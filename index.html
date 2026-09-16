@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>急救與課程教學 APP｜可操作原型 v0.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F2EF; --surface:#FBFBFA; --ink:#12171A; --ink-soft:#4A555B;
+  --muted:#8C9499; --line:#DCDFD9; --line-soft:#E7E9E4;
+  --signal:#C4362C; --signal-soft:rgba(196,54,44,.09); --ok:#3F6B58;
+  --deep:#0D1113;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1114; --surface:#161A1D; --ink:#E8EBE8; --ink-soft:#A5AEB2;
+    --muted:#737C81; --line:#262C30; --line-soft:#1E2326;
+    --signal:#E2564A; --signal-soft:rgba(226,86,74,.14); --ok:#6FA189; --deep:#050708;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1114; --surface:#161A1D; --ink:#E8EBE8; --ink-soft:#A5AEB2;
+  --muted:#737C81; --line:#262C30; --line-soft:#1E2326;
+  --signal:#E2564A; --signal-soft:rgba(226,86,74,.14); --ok:#6FA189; --deep:#050708;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.75;letter-spacing:.01em;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.01em}
+
+.modes{position:sticky;top:0;z-index:30;background:var(--paper);border-bottom:1px solid var(--line)}
+.modes-in{display:flex;gap:20px;align-items:center;padding:0 20px;max-width:620px;margin:0 auto}
+.mode{background:none;border:0;padding:14px 0 12px;cursor:pointer;color:var(--muted);
+  font-size:13.5px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.mode[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--signal)}
+.theme-btn{margin-left:auto;background:none;border:1px solid var(--line);padding:6px 11px;
+  cursor:pointer;font-size:11.5px;font-family:var(--mono);color:var(--muted);
+  align-self:center;white-space:nowrap;transition:border-color .18s,color .18s}
+.theme-btn:hover{border-color:var(--ink);color:var(--ink)}
+
+.wrap{max-width:620px;margin:0 auto;padding:0 20px 90px}
+.zone{display:none}
+.zone.is-on{display:block}
+
+/* nav bar inside 學員端 */
+.nav{display:flex;align-items:center;gap:12px;padding:16px 0 12px;
+  border-bottom:1px solid var(--line-soft);position:sticky;top:44px;background:var(--paper);z-index:10}
+.nav.hide{display:none}
+.back{background:none;border:0;padding:4px 8px 4px 0;cursor:pointer;font-size:17px;line-height:1;
+  color:var(--ink);transition:transform .2s ease}
+.back:active{transform:translateX(-3px)}
+.nav-t{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+
+.page{display:none}
+.page.is-on{display:block;animation:pin .3s cubic-bezier(.22,.61,.36,1)}
+.page.is-on.back{animation:pback .3s cubic-bezier(.22,.61,.36,1)}
+@keyframes pin{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes pback{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.page.is-on,.page.is-on.back{animation:none}}
+
+.display{font-family:var(--serif);font-weight:600;font-size:29px;line-height:1.42}
+.sub{color:var(--ink-soft);font-size:14px;line-height:1.8}
+.meta{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.mark{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.18em;color:var(--muted)}
+.mark i{width:7px;height:7px;background:var(--signal);border-radius:50%;flex:none}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:34px 0 10px}
+.section-head h2{font-size:15px;font-weight:500}
+.section-head span{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.hint{margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.75}
+.note{font-size:12.5px;color:var(--muted);line-height:1.75;padding:20px 0 0;border-top:1px solid var(--line-soft);margin-top:30px}
+
+.trace{display:block;width:100%;height:44px;margin:18px 0 2px;overflow:visible}
+.trace path{fill:none;stroke:var(--signal);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:900;stroke-dashoffset:900;transition:stroke-dashoffset 2.1s cubic-bezier(.22,.61,.36,1)}
+.trace.in path{stroke-dashoffset:0}
+.trace-thin path{stroke-width:1.1;stroke:var(--line)}
+.rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,.61,.36,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}
+  .trace path{transition:none;stroke-dashoffset:0}}
+
+.rows{border-top:1px solid var(--line)}
+.row{display:flex;align-items:flex-start;gap:15px;padding:17px 2px 16px;
+  border-bottom:1px solid var(--line-soft);cursor:pointer;transition:padding-left .2s ease}
+.row:hover{padding-left:6px}
+.row:hover .row-go{color:var(--signal)}
+.row-n{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:5px;flex:none;width:18px}
+.row-b{flex:1;min-width:0}
+.row-t{font-size:16px;font-weight:500;line-height:1.5}
+.row-d{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:2px}
+.row-go{color:var(--line);padding-top:3px;font-size:15px;transition:color .2s ease}
+.row-tag{font-family:var(--mono);font-size:10.5px;color:var(--signal);background:var(--signal-soft);
+  padding:2px 6px;margin-left:8px;vertical-align:2px}
+.row-tag.done{color:var(--ok);background:transparent;border:1px solid var(--line)}
+
+.btn{margin-top:20px;width:100%;background:var(--ink);color:var(--paper);border:0;padding:15px 18px;
+  font-size:15px;font-weight:500;cursor:pointer;transition:opacity .18s ease}
+.btn:hover{opacity:.86}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-quiet{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.f{padding:18px 0 4px;border-bottom:1px solid var(--line-soft)}
+.f-q{font-size:15px;line-height:1.6}
+.f-hint{font-size:12px;color:var(--muted);margin-top:3px}
+.f-in{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:9px 0;
+  font-size:15px;margin-top:10px}
+.f-in:focus{border-bottom-color:var(--ink);outline:none}
+.f-ta{width:100%;background:transparent;border:1px solid var(--line);padding:12px;min-height:104px;
+  margin-top:12px;font-size:15px;line-height:1.8;resize:vertical}
+.req{color:var(--signal);font-family:var(--mono);font-size:11px;vertical-align:3px;margin-left:4px}
+.scale{display:flex;margin:14px 0 6px;border:1px solid var(--line)}
+.scale button{flex:1;background:transparent;border:0;border-right:1px solid var(--line);padding:13px 0;
+  font-family:var(--mono);font-size:15px;color:var(--muted);cursor:pointer;transition:background .18s,color .18s}
+.scale button:last-child{border-right:0}
+.scale button.on{background:var(--ink);color:var(--paper)}
+.scale-l{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+
+/* inline player */
+.player{border:1px solid var(--line);background:var(--paper);margin-top:16px}
+.player-stage{aspect-ratio:16/9;background:var(--line-soft);display:grid;place-items:center;position:relative;
+  border-bottom:1px solid var(--line);transition:background .35s ease}
+.player.playing .player-stage{background:var(--deep)}
+.play{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;
+  background:var(--surface);transition:transform .25s cubic-bezier(.22,.61,.36,1),opacity .2s ease}
+.play::after{content:"";width:0;height:0;border-left:13px solid var(--ink);border-top:9px solid transparent;
+  border-bottom:9px solid transparent;margin-left:4px}
+.player:hover .play{transform:scale(1.07)}
+.player.playing .play{opacity:0;pointer-events:none}
+.stage-live{position:absolute;inset:0;display:none;padding:14px;color:#E8EBE8;
+  flex-direction:column;justify-content:space-between}
+.player.playing .stage-live{display:flex}
+.live-top{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;opacity:.65}
+.live-mid{font-family:var(--serif);font-size:19px;line-height:1.5;font-weight:600}
+.live-bar{height:2px;background:rgba(232,235,232,.22);margin-bottom:8px}
+.live-bar i{display:block;height:2px;background:var(--signal);width:0}
+.live-foot{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px}
+.live-foot button{background:none;border:0;color:#E8EBE8;cursor:pointer;font-size:11px;font-family:var(--mono);padding:4px}
+.player-b{padding:13px 14px 14px}
+.player-t{font-size:15.5px;font-weight:500;line-height:1.5}
+.player-m{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.vid-sm{display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.vid-sm .play{width:30px;height:30px;flex:none}
+.vid-sm .play::after{border-left-width:9px;border-top-width:6px;border-bottom-width:6px;margin-left:3px}
+.vid-sm.on .vid-t{color:var(--signal)}
+.vid-t{font-size:14.5px;font-weight:500;line-height:1.5}
+
+.story p{font-size:16px;line-height:2.05;margin:0 0 20px}
+.quote{font-family:var(--serif);font-size:22px;line-height:1.65;font-weight:600;padding:26px 0 24px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:28px 0}
+.stats{display:flex;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat{flex:1;padding:18px 0 16px;border-right:1px solid var(--line-soft)}
+.stat:last-child{border-right:0}
+.stat-n{font-family:var(--mono);font-size:26px;line-height:1.1;font-weight:500}
+.stat-n small{font-size:13px;color:var(--muted);margin-left:2px}
+.stat-l{font-size:11.5px;color:var(--muted);margin-top:5px}
+.tl{display:flex;gap:16px;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+.tl-y{font-family:var(--mono);font-size:12px;color:var(--muted);flex:none;width:52px;padding-top:4px}
+.tl-b{font-size:14.5px;line-height:1.7}
+.tl-b em{display:block;font-style:normal;font-size:12.5px;color:var(--muted)}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}
+.ph{background:var(--line-soft);aspect-ratio:4/5;display:grid;place-items:center;border:1px solid var(--line);
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);cursor:pointer;transition:opacity .2s}
+.ph:active{opacity:.65}
+.ph.wide{grid-column:1/-1;aspect-ratio:16/10}
+.lbox{position:fixed;inset:0;z-index:70;background:rgba(6,9,10,.94);display:none;
+  align-items:center;justify-content:center;padding:24px}
+.lbox.is-on{display:flex}
+.lbox-in{max-width:520px;width:100%}
+.lbox-ph{aspect-ratio:4/5;background:#20262A;display:grid;place-items:center;font-family:var(--mono);
+  font-size:11px;color:#8C9499}
+.lbox-cap{color:#D6DAD7;font-size:13.5px;line-height:1.7;margin-top:14px;display:flex;
+  justify-content:space-between;gap:16px;align-items:flex-start}
+.lbox-cap button{background:none;border:0;color:#8C9499;cursor:pointer;font-size:13px;flex:none}
+
+/* quiz */
+.prog{height:2px;background:var(--line);margin-top:16px}
+.prog i{display:block;height:2px;background:var(--signal);transition:width .35s ease}
+.opt{display:flex;gap:13px;align-items:flex-start;padding:15px 12px;border:1px solid var(--line);
+  margin-top:10px;cursor:pointer;transition:border-color .18s,background .18s}
+.opt:hover{border-color:var(--ink-soft)}
+.opt.on{border-color:var(--ink);background:var(--paper)}
+.opt-k{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding-top:3px}
+.opt.on .opt-k{color:var(--signal)}
+.ans{border-bottom:1px solid var(--line-soft);padding:16px 0}
+.ans-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;cursor:pointer}
+.ans-q{font-size:15px;line-height:1.6;flex:1}
+.ans-s{font-family:var(--mono);font-size:11px;flex:none;padding-top:3px}
+.ans-s.no{color:var(--signal)}
+.ans-s.yes{color:var(--ok)}
+.ans-b{display:none;padding-top:12px}
+.ans.open .ans-b{display:block}
+.ans-line{display:flex;gap:10px;font-size:14px;line-height:1.8;padding:4px 0}
+.ans-line b{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;flex:none;width:46px;padding-top:4px}
+.star{color:var(--signal);font-size:11px;font-family:var(--mono);margin-left:5px}
+
+/* figures */
+svg.fig{display:block;width:100%;overflow:visible;margin:26px 0 4px}
+svg.fig path{fill:none;stroke:var(--line);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;
+  transition:stroke-dashoffset 1.9s cubic-bezier(.22,.61,.36,1)}
+svg.fig.accent path{stroke:var(--signal);stroke-width:1.6}
+svg.fig circle{fill:var(--paper);stroke:var(--signal);stroke-width:1.3;opacity:0;transition:opacity .5s ease}
+svg.fig.in circle{opacity:1}
+.fig-cap{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10.5px;
+  color:var(--muted);letter-spacing:.12em;margin-top:2px}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--signal);flex:none}
+@media (prefers-reduced-motion:no-preference){
+  .pulse{animation:bpm .545s ease-out infinite}
+}
+@keyframes bpm{0%{transform:scale(1);opacity:1}45%{transform:scale(1.75);opacity:.45}100%{transform:scale(1);opacity:1}}
+
+/* lead photos */
+.lead{margin-top:20px}
+.lead-big{aspect-ratio:4/3!important}
+.lead-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:11px}
+.who{display:flex;align-items:baseline;gap:12px;margin-top:18px}
+.who-n{font-family:var(--serif);font-size:22px;font-weight:600}
+.who-r{font-size:12.5px;color:var(--muted)}
+
+/* scope + chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{border:1px solid var(--line);padding:9px 13px;font-size:13.5px;cursor:pointer;
+  transition:border-color .18s,background .18s,color .18s}
+.chip:hover{border-color:var(--ink-soft)}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* accordion groups */
+.grp{border-bottom:1px solid var(--line)}
+.grp:first-of-type{border-top:1px solid var(--line)}
+.grp-h{display:flex;align-items:center;gap:12px;padding:17px 2px;cursor:pointer;
+  transition:padding-left .2s ease}
+.grp-h:hover{padding-left:5px}
+.grp-t{flex:1;font-size:15.5px;font-weight:500}
+.grp-m{font-family:var(--mono);font-size:11px;color:var(--muted);flex:none}
+.grp-c{font-size:13px;color:var(--line);flex:none;transition:transform .25s cubic-bezier(.22,.61,.36,1),color .2s}
+.grp.open .grp-c{transform:rotate(90deg);color:var(--signal)}
+.grp-b{display:none;padding:0 0 28px}
+.grp.open .grp-b{display:block;animation:gin .3s cubic-bezier(.22,.61,.36,1)}
+@keyframes gin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.grp-b .section-head:first-child{padding-top:4px}
+.grp-b>.sub:first-child{margin-top:0}
+@media (prefers-reduced-motion:reduce){.grp.open .grp-b{animation:none}}
+
+/* export picker */
+.pick{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.pick-c{width:18px;height:18px;border:1.4px solid var(--line);flex:none;display:grid;place-items:center;
+  font-size:11px;color:transparent;transition:all .18s}
+.pick.on .pick-c{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.pick-n{flex:1;font-size:14.5px}
+.pick-m{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.map{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
+.map-a{flex:1;font-family:var(--mono);font-size:12px;color:var(--muted);min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.map-x{color:var(--line);flex:none}
+.map-b{flex:1;min-width:0}
+.drop{border:1px dashed var(--line-strong,var(--line));padding:26px 16px;text-align:center;
+  margin-top:14px;font-size:13.5px;color:var(--muted);cursor:pointer}
+.drop:hover{border-color:var(--ink-soft);color:var(--ink-soft)}
+
+/* editable table */
+.et{border-top:1px solid var(--line);margin-top:12px}
+.et-r{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.et-r input{background:transparent;border:0;font-size:14px;padding:5px 0;min-width:0}
+.et-k{flex:0 0 74px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.et-v{flex:1}
+.et-b{display:flex;gap:6px;flex:none}
+.et-b button{background:none;border:1px solid var(--line);width:28px;height:28px;cursor:pointer;
+  font-size:11px;line-height:1;color:var(--ink-soft)}
+.et-b button:hover{border-color:var(--ink);color:var(--ink)}
+.et-add{font-size:12.5px;border:1px solid var(--line);background:none;padding:9px 14px;
+  cursor:pointer;margin-top:12px;color:var(--ink-soft)}
+.et-add:hover{border-color:var(--ink);color:var(--ink)}
+.num-edit{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.num-edit input{background:transparent;border:0;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:20px;width:110px;padding:4px 0}
+.num-edit span{font-size:13.5px;color:var(--muted);flex:1}
+
+/* podium */
+.podium{border-top:1px solid var(--line);margin-top:18px}
+.pod{display:flex;align-items:center;gap:14px;padding:16px 2px;border-bottom:1px solid var(--line-soft)}
+.pod-r{font-family:var(--mono);font-size:26px;color:var(--line);flex:none;width:30px;line-height:1}
+.pod:first-child .pod-r{color:var(--signal)}
+.pod-b{flex:1;min-width:0}
+.pod-n{font-size:16.5px;font-weight:500}
+.pod-m{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px}
+.pod-s{font-family:var(--mono);font-size:21px;text-align:right;flex:none;line-height:1.2}
+.pod-s small{font-size:12px;color:var(--muted)}
+.pod-s em{display:block;font-style:normal;font-size:11.5px;color:var(--ok);margin-top:2px}
+
+/* contact block */
+.cts{border-top:1px solid var(--line);margin-top:16px}
+.ct{display:flex;align-items:center;gap:13px;padding:14px 2px;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.ct-m{width:34px;height:34px;border:1.4px solid var(--ink);border-radius:9px;flex:none;display:grid;
+  place-items:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.02em}
+.ct-m.ig{position:relative}
+.ct-m.ig::before{content:"";width:13px;height:13px;border:1.4px solid var(--ink);border-radius:50%}
+.ct-m.ig::after{content:"";position:absolute;top:7px;right:7px;width:3.5px;height:3.5px;border-radius:50%;background:var(--signal)}
+.ct-b{flex:1;min-width:0}
+.ct-v{font-family:var(--mono);font-size:14px}
+.ct-l{font-size:12px;color:var(--muted);margin-top:2px}
+.ct-go{font-size:12.5px;color:var(--muted);flex:none}
+
+/* whisper inbox */
+.wi{border-bottom:1px solid var(--line-soft);padding:14px 0}
+.wi-h{display:flex;gap:11px;cursor:pointer;align-items:flex-start}
+.wi-dot{width:7px;height:7px;border-radius:50%;background:var(--signal);flex:none;margin-top:9px}
+.wi.read .wi-dot,.wi.done .wi-dot{background:var(--line)}
+.wi-t{flex:1;font-size:14.5px;line-height:1.75}
+.wi.read .wi-t,.wi.done .wi-t{color:var(--ink-soft)}
+.wi-m{font-family:var(--mono);font-size:10.5px;color:var(--muted);flex:none;padding-top:5px}
+.wi-b{display:none;padding:12px 0 2px 18px}
+.wi.open .wi-b{display:block}
+.wi-c{display:flex;gap:9px;align-items:center;font-size:13px;padding:10px 12px;
+  background:var(--signal-soft);margin-bottom:12px;line-height:1.6}
+.wi-c em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--muted);flex:none}
+.wact{display:flex;gap:8px;flex-wrap:wrap}
+.wact button{font-size:12px;border:1px solid var(--line);background:none;padding:6px 11px;
+  cursor:pointer;color:var(--ink-soft);transition:border-color .18s,color .18s}
+.wact button:hover{border-color:var(--ink);color:var(--ink)}
+.wtag{font-family:var(--mono);font-size:10px;padding:1px 6px;margin-left:8px;vertical-align:1px}
+.wtag.todo{color:var(--signal);border:1px solid var(--signal)}
+.wtag.done{color:var(--ok);border:1px solid var(--line)}
+.empty{padding:26px 0;font-size:13.5px;color:var(--muted)}
+
+/* line card */
+.linec{display:flex;align-items:center;gap:14px;border:1px solid var(--line);padding:15px 16px;margin-top:14px}
+.linec-m{width:40px;height:40px;border:1.6px solid var(--ok);border-radius:11px;flex:none;
+  display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--ok)}
+.linec-b{flex:1;min-width:0}
+.linec-h{font-family:var(--mono);font-size:14.5px}
+.linec-d{font-size:12.5px;color:var(--muted);margin-top:2px}
+.copy{font-size:12.5px;border:1px solid var(--line);background:none;padding:7px 12px;cursor:pointer;flex:none}
+
+/* question editor */
+.qe{border:1px solid var(--line);margin-top:10px}
+.qe-h{display:flex;align-items:flex-start;gap:12px;padding:14px 14px;cursor:pointer}
+.qe-n{font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:none;padding-top:4px;width:22px}
+.qe-t{flex:1;font-size:14.5px;line-height:1.6}
+.qe-x{font-family:var(--mono);font-size:11px;color:var(--muted);flex:none;padding-top:4px}
+.qe-b{display:none;padding:2px 14px 16px;border-top:1px solid var(--line-soft)}
+.qe.open .qe-b{display:block}
+.qe.open .qe-h{padding-bottom:12px}
+.oedit{display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line-soft)}
+.radio{width:17px;height:17px;border:1.4px solid var(--line);border-radius:50%;flex:none;cursor:pointer;
+  display:grid;place-items:center;transition:border-color .18s}
+.radio::after{content:"";width:8px;height:8px;border-radius:50%;background:transparent;transition:background .18s}
+.radio.on{border-color:var(--signal)}
+.radio.on::after{background:var(--signal)}
+.oedit input{flex:1;background:transparent;border:0;font-size:14.5px;padding:4px 0}
+.oedit-k{font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:none;width:14px}
+.startog{font-family:var(--mono);font-size:11px;border:1px solid var(--line);padding:5px 9px;
+  cursor:pointer;color:var(--muted);transition:all .18s}
+.startog.on{color:var(--signal);border-color:var(--signal);background:var(--signal-soft)}
+/* horizontal photo strip */
+.strip{display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x mandatory;margin-top:16px;
+  padding-bottom:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.strip::-webkit-scrollbar{display:none}
+.strip .ph{flex:0 0 66%;scroll-snap-align:start;aspect-ratio:4/5}
+.strip-m{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.1em;margin-top:4px}
+.chip-s{border:1px solid var(--line);padding:8px 12px;font-size:13px;cursor:pointer;
+  transition:border-color .18s,color .18s}
+.chip-s:hover{border-color:var(--ink)}
+
+/* notification preview */
+.notif{position:fixed;left:12px;right:12px;top:12px;z-index:90;background:var(--surface);
+  border:1px solid var(--line);padding:13px 14px;display:flex;gap:12px;
+  transform:translateY(-140%);transition:transform .42s cubic-bezier(.22,.9,.3,1);
+  box-shadow:0 8px 24px rgba(8,12,14,.14)}
+.notif.is-on{transform:none}
+.notif-i{width:34px;height:34px;background:var(--ink);color:var(--paper);display:grid;
+  place-items:center;flex:none;font-size:16px}
+.notif-b{flex:1;min-width:0}
+.notif-t{font-size:13.5px;font-weight:500;line-height:1.45}
+.notif-d{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:2px}
+.notif-m{font-family:var(--mono);font-size:10px;color:var(--muted);flex:none}
+
+/* instagram */
+.ig{display:flex;align-items:center;gap:14px;border:1px solid var(--line);padding:15px 16px;
+  margin-top:16px;cursor:pointer;transition:border-color .2s ease,transform .2s cubic-bezier(.22,.61,.36,1)}
+.ig:hover{border-color:var(--ink)}
+.ig:active{transform:scale(.99)}
+.ig-mark{width:42px;height:42px;border:1.6px solid var(--ink);border-radius:12px;display:grid;
+  place-items:center;flex:none;position:relative}
+.ig-mark::before{content:"";width:16px;height:16px;border:1.6px solid var(--ink);border-radius:50%}
+.ig-mark::after{content:"";position:absolute;top:9px;right:9px;width:4px;height:4px;border-radius:50%;background:var(--signal)}
+.ig-b{flex:1;min-width:0}
+.ig-h{font-family:var(--mono);font-size:14.5px;letter-spacing:.04em}
+.ig-d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.6}
+.ig-go{font-size:13px;color:var(--muted);flex:none}
+.ig-inline{font-family:var(--mono);font-size:12.5px;color:var(--signal);cursor:pointer}
+.ig-foot{display:flex;align-items:center;gap:8px;padding:14px 0 0;font-size:13px;cursor:pointer}
+.ig-foot .dotmark{width:18px;height:18px;border:1.3px solid var(--ink);border-radius:5px;flex:none;
+  display:grid;place-items:center}
+.ig-foot .dotmark::before{content:"";width:7px;height:7px;border:1.3px solid var(--ink);border-radius:50%}
+
+/* sortable photos */
+.sortrow{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-soft)}
+.sortrow .dthumb{width:42px;height:42px}
+.sortname{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sortname em{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.move{background:none;border:1px solid var(--line);width:28px;height:28px;cursor:pointer;
+  font-size:11px;line-height:1;flex:none;color:var(--ink-soft)}
+.move:hover{border-color:var(--ink)}
+.badge{font-family:var(--mono);font-size:10px;color:var(--signal);background:var(--signal-soft);padding:2px 5px}
+
+/* segmented */
+.seg{display:flex;border:1px solid var(--line);margin-top:14px}
+.seg button{flex:1;background:none;border:0;border-right:1px solid var(--line);padding:10px 0;
+  font-size:13px;color:var(--muted);cursor:pointer;transition:background .18s,color .18s}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--ink);color:var(--paper)}
+.trow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+.trow-n{flex:1;font-size:14.5px;min-width:0}
+.trow .bar{flex:none;width:96px}
+.trow-v{font-family:var(--mono);font-size:12px;width:52px;text-align:right}
+
+/* stats */
+.bar{height:7px;background:var(--line-soft);flex:1}
+.bar i{display:block;height:7px;background:var(--ink);transition:width .6s cubic-bezier(.22,.61,.36,1)}
+.bar.pre i{background:var(--muted)}
+.brow{display:flex;align-items:center;gap:10px;margin-top:7px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.brow b{width:26px;font-weight:400}
+.brow .pct{width:40px;text-align:right;color:var(--ink)}
+.qstat{padding:17px 0;border-bottom:1px solid var(--line-soft)}
+.qstat-t{font-size:14.5px;line-height:1.6;display:flex;gap:10px}
+.qstat-t em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:none;padding-top:3px}
+.delta{font-family:var(--mono);font-size:12px;color:var(--ok);margin-left:8px}
+.delta.flat{color:var(--signal)}
+.pair{display:flex;align-items:flex-end;gap:16px;margin-top:14px}
+.pair-c{flex:1}
+.pair-n{font-family:var(--mono);font-size:34px;line-height:1;font-weight:500}
+.pair-n small{font-size:14px;color:var(--muted);margin-left:1px}
+.pair-l{font-size:11.5px;color:var(--muted);margin-top:6px}
+.pair-a{font-family:var(--mono);font-size:18px;color:var(--muted);padding-bottom:12px}
+.miss{border:1px solid var(--line);padding:15px 15px 16px;margin-top:12px}
+.miss-h{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.miss-q{font-size:15px;line-height:1.65;margin-top:9px}
+.miss-w{margin-top:12px;padding:11px 12px;background:var(--signal-soft);font-size:13.5px;line-height:1.75}
+.miss-w b{font-weight:500}
+.code-in{width:100%;background:transparent;border:0;border-bottom:1.5px solid var(--ink);
+  font-family:var(--mono);font-size:32px;letter-spacing:.38em;padding:6px 0 10px;margin-top:14px}
+.code-in::placeholder{color:var(--line)}
+.code-bad{color:var(--signal);font-size:12.5px;margin-top:10px;display:none}
+.code-bad.on{display:block}
+
+/* article */
+.art p{font-size:16px;line-height:2.05;margin:0 0 20px}
+.art-h{padding-bottom:8px}
+.views{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* whisper */
+.whisper-box{border:1px solid var(--line);background:var(--paper);padding:16px;margin-top:18px}
+.whisper-box textarea{width:100%;min-height:124px;background:transparent;border:0;resize:vertical;
+  font-size:15px;line-height:1.8}
+.whisper-foot{display:flex;justify-content:space-between;border-top:1px solid var(--line-soft);
+  margin-top:12px;padding-top:11px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.lock{display:flex;gap:10px;align-items:flex-start;margin-top:18px;padding:13px 14px;
+  background:var(--signal-soft);font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+.lock b{color:var(--ink);font-weight:500}
+.done-view{display:none;padding:34px 0 20px}
+.done-view.is-on{display:block}
+
+/* pro */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;
+  border-bottom:1px solid var(--line-soft);font-size:15px}
+.sw{width:34px;height:20px;border-radius:11px;background:var(--line);position:relative;flex:none;
+  cursor:pointer;transition:background .2s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:var(--surface);transition:transform .2s}
+.sw.on{background:var(--ink)}
+.sw.on::after{transform:translateX(14px)}
+.picker{position:fixed;inset:0;z-index:70;background:var(--paper);display:none;overflow-y:auto;padding:0 20px}
+.picker.is-on{display:block}
+.picker-in{max-width:560px;margin:0 auto;padding:26px 0 40px}
+.dfile{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.dthumb{width:46px;height:46px;background:var(--line-soft);border:1px solid var(--line);flex:none;
+  display:grid;place-items:center;font-family:var(--mono);font-size:9px;color:var(--muted)}
+.dname{flex:1;min-width:0;font-size:14.5px}
+.dname em{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.dcheck{width:19px;height:19px;border:1.5px solid var(--line);flex:none;display:grid;place-items:center;
+  font-size:11px;color:transparent}
+.dfile.on .dcheck{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.picker-bar{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var(--line);
+  padding:14px 0;display:flex;gap:12px;align-items:center}
+.picker-bar .btn{margin:0}
+
+.gate-mark{display:flex;align-items:center;gap:8px;margin-top:34px;padding-top:15px;
+  border-top:1px solid var(--line-soft);font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.1em}
+.foot-mark{width:24px;height:24px;display:grid;place-items:center;position:relative;margin-left:-4px;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.foot-mark i{width:6px;height:6px;border-radius:50%;background:var(--line);display:block}
+.foot-mark::after{content:"";position:absolute;inset:1px;border-radius:50%;border:1.5px solid var(--signal);
+  opacity:0;transform:scale(.55)}
+.foot-mark.arming::after{animation:arm 1.1s linear forwards}
+@keyframes arm{0%{opacity:0;transform:scale(.55)}55%{opacity:0}100%{opacity:.85;transform:scale(1)}}
+.gate{position:fixed;inset:0;z-index:60;background:var(--paper);display:none;padding:0 22px;overflow-y:auto}
+.gate.is-on{display:block}
+.gate-in{max-width:400px;margin:0 auto;padding:18vh 0 40px}
+.gate-x{background:none;border:0;padding:8px 0;margin-top:18px;cursor:pointer;font-size:13px;color:var(--muted)}
+.sw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:16px}
+.sw-cell{background:var(--surface);padding:12px}
+.sw-chip{height:42px;border:1px solid var(--line-soft)}
+.sw-name{font-size:12px;margin-top:9px}
+.sw-hex{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+
+/* ============================================================
+   響應式：小手機 → 手機 → 平板 → 桌機
+   基準 375px。字級與間距用 clamp 連續縮放，不是跳三段。
+   ============================================================ */
+
+/* 連續縮放的字級：小螢幕不擠，大螢幕不空 */
+body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
+.display{font-size:clamp(22px,4.4vw + 8px,32px)}
+.quote{font-size:clamp(19px,2.6vw + 11px,25px)}
+.story p{font-size:clamp(15px,1vw + 12px,17px);line-height:1.95}
+.stat-n{font-size:clamp(21px,3vw + 9px,28px)}
+.pair-n{font-size:clamp(26px,4vw + 11px,38px)}
+.code-in{font-size:clamp(25px,7vw,34px)}
+
+/* 內距跟著螢幕走 */
+.wrap{padding-left:clamp(16px,4vw,34px);padding-right:clamp(16px,4vw,34px)}
+.modes-in{padding-left:clamp(16px,4vw,34px);padding-right:clamp(16px,4vw,34px)}
+
+/* 不讓任何一塊撐破畫面 */
+.wrap,.view,.story p,.row-t,.ans-q,.miss-q{min-width:0}
+.row-t,.sortname,.trow-n,.ct-v{overflow-wrap:anywhere}
+
+/* ---------- 小手機 ≤360px（SE、mini） ---------- */
+@media (max-width:360px){
+  .pair{gap:10px;flex-wrap:wrap}
+  .pair-c{min-width:84px}
+  .pair-a{display:none}
+  .seg button{font-size:12px;padding:10px 0}
+  .tl-y{width:46px}
+  .tl{gap:12px}
+  .trow .bar{width:60px}
+  .strip .ph{flex-basis:78%}
+  .chip,.chip-s{font-size:12.5px;padding:8px 10px}
+  .stats .stat-l{font-size:11px}
+  .who{flex-wrap:wrap;gap:6px}
+  .grp-m{display:none}
+}
+
+/* ---------- 大手機 ≥430px（Pro Max、Plus） ---------- */
+@media (min-width:430px){
+  .lead-row{gap:13px}
+  .strip .ph{flex-basis:58%}
+}
+
+/* ---------- 平板 ≥700px ---------- */
+@media (min-width:700px){
+  .wrap{max-width:700px}
+  .modes-in{max-width:700px}
+
+  /* 按鈕不再整條，改成內容寬度 */
+  .btn{width:auto;min-width:260px;padding:15px 34px}
+  .btn-quiet{min-width:200px}
+
+  /* 開頭三張照片一次看得完 */
+  .lead{display:grid;grid-template-columns:1.35fr 1fr;gap:13px;align-items:start}
+  .lead-big{aspect-ratio:4/5!important}
+  .lead-row{grid-template-columns:1fr;gap:13px}
+
+  /* 現場照片一次看三張 */
+  .strip .ph{flex-basis:36%}
+
+  /* 選項與表單拉寬一點比較好點 */
+  .opt{padding:16px 15px}
+  .scale button{padding:14px 0;font-size:16px}
+  .f-in{font-size:15.5px}
+
+  /* 通知靠右上，不再橫跨整個畫面 */
+  .notif{left:auto;right:20px;top:18px;width:380px}
+  .lbox-in{max-width:520px}
+  .gate-in{padding-top:16vh}
+}
+
+/* ---------- 桌機 ≥1100px ---------- */
+@media (min-width:1100px){
+  .wrap{max-width:760px}
+  .modes-in{max-width:760px}
+  .display{line-height:1.38}
+  .strip .ph{flex-basis:29%}
+
+  /* 後台設定列在寬螢幕分兩欄，少捲一半 */
+  .grp-b .toggle-row{display:grid;grid-template-columns:1fr auto;column-gap:20px}
+  .grp-b .pick{padding:12px 0}
+
+  /* 統計長條吃掉多出來的寬度，比較好比 */
+  .trow .bar{width:auto;flex:1;max-width:280px}
+  .brow .bar{max-width:420px}
+}
+
+/* ---------- 橫向短螢幕（手機轉橫） ---------- */
+@media (max-height:520px) and (orientation:landscape){
+  .gate-in{padding-top:6vh}
+  .nav{position:static}
+  .modes{position:static}
+}
+
+/* ---------- 桌機才有的細節 ---------- */
+@media (hover:hover) and (pointer:fine){
+  .row,.ct,.vid-sm,.grp-h{cursor:pointer}
+}
+/* 觸控裝置：把可點區域撐到 44px，手指才按得準 */
+@media (hover:none){
+  .move{width:34px;height:34px}
+  .radio{width:20px;height:20px}
+  .copy,.wact button{padding:10px 14px}
+  .ct{padding:16px 2px}
+}
+</style>
+</head>
+<body>
+
+<nav class="modes" role="tablist">
+  <div class="modes-in">
+    <button class="mode" role="tab" aria-selected="true" data-zone="z-student">學員端</button>
+    <button class="mode" role="tab" aria-selected="false" data-zone="z-pro">後台</button>
+    <button class="mode" role="tab" aria-selected="false" data-zone="z-style">設計語言</button>
+    <button class="theme-btn" id="themeBtn" aria-label="切換深淺色">淺色</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ================= 學員端 ================= -->
+<div class="zone is-on" id="z-student">
+  <div class="nav hide" id="nav"><button class="back" id="back" aria-label="返回">←</button><span class="nav-t" id="navt"></span></div>
+
+  <!-- 課程首頁 -->
+  <section class="page is-on" id="p-home">
+    <div style="padding-top:26px">
+      <div class="meta">2026 / 09 / 14 · CPR-4f9a2e</div>
+      <h1 class="display" style="margin-top:10px">成人 CPR 與 AED 實務</h1>
+      <p class="sub" style="margin:8px 0 0">三小時實作課．新北市政府消防局</p>
+      <svg class="trace rv" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 25 L150 25 L163 25 L171 7 L180 41 L189 18 L200 25 L400 25"/>
+      </svg>
+    </div>
+    <div class="rows" style="margin-top:14px">
+      <div class="row" data-go="p-about"><div class="row-n">01</div><div class="row-b"><div class="row-t">講師介紹</div><div class="row-d">影片、經歷、這件事為什麼要做</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-quiz"><div class="row-n">02</div><div class="row-b"><div class="row-t">線上測驗<span class="row-tag">進行中</span></div><div class="row-d">課前、課後測驗與題目詳解</div></div><div class="row-go">→</div></div>
+      <div class="row" data-gate="p-feedback"><div class="row-n">03</div><div class="row-b"><div class="row-t">課程回饋</div><div class="row-d">課程、講師、教材評分與文字回饋</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-invite"><div class="row-n">04</div><div class="row-b"><div class="row-t">課程邀約</div><div class="row-d">邀請講師到你的單位授課</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-disaster"><div class="row-n">05</div><div class="row-b"><div class="row-t">防災知識專區</div><div class="row-d">火災逃生、住警器、地震與居家安全</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-firstaid"><div class="row-n">06</div><div class="row-b"><div class="row-t">急救教育專區</div><div class="row-d">CPR、AED、OHCA、創傷處置</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-whisper"><div class="row-n">07</div><div class="row-b"><div class="row-t">傳聲悄悄話<span class="row-tag">僅講師可見</span></div><div class="row-d">想說又不好意思當面說的話</div></div><div class="row-go">→</div></div>
+    </div>
+    <div class="ig-foot" data-ig><span class="dotmark"></span><span>@rescue.teacher</span><span style="color:var(--muted);font-size:12.5px">每週一則急救小知識</span></div>
+    <div class="gate-mark"><span class="foot-mark" id="gate"><i></i></span><span>CPR-4f9a2e</span></div>
+    <p class="note">這個頁面是公開的，舊連結、轉寄的連結都能看。只有作答與回饋需要上課代號。後台入口是上面那顆灰點，長按 1.1 秒。</p>
+  </section>
+
+  <!-- 講師介紹 -->
+  <section class="page" id="p-about">
+    <div class="lead rv">
+      <div class="ph lead-big" data-cap="火場勤務現場">照片 4:3</div>
+      <div class="lead-row">
+        <div class="ph" data-cap="TED 演講現場">照片 4:5</div>
+        <div class="ph" data-cap="企業內訓　AED 實際操作">照片 4:5</div>
+      </div>
+    </div>
+    <div class="who rv"><span class="who-n">尤偉檁</span><span class="who-r">消防安全 × 急救教育講師</span>
+      <span class="ig-inline" data-ig>@rescue.teacher</span></div>
+    <div class="meta rv" style="margin-top:6px">新北市政府消防局・新板分隊隊員</div>
+
+    <h1 class="display rv" style="margin-top:22px">我站在第一線，<br>也站在講台上。</h1>
+    <p class="sub rv" style="margin-top:14px">從火災現場、救護現場，到企業、學校與社區，我希望把第一線看見的真實經驗，轉化成每個人都聽得懂、學得會、真正用得上的安全知識。讓知識不只停留在課堂，而是在關鍵時刻，真的派得上用場。</p>
+
+    <div class="stats rv" style="margin-top:26px">
+      <div class="stat"><div class="stat-n">280<small>+</small></div><div class="stat-l">場演講與教育訓練</div></div>
+      <div class="stat"><div class="stat-n">16,000<small>+</small></div><div class="stat-l">授課人次</div></div>
+    </div>
+
+    <div class="player rv" id="player">
+      <div class="player-stage" id="stage">
+        <span class="play"></span>
+        <div class="stage-live">
+          <div class="live-top">TED · 站內播放</div>
+          <div class="live-mid" id="liveT"></div>
+          <div><div class="live-bar"><i id="liveBar"></i></div>
+            <div class="live-foot"><span id="liveTime">0:00</span><button id="livePause">暫停</button></div></div>
+        </div>
+      </div>
+      <div class="player-b"><div class="player-t" id="plT">如果，有一天你發現……</div><div class="player-m" id="plM">TED 演講 · 14:20</div></div>
+    </div>
+    <p class="hint rv">如果我們能讓意外少發生一點呢？如果能讓更多人在火災發生前知道怎麼預防，在家人倒下時知道怎麼撥打 119，在等待救護車的幾分鐘裡知道怎麼做 CPR — 那麼消防員是不是就有機會，少晚一點到達。</p>
+
+    <svg class="fig rv" viewBox="0 0 400 48" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 26 L150 26 L163 26 L171 6 L180 44 L189 18 L200 26 L400 26"/>
+    </svg>
+
+    <div class="section-head rv"><h2>我為什麼一直講</h2><span>因為看過「來不及」</span></div>
+    <div class="story rv">
+      <p>在第一線工作的時間越久，我越知道：很多事故不是因為沒有救援，而是我們在最初的幾分鐘裡，不知道該做什麼。</p>
+      <p>火災時不知道要往哪裡跑。家人倒下時不知道 CPR 怎麼做。看到 AED 卻不知道敢不敢使用。鋰電池起火時不知道該怎麼處理。</p>
+      <p>所以我想做的事情很簡單：把消防員知道的事情，教給更多人。</p>
+    </div>
+
+    <div class="quote rv">「希望這社會<br>因為有我的存在，<br>能有一點點正向的改變。」</div>
+
+    <svg class="fig accent rv" viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 28 L86 28 L96 20 L100 36 L108 28 L118 20 L122 36 L130 28 L140 20 L144 36 L152 28 L164 28 L206 28 L214 6 L222 48 L230 22 L238 28 L296 28 L304 14 L310 40 L316 24 L326 28 L400 28"/>
+    </svg>
+    <div class="fig-cap rv"><span class="pulse"></span><span>FLATLINE → COMPRESSIONS → ROSC　110 / MIN</span></div>
+
+    <div class="story rv" style="margin-top:26px">
+      <p>消防員一次可能救一個人、幾個人。但教育可以讓一個人，在事故發生時救自己、救家人，甚至救陌生人。</p>
+      <p>我相信教育的價值，不是讓人記住一堂課。而是多年以後，當事故真的發生時，那個人還記得「我曾經學過」，然後做出正確的第一個動作。</p>
+    </div>
+
+    <div class="section-head rv"><h2>教育理念</h2><span>三件事</span></div>
+    <div class="rv">
+      <div class="tl"><div class="tl-y">看得懂</div><div class="tl-b">把複雜的專業知識轉化成生活語言<em>專業，不應該只是專業人員才懂的語言</em></div></div>
+      <div class="tl"><div class="tl-y">記得住</div><div class="tl-b">透過故事、案例、互動與情境，讓知識留下來</div></div>
+      <div class="tl"><div class="tl-y">用得出來</div><div class="tl-b">讓學員面對真實狀況時，能夠採取行動</div></div>
+    </div>
+
+    <div class="section-head rv"><h2>新聞紀實</h2><span>真實案例</span></div>
+    <div class="vid-sm rv" data-t="行動電源火災" data-m="新聞紀實 · 3:12" data-s="192"><span class="play"></span>
+      <div><div class="vid-t">放在床上的行動電源，為什麼可能成為危險</div><div class="player-m">鋰電池火災．新聞紀實</div></div></div>
+    <p class="hint rv">事故不是新聞結束的地方，而是安全教育的開始。</p>
+
+    <svg class="fig rv" viewBox="0 0 400 54" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M6 34 C 70 6, 130 52, 200 28 S 330 8, 394 32"/>
+      <circle cx="6" cy="34" r="3.2"/><circle cx="130" cy="34" r="3.2"/>
+      <circle cx="200" cy="28" r="3.2"/><circle cx="300" cy="14" r="3.2"/><circle cx="394" cy="32" r="3.2"/>
+    </svg>
+    <div class="fig-cap rv"><span>280 SITES　16,000 PEOPLE</span></div>
+
+    <div class="section-head rv"><h2>我站過的講台</h2><span>部分列舉</span></div>
+    <div class="rv">
+      <div class="tl"><div class="tl-y">科技</div><div class="tl-b">台積電．緯創．Google 台灣<em>敦泰企業．宏華國際．立肯國際</em></div></div>
+      <div class="tl"><div class="tl-y">商辦</div><div class="tl-b">MEGA 50 百揚大樓．曼哈頓金融中心<em>板信雙子星辦公大樓．板橋大遠百</em></div></div>
+      <div class="tl"><div class="tl-y">公部門</div><div class="tl-b">新北市政府各局處．新北市政府消防局<em>新北市榮民服務處．新北市農會．板橋區農會</em></div></div>
+      <div class="tl"><div class="tl-y">交通</div><div class="tl-b">板橋車站．捷運板橋站．捷運府中站<em>台鐵台北電務段</em></div></div>
+      <div class="tl"><div class="tl-y">教育</div><div class="tl-b">板橋高中．公私立幼兒園<em>新北市保母協會</em></div></div>
+      <div class="tl"><div class="tl-y">社福</div><div class="tl-b">新北市家庭暴力防治中心<em>板橋區大飯店、旅館</em></div></div>
+    </div>
+
+    <div class="section-head rv"><h2>學歷與訓練</h2><span>3</span></div>
+    <div class="rv">
+      <div class="tl"><div class="tl-y">碩士</div><div class="tl-b">東南科技大學<em>營建科技與防災研究所</em></div></div>
+      <div class="tl"><div class="tl-y">學士</div><div class="tl-b">輔仁大學<em>生命科學系</em></div></div>
+      <div class="tl"><div class="tl-y">107</div><div class="tl-b">內政部消防署訓練中心<em>消防警察人員教育訓練班</em></div></div>
+    </div>
+
+    <svg class="fig rv" viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M40 26 L130 26 M112 12 L130 26 L112 40"/>
+      <path d="M186 8 L186 44 L246 44 L246 8"/>
+      <path d="M276 26 L366 26 M348 12 L366 26 L348 40"/>
+    </svg>
+    <div class="fig-cap rv"><span>EVACUATION ROUTE　保持低姿　不搭電梯</span></div>
+
+    <div class="section-head rv"><h2>授課範圍</h2><span>8．點一下帶你去邀約</span></div>
+    <div class="chips rv">
+      <span class="chip-s" data-go="p-invite">基礎火災防範與應變</span>
+      <span class="chip-s" data-go="p-invite">進階火災防範與應變</span>
+      <span class="chip-s" data-go="p-invite">自衛消防編組訓練</span>
+      <span class="chip-s" data-go="p-invite">地震災害應變</span>
+      <span class="chip-s" data-go="p-invite">居家及工作場域安全評估</span>
+      <span class="chip-s" data-go="p-invite">心肺復甦術 CPR</span>
+      <span class="chip-s" data-go="p-invite">創傷急救</span>
+      <span class="chip-s" data-go="p-invite">急病重症急救</span>
+    </div>
+
+    <div class="section-head rv"><h2>現場</h2><span>教學與媒體</span></div>
+    <div class="strip rv" id="gal">
+      <div class="ph" data-cap="TED 演講現場">照片 01</div>
+      <div class="ph" data-cap="企業消防安全講座">照片 02</div>
+      <div class="ph" data-cap="幼兒園安全教育">照片 03</div>
+      <div class="ph" data-cap="CPR / AED 實作">照片 04</div>
+      <div class="ph" data-cap="VR 火場體驗">照片 05</div>
+      <div class="ph" data-cap="新聞採訪">照片 06</div>
+    </div>
+    <div class="strip-m rv">← 左右滑　6 張</div>
+
+    <div class="section-head rv"><h2>聯絡方式</h2><span>四種都可以</span></div>
+    <div class="ig rv" data-ig>
+      <div class="ig-mark"></div>
+      <div class="ig-b"><div class="ig-h">@rescue.teacher</div><div class="ig-d">每週一則急救小知識．上課花絮與現場紀錄</div></div>
+      <div class="ig-go">追蹤 →</div>
+    </div>
+    <div class="cts rv">
+      <div class="ct" data-copy="@rescue-teacher"><div class="ct-m">LINE</div>
+        <div class="ct-b"><div class="ct-v">@rescue-teacher</div><div class="ct-l">回覆最快</div></div>
+        <div class="ct-go">複製</div></div>
+      <div class="ct" data-copy="0975-953359"><div class="ct-m">TEL</div>
+        <div class="ct-b"><div class="ct-v">0975-953359</div><div class="ct-l">可傳簡訊</div></div>
+        <div class="ct-go">複製</div></div>
+    </div>
+
+    <div class="rv" style="margin-top:34px;border-top:1px solid var(--line);padding-top:24px">
+      <h2 class="display" style="font-size:21px">如果有一天，<br>意外真的發生了。</h2>
+      <p class="sub" style="margin-top:12px">你希望自己是什麼都不知道、只能等待的人？還是知道該做什麼、能夠伸出手的人？</p>
+      <p class="sub" style="margin-top:14px">消防安全，不只是消防員的事。急救，也不只是醫護人員的事。每一個人，都可能成為第一位救援者。</p>
+      <button class="btn btn-quiet" data-go="p-invite">課程邀約</button>
+    </div>
+    <p class="note">照片與影片是佔位。文案取自你的個人品牌稿，需要微調隨時說。</p>
+  </section>
+
+  <!-- 線上測驗 hub -->
+  <section class="page" id="p-quiz">
+    <div style="padding-top:24px">
+      <div class="meta">線上測驗</div>
+      <h1 class="display" style="font-size:24px;margin-top:8px">兩份測驗，<br>看自己進步多少</h1>
+    </div>
+    <div class="rows" style="margin-top:20px">
+      <div class="row" data-gate="p-run"><div class="row-n">前</div><div class="row-b"><div class="row-t">課前測驗<span class="row-tag done">已完成 6/10</span></div><div class="row-d">上課前先測，知道自己哪裡不熟</div></div><div class="row-go">→</div></div>
+      <div class="row" data-gate="p-run"><div class="row-n">後</div><div class="row-b"><div class="row-t">課後測驗<span class="row-tag">未作答</span></div><div class="row-d">4 題．約 2 分鐘</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-top3"><div class="row-n">榜</div><div class="row-b"><div class="row-t">前三名<span class="row-tag">講師已開放</span></div><div class="row-d">成績榜與進步榜，課堂表揚用</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-stats"><div class="row-n">計</div><div class="row-b"><div class="row-t">本堂統計</div><div class="row-d">跟全班比、看哪幾題最多人誤會</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-explain"><div class="row-n">解</div><div class="row-b"><div class="row-t">題目詳解</div><div class="row-d">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
+    </div>
+    <p class="note">題目、正解、詳解都在同一個地方，所以作答完立刻就有統計，不用等講師另外整理。</p>
+  </section>
+
+
+  <!-- 基本資料 -->
+  <section class="page" id="p-profile">
+    <div style="padding-top:24px">
+      <div class="meta">第一部分 · 基本資料</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px">先問五個問題</h1>
+      <p class="sub" style="margin-top:10px">這些不是考題。填了之後才能看出哪些族群學得快、哪些需要多講一次。約 30 秒。</p>
+    </div>
+
+    <div class="f"><div class="f-q">填答人姓名<span class="req">必填</span></div>
+      <div class="f-hint">僅供課程表揚及記錄使用，不會公開</div>
+      <input class="f-in" id="pfName" placeholder="王小明"></div>
+
+    <div class="f"><div class="f-q">年齡<span class="req">必填</span></div>
+      <div class="chips" data-one>
+        <span class="chip">未滿 20</span><span class="chip">20–29</span><span class="chip">30–39</span>
+        <span class="chip">40–49</span><span class="chip">50–59</span><span class="chip">60–69</span>
+        <span class="chip">70 以上</span>
+      </div></div>
+
+    <div class="f"><div class="f-q">性別<span class="req">必填</span></div>
+      <div class="chips" data-one><span class="chip">男性</span><span class="chip">女性</span><span class="chip">不願透露</span></div></div>
+
+    <div class="f"><div class="f-q">工作年資<span class="req">必填</span></div>
+      <div class="chips" data-one>
+        <span class="chip">未滿 1 年</span><span class="chip">1–未滿 5 年</span><span class="chip">5–未滿 10 年</span>
+        <span class="chip">10 年以上</span><span class="chip">無年資</span>
+      </div>
+      <div class="f-hint" style="margin-top:8px">無年資包含家管、學生、退休人士、無業及待業者</div></div>
+
+    <div class="f"><div class="f-q">過去上過<b style="color:var(--signal);font-weight:500">急救</b>教育課程的總次數<span class="req">必填</span></div>
+      <div class="f-hint">單次課程時數至少 2 小時以上</div>
+      <div class="chips" data-one>
+        <span class="chip">0 次</span><span class="chip">1–3 次</span><span class="chip">4–6 次</span>
+        <span class="chip">7–9 次</span><span class="chip">10 次以上</span>
+      </div></div>
+
+    <button class="btn" id="pfGo">開始課前測驗</button>
+    <p class="note">基本資料只在課前問一次。課後測驗只會再問一次姓名，用來把你的前後成績接起來。</p>
+  </section>
+
+
+  <!-- 課後：只問姓名 -->
+  <section class="page" id="p-name">
+    <div style="padding-top:26px">
+      <div class="meta">課後測驗</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px">請再填一次姓名</h1>
+      <p class="sub" style="margin-top:10px">跟課前填的一樣就好。這是唯一能把你的課前與課後成績接起來的方式，填錯就對不上了。</p>
+      <input class="f-in" id="nmIn" placeholder="王小明" style="font-size:19px;margin-top:18px">
+      <button class="btn" id="nmGo">開始課後測驗</button>
+      <p class="note">其他基本資料不會再問一次。</p>
+    </div>
+  </section>
+
+  <!-- 作答 -->
+  <section class="page" id="p-run">
+    <div id="runBody">
+      <div class="meta" id="pfTag" style="display:none;padding-top:22px"></div>
+      <div class="prog"><i id="qbar" style="width:25%"></i></div>
+      <div class="meta" style="margin-top:12px" id="qmeta">課後測驗 · 第 1 題 / 4</div>
+      <h2 style="font-size:18px;line-height:1.7;margin-top:10px" id="qtext"></h2>
+      <div id="qopts" style="margin-top:14px"></div>
+      <button class="btn" id="qnext" disabled>選一個答案</button>
+    </div>
+    <div id="runDone" style="display:none">
+      <div style="padding-top:26px">
+        <div class="meta">課後測驗完成</div>
+        <h1 class="display" id="scoreT" style="margin-top:10px"></h1>
+        <p class="sub" style="margin-top:10px" id="scoreS"></p>
+      </div>
+      <div class="stats" style="margin-top:24px">
+        <div class="stat"><div class="stat-n" id="sPre">60<small>%</small></div><div class="stat-l">課前</div></div>
+        <div class="stat"><div class="stat-n" id="sPost">—</div><div class="stat-l">課後</div></div>
+        <div class="stat"><div class="stat-n" id="sUp" style="color:var(--ok)">—</div><div class="stat-l">進步</div></div>
+      </div>
+      <button class="btn" data-go="p-stats">看本堂統計</button>
+      <button class="btn btn-quiet" data-go="p-top3">看前三名</button>
+      <button class="btn btn-quiet" data-go="p-explain">看題目詳解</button>
+      <button class="btn btn-quiet" id="qagain">重做一次</button>
+      <p class="note">送出的同時就進統計了，下面那三個數字是全班即時的。</p>
+    </div>
+  </section>
+
+
+  <!-- 上課代號 -->
+  <section class="page" id="p-code">
+    <div style="padding-top:26px">
+      <div class="meta">上課代號</div>
+      <h1 class="display" style="font-size:24px;margin-top:8px">先輸入今天的代號</h1>
+      <p class="sub" style="margin-top:10px">只有現場上課的人需要填。這是為了讓統計只算真正上過課的人，不然平均會被稀釋，你也看不出自己到底進步多少。</p>
+      <input class="code-in" id="codeIn" inputmode="numeric" maxlength="4" placeholder="0000">
+      <div class="code-bad" id="codeBad">代號不對。講師會寫在白板上，或直接問一下。</div>
+      <button class="btn" id="codeOk">確認</button>
+      <button class="btn btn-quiet" data-go="p-explain">我只想看題目詳解</button>
+      <p class="note">詳解跟統計不用代號也看得到，因為那些不會影響數據。代號只擋作答與回饋。</p>
+    </div>
+  </section>
+
+  <!-- 本堂統計 -->
+  <section class="page" id="p-stats">
+    <div style="padding-top:24px">
+      <div class="meta">本堂統計 · 32 人參與</div>
+      <h1 class="display" style="font-size:24px;margin-top:8px">三小時，<br>差別有多大</h1>
+    </div>
+
+    <div class="section-head"><h2>你自己</h2><span id="myTag">尚未作答</span></div>
+    <div class="pair">
+      <div class="pair-c"><div class="pair-n" id="myPre">60<small>%</small></div><div class="pair-l">課前</div></div>
+      <div class="pair-a">→</div>
+      <div class="pair-c"><div class="pair-n" id="myPost">—</div><div class="pair-l">課後</div></div>
+      <div class="pair-c"><div class="pair-n" id="myUp" style="color:var(--ok)">—</div><div class="pair-l">進步</div></div>
+    </div>
+    <p class="hint" id="myNote">做完課後測驗就會出現你自己的曲線。</p>
+
+    <div class="section-head"><h2>全班及格率</h2><span>及格線 60 分</span></div>
+    <div class="pair">
+      <div class="pair-c"><div class="pair-n">38<small>%</small></div><div class="pair-l">課前及格</div></div>
+      <div class="pair-a">→</div>
+      <div class="pair-c"><div class="pair-n">91<small>%</small></div><div class="pair-l">課後及格</div></div>
+      <div class="pair-c"><div class="pair-n" style="color:var(--ok)">+53</div><div class="pair-l">百分點</div></div>
+    </div>
+    <div class="brow" style="margin-top:16px"><b>課前</b><span class="bar pre"><i style="width:38%"></i></span><span class="pct">38%</span></div>
+    <div class="brow"><b>課後</b><span class="bar"><i style="width:91%"></i></span><span class="pct">91%</span></div>
+    <p class="hint">平均分從 44 分變成 82 分。上課前十個人裡不到四個及格，現在十個裡有九個。</p>
+
+    <div class="section-head"><h2>每題正確率</h2><span>課前 → 課後</span></div>
+    <div id="qstats"></div>
+
+    <div class="section-head"><h2>最多人誤會的</h2><span>課後仍答錯</span></div>
+    <p class="sub">這幾題不是因為難，是因為直覺會帶你走錯方向。下次遇到真的狀況，最容易卡在這裡。</p>
+    <div id="missList"></div>
+
+    <div class="section-head"><h2>誰學得比較快</h2><span>依上課經驗</span></div>
+    <p class="sub">第一次上課的人進步幅度最大，但絕對分數還是比上過幾次的人低。這是課前基本資料換來的。</p>
+    <div class="qstat">
+      <div class="qstat-t"><em>0 次</em><span>第一次上課　14 人<span class="delta">+41</span></span></div>
+      <div class="brow"><b>課前</b><span class="bar pre"><i style="width:31%"></i></span><span class="pct">31%</span></div>
+      <div class="brow"><b>課後</b><span class="bar"><i style="width:72%"></i></span><span class="pct">72%</span></div>
+    </div>
+    <div class="qstat">
+      <div class="qstat-t"><em>1–3</em><span>上過 1–3 次　13 人<span class="delta">+34</span></span></div>
+      <div class="brow"><b>課前</b><span class="bar pre"><i style="width:52%"></i></span><span class="pct">52%</span></div>
+      <div class="brow"><b>課後</b><span class="bar"><i style="width:86%"></i></span><span class="pct">86%</span></div>
+    </div>
+    <div class="qstat">
+      <div class="qstat-t"><em>4+</em><span>上過 4 次以上　5 人<span class="delta flat">+11</span></span></div>
+      <div class="brow"><b>課前</b><span class="bar pre"><i style="width:81%"></i></span><span class="pct">81%</span></div>
+      <div class="brow"><b>課後</b><span class="bar"><i style="width:92%"></i></span><span class="pct">92%</span></div>
+    </div>
+    <p class="hint">也可以依年齡、年資、性別切。族群人數少於 5 人時不顯示，人太少的平均沒有意義，也可能認得出是誰。</p>
+
+    <div class="section-head"><h2>跟以前比</h2><span>累計 168 場</span></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n">4,200<small>+</small></div><div class="stat-l">歷年受訓</div></div>
+      <div class="stat"><div class="stat-n">79<small>%</small></div><div class="stat-l">歷史課後平均</div></div>
+      <div class="stat"><div class="stat-n" style="color:var(--ok)">+3</div><div class="stat-l">本堂高出</div></div>
+    </div>
+    <div class="section-head" style="padding-top:26px"><h2>歷史最常錯</h2><span>課後錯誤率</span></div>
+    <div class="brow" style="margin-top:12px"><b>Q2</b><span class="bar"><i style="width:34%;background:var(--signal)"></i></span><span class="pct">34%</span></div>
+    <div class="row" style="border-top:0;padding-top:6px"><div class="row-b"><div class="row-d">AED 貼片貼好之後要不要離手　★ 重要題</div></div></div>
+    <div class="brow"><b>Q4</b><span class="bar"><i style="width:29%;background:var(--signal)"></i></span><span class="pct">29%</span></div>
+    <div class="row" style="border-top:0;padding-top:6px"><div class="row-b"><div class="row-d">兒童 CPR 的按壓吹氣比例　★ 重要題</div></div></div>
+    <p class="hint">這兩題四年來都在前兩名。講師每一場都會重講一次，但它還是最容易忘。</p>
+    <button class="btn btn-quiet" data-go="p-explain">去看這幾題的詳解</button>
+    <p class="note">統計只算有輸入代號的人。沒上課但拿到連結的人可以看，但不會被算進去。</p>
+  </section>
+
+
+  <!-- 前三名 -->
+  <section class="page" id="p-top3">
+    <div style="padding-top:24px">
+      <div class="meta">本堂課 · 課後測驗</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px">今天的前三名</h1>
+      <p class="sub" style="margin-top:10px">同分時，進步幅度大的排前面。</p>
+    </div>
+
+    <div class="podium">
+      <div class="pod">
+        <div class="pod-r">1</div>
+        <div class="pod-b"><div class="pod-n">陳○宇</div><div class="pod-m">課前 40% → 課後 100%</div></div>
+        <div class="pod-s">100<small>%</small><em>+60</em></div>
+      </div>
+      <div class="pod">
+        <div class="pod-r">2</div>
+        <div class="pod-b"><div class="pod-n">林○玲</div><div class="pod-m">課前 70% → 課後 100%</div></div>
+        <div class="pod-s">100<small>%</small><em>+30</em></div>
+      </div>
+      <div class="pod">
+        <div class="pod-r">3</div>
+        <div class="pod-b"><div class="pod-n">王○明</div><div class="pod-m">課前 50% → 課後 90%</div></div>
+        <div class="pod-s">90<small>%</small><em>+40</em></div>
+      </div>
+    </div>
+
+    <div class="section-head"><h2>進步最多</h2><span>另一種表揚</span></div>
+    <p class="sub">分數高不一定是今天學到最多的人。這三位是進步幅度最大的。</p>
+    <div class="rows" style="margin-top:14px">
+      <div class="row"><div class="row-n">1</div><div class="row-b"><div class="row-t" style="font-size:15px">張○文<span class="delta">+70</span></div><div class="row-d">課前 20% → 課後 90%</div></div></div>
+      <div class="row"><div class="row-n">2</div><div class="row-b"><div class="row-t" style="font-size:15px">陳○宇<span class="delta">+60</span></div><div class="row-d">課前 40% → 課後 100%</div></div></div>
+      <div class="row"><div class="row-n">3</div><div class="row-b"><div class="row-t" style="font-size:15px">李○安<span class="delta">+50</span></div><div class="row-d">課前 30% → 課後 80%</div></div></div>
+    </div>
+
+    <div class="section-head"><h2>全班最常錯</h2><span>不列姓名</span></div>
+    <div class="rows">
+      <div class="row"><div class="row-n">Q2</div><div class="row-b"><div class="row-t" style="font-size:15px">AED 貼片貼好之後<span class="star">★</span></div><div class="row-d">31% 答錯．最多人選「繼續按壓不要停」</div></div></div>
+      <div class="row"><div class="row-n">Q4</div><div class="row-b"><div class="row-t" style="font-size:15px">兒童 CPR 按壓吹氣比例<span class="star">★</span></div><div class="row-d">28% 答錯．最多人選「一律 30:2」</div></div></div>
+    </div>
+    <p class="note">姓名只顯示姓與末字，中間以 ○ 代替。要顯示全名或完全不顯示，都可以在後台改。</p>
+  </section>
+
+  <!-- 詳解 -->
+  <section class="page" id="p-explain">
+    <div style="padding-top:24px">
+      <div class="meta">題目詳解</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px">錯的那幾題，<br>才是要記住的</h1>
+    </div>
+    <div style="margin-top:20px" id="explainList"></div>
+    <p class="note">★ 是講師標記的重要題。答錯的自動收進「我的錯題」，之後可以只看錯題。</p>
+  </section>
+
+  <!-- 課程回饋 -->
+  <section class="page" id="p-feedback">
+    <div id="fbForm">
+      <div style="padding-top:24px">
+        <div class="meta">115年 防災及急救教育訓練</div>
+        <h1 class="display" style="font-size:23px;margin-top:8px">課後問卷</h1>
+        <p class="sub" style="margin-top:8px">感謝您耐心聽完這堂課。幾分鐘就好，您的感想會直接影響下一堂課怎麼安排。</p>
+        <div class="meta" style="margin-top:14px">場次　115.09.20 齡活長照</div>
+      </div>
+
+      <div class="f"><div class="f-q">性別<span class="req">必填</span></div>
+        <div class="chips"><span class="chip">男性</span><span class="chip">女性</span></div></div>
+
+      <div class="f"><div class="f-q">年齡<span class="req">必填</span></div>
+        <div class="chips">
+          <span class="chip">未滿 20</span><span class="chip">20–29</span><span class="chip">30–39</span>
+          <span class="chip">40–49</span><span class="chip">50–59</span><span class="chip">60–69</span>
+          <span class="chip">70 以上</span>
+        </div></div>
+
+      <div class="f"><div class="f-q">整體課程滿意度<span class="req">必填</span></div>
+        <div class="scale" data-scale><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        <div class="scale-l"><span>不滿意</span><span>非常滿意</span></div></div>
+
+      <div class="f"><div class="f-q">課程內容豐富度<span class="req">必填</span></div>
+        <div class="scale" data-scale><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        <div class="scale-l"><span>不滿意</span><span>非常滿意</span></div></div>
+
+      <div class="f"><div class="f-q">課程難易度<span class="req">必填</span></div>
+        <div class="scale" data-scale><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        <div class="scale-l"><span>太簡單</span><span>太難</span></div></div>
+
+      <div class="f"><div class="f-q">講師表達方式<span class="req">必填</span></div>
+        <div class="scale" data-scale><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        <div class="scale-l"><span>不滿意</span><span>非常滿意</span></div></div>
+
+      <div class="f"><div class="f-q">其他建議</div>
+        <div class="f-hint">給講師的建議，或未來課程內容的期望，歡迎留言分享</div>
+        <textarea class="f-ta" placeholder="想到什麼寫什麼"></textarea></div>
+
+      <button class="btn" id="fbSend">送出回饋</button>
+      <p class="note">不記名。場次不用選，你從哪一堂課進來系統就知道了。</p>
+    </div>
+    <div class="done-view" id="fbDone">
+      <h2 class="display">謝謝你的回饋。</h2>
+      <p class="sub" style="margin-top:10px">你的評分已經併進全班平均，文字回饋講師會逐則看。</p>
+      <svg class="trace" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true" style="margin-top:4px">
+        <path d="M0 25 L160 25 L173 25 L181 7 L190 41 L199 18 L212 25 L400 25"/>
+      </svg>
+      <button class="btn btn-quiet" data-go="p-home" style="margin-top:20px">回課程首頁</button>
+    </div>
+  </section>
+
+  <!-- 課程邀約 -->
+  <section class="page" id="p-invite">
+    <div id="ivForm">
+      <div style="padding-top:24px">
+        <div class="meta">演講報名</div>
+        <h1 class="display" style="font-size:23px;margin-top:8px">想在你的單位<br>開一堂</h1>
+        <p class="sub" style="margin-top:10px">報名完成後三個工作天內會與您聯繫確認時間。若未等到回應，可傳簡訊至 0975-953359。</p>
+      </div>
+
+      <div class="f"><div class="f-q">期望日期<span class="req">必填</span></div><input class="f-in" type="date"></div>
+      <div class="f"><div class="f-q">期望時間<span class="req">必填</span></div>
+        <div class="f-hint">例如 09:00-16:00、19:00-20:00</div><input class="f-in" placeholder="09:00-12:00"></div>
+      <div class="f"><div class="f-q">聯絡單位 / 聯絡人員<span class="req">必填</span></div>
+        <div class="f-hint">例如 ooo 基金會 / 王曉明 先生</div><input class="f-in" placeholder="單位 / 姓名"></div>
+      <div class="f"><div class="f-q">聯絡電話<span class="req">必填</span></div>
+        <div class="f-hint">手機或辦公室電話都可以</div><input class="f-in" inputmode="tel" placeholder="0912-000-000"></div>
+      <div class="f"><div class="f-q">Email</div><input class="f-in" type="email" placeholder="選填．寄報價與確認單用"></div>
+      <div class="f"><div class="f-q">LINE ID</div><input class="f-in" placeholder="選填．用 LINE 聯絡通常最快"></div>
+      <div class="f"><div class="f-q">Instagram</div><input class="f-in" placeholder="選填．@your_id"></div>
+
+      <div class="f"><div class="f-q">想要訓練之課程<span class="req">必填</span></div>
+        <div class="f-hint">可複選．括號內是建議時數</div>
+        <div class="chips">
+          <span class="chip">初級火災防範與應變<em style="font-style:normal;color:var(--muted);font-size:11px"> 3h+</em></span>
+          <span class="chip">進階火災防範與應變<em style="font-style:normal;color:var(--muted);font-size:11px"> 3h+</em></span>
+          <span class="chip">地震災害應變<em style="font-style:normal;color:var(--muted);font-size:11px"> 3h+</em></span>
+          <span class="chip">心肺復甦術教育訓練<em style="font-style:normal;color:var(--muted);font-size:11px"> 6h+</em></span>
+          <span class="chip">創傷急救教育訓練</span>
+          <span class="chip">急病重症急救教育訓練</span>
+          <span class="chip">自衛消防編組訓練</span>
+          <span class="chip">居家及工作場域安全評估</span>
+        </div></div>
+
+      <div class="f"><div class="f-q">學員對象 / 人數<span class="req">必填</span></div>
+        <div class="f-hint">例如 公司員工(30-60歲) / 約 80 人</div><input class="f-in" placeholder="對象 / 人數"></div>
+      <div class="f"><div class="f-q">講師費預算<span class="req">必填</span></div><input class="f-in" placeholder="可填區間或「依規定」"></div>
+      <div class="f"><div class="f-q">備註</div>
+        <div class="f-hint">場地限制、想解決的問題、細節需求</div>
+        <textarea class="f-ta" placeholder="例如：廠區有 AED 但同仁都不敢用"></textarea></div>
+
+      <button class="btn" id="ivSend">送出報名</button>
+
+      <div class="section-head"><h2>或直接聯絡</h2><span>四種</span></div>
+      <div class="cts">
+        <div class="ct" data-ig><div class="ct-m ig"></div>
+          <div class="ct-b"><div class="ct-v">@rescue.teacher</div><div class="ct-l">Instagram</div></div>
+          <div class="ct-go">開啟 →</div></div>
+        <div class="ct" data-copy="@rescue-teacher"><div class="ct-m">LINE</div>
+          <div class="ct-b"><div class="ct-v">@rescue-teacher</div><div class="ct-l">回覆最快</div></div>
+          <div class="ct-go">複製</div></div>
+        <div class="ct" data-copy="0975-953359"><div class="ct-m">TEL</div>
+          <div class="ct-b"><div class="ct-v">0975-953359</div><div class="ct-l">可傳簡訊</div></div>
+          <div class="ct-go">複製</div></div>
+        <div class="ct" data-copy="will@example.com"><div class="ct-m">MAIL</div>
+          <div class="ct-b"><div class="ct-v">will@example.com</div><div class="ct-l">正式公文與報價</div></div>
+          <div class="ct-go">複製</div></div>
+      </div>
+    </div>
+    <div class="done-view" id="ivDone">
+      <h2 class="display">報名送出了。</h2>
+      <p class="sub" style="margin-top:10px">三個工作天內會與您聯繫確認時間。若未等到回應，可傳簡訊至 0975-953359。</p>
+      <button class="btn btn-quiet" data-go="p-home" style="margin-top:20px">回課程首頁</button>
+    </div>
+  </section>
+
+  <!-- 防災知識專區 -->
+  <section class="page" id="p-disaster">
+    <div style="padding-top:24px">
+      <div class="meta">防災知識專區</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px">火災、地震，<br>還有那些來不及想的事</h1>
+    </div>
+    <div class="rows" style="margin-top:20px" id="listDisaster"></div>
+    <p class="note">每開一次文章瀏覽量 +1。後台看得到今日熱門、本週熱門與排行。</p>
+  </section>
+
+  <!-- 急救教育專區 -->
+  <section class="page" id="p-firstaid">
+    <div style="padding-top:24px">
+      <div class="meta">急救教育專區</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px">在救護車來之前，<br>你可以做的事</h1>
+    </div>
+    <div class="rows" style="margin-top:20px" id="listFirstaid"></div>
+    <p class="note">兩個專區共用同一套文章系統，只是分類不同。講師可以決定這堂課要開哪一區。</p>
+  </section>
+
+  <!-- 文章 -->
+  <section class="page" id="p-article">
+    <div class="art" style="padding-top:24px">
+      <div class="art-h">
+        <div class="meta" id="artMeta"></div>
+        <h1 class="display" style="font-size:25px;margin-top:10px" id="artTitle"></h1>
+      </div>
+      <svg class="trace trace-thin rv" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 25 L150 25 L163 25 L171 9 L180 39 L189 19 L200 25 L400 25"/>
+      </svg>
+      <div id="artBody" style="margin-top:22px"></div>
+      <div class="section-head"><h2>延伸閱讀</h2><span>同分類</span></div>
+      <div class="rows" id="artMore"></div>
+    </div>
+  </section>
+
+  <!-- 悄悄話 -->
+  <section class="page" id="p-whisper">
+    <div id="wForm">
+      <div style="padding-top:24px">
+        <h1 class="display" style="font-size:24px">想說什麼都可以</h1>
+        <p class="sub" style="margin-top:8px">課堂上沒問完的、覺得怪怪的、或只是想講一句話。</p>
+      </div>
+      <div class="whisper-box">
+        <textarea id="wt" placeholder="在這裡寫下來…"></textarea>
+        <div class="whisper-foot"><span id="wc">0 / 500</span><span>不會公開</span></div>
+      </div>
+      <div class="lock"><span aria-hidden="true">🔒</span><div><b>只有講師看得到。</b>不會顯示在課程裡，也不會有其他學員看到。系統不記錄姓名，除非你自己寫在內容裡。</div></div>
+
+      <div class="toggle-row" style="margin-top:6px"><span>希望講師回覆我<em style="font-style:normal;display:block;font-size:12px;color:var(--muted)">留了聯絡方式就不是匿名的了</em></span><span class="sw" id="wantReply" role="switch" aria-checked="false" tabindex="0"></span></div>
+      <div id="contactBox" style="display:none">
+        <div class="f"><div class="f-q">聯絡方式</div><div class="f-hint">LINE ID、手機或 email 都可以</div>
+          <input class="f-in" id="wContact" placeholder="例如 LINE：mingchen88"></div>
+      </div>
+
+      <button class="btn" id="wsend">送出</button>
+    </div>
+    <div class="done-view" id="wDone">
+      <h2 class="display">收到了。</h2>
+      <p class="sub" style="margin-top:10px">講師會在課後看到這則訊息。你可以關掉這頁，或再寫一則。</p>
+      <button class="btn btn-quiet" id="wagain" style="margin-top:20px">再寫一則</button>
+    </div>
+  </section>
+</div>
+
+<!-- ================= 後台 ================= -->
+<div class="zone" id="z-pro">
+  <div style="padding-top:26px">
+    <div class="meta">進行中 · CPR-4f9a2e</div>
+    <h1 class="display" style="font-size:24px;margin-top:8px">成人 CPR 與 AED 實務</h1>
+  </div>
+  <div class="stats" style="margin-top:20px">
+    <div class="stat"><div class="stat-n">32</div><div class="stat-l">進入人數</div></div>
+    <div class="stat"><div class="stat-n">7</div><div class="stat-l">悄悄話</div></div>
+    <div class="stat"><div class="stat-n">+27<small>%</small></div><div class="stat-l">前後測進步</div></div>
+  </div>
+  <p class="hint">下面依功能分組，點標題展開。只有需要改的時候才打開。</p>
+
+  <div style="margin-top:20px">
+
+  <!-- 課程設定 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">課程設定</span><span class="grp-m">7 / 7 開啟</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>課程連結</h2><span>QR</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding-bottom:14px">
+      <div style="font-family:var(--mono);font-size:15px;word-break:break-all">/course/CPR-4f9a2e</div>
+      <button class="btn btn-quiet" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">關閉課程</button>
+    </div>
+    <p class="hint">課程頁是公開的，關閉之後舊連結就進不來。</p>
+
+    <div class="section-head"><h2>上課代號</h2><span>只擋作答與回饋</span></div>
+    <div class="toggle-row"><span>作答與回饋需要代號</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding:16px 0">
+      <div style="font-family:var(--mono);font-size:30px;letter-spacing:.3em;color:var(--signal)">8236</div>
+      <button class="btn btn-quiet" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">重新產生</button>
+    </div>
+
+    <div class="section-head"><h2>學員看到什麼</h2><span>7 / 7</span></div>
+    <div class="toggle-row"><span>講師介紹</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>線上測驗</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程回饋</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程邀約</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>防災知識專區</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>急救教育專區</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>傳聲悄悄話</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">及格線</div><input class="f-in" value="60" inputmode="numeric"></div>
+  </div></div>
+
+  <!-- 線上測驗 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">線上測驗</span><span class="grp-m">題庫 4 題</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">題目、正解、詳解、重點寫在同一個地方，統計直接算得出來。題目改順序詳解不會錯位。</p>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-quiet" style="margin:0" id="qeAdd">新增題目</button>
+      <button class="btn btn-quiet" style="margin:0" id="qeImport">從舊表單匯入一次</button>
+    </div>
+    <div id="qeList" style="margin-top:14px"></div>
+
+    <div class="section-head"><h2>課前基本資料</h2><span>5 題</span></div>
+    <p class="sub">測驗前先問，用來做分眾統計與課前課後配對。</p>
+    <div class="toggle-row" style="margin-top:10px"><span>填答人姓名<em style="font-style:normal;display:block;font-size:12px;color:var(--muted)">拿來接課前課後，關掉就配不起來</em></span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>年齡</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>性別</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>工作年資</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>過去上課次數</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="section-head"><h2>成績與統計開放給學員</h2><span>6</span></div>
+    <p class="sub">學員看得到哪些，由你決定。全部關掉的話，測驗就只是收資料，學員只看得到自己答完了。</p>
+    <div class="toggle-row" style="margin-top:10px"><span>自己的成績與對錯</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>題目詳解</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>全班統計與及格率</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>每題正確率與誤會排行</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>前三名榜單</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>分眾統計（年齡、年資、上課次數）</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">榜單上的姓名怎麼顯示</div>
+      <div class="chips" data-one style="margin-top:10px">
+        <span class="chip">全名</span><span class="chip on">陳○宇</span><span class="chip">只顯示姓</span><span class="chip">不顯示</span>
+      </div></div>
+    <p class="hint">分眾統計預設關閉。班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>
+
+    <div class="f"><div class="f-q">課程主題</div>
+      <div class="f-hint">會自動帶進第 4 題：「過去上過 ___ 教育課程的總次數」</div>
+      <input class="f-in" value="急救"></div>
+    <p class="hint">開地震課就改成「地震」，防火課就改成「防火」，題目跟著變，統計仍然分開累積。</p>
+  </div></div>
+
+  <!-- 課程回饋 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">課程回饋</span><span class="grp-m">19 份 · 4.6</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>本堂結果</h2><span>19 / 32 填答</span></div>
+    <div class="trow"><span class="trow-n">整體課程滿意度</span><span class="bar"><i style="width:92%"></i></span><span class="trow-v">4.6</span></div>
+    <div class="trow"><span class="trow-n">課程內容豐富度</span><span class="bar"><i style="width:88%"></i></span><span class="trow-v">4.4</span></div>
+    <div class="trow"><span class="trow-n">課程難易度</span><span class="bar"><i style="width:62%"></i></span><span class="trow-v">3.1</span></div>
+    <div class="trow"><span class="trow-n">講師表達方式</span><span class="bar"><i style="width:96%"></i></span><span class="trow-v">4.8</span></div>
+    <p class="hint">難易度 3.1 代表大部分人覺得剛好。低於 2 要加深，高於 4 要放慢。</p>
+
+    <div class="section-head"><h2>文字回饋</h2><span>11 則</span></div>
+    <div class="rows">
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px;font-weight:400">實際壓假人那段最有用，之前都只看影片</div><div class="row-d">女性 · 30–39</div></div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px;font-weight:400">希望可以多留一點時間練 AED</div><div class="row-d">男性 · 40–49</div></div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px;font-weight:400">老師講得很清楚，但冷氣太冷了</div><div class="row-d">女性 · 50–59</div></div></div>
+    </div>
+
+    <div class="section-head"><h2>問卷題目</h2><span>7</span></div>
+    <p class="sub">改題目會影響之後的統計比較，改之前先想清楚。</p>
+    <div class="rows" style="margin-top:12px">
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">性別　年齡</div><div class="row-d">基本資料．必填</div></div><div class="row-go">→</div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">四項 1–5 評分</div><div class="row-d">滿意度．豐富度．難易度．表達方式</div></div><div class="row-go">→</div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">其他建議</div><div class="row-d">開放填答</div></div><div class="row-go">→</div></div>
+    </div>
+  </div></div>
+
+  <!-- 課程邀約 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">課程邀約</span><span class="grp-m">3 筆待回</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>待回覆</h2><span>3</span></div>
+    <div class="rows">
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">緯創電子 / 李專員<span class="wtag todo">3 天內</span></div><div class="row-d">11/18 09:00-12:00　員工 80 人　CPR 教育訓練</div></div><div class="row-go">→</div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">板橋某某國小 / 陳主任</div><div class="row-d">12/05 全日　教職員 45 人　地震災害應變</div></div><div class="row-go">→</div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">某某長照機構 / 林小姐</div><div class="row-d">日期待議　照服員 30 人　急病重症急救</div></div><div class="row-go">→</div></div>
+    </div>
+
+    <div class="section-head"><h2>報名須知</h2><span>顯示在表單最上面</span></div>
+    <div class="f" style="padding-top:12px"><textarea class="f-ta" style="min-height:80px">報名完成後三個工作天內會與您聯繫確認時間。若未等到回應，可傳簡訊至 0975-953359。</textarea></div>
+
+    <div class="section-head"><h2>表單欄位</h2><span>9</span></div>
+    <div class="toggle-row"><span>期望日期與時間</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>聯絡單位 / 人員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>聯絡電話</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>Email</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>LINE ID</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>Instagram</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="toggle-row"><span>學員對象 / 人數</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>講師費預算</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>備註</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+
+    <div class="section-head"><h2>可報名的課程</h2><span>8</span></div>
+    <p class="sub">勾選的才會出現在報名表的複選清單裡，後面可以標建議時數。</p>
+    <div class="chips" style="margin-top:12px">
+      <span class="chip on">初級火災防範與應變</span><span class="chip on">進階火災防範與應變</span>
+      <span class="chip on">地震災害應變</span><span class="chip on">心肺復甦術教育訓練</span>
+      <span class="chip on">創傷急救教育訓練</span><span class="chip on">急病重症急救教育訓練</span>
+      <span class="chip on">自衛消防編組訓練</span><span class="chip on">居家及工作場域安全評估</span>
+    </div>
+  </div></div>
+
+  <!-- 傳聲悄悄話 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">傳聲悄悄話</span><span class="grp-m" id="wCount"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="seg" id="wSeg">
+      <button class="on" data-f="all">全部</button><button data-f="unread">未讀</button>
+      <button data-f="todo">需處理</button><button data-f="trash">垃圾桶</button>
+    </div>
+    <div id="wInbox" style="margin-top:6px"></div>
+    <p class="hint">刪掉的會進垃圾桶，可以撈回來。垃圾桶不會自動清空。</p>
+  </div></div>
+
+  <!-- 講師介紹 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">講師介紹</span><span class="grp-m">照片 6 · 影片 4</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>影片</h2><span>YouTube</span></div>
+    <div class="f" style="padding-top:12px"><div class="f-q">主打影片</div><input class="f-in" value="youtu.be/kJQP7kiw…" readonly>
+      <div class="f-hint" style="margin-top:8px">在超商倒下的那個人，後來活下來了 · 6:12</div></div>
+    <div class="f"><div class="f-q">其他影片</div><input class="f-in" placeholder="貼上 YouTube 網址，一行一支">
+      <div class="f-hint" style="margin-top:8px">目前 3 支．標題與長度自動抓</div></div>
+
+    <div class="section-head"><h2>照片</h2><span>Google Drive 資料夾</span></div>
+    <p class="sub">貼整個資料夾的連結，App 列出裡面的照片，你再排順序。檔案留在雲端硬碟。</p>
+    <div class="f" style="padding-top:14px"><div class="f-q">資料夾連結</div>
+      <input class="f-in" value="drive.google.com/drive/folders/1Xk9…" readonly>
+      <div class="f-hint" style="margin-top:8px">權限：知道連結的人可檢視．最後同步 09/12 14:18．找到 6 張</div></div>
+    <button class="btn btn-quiet" id="resync">重新同步資料夾</button>
+    <div class="section-head" style="padding-top:26px"><h2>排序</h2><span>前三張是開頭</span></div>
+    <div id="photoSort"></div>
+
+    <div class="section-head"><h2>首頁大數字</h2><span>可直接改</span></div>
+    <div class="num-edit"><input value="280+"><span>場演講與教育訓練</span></div>
+    <div class="num-edit"><input value="16,000+"><span>授課人次</span></div>
+    <p class="hint">改完學員端立刻跟著變。要加第三個數字按下面的新增。</p>
+
+    <div class="section-head"><h2>我站過的講台</h2><span id="etSpeakN"></span></div>
+    <div class="et" id="etSpeak"></div>
+    <button class="et-add" data-add="speak">新增一組</button>
+
+    <div class="section-head"><h2>學歷與訓練</h2><span id="etEduN"></span></div>
+    <div class="et" id="etEdu"></div>
+    <button class="et-add" data-add="edu">新增一筆</button>
+
+    <div class="section-head"><h2>教育理念</h2><span id="etIdeaN"></span></div>
+    <div class="et" id="etIdea"></div>
+    <button class="et-add" data-add="idea">新增一點</button>
+
+    <div class="section-head"><h2>文字段落</h2><span>3 段</span></div>
+    <div class="f" style="padding-top:12px"><div class="f-q">開場句</div>
+      <textarea class="f-ta" style="min-height:66px">我站在第一線，也站在講台上。</textarea></div>
+    <div class="f"><div class="f-q">引句</div>
+      <textarea class="f-ta" style="min-height:66px">希望這社會因為有我的存在，能有一點點正向的改變。</textarea></div>
+    <div class="f"><div class="f-q">結尾</div>
+      <textarea class="f-ta" style="min-height:90px">消防安全，不只是消防員的事。急救，也不只是醫護人員的事。每一個人，都可能成為第一位救援者。</textarea></div>
+  </div></div>
+
+  <!-- 知識專區 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">知識專區</span><span class="grp-m">6 篇</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>文章排行</h2><span>累計瀏覽</span></div>
+    <div id="artRank"></div>
+    <button class="btn btn-quiet">新增文章</button>
+  </div></div>
+
+  <!-- 聯絡方式 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">聯絡方式</span><span class="grp-m">3 / 4 啟用</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">學員端顯示哪幾種、報名表要問哪幾種，都在這裡決定。</p>
+    <div class="f" style="padding-top:14px"><div class="f-q">Instagram</div><input class="f-in" value="@rescue.teacher"></div>
+    <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">LINE ID</div><input class="f-in" value="@rescue-teacher"></div>
+    <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">電話</div><input class="f-in" value="0975-953359"></div>
+    <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">Email</div><input class="f-in" placeholder="尚未填寫"></div>
+    <div class="toggle-row"><span>顯示給學員</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="section-head"><h2>顯示位置</h2><span>學員端</span></div>
+    <div class="toggle-row"><span>講師介紹頁</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>報名頁底部</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程首頁頁尾（只放 IG）</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>悄悄話可以留聯絡方式</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <p class="hint">關掉就整列不出現，不是變灰。沒填內容的也會自動隱藏。</p>
+  </div></div>
+
+  <!-- 通知 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">手機通知</span><span class="grp-m">已開啟</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">有人送出悄悄話或報名時，手機狀態列立刻跳出來。</p>
+    <button class="btn btn-quiet" id="notifOn">開啟通知權限</button>
+    <div class="toggle-row" style="margin-top:8px"><span>傳聲悄悄話</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程邀約</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程回饋</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="toggle-row"><span>通知顯示內容<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關閉時只說「有一則新訊息」</em></span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">安靜時段</div><input class="f-in" value="22:00 – 07:00" readonly>
+      <div class="f-hint" style="margin-top:8px">這段時間收到的會累積，隔天早上一次通知</div></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-quiet" style="margin:0" data-demo="whisper">預覽悄悄話通知</button>
+      <button class="btn btn-quiet" style="margin:0" data-demo="invite">預覽邀約通知</button>
+    </div>
+    <p class="hint">iPhone 要先把這頁加入主畫面，從那個圖示開啟才收得到。</p>
+  </div></div>
+
+  <!-- 流量 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">瀏覽流量</span><span class="grp-m">每一項</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="seg" id="tSeg"><button class="on" data-t="now">本堂</button><button data-t="all">累計</button></div>
+    <div id="traffic" style="margin-top:8px"></div>
+  </div></div>
+
+  <!-- 匯出 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">匯出資料</span><span class="grp-m">Excel · CSV</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>範圍</h2><span>選一個</span></div>
+    <div class="seg"><button class="on">本堂課</button><button>指定期間</button><button>全部</button></div>
+    <div class="section-head"><h2>內容</h2><span>可複選</span></div>
+    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">課程總覽</span><span class="pick-m">1 sheet</span></div>
+    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">學員成績</span><span class="pick-m">課前 / 課後</span></div>
+    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">題目答題統計</span><span class="pick-m">含每個選項被選幾次</span></div>
+    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">課前課後比較</span><span class="pick-m">及格率．平均</span></div>
+    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">個人錯題</span><span class="pick-m">逐人</span></div>
+    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">題目歷史統計</span><span class="pick-m">跨課程累計</span></div>
+    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">課程回饋</span><span class="pick-m">評分．性別年齡</span></div>
+    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">文字回饋</span><span class="pick-m">逐則</span></div>
+    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">報名紀錄</span><span class="pick-m">含聯絡方式</span></div>
+    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">悄悄話</span><span class="pick-m">敏感．預設不勾</span></div>
+    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">瀏覽統計</span><span class="pick-m">頁面．文章．影片</span></div>
+    <div class="section-head"><h2>格式</h2><span></span></div>
+    <div class="seg"><button class="on">Excel．一個檔多分頁</button><button>CSV．一項一個檔</button></div>
+    <button class="btn" id="expBtn">匯出</button>
+    <p class="hint">Excel 會依勾選的項目分頁，每一頁第一列是欄位名稱，直接丟進樞紐分析就能用。</p>
+  </div></div>
+
+  <!-- 匯入 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">匯入舊資料</span><span class="grp-m">歷年問卷</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">以前用 Google 表單收的滿意度問卷可以合併進來，歷史統計會一起算。從試算表下載 CSV 或 Excel 上傳即可。</p>
+    <div class="drop" id="dropZone">點這裡選檔案，或把 CSV / Excel 拖進來</div>
+
+    <div class="section-head"><h2>欄位對應</h2><span>系統先猜，你可以改</span></div>
+    <div class="map"><span class="map-a">整體課程滿意度</span><span class="map-x">→</span><span class="map-b">整體課程滿意度</span></div>
+    <div class="map"><span class="map-a">課程內容豐富度</span><span class="map-x">→</span><span class="map-b">課程內容豐富度</span></div>
+    <div class="map"><span class="map-a">課程難易度</span><span class="map-x">→</span><span class="map-b">課程難易度</span></div>
+    <div class="map"><span class="map-a">講師表達方式</span><span class="map-x">→</span><span class="map-b">講師表達方式</span></div>
+    <div class="map"><span class="map-a">其他建議</span><span class="map-x">→</span><span class="map-b">文字回饋</span></div>
+    <div class="map"><span class="map-a">性別　年齡</span><span class="map-x">→</span><span class="map-b">性別　年齡</span></div>
+    <div class="map"><span class="map-a">時間戳記</span><span class="map-x">→</span><span class="map-b" style="color:var(--muted)">填答時間</span></div>
+    <div class="map"><span class="map-a" style="color:var(--signal)">課程場次</span><span class="map-x">→</span><span class="map-b" style="color:var(--signal)">需要指定歸到哪一堂</span></div>
+
+    <div class="section-head"><h2>場次歸屬</h2><span>必選</span></div>
+    <div class="seg"><button class="on">依「課程場次」欄自動建立歷史課程</button><button>全部歸到同一堂</button></div>
+    <p class="hint">舊資料會標記為「歷史匯入」，統計時算進累計與歷史平均，但不會混進本堂課的數字。匯錯了可以整批復原。</p>
+    <button class="btn" id="impBtn">開始匯入</button>
+  </div></div>
+
+  <!-- 變更紀錄 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">變更紀錄</span><span class="grp-m">誰改了什麼</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="rows">
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:14.5px;font-weight:400">重新產生上課代號</div><div class="row-d">今天 13:58</div></div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:14.5px;font-weight:400">修改 Q2 詳解內容</div><div class="row-d">今天 11:20</div></div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:14.5px;font-weight:400">關閉「課程回饋」通知</div><div class="row-d">昨天 20:44</div></div></div>
+    </div>
+  </div></div>
+
+  </div>
+</div>
+
+<div class="zone" id="z-style">
+  <div class="section-head"><h2>視覺語言</h2><span>v0.5</span></div>
+  <p class="sub">底色偏冷，接近現場文件的紙灰。紅色只當訊號用：警示、重要題、進行中。深色是主要操作色。</p>
+  <div class="sw-grid">
+    <div class="sw-cell"><div class="sw-chip" style="background:#F1F2EF"></div><div class="sw-name">底色</div><div class="sw-hex">#F1F2EF</div></div>
+    <div class="sw-cell"><div class="sw-chip" style="background:#FBFBFA"></div><div class="sw-name">頁面</div><div class="sw-hex">#FBFBFA</div></div>
+    <div class="sw-cell"><div class="sw-chip" style="background:#12171A"></div><div class="sw-name">主文字</div><div class="sw-hex">#12171A</div></div>
+    <div class="sw-cell"><div class="sw-chip" style="background:#4A555B"></div><div class="sw-name">次文字</div><div class="sw-hex">#4A555B</div></div>
+    <div class="sw-cell"><div class="sw-chip" style="background:#DCDFD9"></div><div class="sw-name">細線</div><div class="sw-hex">#DCDFD9</div></div>
+    <div class="sw-cell"><div class="sw-chip" style="background:#C4362C"></div><div class="sw-name">訊號紅</div><div class="sw-hex">#C4362C</div></div>
+  </div>
+  <div class="section-head"><h2>響應式斷點</h2><span>4</span></div>
+  <div class="f"><div class="f-q">≤ 360px　小手機</div><div class="f-hint">SE、mini。統計數字換行排，長條縮短，分組摘要隱藏</div></div>
+  <div class="f"><div class="f-q">375–699px　手機</div><div class="f-hint">基準。單欄，按鈕整條，照片橫向滑動一次一張多</div></div>
+  <div class="f"><div class="f-q">≥ 700px　平板</div><div class="f-hint">按鈕改成內容寬度，開頭照片並排，現場照片一次看三張</div></div>
+  <div class="f"><div class="f-q">≥ 1100px　桌機</div><div class="f-hint">閱讀寬度上限 760px，後台設定分兩欄，統計長條加長</div></div>
+  <p class="hint">字級與內距用 clamp 連續縮放，不是跳三段。所以 390px 跟 414px 的手機看起來會是連續的，不會突然變樣。</p>
+
+  <div class="section-head"><h2>動態原則</h2><span>4</span></div>
+  <div class="f"><div class="f-q">頁面切換：右進左出</div><div class="f-hint">0.3 秒，位移 18px，不用彈跳</div></div>
+  <div class="f"><div class="f-q">心電圖線只畫一次</div><div class="f-hint">進入畫面時觸發，不重播</div></div>
+  <div class="f"><div class="f-q">段落浮現只用在講師介紹</div><div class="f-hint">故事頁需要節奏，清單頁不用</div></div>
+  <div class="f"><div class="f-q">其餘動態都在回應點擊</div><div class="f-hint">選項、播放、送出、展開詳解</div></div>
+</div>
+
+</div>
+
+<!-- overlays -->
+<div class="notif" id="notif">
+  <div class="notif-i">🚒</div>
+  <div class="notif-b"><div class="notif-t" id="notifT"></div><div class="notif-d" id="notifD"></div></div>
+  <div class="notif-m">現在</div>
+</div>
+
+<div class="lbox" id="lbox"><div class="lbox-in">
+  <div class="lbox-ph" id="lboxPh">照片</div>
+  <div class="lbox-cap"><span id="lboxCap"></span><button id="lboxX">關閉</button></div>
+</div></div>
+
+<div class="gate" id="gateview" role="dialog" aria-label="講師登入"><div class="gate-in">
+  <div class="mark"><i></i>Professional Mode</div>
+  <h1 class="display" style="font-size:24px;margin-top:22px">講師登入</h1>
+  <p class="sub" style="margin:8px 0 26px">這個畫面不會出現在任何連結裡。</p>
+  <input class="f-in" type="email" placeholder="電子郵件" autocomplete="username">
+  <input class="f-in" type="password" placeholder="密碼" autocomplete="current-password">
+  <button class="btn">登入</button>
+  <button class="gate-x" id="gateclose">返回課程</button>
+</div></div>
+
+<script>
+(function(){
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+
+/* ---- 深淺色 ---- */
+(function(){
+  var btn=$('#themeBtn'), root=document.documentElement;
+  function apply(t){
+    if(t==='auto'){root.removeAttribute('data-theme');btn.textContent='跟隨系統';}
+    else{root.setAttribute('data-theme',t);btn.textContent=t==='dark'?'深色':'淺色';}
+    try{localStorage.setItem('theme',t)}catch(e){}
+  }
+  var saved='auto';
+  try{saved=localStorage.getItem('theme')||'auto'}catch(e){}
+  apply(saved);
+  btn.addEventListener('click',function(){
+    var now=root.getAttribute('data-theme');
+    apply(now==='dark'?'light':now==='light'?'auto':'dark');
+  });
+})();
+
+/* ---- zones ---- */
+$$('.mode').forEach(function(m){
+  m.addEventListener('click',function(){
+    $$('.mode').forEach(function(x){x.setAttribute('aria-selected',String(x===m))});
+    $$('.zone').forEach(function(z){z.classList.toggle('is-on',z.id===m.dataset.zone)});
+    window.scrollTo({top:0,behavior:'instant'});
+  });
+});
+
+/* ---- reveal ---- */
+function armFig(sv){
+  $$('path',sv).forEach(function(pt,k){
+    var L=pt.getTotalLength();
+    pt.style.strokeDasharray=L;pt.style.strokeDashoffset=L;
+    setTimeout(function(){pt.style.strokeDashoffset=0},60+k*260);
+  });
+}
+function reveal(root){
+  var items=$$('.rv',root);
+  if(!('IntersectionObserver' in window)){items.forEach(function(n){n.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.tagName.toLowerCase()==='svg')armFig(e.target);
+      io.unobserve(e.target);}});
+  },{threshold:.15,rootMargin:'0px 0px -6% 0px'});
+  items.forEach(function(n){io.observe(n)});
+}
+
+/* ---- router ---- */
+var TITLES={'p-about':'講師介紹','p-quiz':'線上測驗','p-run':'課後測驗','p-explain':'題目詳解','p-stats':'本堂統計','p-code':'上課代號','p-profile':'基本資料','p-name':'課後測驗','p-top3':'前三名',
+  'p-feedback':'課程回饋','p-invite':'課程邀約','p-disaster':'防災知識專區','p-firstaid':'急救教育專區',
+  'p-article':'文章','p-whisper':'傳聲悄悄話'};
+var stack=['p-home'];
+function show(id,isBack){
+  $$('.page').forEach(function(p){
+    p.classList.remove('is-on','back');
+    if(p.id===id){p.classList.add('is-on');if(isBack)p.classList.add('back');}
+  });
+  var nav=$('#nav');
+  if(id==='p-home'){nav.classList.add('hide');}
+  else{nav.classList.remove('hide');$('#navt').textContent=TITLES[id]||'';}
+  var pg=$('#'+id);
+  $$('.rv',pg).forEach(function(n){n.classList.remove('in')});
+  $$('svg.fig path',pg).forEach(function(pt){
+    var L=pt.getTotalLength();pt.style.strokeDasharray=L;pt.style.strokeDashoffset=L;});
+  setTimeout(function(){reveal(pg)},40);
+  window.scrollTo({top:0,behavior:'instant'});
+  stopPlay();
+}
+function go(id){if(id!==stack[stack.length-1]){stack.push(id);}show(id,false);}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-go]');
+  if(t){e.preventDefault();go(t.dataset.go);}
+});
+$('#back').addEventListener('click',function(){
+  stack.pop();var prev=stack[stack.length-1]||'p-home';
+  if(!stack.length)stack=['p-home'];
+  show(prev,true);
+});
+reveal($('#p-home'));
+
+/* ---- inline player ---- */
+var player=$('#player'),tick=null,sec=0,total=372;
+function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)}
+function startPlay(title,meta,len){
+  $('#plT').textContent=title;$('#plM').textContent=meta;$('#liveT').textContent=title;
+  total=len;sec=0;player.classList.add('playing');
+  clearInterval(tick);
+  tick=setInterval(function(){
+    sec++;if(sec>total){stopPlay();return;}
+    $('#liveBar').style.width=(sec/total*100)+'%';
+    $('#liveTime').textContent=fmt(sec)+' / '+fmt(total);
+  },250);
+}
+function stopPlay(){clearInterval(tick);if(player)player.classList.remove('playing');}
+$('#stage').addEventListener('click',function(){
+  if(player.classList.contains('playing'))return;
+  startPlay($('#plT').textContent,$('#plM').textContent,372);
+});
+$('#livePause').addEventListener('click',function(e){e.stopPropagation();stopPlay();});
+$$('.vid-sm').forEach(function(v){
+  v.addEventListener('click',function(){
+    $$('.vid-sm').forEach(function(x){x.classList.toggle('on',x===v)});
+    startPlay(v.dataset.t,v.dataset.m,parseInt(v.dataset.s,10));
+    player.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+});
+
+/* ---- lightbox ---- */
+document.addEventListener('click',function(e){
+  var p=e.target.closest('.ph[data-cap]');if(!p)return;
+  $('#lboxCap').textContent=p.dataset.cap;
+  $('#lboxPh').textContent=p.textContent.trim();
+  $('#lbox').classList.add('is-on');
+});
+$('#lboxX').addEventListener('click',function(){$('#lbox').classList.remove('is-on')});
+$('#lbox').addEventListener('click',function(e){if(e.target===$('#lbox'))$('#lbox').classList.remove('is-on')});
+
+/* ---- quiz ---- */
+var QS=[
+ {q:'成人 CPR 的胸外按壓深度，最接近下列何者？',o:['3 至 4 公分','5 至 6 公分','7 至 8 公分','壓到底就對了'],a:1,
+  ex:'太淺打不出足夠的血流，太深會增加內傷風險。成人建議 5 至 6 公分，每次按壓後讓胸廓完全回彈。',k:'壓好壓滿，但要讓它彈回來。',star:false},
+ {q:'使用 AED，貼片貼好之後應該做什麼？',o:['繼續按壓不要停','停止接觸病人，讓機器分析心律','先摸脈搏確認','直接按電擊鍵'],a:1,
+  ex:'分析心律時任何接觸都會干擾判讀，機器可能誤判成不需電擊。分析完成、確認無人接觸後才按電擊，電擊後立刻回到按壓。',k:'分析時離手，電擊後馬上壓。',star:true},
+ {q:'發現有人倒地，確認環境安全後的第一步是？',o:['拍肩大聲呼叫，確認有無反應','立刻開始壓胸','先打 119 再說','把人翻成側躺'],a:0,
+  ex:'先確認意識與呼吸，才知道要不要開始 CPR。同時指定特定的人打 119、指定另一個人去拿 AED。',k:'先確認，再指定人做事。',star:false},
+ {q:'兒童 CPR 的按壓與吹氣比例？',o:['一律 30:2','單人 30:2，雙人 15:2','一律 15:2','只壓不吹'],a:1,
+  ex:'成人固定 30:2。兒童與嬰兒在雙人施救時改為 15:2，因為小孩多為呼吸性的心跳停止，通氣相對更重要。',k:'小孩兩個人救的時候，吹氣要更頻繁。',star:true}
+];
+var qi=0,answers=[];
+function renderQ(){
+  var q=QS[qi];
+  $('#qbar').style.width=((qi)/QS.length*100+25)+'%';
+  $('#qmeta').textContent='課後測驗 · 第 '+(qi+1)+' 題 / '+QS.length;
+  $('#qtext').textContent=q.q;
+  var box=$('#qopts');box.innerHTML='';
+  q.o.forEach(function(t,i){
+    var d=document.createElement('div');d.className='opt';
+    d.innerHTML='<span class="opt-k">'+'ABCD'[i]+'</span><span>'+t+'</span>';
+    d.addEventListener('click',function(){
+      $$('.opt',box).forEach(function(x){x.classList.toggle('on',x===d)});
+      answers[qi]=i;
+      $('#qnext').disabled=false;
+      $('#qnext').textContent=(qi===QS.length-1)?'送出答案':'下一題';
+    });
+    box.appendChild(d);
+  });
+  $('#qnext').disabled=answers[qi]==null;
+  $('#qnext').textContent=answers[qi]==null?'選一個答案':((qi===QS.length-1)?'送出答案':'下一題');
+}
+$('#qnext').addEventListener('click',function(){
+  if(qi<QS.length-1){qi++;renderQ();window.scrollTo({top:0,behavior:'smooth'});}
+  else{
+    var right=answers.filter(function(v,i){return v===QS[i].a}).length;
+    var pct=Math.round(right/QS.length*100);
+    $('#runBody').style.display='none';$('#runDone').style.display='block';
+    $('#scoreT').textContent='答對 '+right+' / '+QS.length+' 題';
+    $('#scoreS').textContent=right===QS.length?'全對。下次有人倒下，你會知道要做什麼。':'錯的那幾題去看詳解，比重做一次有用。';
+    $('#sPost').innerHTML=pct+'<small>%</small>';
+    $('#sUp').innerHTML=(pct-60>=0?'+':'')+(pct-60)+'<small>%</small>';
+    renderExplain();pushMyScore(pct);
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+});
+$('#qagain').addEventListener('click',function(){
+  qi=0;answers=[];$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
+});
+function renderExplain(){
+  var box=$('#explainList');box.innerHTML='';
+  QS.forEach(function(q,i){
+    var mine=answers[i], ok=mine===q.a;
+    var d=document.createElement('div');d.className='ans'+(i===0?' open':'');
+    var mineTxt=mine==null?'未作答':('ABCD'[mine]+'　'+q.o[mine]);
+    d.innerHTML='<div class="ans-h"><div class="ans-q">Q'+(i+1)+'　'+q.q+(q.star?'<span class="star">★</span>':'')+
+      '</div><div class="ans-s '+(mine==null?'':(ok?'yes':'no'))+'">'+(mine==null?'—':(ok?'答對':'答錯'))+'</div></div>'+
+      '<div class="ans-b">'+
+      (ok?'':'<div class="ans-line"><b>你的答案</b><span>'+mineTxt+'</span></div>')+
+      '<div class="ans-line"><b>正確答案</b><span>'+'ABCD'[q.a]+'　'+q.o[q.a]+'</span></div>'+
+      '<div class="ans-line"><b>解析</b><span>'+q.ex+'</span></div>'+
+      '<div class="ans-line"><b>重點</b><span>'+q.k+'</span></div></div>';
+    d.querySelector('.ans-h').addEventListener('click',function(){d.classList.toggle('open')});
+    box.appendChild(d);
+  });
+}
+renderQ();renderExplain();
+
+/* ---- articles ---- */
+var ARTS={
+ disaster:[
+  {t:'住警器裝在哪裡才有用',c:'居家安全',v:1240,d:'2026/08/02',
+   b:['住宅用火災警報器不是裝了就好，位置錯了會慢好幾分鐘。臥室、樓梯間、廚房外側是優先順位，因為半夜起火時你需要的是被叫醒，不是等到聞到味道。','裝在天花板時距離牆面至少 60 公分，裝在牆面時距離天花板 15 至 30 公分。避開冷氣出風口與抽油煙機正上方，氣流會把煙帶走，警報器就聞不到。','每個月按一次測試鈕，聽到聲音就表示電池還活著。十年要整顆換掉，不是換電池而已。']},
+  {t:'火場裡先關門，還是先跑',c:'火災逃生',v:986,d:'2026/07/18',
+   b:['如果門外已經是濃煙，開門跑出去往往比留在房間裡更危險。一扇關上的實心門可以擋住火與大部分的煙，爭取十幾分鐘。','留在房間的話，用濕毛巾或衣物塞住門縫，到窗邊讓外面看得到你，並打 119 告知自己在幾樓哪一間。','能不能跑的判斷很簡單：摸門把燙不燙、門縫有沒有煙。兩個都沒有才考慮開門，而且要側身慢慢開。']},
+  {t:'地震時躲桌子底下，真的安全嗎',c:'地震',v:754,d:'2026/06/30',
+   b:['在台灣的建築結構下，趴下、掩護、穩住仍然是建議做法。桌子擋的不是整棟樓，是掉下來的燈具、天花板、書櫃，那才是地震中最常見的傷害來源。','沒有桌子就靠著堅固的內牆蹲低，護住頭頸，遠離窗戶與高櫃。不要往外衝，掉落物通常在建築物外側。','搖完再移動。第一波停下來之後才是關火、開門、檢查逃生路線的時機。']}],
+ firstaid:[
+  {t:'壓胸壓斷肋骨怎麼辦',c:'CPR',v:1580,d:'2026/08/11',
+   b:['肋骨斷掉聽起來很嚇人，但相較於沒有人壓，那是可以接受的代價。心跳停止的人如果沒有立刻 CPR，每過一分鐘存活率大約掉 7 到 10 個百分點。','實際上真正壓斷的比例沒有想像中高，而且台灣有緊急救護的免責保護，善意施救不會因此被追究。','正確的深度與位置可以降低風險：胸骨下半部，手掌根重疊，垂直下壓 5 至 6 公分。']},
+  {t:'AED 會不會電到自己',c:'AED',v:1122,d:'2026/07/25',
+   b:['只要在機器說「請勿接觸病人」時放手，就不會。AED 在分析與放電前都會語音提醒，照著做就好。','要注意的是病人身上有沒有水、金屬、藥物貼片。濕的先擦乾，貼片撕掉再貼，植入式心律調節器的位置避開 2.5 公分。','小孩用兒童貼片或兒童模式，沒有的話成人貼片也可以用，前後貼避免兩片碰在一起。']},
+  {t:'有人噎到，哈姆立克怎麼做',c:'創傷與急症',v:869,d:'2026/07/09',
+   b:['先看他還能不能咳。咳得出聲音就鼓勵他咳，不要拍背也不要亂掏嘴巴，那反而會把東西推更深。','完全咳不出、發不出聲音、雙手掐住脖子，才做腹部快速擠壓。站在後方，拳頭放在肚臍上方、劍突下方，向內向上快速推。','如果對方失去意識，放平開始 CPR，每次要吹氣前看一眼嘴巴，看得到異物才拿出來。']}]
+};
+function buildList(key,el){
+  var box=$(el);box.innerHTML='';
+  ARTS[key].forEach(function(a,i){
+    var d=document.createElement('div');d.className='row';
+    d.innerHTML='<div class="row-n">'+('0'+(i+1)).slice(-2)+'</div><div class="row-b"><div class="row-t">'+a.t+
+      '</div><div class="row-d">'+a.c+'　'+a.d+'　👁 '+a.v.toLocaleString()+'</div></div><div class="row-go">→</div>';
+    d.addEventListener('click',function(){openArt(key,i)});
+    box.appendChild(d);
+  });
+}
+function openArt(key,i){
+  var a=ARTS[key][i];a.v++;
+  $('#artMeta').textContent=a.c+'　'+a.d+'　👁 '+a.v.toLocaleString();
+  $('#artTitle').textContent=a.t;
+  $('#artBody').innerHTML=a.b.map(function(p){return '<p>'+p+'</p>'}).join('');
+  var more=$('#artMore');more.innerHTML='';
+  ARTS[key].forEach(function(o,j){
+    if(j===i)return;
+    var d=document.createElement('div');d.className='row';
+    d.innerHTML='<div class="row-b"><div class="row-t" style="font-size:15px">'+o.t+'</div><div class="row-d">'+o.c+'</div></div><div class="row-go">→</div>';
+    d.addEventListener('click',function(){openArt(key,j);window.scrollTo({top:0,behavior:'smooth'})});
+    more.appendChild(d);
+  });
+  go('p-article');
+  buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
+}
+buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
+renderArtRank();
+
+/* ---- 可編輯表格 ---- */
+var ET={
+ speak:[['科技','台積電．緯創．Google 台灣'],['商辦','MEGA 50．曼哈頓金融中心'],
+        ['公部門','新北市政府各局處．消防局'],['交通','板橋車站．捷運板橋站．府中站'],
+        ['教育','板橋高中．公私立幼兒園．保母協會'],['社福','新北市家庭暴力防治中心']],
+ edu:[['碩士','東南科技大學　營建科技與防災研究所'],['學士','輔仁大學　生命科學系'],
+      ['107','內政部消防署訓練中心　消防警察人員教育訓練班']],
+ idea:[['看得懂','把複雜的專業知識轉化成生活語言'],['記得住','透過故事、案例與情境，讓知識留下來'],
+       ['用得出來','讓學員面對真實狀況時，能夠採取行動']]
+};
+var ETMAP={speak:['#etSpeak','#etSpeakN','組'],edu:['#etEdu','#etEduN','筆'],idea:['#etIdea','#etIdeaN','點']};
+function renderET(key){
+  var cfg=ETMAP[key],box=$(cfg[0]);if(!box)return;
+  var list=ET[key];box.innerHTML='';
+  $(cfg[1]).textContent=list.length+' '+cfg[2];
+  list.forEach(function(row,i){
+    var el=document.createElement('div');el.className='et-r';
+    el.innerHTML='<input class="et-k" value="'+row[0].replace(/"/g,'&quot;')+'">'+
+      '<input class="et-v" value="'+row[1].replace(/"/g,'&quot;')+'">'+
+      '<span class="et-b"><button data-m="up">↑</button><button data-m="dn">↓</button><button data-m="rm">×</button></span>';
+    var ins=el.querySelectorAll('input');
+    ins[0].addEventListener('input',function(){row[0]=ins[0].value});
+    ins[1].addEventListener('input',function(){row[1]=ins[1].value});
+    el.querySelectorAll('[data-m]').forEach(function(b){
+      b.addEventListener('click',function(){
+        var m=b.dataset.m;
+        if(m==='rm')list.splice(i,1);
+        else{var k=m==='up'?i-1:i+1;if(k<0||k>=list.length)return;
+             var t=list[i];list[i]=list[k];list[k]=t;}
+        renderET(key);
+      });
+    });
+    box.appendChild(el);
+  });
+}
+Object.keys(ETMAP).forEach(renderET);
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-add]');if(!b)return;
+  ET[b.dataset.add].push(['','']);renderET(b.dataset.add);
+});
+
+/* ---- 後台分組展開 ---- */
+$$('.grp-h').forEach(function(h){
+  h.addEventListener('click',function(){h.parentElement.classList.toggle('open')});
+});
+document.addEventListener('click',function(e){
+  var pk=e.target.closest('.pick');
+  if(pk)pk.classList.toggle('on');
+});
+var eb=$('#expBtn');
+if(eb)eb.addEventListener('click',function(){
+  eb.textContent='產生檔案中…';
+  setTimeout(function(){eb.textContent='已下載　CPR-4f9a2e_20260916.xlsx'},1000);
+  setTimeout(function(){eb.textContent='匯出'},3200);
+});
+var ib=$('#impBtn'), dz=$('#dropZone');
+if(dz)dz.addEventListener('click',function(){
+  dz.textContent='課後問卷_回覆.xlsx　讀到 1,284 列';
+});
+if(ib)ib.addEventListener('click',function(){
+  ib.textContent='匯入中…';
+  setTimeout(function(){ib.textContent='完成．1,284 筆已併入歷史統計'},1200);
+  setTimeout(function(){ib.textContent='開始匯入'},3600);
+});
+
+/* ---- 悄悄話收件匣 ---- */
+var WMSG=[
+ {t:'壓的時候手會抖，是不是我姿勢錯了',m:'14:32',st:'unread',c:null},
+ {t:'想問如果對方有戴假牙要拿掉嗎',m:'14:41',st:'unread',c:null},
+ {t:'我們公司 AED 放在鎖起來的櫃子裡，這樣對嗎？想請老師給個建議，我可能要去跟主管講',m:'14:52',st:'todo',c:'LINE：mingchen88'},
+ {t:'謝謝老師，我阿公去年就是這樣走的。那時候沒有人會壓。',m:'15:03',st:'read',c:null},
+ {t:'我是保全，值班時遇到過一次但不敢做。今天上完比較有底了',m:'15:07',st:'todo',c:'0912-345-678'},
+ {t:'可以再教一次哈姆立克嗎，剛剛沒看清楚',m:'15:14',st:'unread',c:null},
+ {t:'課程很好，但冷氣真的太冷了',m:'15:20',st:'read',c:null}
+];
+var WTRASH=[{t:'測試測試',m:'13:02',st:'read',c:null}];
+var wFilter='all';
+function wRender(){
+  var box=$('#wInbox');if(!box)return;
+  var list = wFilter==='trash' ? WTRASH
+    : WMSG.filter(function(w){
+        if(wFilter==='all')return true;
+        if(wFilter==='unread')return w.st==='unread';
+        if(wFilter==='todo')return w.st==='todo';
+        return true;
+      });
+  var un=WMSG.filter(function(w){return w.st==='unread'}).length;
+  var td=WMSG.filter(function(w){return w.st==='todo'}).length;
+  $('#wCount').textContent=un+' 未讀 · '+td+' 需處理';
+  box.innerHTML='';
+  if(!list.length){box.innerHTML='<div class="empty">這裡沒有東西。</div>';return;}
+  list.forEach(function(w){
+    var el=document.createElement('div');
+    el.className='wi '+(w.st==='unread'?'':'read')+(w.st==='done'?' done':'');
+    var tag = w.st==='todo'?'<span class="wtag todo">需處理</span>'
+            : w.st==='done'?'<span class="wtag done">已處理</span>':'';
+    el.innerHTML='<div class="wi-h"><span class="wi-dot"></span><div class="wi-t">'+w.t+tag+
+      '</div><div class="wi-m">'+w.m+'</div></div><div class="wi-b">'+
+      (w.c?'<div class="wi-c"><em>聯絡</em><span>'+w.c+'</span></div>':'')+
+      '<div class="wact"></div></div>';
+    var act=el.querySelector('.wact');
+    function btn(label,fn){
+      var b=document.createElement('button');b.textContent=label;
+      b.addEventListener('click',function(e){e.stopPropagation();fn();wRender();});
+      act.appendChild(b);
+    }
+    if(wFilter==='trash'){
+      btn('復原',function(){WTRASH.splice(WTRASH.indexOf(w),1);w.st='read';WMSG.push(w);});
+      btn('永久刪除',function(){WTRASH.splice(WTRASH.indexOf(w),1);});
+    }else{
+      if(w.st==='unread')btn('標記已讀',function(){w.st='read'});
+      if(w.st!=='todo')btn('標為需處理',function(){w.st='todo'});
+      if(w.st==='todo')btn('標為已處理',function(){w.st='done'});
+      if(w.c)btn('複製聯絡方式',function(){});
+      btn('刪除',function(){WMSG.splice(WMSG.indexOf(w),1);WTRASH.unshift(w);});
+    }
+    el.querySelector('.wi-h').addEventListener('click',function(){
+      el.classList.toggle('open');
+      if(w.st==='unread'){w.st='read';setTimeout(function(){
+        var was=el.classList.contains('open');wRender();
+        if(was){var all=$$('#wInbox .wi');var idx=list.indexOf(w);if(all[idx])all[idx].classList.add('open');}
+      },240);}
+    });
+    box.appendChild(el);
+  });
+}
+wRender();
+var wseg=$('#wSeg');
+if(wseg)wseg.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  $$('button',wseg).forEach(function(x){x.classList.toggle('on',x===b)});
+  wFilter=b.dataset.f;wRender();
+});
+
+/* ---- 複製 ---- */
+document.addEventListener('click',function(e){
+  var c=e.target.closest('[data-copy]');if(!c)return;
+  var v=c.dataset.copy, old=c.textContent;
+  if(navigator.clipboard)navigator.clipboard.writeText(v);
+  c.textContent='已複製';setTimeout(function(){c.textContent=old},1400);
+});
+
+/* ---- 題庫編輯 ---- */
+var QBANK=QS.map(function(q){return {q:q.q,o:q.o.slice(),a:q.a,ex:q.ex,k:q.k,star:!!q.star}});
+function renderQBank(){
+  var box=$('#qeList');if(!box)return;box.innerHTML='';
+  QBANK.forEach(function(q,i){
+    var el=document.createElement('div');el.className='qe';
+    el.innerHTML='<div class="qe-h"><div class="qe-n">Q'+(i+1)+'</div><div class="qe-t">'+
+      (q.q||'（新題目）')+'</div><div class="qe-x">'+(q.star?'★':'')+'　編輯</div></div>'+
+      '<div class="qe-b">'+
+      '<div class="f" style="padding-top:12px"><div class="f-q" style="font-size:13px;color:var(--muted)">題幹</div>'+
+      '<input class="f-in" value="'+(q.q||'').replace(/"/g,'&quot;')+'" data-k="q"></div>'+
+      '<div style="margin-top:14px"><div class="f-q" style="font-size:13px;color:var(--muted)">選項．點圓圈設為正解</div>'+
+      q.o.map(function(t,k){return '<div class="oedit"><span class="radio'+(k===q.a?' on':'')+'" data-a="'+k+'"></span>'+
+        '<span class="oedit-k">'+'ABCD'[k]+'</span><input value="'+t.replace(/"/g,'&quot;')+'" data-o="'+k+'"></div>'}).join('')+
+      '</div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">詳解</div>'+
+      '<textarea class="f-ta" style="min-height:84px" data-k="ex">'+(q.ex||'')+'</textarea></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">一句重點</div>'+
+      '<input class="f-in" value="'+(q.k||'').replace(/"/g,'&quot;')+'" data-k="k"></div>'+
+      '<div style="display:flex;gap:10px;align-items:center;margin-top:16px">'+
+      '<span class="startog'+(q.star?' on':'')+'" data-star>★ 重要題</span>'+
+      '<span class="startog" data-del>刪除</span></div>'+
+      '</div>';
+    el.querySelector('.qe-h').addEventListener('click',function(){el.classList.toggle('open')});
+    el.querySelectorAll('.radio').forEach(function(r){
+      r.addEventListener('click',function(){
+        q.a=+r.dataset.a;
+        el.querySelectorAll('.radio').forEach(function(x){x.classList.toggle('on',x===r)});
+      });
+    });
+    el.querySelectorAll('[data-k]').forEach(function(f){
+      f.addEventListener('input',function(){
+        q[f.dataset.k]=f.value;
+        if(f.dataset.k==='q')el.querySelector('.qe-t').textContent=f.value||'（新題目）';
+      });
+    });
+    el.querySelectorAll('[data-o]').forEach(function(f){
+      f.addEventListener('input',function(){q.o[+f.dataset.o]=f.value});
+    });
+    el.querySelector('[data-star]').addEventListener('click',function(){
+      q.star=!q.star;renderQBank();
+      $$('.qe')[i].classList.add('open');
+    });
+    el.querySelector('[data-del]').addEventListener('click',function(){
+      QBANK.splice(i,1);renderQBank();
+    });
+    box.appendChild(el);
+  });
+}
+renderQBank();
+var qa=$('#qeAdd');
+if(qa)qa.addEventListener('click',function(){
+  QBANK.push({q:'',o:['','','',''],a:0,ex:'',k:'',star:false});
+  renderQBank();
+  var last=$$('.qe').pop();last.classList.add('open');
+  last.scrollIntoView({behavior:'smooth',block:'center'});
+});
+var qim=$('#qeImport');
+if(qim)qim.addEventListener('click',function(){
+  qim.textContent='讀取中…';
+  setTimeout(function(){qim.textContent='已匯入 '+QBANK.length+' 題．詳解要自己補'},900);
+  setTimeout(function(){qim.textContent='從舊表單匯入一次'},3000);
+});
+
+/* ---- 通知預覽 ---- */
+var notifTimer=null;
+function showNotif(t,d){
+  $('#notifT').textContent=t;$('#notifD').textContent=d;
+  $('#notif').classList.add('is-on');
+  clearTimeout(notifTimer);
+  notifTimer=setTimeout(function(){$('#notif').classList.remove('is-on')},4200);
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-demo]');
+  if(!b)return;
+  if(b.dataset.demo==='whisper')showNotif('成人 CPR 與 AED 實務','有一則新的悄悄話');
+  else showNotif('新的課程邀約','台積電 新竹廠　40 人　11 月下旬');
+});
+$('#notif').addEventListener('click',function(){$('#notif').classList.remove('is-on')});
+var nOn=$('#notifOn');
+if(nOn)nOn.addEventListener('click',function(){
+  nOn.textContent='已開啟．這支手機會收到';
+  setTimeout(function(){showNotif('通知已開啟','之後有人送出就會跳出來')},450);
+});
+
+/* ---- Instagram ---- */
+var IG='https://www.instagram.com/rescue.teacher/';
+document.addEventListener('click',function(e){
+  if(e.target.closest('[data-ig]')){window.open(IG,'_blank','noopener');}
+});
+
+/* ---- 後台：照片排序 ---- */
+var PHOTOS=['消防月宣導_主場.jpg','台積電_編組訓練.jpg','企業內訓_AED.jpg','國小防災課_壓胸.jpg','記者會_現場.jpg','夜間演練_01.jpg'];
+function renderPhotos(){
+  var box=$('#photoSort');if(!box)return;box.innerHTML='';
+  PHOTOS.forEach(function(n,i){
+    var r=document.createElement('div');r.className='sortrow';
+    r.innerHTML='<div class="dthumb">'+(i+1)+'</div>'+
+      '<div class="sortname">'+n+(i===0?' <span class="badge">封面</span>':'')+
+      '<em>'+(i<3?'講師介紹開頭':'現場區')+'</em></div>'+
+      '<button class="move" data-m="up" '+(i===0?'disabled':'')+'>↑</button>'+
+      '<button class="move" data-m="down" '+(i===PHOTOS.length-1?'disabled':'')+'>↓</button>';
+    r.querySelectorAll('.move').forEach(function(b){
+      b.addEventListener('click',function(){
+        var k=b.dataset.m==='up'?i-1:i+1;
+        if(k<0||k>=PHOTOS.length)return;
+        var t=PHOTOS[i];PHOTOS[i]=PHOTOS[k];PHOTOS[k]=t;renderPhotos();
+      });
+    });
+    box.appendChild(r);
+  });
+}
+renderPhotos();
+var rs=$('#resync');
+if(rs)rs.addEventListener('click',function(){
+  rs.textContent='同步中…';
+  setTimeout(function(){rs.textContent='已是最新．6 張'},900);
+  setTimeout(function(){rs.textContent='重新同步資料夾'},2600);
+});
+
+/* ---- 後台：流量 ---- */
+var TRAFFIC={
+ now:[['講師介紹',28],['線上測驗',31],['課程回饋',19],['課程邀約',6],['防災知識專區',14],['急救教育專區',22],['傳聲悄悄話',9],['影片播放',22],['IG 點擊',11]],
+ all:[['講師介紹',3120],['線上測驗',2980],['課程回饋',2210],['課程邀約',640],['防災知識專區',1860],['急救教育專區',2440],['傳聲悄悄話',980],['影片播放',2140],['IG 點擊',1180]]
+};
+function renderTraffic(which){
+  var box=$('#traffic');if(!box)return;
+  var d=TRAFFIC[which],max=Math.max.apply(null,d.map(function(x){return x[1]}));
+  box.innerHTML='';
+  d.forEach(function(x,i){
+    var sp=i>=7;
+    var r=document.createElement('div');r.className='trow';
+    r.innerHTML='<span class="trow-n"'+(sp?' style="color:var(--muted)"':'')+'>'+x[0]+'</span>'+
+      '<span class="bar"><i style="width:'+(x[1]/max*100)+'%'+(sp?';background:var(--signal)':'')+'"></i></span>'+
+      '<span class="trow-v">'+x[1].toLocaleString()+'</span>';
+    box.appendChild(r);
+  });
+}
+renderTraffic('now');
+var seg=$('#tSeg');
+if(seg)seg.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  $$('button',seg).forEach(function(x){x.classList.toggle('on',x===b)});
+  renderTraffic(b.dataset.t);
+});
+function renderArtRank(){
+  var box=$('#artRank');if(!box||box.children.length)return;
+  var all=[].concat(ARTS.disaster,ARTS.firstaid).sort(function(a,b){return b.v-a.v});
+  var max=all[0].v;
+  all.forEach(function(a){
+    var r=document.createElement('div');r.className='trow';
+    r.innerHTML='<span class="trow-n">'+a.t+'</span><span class="bar"><i style="width:'+(a.v/max*100)+'%"></i></span>'+
+      '<span class="trow-v">'+a.v.toLocaleString()+'</span>';
+    box.appendChild(r);
+  });
+}
+
+/* ---- 授課範圍複選 ---- */
+document.addEventListener('click',function(e){
+  var c=e.target.closest('.chip');
+  if(!c||c.classList.contains('chip-s'))return;
+  var grp=c.parentElement;
+  if(grp.hasAttribute('data-one')){
+    [].slice.call(grp.children).forEach(function(x){x.classList.toggle('on',x===c)});
+  }else{
+    c.classList.toggle('on');
+  }
+});
+
+/* ---- 上課代號 ---- */
+var CODE='8236', codePassed=false, pending=null;
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-gate]');
+  if(!t)return;
+  e.preventDefault();
+  if(codePassed){
+    var d=t.dataset.gate;
+    if(d==='p-run')d=profileName?'p-name':'p-profile';
+    go(d);return;
+  }
+  pending=t.dataset.gate;
+  $('#codeIn').value='';$('#codeBad').classList.remove('on');
+  go('p-code');
+});
+var profileName=null;
+$('#codeOk').addEventListener('click',function(){
+  if($('#codeIn').value.trim()===CODE){
+    codePassed=true;$('#codeBad').classList.remove('on');
+    var dest=pending||'p-run';
+    if(dest==='p-run')dest=profileName?'p-name':'p-profile';
+    go(dest);
+  }else{$('#codeBad').classList.add('on');}
+});
+function enterRun(label){
+  var tag=$('#pfTag');
+  tag.style.display='block';
+  tag.textContent=label;
+  go('p-run');
+}
+$('#pfGo').addEventListener('click',function(){
+  profileName=($('#pfName').value||'').trim()||'這位學員';
+  enterRun('課前測驗 · '+profileName);
+});
+$('#nmGo').addEventListener('click',function(){
+  var n=($('#nmIn').value||'').trim()||profileName||'這位學員';
+  enterRun('課後測驗 · '+n+'　基本資料已帶入，不再重問');
+});
+
+/* ---- 統計 ---- */
+var QSTAT=[
+ {pre:52,post:91,wrong:'3 至 4 公分',wpct:31},
+ {pre:28,post:69,wrong:'繼續按壓不要停',wpct:24},
+ {pre:64,post:94,wrong:'立刻開始壓胸',wpct:4},
+ {pre:33,post:72,wrong:'一律 30:2',wpct:21}
+];
+function renderStats(){
+  var box=$('#qstats');box.innerHTML='';
+  QS.forEach(function(q,i){
+    var st=QSTAT[i],d=st.post-st.pre;
+    var el=document.createElement('div');el.className='qstat';
+    el.innerHTML='<div class="qstat-t"><em>Q'+(i+1)+'</em><span>'+q.q+(q.star?'<span class="star">★</span>':'')+
+      '<span class="delta'+(d<40?' flat':'')+'">'+(d>=0?'+':'')+d+'</span></span></div>'+
+      '<div class="brow"><b>課前</b><span class="bar pre"><i style="width:'+st.pre+'%"></i></span><span class="pct">'+st.pre+'%</span></div>'+
+      '<div class="brow"><b>課後</b><span class="bar"><i style="width:'+st.post+'%"></i></span><span class="pct">'+st.post+'%</span></div>';
+    box.appendChild(el);
+  });
+  var order=QS.map(function(q,i){return {i:i,q:q,s:QSTAT[i]}})
+    .sort(function(a,b){return a.s.post-b.s.post}).slice(0,2);
+  var ml=$('#missList');ml.innerHTML='';
+  order.forEach(function(o){
+    var el=document.createElement('div');el.className='miss';
+    el.innerHTML='<div class="miss-h"><span>Q'+(o.i+1)+(o.q.star?'　★ 重要題':'')+'</span><span>課後仍答錯 '+(100-o.s.post)+'%</span></div>'+
+      '<div class="miss-q">'+o.q.q+'</div>'+
+      '<div class="miss-w"><b>'+o.s.wpct+'% 的人選了「'+o.s.wrong+'」</b><br>'+o.q.ex+'</div>'+
+      '<div class="ans-line" style="margin-top:10px"><b>記這句</b><span>'+o.q.k+'</span></div>';
+    ml.appendChild(el);
+  });
+}
+renderStats();
+function pushMyScore(pct){
+  $('#myTag').textContent='已完成';
+  $('#myPost').innerHTML=pct+'<small>%</small>';
+  $('#myUp').innerHTML=(pct-60>=0?'+':'')+(pct-60);
+  $('#myNote').textContent=pct>=60?'你從不及格變成及格。全班有 91% 的人跟你一樣。':'還差一點。錯的那幾題去看詳解，不用重做整份。';
+}
+
+/* ---- scales / switches ---- */
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-scale] button');
+  if(b){[].slice.call(b.parentElement.children).forEach(function(x){x.classList.toggle('on',x===b)});}
+});
+$$('.sw').forEach(function(s){
+  function flip(){
+    var on=s.classList.toggle('on');
+    s.setAttribute('aria-checked',String(on));
+    if(s.id==='wantReply'){
+      var box=$('#contactBox');
+      box.style.display=on?'block':'none';
+      if(on){var f=$('#wContact');if(f)setTimeout(function(){f.focus()},60);}
+      else{var g=$('#wContact');if(g)g.value='';}
+    }
+  }
+  s.addEventListener('click',flip);
+  s.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();flip();}});
+});
+
+/* ---- form submits ---- */
+function submitPair(formId,doneId){
+  var f=$(formId),d=$(doneId);
+  f.style.display='none';d.classList.add('is-on');
+  $$('.trace',d).forEach(function(t){setTimeout(function(){t.classList.add('in')},60)});
+  window.scrollTo({top:0,behavior:'instant'});
+}
+$('#fbSend').addEventListener('click',function(){submitPair('#fbForm','#fbDone')});
+$('#ivSend').addEventListener('click',function(){submitPair('#ivForm','#ivDone')});
+var wt=$('#wt');
+wt.addEventListener('input',function(){$('#wc').textContent=wt.value.length+' / 500'});
+$('#wsend').addEventListener('click',function(){submitPair('#wForm','#wDone')});
+$('#wagain').addEventListener('click',function(){
+  wt.value='';$('#wc').textContent='0 / 500';
+  $('#wForm').style.display='';$('#wDone').classList.remove('is-on');
+});
+
+/* ---- hidden gate ---- */
+var gate=$('#gate'),gv=$('#gateview'),timer=null;
+function stopArm(){clearTimeout(timer);gate.classList.remove('arming');}
+gate.addEventListener('pointerdown',function(e){
+  e.preventDefault();gate.classList.add('arming');
+  timer=setTimeout(function(){
+    gate.classList.remove('arming');gv.classList.add('is-on');
+    if(navigator.vibrate)navigator.vibrate(12);
+  },1100);
+});
+['pointerup','pointerleave','pointercancel'].forEach(function(ev){gate.addEventListener(ev,stopArm)});
+gate.addEventListener('contextmenu',function(e){e.preventDefault()});
+$('#gateclose').addEventListener('click',function(){gv.classList.remove('is-on')});
+})();
+</script>
+</body>
+</html>
