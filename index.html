@@ -285,6 +285,15 @@ svg.fig.in circle{opacity:1}
   font-family:var(--mono);font-size:20px;width:110px;padding:4px 0}
 .num-edit span{font-size:13.5px;color:var(--muted);flex:1}
 
+/* 連線狀態 */
+.conn{display:flex;align-items:center;gap:9px;margin-top:18px;padding:11px 13px;
+  border:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.conn-d{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:none}
+.conn.ok .conn-d{background:var(--ok)}
+.conn.off .conn-d{background:var(--signal)}
+.conn-x{margin-left:auto;background:none;border:1px solid var(--line);padding:5px 10px;
+  cursor:pointer;font-size:11px;font-family:var(--mono);color:var(--ink-soft)}
+
 /* podium */
 .podium{border-top:1px solid var(--line);margin-top:18px}
 .pod{display:flex;align-items:center;gap:14px;padding:16px 2px;border-bottom:1px solid var(--line-soft)}
@@ -1240,6 +1249,8 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="stat"><div class="stat-n">7</div><div class="stat-l">悄悄話</div></div>
     <div class="stat"><div class="stat-n">+27<small>%</small></div><div class="stat-l">前後測進步</div></div>
   </div>
+  <div class="conn" id="conn"><span class="conn-d"></span><span id="connT">連線中…</span>
+    <button class="conn-x" id="signOut" style="display:none">登出</button></div>
   <p class="hint">下面依功能分組，點標題展開。只有需要改的時候才打開。</p>
 
   <div style="margin-top:20px">
@@ -1578,9 +1589,10 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <div class="mark"><i></i>Professional Mode</div>
   <h1 class="display" style="font-size:24px;margin-top:22px">講師登入</h1>
   <p class="sub" style="margin:8px 0 26px">這個畫面不會出現在任何連結裡。</p>
-  <input class="f-in" type="email" placeholder="電子郵件" autocomplete="username">
-  <input class="f-in" type="password" placeholder="密碼" autocomplete="current-password">
-  <button class="btn">登入</button>
+  <input class="f-in" id="logEmail" type="email" placeholder="電子郵件" autocomplete="username">
+  <input class="f-in" id="logPass" type="password" placeholder="密碼" autocomplete="current-password">
+  <div class="code-bad" id="logBad"></div>
+  <button class="btn" id="logGo">登入</button>
   <button class="gate-x" id="gateclose">返回課程</button>
 </div></div>
 
@@ -1588,6 +1600,77 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 (function(){
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+
+/* ---- Firebase ---- */
+function setConn(state,text){
+  var c=$('#conn');if(!c)return;
+  c.className='conn'+(state?' '+state:'');
+  $('#connT').textContent=text;
+}
+function fmtTime(ts){
+  try{var d=ts&&ts.toDate?ts.toDate():new Date();
+      return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+  catch(e){return '--:--'}
+}
+async function loadWhispers(){
+  var F=window.fb;
+  try{
+    var snap=await F.getDocs(F.query(F.collection(F.db,'courses',F.COURSE,'whispers'),
+                                     F.orderBy('createdAt','desc')));
+    WMSG.length=0;WTRASH.length=0;
+    snap.forEach(function(d){
+      var v=d.data();
+      var row={id:d.id,t:v.text||'',m:fmtTime(v.createdAt),st:v.status||'unread',c:v.contact||null};
+      (v.deletedAt?WTRASH:WMSG).push(row);
+    });
+    LIVE=true;wRender();
+  }catch(e){
+    console.warn('讀取悄悄話失敗（多半是安全規則或尚未登入）：',e);
+  }
+}
+function saveWhisper(row,patch){
+  if(!LIVE||!window.fb||!row.id)return;
+  var F=window.fb;
+  F.updateDoc(F.doc(F.db,'courses',F.COURSE,'whispers',row.id),patch)
+   .catch(function(e){console.warn('更新失敗：',e)});
+}
+window.addEventListener('fb-failed',function(){
+  setConn('off','離線．目前顯示示範資料');
+});
+window.addEventListener('fb-ready',function(){
+  var F=window.fb;
+  setConn('','已連線　未登入');
+  F.onAuthStateChanged(F.auth,function(user){
+    if(user){
+      setConn('ok','已登入　'+user.email);
+      $('#signOut').style.display='block';
+      $('#gateview').classList.remove('is-on');
+      loadWhispers();
+    }else{
+      setConn('','已連線　未登入（後台顯示示範資料）');
+      $('#signOut').style.display='none';
+      LIVE=false;
+    }
+  });
+  $('#logGo').addEventListener('click',async function(){
+    var em=($('#logEmail').value||'').trim(), pw=$('#logPass').value||'';
+    var bad=$('#logBad');bad.classList.remove('on');
+    if(!em||!pw){bad.textContent='請輸入帳號與密碼';bad.classList.add('on');return;}
+    $('#logGo').textContent='登入中…';
+    try{
+      await F.signInWithEmailAndPassword(F.auth,em,pw);
+      $('#logPass').value='';
+    }catch(e){
+      var msg={'auth/invalid-credential':'帳號或密碼不對',
+               'auth/invalid-email':'email 格式不對',
+               'auth/too-many-requests':'嘗試太多次，等幾分鐘再試',
+               'auth/network-request-failed':'連不到網路'}[e.code]||('登入失敗：'+e.code);
+      bad.textContent=msg;bad.classList.add('on');
+    }
+    $('#logGo').textContent='登入';
+  });
+  $('#signOut').addEventListener('click',function(){F.signOut(F.auth)});
+});
 
 /* ---- 深淺色 ---- */
 (function(){
@@ -1895,6 +1978,7 @@ var WMSG=[
  {t:'課程很好，但冷氣真的太冷了',m:'15:20',st:'read',c:null}
 ];
 var WTRASH=[{t:'測試測試',m:'13:02',st:'read',c:null}];
+var LIVE=false;   // 連上 Firestore 之後改 true，示範資料就退場
 var wFilter='all';
 function wRender(){
   var box=$('#wInbox');if(!box)return;
@@ -1926,18 +2010,28 @@ function wRender(){
       act.appendChild(b);
     }
     if(wFilter==='trash'){
-      btn('復原',function(){WTRASH.splice(WTRASH.indexOf(w),1);w.st='read';WMSG.push(w);});
-      btn('永久刪除',function(){WTRASH.splice(WTRASH.indexOf(w),1);});
+      btn('復原',function(){
+        WTRASH.splice(WTRASH.indexOf(w),1);w.st='read';WMSG.push(w);
+        saveWhisper(w,{deletedAt:null,status:'read'});
+      });
+      btn('永久刪除',function(){
+        WTRASH.splice(WTRASH.indexOf(w),1);
+        if(LIVE&&window.fb&&w.id){var F=window.fb;
+          F.deleteDoc(F.doc(F.db,'courses',F.COURSE,'whispers',w.id)).catch(function(){});}
+      });
     }else{
-      if(w.st==='unread')btn('標記已讀',function(){w.st='read'});
-      if(w.st!=='todo')btn('標為需處理',function(){w.st='todo'});
-      if(w.st==='todo')btn('標為已處理',function(){w.st='done'});
-      if(w.c)btn('複製聯絡方式',function(){});
-      btn('刪除',function(){WMSG.splice(WMSG.indexOf(w),1);WTRASH.unshift(w);});
+      if(w.st==='unread')btn('標記已讀',function(){w.st='read';saveWhisper(w,{status:'read'})});
+      if(w.st!=='todo')btn('標為需處理',function(){w.st='todo';saveWhisper(w,{status:'todo'})});
+      if(w.st==='todo')btn('標為已處理',function(){w.st='done';saveWhisper(w,{status:'done'})});
+      if(w.c)btn('複製聯絡方式',function(){if(navigator.clipboard)navigator.clipboard.writeText(w.c)});
+      btn('刪除',function(){
+        WMSG.splice(WMSG.indexOf(w),1);WTRASH.unshift(w);
+        saveWhisper(w,{deletedAt:window.fb?window.fb.serverTimestamp():Date.now()});
+      });
     }
     el.querySelector('.wi-h').addEventListener('click',function(){
       el.classList.toggle('open');
-      if(w.st==='unread'){w.st='read';setTimeout(function(){
+      if(w.st==='unread'){w.st='read';saveWhisper(w,{status:'read'});setTimeout(function(){
         var was=el.classList.contains('open');wRender();
         if(was){var all=$$('#wInbox .wi');var idx=list.indexOf(w);if(all[idx])all[idx].classList.add('open');}
       },240);}
@@ -2238,7 +2332,19 @@ $('#fbSend').addEventListener('click',function(){submitPair('#fbForm','#fbDone')
 $('#ivSend').addEventListener('click',function(){submitPair('#ivForm','#ivDone')});
 var wt=$('#wt');
 wt.addEventListener('input',function(){$('#wc').textContent=wt.value.length+' / 500'});
-$('#wsend').addEventListener('click',function(){submitPair('#wForm','#wDone')});
+$('#wsend').addEventListener('click',function(){
+  var text=(wt.value||'').trim();
+  if(!text){wt.focus();return;}
+  var contact=($('#wContact')&&$('#wantReply').classList.contains('on'))?($('#wContact').value||'').trim():'';
+  submitPair('#wForm','#wDone');
+  if(window.fb){
+    var F=window.fb;
+    F.addDoc(F.collection(F.db,'courses',F.COURSE,'whispers'),{
+      text:text, contact:contact||null, status:'unread',
+      deletedAt:null, createdAt:F.serverTimestamp()
+    }).catch(function(e){console.warn('悄悄話寫入失敗：',e);});
+  }
+});
 $('#wagain').addEventListener('click',function(){
   wt.value='';$('#wc').textContent='0 / 500';
   $('#wForm').style.display='';$('#wDone').classList.remove('is-on');
@@ -2258,6 +2364,39 @@ gate.addEventListener('pointerdown',function(e){
 gate.addEventListener('contextmenu',function(e){e.preventDefault()});
 $('#gateclose').addEventListener('click',function(){gv.classList.remove('is-on')});
 })();
+</script>
+
+<!-- ================= Firebase ================= -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc,
+         deleteDoc, query, where, orderBy, increment, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWBGfFfJS5tYdqPt4RZxbNHpuWH6vnQfw",
+  authDomain: "ironwill-6f96b.firebaseapp.com",
+  projectId: "ironwill-6f96b",
+  storageBucket: "ironwill-6f96b.firebasestorage.app",
+  messagingSenderId: "998237288934",
+  appId: "1:998237288934:web:1e722c2a16c12a49327e27"
+};
+
+try{
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+  window.fb = { db, auth, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc,
+                deleteDoc, query, where, orderBy, increment, serverTimestamp,
+                signInWithEmailAndPassword, onAuthStateChanged, signOut,
+                COURSE: 'CPR-4f9a2e' };
+  window.dispatchEvent(new Event('fb-ready'));
+}catch(e){
+  console.warn('Firebase 初始化失敗，改用示範資料：', e);
+  window.dispatchEvent(new Event('fb-failed'));
+}
 </script>
 </body>
 </html>
