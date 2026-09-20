@@ -48,7 +48,7 @@ h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.01em}
   align-self:center;white-space:nowrap;transition:border-color .18s,color .18s}
 .theme-btn:hover{border-color:var(--ink);color:var(--ink)}
 
-.wrap{max-width:620px;margin:0 auto;padding:0 20px 90px}
+.wrap{max-width:620px;margin:0 auto;padding:0 20px 120px}
 .zone{display:none}
 .zone.is-on{display:block}
 
@@ -284,6 +284,22 @@ svg.fig.in circle{opacity:1}
 .num-edit input{background:transparent;border:0;border-bottom:1px solid var(--line);
   font-family:var(--mono);font-size:20px;width:110px;padding:4px 0}
 .num-edit span{font-size:13.5px;color:var(--muted);flex:1}
+
+/* 提示條 */
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));
+  transform:translate(-50%,14px);z-index:80;background:var(--ink);color:var(--paper);
+  padding:11px 18px;font-size:13.5px;opacity:0;pointer-events:none;
+  transition:opacity .25s ease,transform .25s cubic-bezier(.22,.61,.36,1);white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* 主視覺圖案選擇 */
+.icon-pick{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.icon-pick button{width:56px;height:56px;border:1px solid var(--line);background:none;
+  cursor:pointer;display:grid;place-items:center;transition:border-color .18s}
+.icon-pick button.on{border-color:var(--signal)}
+.icon-pick svg{width:30px;height:26px;fill:none;stroke:var(--ink-soft);stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.icon-pick button.on svg{stroke:var(--signal)}
 
 /* 後台切換鈕 */
 .pro-switch{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;
@@ -677,6 +693,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 </head>
 <body>
 
+<div class="toast" id="toast"></div>
 <button class="pro-switch" id="proSwitch" hidden>後台</button>
 
 
@@ -688,18 +705,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
   <!-- 課程首頁 -->
   <section class="page is-on" id="p-home">
-    <div class="hero-card rv">
-      <svg class="hero-mark" viewBox="0 0 190 86" aria-hidden="true">
-        <path class="soft" d="M6 52 H44"/>
-        <path d="M44 52 L54 52 L60 32 L68 70 L76 44 L82 52 L96 52"/>
-        <path class="soft" d="M146 52 H184"/>
-        <path d="M96 52 L106 52 L112 36 L120 66 L128 46 L134 52 L146 52"/>
-        <path d="M95 26 C95 14, 78 10, 72 20 C66 10, 49 14, 49 26 C49 38, 72 52, 72 52"
-              style="stroke:var(--line)"/>
-      </svg>
-      <div class="hero-tags"><span>實作課</span><span>3 小時</span><span>2026 / 09 / 14</span></div>
-      <h1 class="display" id="cHomeTitle">成人 CPR 與 AED 實務</h1>
-    </div>
+    <div class="hero-card rv" id="heroCard"></div>
 
     <div class="cols" id="tileGrid"></div>
 
@@ -1292,15 +1298,15 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="section-head"><h2>課程連結</h2><span>QR</span></div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding-bottom:14px">
       <div style="font-family:var(--mono);font-size:15px;word-break:break-all">/course/CPR-4f9a2e</div>
-      <button class="btn btn-quiet" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">關閉課程</button>
+      <button class="btn btn-quiet" id="closeCourse" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">關閉課程</button>
     </div>
     <p class="hint">課程頁是公開的，關閉之後舊連結就進不來。</p>
 
     <div class="section-head"><h2>上課代號</h2><span>只擋作答與回饋</span></div>
     <div class="toggle-row"><span>作答與回饋需要代號</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding:16px 0">
-      <div style="font-family:var(--mono);font-size:30px;letter-spacing:.3em;color:var(--signal)">8236</div>
-      <button class="btn btn-quiet" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">重新產生</button>
+      <div style="font-family:var(--mono);font-size:30px;letter-spacing:.3em;color:var(--signal)" id="codeShow">8236</div>
+      <button class="btn btn-quiet" id="regenCode" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">重新產生</button>
     </div>
 
     <div class="section-head"><h2>學員看到什麼</h2><span>7 / 7</span></div>
@@ -1313,6 +1319,13 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="toggle-row"><span>傳聲悄悄話</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="f"><div class="f-q">課程名稱</div><input class="f-in" id="edCTitle" value="成人 CPR 與 AED 實務"></div>
     <div class="f"><div class="f-q">副標</div><input class="f-in" id="edCSub" value="三小時實作課．新北市政府消防局"></div>
+    <div class="f"><div class="f-q">課程標籤</div>
+      <div class="f-hint">顯示在課程名稱上方，最多三個，留空就不顯示</div>
+      <input class="f-in" id="edTag1" value="實作課">
+      <input class="f-in" id="edTag2" value="3 小時">
+      <input class="f-in" id="edTag3" value="2026 / 09 / 14"></div>
+    <div class="f"><div class="f-q">主視覺圖案</div>
+      <div class="icon-pick" id="heroPick"></div></div>
     <div class="f"><div class="f-q">及格線</div><input class="f-in" id="edPass" value="60" inputmode="numeric"></div>
     <button class="btn btn-quiet" data-save="course">儲存課程設定</button>
   </div></div>
@@ -1390,9 +1403,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="section-head"><h2>問卷題目</h2><span>7</span></div>
     <p class="sub">改題目會影響之後的統計比較，改之前先想清楚。</p>
     <div class="rows" style="margin-top:12px">
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">性別　年齡</div><div class="row-d">基本資料．必填</div></div><div class="row-go">→</div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">四項 1–5 評分</div><div class="row-d">滿意度．豐富度．難易度．表達方式</div></div><div class="row-go">→</div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">其他建議</div><div class="row-d">開放填答</div></div><div class="row-go">→</div></div>
+      <div class="row" style="cursor:default"><div class="row-b"><div class="row-t" style="font-size:15px">性別　年齡</div><div class="row-d">基本資料．必填</div></div></div>
+      <div class="row" style="cursor:default"><div class="row-b"><div class="row-t" style="font-size:15px">四項 1–5 評分</div><div class="row-d">滿意度．豐富度．難易度．表達方式</div></div></div>
+      <div class="row" style="cursor:default"><div class="row-b"><div class="row-t" style="font-size:15px">其他建議</div><div class="row-d">開放填答</div></div></div>
     </div>
   </div></div>
 
@@ -1401,9 +1414,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <div class="grp-b">
     <div class="section-head"><h2>待回覆</h2><span>3</span></div>
     <div class="rows">
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">緯創電子 / 李專員<span class="wtag todo">3 天內</span></div><div class="row-d">11/18 09:00-12:00　員工 80 人　CPR 教育訓練</div></div><div class="row-go">→</div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">板橋某某國小 / 陳主任</div><div class="row-d">12/05 全日　教職員 45 人　地震災害應變</div></div><div class="row-go">→</div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">某某長照機構 / 林小姐</div><div class="row-d">日期待議　照服員 30 人　急病重症急救</div></div><div class="row-go">→</div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">緯創電子 / 李專員<span class="wtag todo">3 天內</span></div><div class="row-d">11/18 09:00-12:00　員工 80 人　CPR 教育訓練</div></div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">板橋某某國小 / 陳主任</div><div class="row-d">12/05 全日　教職員 45 人　地震災害應變</div></div></div>
+      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">某某長照機構 / 林小姐</div><div class="row-d">日期待議　照服員 30 人　急病重症急救</div></div></div>
     </div>
 
     <div class="section-head"><h2>報名須知</h2><span>顯示在表單最上面</span></div>
@@ -1494,7 +1507,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <div class="grp-b">
     <div class="section-head"><h2>文章排行</h2><span>累計瀏覽</span></div>
     <div id="artRank"></div>
-    <button class="btn btn-quiet">新增文章</button>
+    <button class="btn btn-quiet" id="addArticle">新增文章</button>
   </div></div>
 
   <!-- 聯絡方式 -->
@@ -2016,6 +2029,43 @@ function openArt(key,i){
 buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
 renderArtRank();
 
+/* ---- 提示條 ---- */
+var toastT=null;
+function toast(msg){
+  var t=$('#toast');if(!t)return;
+  t.textContent=msg;t.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},2200);
+}
+
+/* ================= 課程主視覺 ================= */
+var HERO={
+ ecg:'<path class="soft" d="M6 52 H44"/><path d="M44 52 L54 52 L60 32 L68 70 L76 44 L82 52 L96 52"/><path class="soft" d="M146 52 H184"/><path d="M96 52 L106 52 L112 36 L120 66 L128 46 L134 52 L146 52"/><path class="soft" d="M95 26 C95 14, 78 10, 72 20 C66 10, 49 14, 49 26 C49 38, 72 52, 72 52"/>',
+ heart:'<path d="M95 66s-30-18-30-34a14 14 0 0 1 26-7 14 14 0 0 1 26 7c0 16-30 34-30 34z"/><path class="soft" d="M40 46h20l7-12 9 26 8-18 5 8h36"/>',
+ flame:'<path d="M95 14c14 16 23 26 23 41a23 23 0 1 1-46 0c0-15 9-25 23-41z"/><path class="soft" d="M95 70a10 10 0 0 1-10-10c0-6 4-10 10-17 6 7 10 11 10 17a10 10 0 0 1-10 10z"/>',
+ aed:'<path d="M64 20h62a8 8 0 0 1 8 8v36a8 8 0 0 1-8 8H64a8 8 0 0 1-8-8V28a8 8 0 0 1 8-8z"/><path d="M95 30v32M79 46h32" class="soft"/><path d="M40 46h10M140 46h10" class="soft"/>',
+ shield:'<path d="M95 12l32 12v22c0 18-13 31-32 38-19-7-32-20-32-38V24z"/><path class="soft" d="M81 45l10 10 19-20"/>',
+ helmet:'<path d="M50 58c0-25 20-40 45-40s45 15 45 40"/><path d="M40 58h110v10H40z"/><path class="soft" d="M95 18v40"/>'
+};
+function renderHero(){
+  var box=$('#heroCard');if(!box)return;
+  var tags=(COURSE.tags||[]).filter(Boolean);
+  box.innerHTML='<svg class="hero-mark" viewBox="0 0 190 86" aria-hidden="true">'+
+      (HERO[COURSE.icon]||HERO.ecg)+'</svg>'+
+    (tags.length?'<div class="hero-tags">'+tags.map(function(t){return '<span>'+t+'</span>'}).join('')+'</div>':'')+
+    '<h1 class="display" id="cHomeTitle">'+COURSE.title+'</h1>';
+}
+function renderHeroPick(){
+  var box=$('#heroPick');if(!box)return;
+  box.innerHTML=Object.keys(HERO).map(function(k){
+    return '<button data-hero="'+k+'" class="'+(COURSE.icon===k?'on':'')+'">'+
+      '<svg viewBox="0 0 190 86">'+HERO[k]+'</svg></button>';
+  }).join('');
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-hero]');if(!b)return;
+  COURSE.icon=b.dataset.hero;renderHero();renderHeroPick();
+});
+
 /* ================= 首頁功能磁磚 ================= */
 var ICONS={
  user:'<circle cx="12" cy="7.5" r="3.6"/><path d="M4.5 20.5c0-4.1 3.4-6.4 7.5-6.4s7.5 2.3 7.5 6.4"/>',
@@ -2034,7 +2084,7 @@ var TILES=[
  {id:'invite',   t:'課程邀約',     icon:'mail',  go:'p-invite',    on:true},
  {id:'disaster', t:'防災知識專區', icon:'flame', go:'p-disaster',  on:true},
  {id:'firstaid', t:'急救教育專區', icon:'heart', go:'p-firstaid',  on:true},
- {id:'whisper',  t:'傳聲悄悄話',   icon:'lock',  go:'p-whisper',   on:true, quiet:'僅講師可見'}
+ {id:'whisper',  t:'傳聲悄悄話',   icon:'lock',  go:'p-whisper',   on:true,}
 ];
 function renderTiles(){
   var grid=$('#tileGrid');if(!grid)return;
@@ -2111,6 +2161,7 @@ var SITE={
   notify:{emails:'',endpoint:'',onWhisper:true,onInvite:true,onFeedback:false}
 };
 var COURSE={title:'成人 CPR 與 AED 實務',sub:'三小時實作課',pass:60,
+            tags:['實作課','3 小時','2026 / 09 / 14'], icon:'ecg',
             quiz:{score:true,wrong:true,exp:'now'}};
 
 function applySite(){
@@ -2127,13 +2178,15 @@ function applySite(){
   if($('#abSpeak'))$('#abSpeak').innerHTML=tl(ET.speak);
   if($('#abIdea'))$('#abIdea').innerHTML=tl(ET.idea);
   if($('#abCareer'))$('#abCareer').innerHTML=tl(SITE.career);
-  set('#cHomeTitle',COURSE.title);
+  renderHero();
 }
 function applyForms(){
   var v=function(id,val){var e=$(id);if(e)e.value=val;};
   v('#edHeadline',SITE.headline);v('#edQuote',SITE.quote);v('#edEnd',SITE.ending);
   v('#edStat1',SITE.stats[0][0]);v('#edStat2',SITE.stats[1][0]);
   v('#edCTitle',COURSE.title);v('#edCSub',COURSE.sub);v('#edPass',COURSE.pass);
+  v('#edTag1',COURSE.tags[0]||'');v('#edTag2',COURSE.tags[1]||'');v('#edTag3',COURSE.tags[2]||'');
+  renderHeroPick();
   v('#edEmails',SITE.notify.emails);v('#edEndpoint',SITE.notify.endpoint);
 }
 function pullForms(){
@@ -2148,6 +2201,7 @@ function pullForms(){
   COURSE.title=g('#edCTitle',COURSE.title);
   COURSE.sub=g('#edCSub',COURSE.sub);
   COURSE.pass=parseInt(g('#edPass',60),10)||60;
+  COURSE.tags=[g('#edTag1',''),g('#edTag2',''),g('#edTag3','')];
 }
 function flash(btn,msg){
   var old=btn.textContent;btn.textContent=msg;
@@ -2172,7 +2226,7 @@ async function saveCourse(){
   pullForms();
   await F.setDoc(F.doc(F.db,'courses',F.COURSE),{
     title:COURSE.title,subtitle:COURSE.sub,passLine:COURSE.pass,
-    quiz:COURSE.quiz,isOpen:true
+    tags:COURSE.tags,icon:COURSE.icon,quiz:COURSE.quiz
   },{merge:true});
   applySite();
 }
@@ -2193,6 +2247,7 @@ async function loadAll(){
     if(c.exists()){var d=c.data();
       COURSE.title=d.title||COURSE.title;COURSE.sub=d.subtitle||COURSE.sub;
       COURSE.pass=d.passLine||COURSE.pass;if(d.quiz)COURSE.quiz=d.quiz;
+      if(d.tags)COURSE.tags=d.tags;if(d.icon)COURSE.icon=d.icon;
       if(d.tiles&&d.tiles.length){TILES=d.tiles;renderTiles();renderTileEdit();}
       if($('#stCourse'))$('#stCourse').textContent='已同步';}
     var m=await F.getDoc(F.doc(F.db,'instructors','main'));
@@ -2287,6 +2342,50 @@ document.addEventListener('click',function(e){
   ET[b.dataset.add].push(['','']);renderET(b.dataset.add);
 });
 
+/* ---- 分段控制：通用切換 ---- */
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.seg button');if(!b)return;
+  [].slice.call(b.parentElement.children).forEach(function(x){x.classList.toggle('on',x===b)});
+});
+
+/* ---- 補齊後台各按鈕 ---- */
+var courseOpen=true;
+var cc=$('#closeCourse');
+if(cc)cc.addEventListener('click',async function(){
+  courseOpen=!courseOpen;
+  cc.textContent=courseOpen?'關閉課程':'重新開放課程';
+  toast(courseOpen?'課程已重新開放':'課程已關閉，舊連結進不來');
+  if(window.fb&&window.fb.auth.currentUser){
+    var F=window.fb;
+    try{await F.setDoc(F.doc(F.db,'courses',F.COURSE),{isOpen:courseOpen},{merge:true});}
+    catch(e){toast('寫入失敗：'+(e.code||e.message))}
+  }
+});
+var rg=$('#regenCode');
+if(rg)rg.addEventListener('click',async function(){
+  CODE=String(Math.floor(1000+Math.random()*9000));
+  $('#codeShow').textContent=CODE;
+  codePassed=false;
+  toast('新代號 '+CODE+'，舊代號立即失效');
+  if(window.fb&&window.fb.auth.currentUser){
+    var F=window.fb;
+    try{await F.setDoc(F.doc(F.db,'courses',F.COURSE,'private','gate'),{code:CODE});}
+    catch(e){toast('寫入失敗：'+(e.code||e.message))}
+  }
+});
+var aa=$('#addArticle');
+if(aa)aa.addEventListener('click',function(){
+  var d=new Date();
+  ARTS.disaster.unshift({t:'新文章（點兩下改標題）',c:'防災知識',v:0,
+    d:d.getFullYear()+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2),
+    b:['內文還沒寫。']});
+  buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
+  $('#artRank').innerHTML='';renderArtRank();
+  toast('已新增一篇，排在防災知識專區最前面');
+});
+var rq=$('#resyncQ');
+if(rq)rq.addEventListener('click',function(){toast('題庫已是最新．'+QBANK.length+' 題')});
+
 /* ---- 儲存與同步 ---- */
 document.addEventListener('click',async function(e){
   var b=e.target.closest('[data-save]');if(!b)return;
@@ -2300,7 +2399,7 @@ document.addEventListener('click',async function(e){
     else if(k==='course')await saveCourse();
     else if(k==='questions')await saveQuestions();
     else await saveSite();
-    flash(b,'已儲存');
+    flash(b,'已儲存');toast('已儲存到雲端');
   }catch(err){console.warn(err);flash(b,'儲存失敗：'+(err.code||err.message));}
 });
 var sb=$('#seedBtn');
