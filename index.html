@@ -285,6 +285,40 @@ svg.fig.in circle{opacity:1}
   font-family:var(--mono);font-size:20px;width:110px;padding:4px 0}
 .num-edit span{font-size:13.5px;color:var(--muted);flex:1}
 
+/* 講師控制台 */
+.console{padding-top:34px}
+.console-mark{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.18em;color:var(--muted)}
+.console-mark i{width:7px;height:7px;background:var(--signal);border-radius:50%;flex:none}
+.state{display:flex;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:20px}
+.state-c{flex:1;padding:15px 0 13px;border-right:1px solid var(--line-soft)}
+.state-c:last-child{border-right:0}
+.state-n{font-family:var(--mono);font-size:17px;line-height:1.2}
+.state-n.live{color:var(--ok)}
+.state-n.off{color:var(--signal)}
+.state-l{font-size:11px;color:var(--muted);margin-top:4px}
+.act{display:flex;align-items:center;gap:15px;padding:19px 4px;border-bottom:1px solid var(--line-soft);cursor:pointer;
+  transition:padding-left .2s ease}
+.act:hover{padding-left:8px}
+.act:hover .act-go{color:var(--signal)}
+.act svg{width:26px;height:26px;fill:none;stroke:var(--ink-soft);stroke-width:1.4;
+  stroke-linecap:round;stroke-linejoin:round;flex:none}
+.act-b{flex:1;min-width:0}
+.act-t{font-size:16.5px;font-weight:500}
+.act-d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.6}
+.act-go{color:var(--line);font-size:15px;flex:none;transition:color .2s ease}
+.preview-bar{position:sticky;top:0;z-index:40;background:var(--signal);color:#fff;
+  display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:12.5px;
+  padding-top:calc(9px + env(safe-area-inset-top,0px))}
+.preview-bar button{margin-left:auto;background:rgba(255,255,255,.18);border:0;color:#fff;
+  padding:5px 11px;font-size:12px;cursor:pointer}
+.qrbox{border:1px solid var(--line);background:var(--surface);padding:20px;margin-top:16px;text-align:center}
+.qrbox img{width:100%;max-width:230px;height:auto;background:#fff;padding:10px;display:block;margin:0 auto}
+.qrfail{font-size:12.5px;color:var(--muted);line-height:1.7;padding:26px 8px}
+.linkrow{display:flex;gap:9px;align-items:center;border:1px solid var(--line);
+  padding:11px 12px;margin-top:14px;font-family:var(--mono);font-size:12px;overflow:hidden}
+.linkrow span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* 提示條 */
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));
   transform:translate(-50%,14px);z-index:80;background:var(--ink);color:var(--paper);
@@ -700,7 +734,57 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 <div class="wrap">
 
 <!-- ================= 學員端 ================= -->
-<div class="zone is-on" id="z-student">
+<div class="zone" id="z-home">
+  <div class="console">
+    <div class="console-mark"><i></i>講師控制台</div>
+    <h1 class="display" style="margin-top:18px" id="conTitle">成人 CPR 與 AED 實務</h1>
+    <p class="sub" style="margin-top:8px" id="conSub">三小時實作課</p>
+
+    <div class="state">
+      <div class="state-c"><div class="state-n live" id="stOpen">開放中</div><div class="state-l">課程狀態</div></div>
+      <div class="state-c"><div class="state-n" id="stCode">8236</div><div class="state-l">上課代號</div></div>
+      <div class="state-c"><div class="state-n" id="stPpl">32</div><div class="state-l">進入人數</div></div>
+    </div>
+
+    <div class="section-head"><h2>要做什麼</h2><span>3</span></div>
+    <div style="border-top:1px solid var(--line)">
+      <div class="act" id="actLogin">
+        <svg viewBox="0 0 24 24"><path d="M6 10.5V8a6 6 0 0 1 12 0v2.5"/><path d="M4.6 10.5h14.8v9.9H4.6z"/><circle cx="12" cy="15.4" r="1.6"/></svg>
+        <div class="act-b"><div class="act-t" id="actLoginT">講師登入</div><div class="act-d" id="actLoginD">登入後可以編輯課程、看悄悄話與統計</div></div>
+        <div class="act-go">→</div>
+      </div>
+      <div class="act" id="actPreview">
+        <svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>
+        <div class="act-b"><div class="act-t">學員端預覽</div><div class="act-d">用學員的視角看一次，畫面上會標示預覽中</div></div>
+        <div class="act-go">→</div>
+      </div>
+      <div class="act" id="actShare">
+        <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/><path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5z"/></svg>
+        <div class="act-b"><div class="act-t">學員連結與 QR Code</div><div class="act-d">上課時投影或列印這個，學員掃了直接進課程</div></div>
+        <div class="act-go">→</div>
+      </div>
+    </div>
+
+    <div id="shareBox" style="display:none">
+      <div class="section-head"><h2>學員入口</h2><span>只會看到課程</span></div>
+      <div class="qrbox"><div id="qrWrap"></div>
+        <div class="meta" style="margin-top:14px">掃描後直接進入課程，看不到任何管理功能</div></div>
+      <div class="linkrow"><span id="stuLink"></span></div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn btn-quiet" style="margin:0" id="copyLink">複製連結</button>
+        <button class="btn btn-quiet" style="margin:0" id="openQR">開啟大圖</button>
+      </div>
+      <p class="hint">長按大圖可以存到相簿。這個連結不含任何管理入口，就算轉傳出去也只會看到課程頁。</p>
+    </div>
+
+    <p class="note">這頁是你自己的入口，學員掃 QR 進來的是另一個網址，不會看到這裡。</p>
+  </div>
+</div>
+
+<div class="zone" id="z-student">
+  <div class="preview-bar" id="pvBar" style="display:none">
+    <span>預覽中 · 這是學員看到的畫面</span><button id="pvExit">離開預覽</button>
+  </div>
   <div class="nav hide" id="nav"><button class="back" id="back" aria-label="返回">←</button><span class="nav-t" id="navt"></span></div>
 
   <!-- 課程首頁 -->
@@ -1330,6 +1414,18 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <button class="btn btn-quiet" data-save="course">儲存課程設定</button>
   </div></div>
 
+  <!-- 學員入口 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">學員入口</span><span class="grp-m">連結與 QR</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">投影或列印這個 QR，學員掃了直接進課程頁，看不到任何管理功能。</p>
+    <div class="qrbox"><div id="qrWrap2"></div></div>
+    <div class="linkrow"><span id="stuLink2"></span></div>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="btn btn-quiet" style="margin:0" id="copyLink2">複製連結</button>
+      <button class="btn btn-quiet" style="margin:0" id="openQR2">開啟大圖</button>
+    </div>
+  </div></div>
+
   <!-- 首頁功能 -->
   <div class="grp"><div class="grp-h"><span class="grp-t">首頁功能</span><span class="grp-m" id="tileCount"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
@@ -1485,7 +1581,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div class="section-head"><h2>學歷與訓練</h2><span id="etEduN"></span></div>
     <div class="et" id="etEdu"></div>
-    <button class="et-add" data-add="edu">新增一筆</button>
+    <button class="et-add" data-add="career">新增一筆</button>
 
     <div class="section-head"><h2>教育理念</h2><span id="etIdeaN"></span></div>
     <div class="et" id="etIdea"></div>
@@ -1756,15 +1852,17 @@ window.addEventListener('fb-ready',function(){
       setConn('ok','已登入　'+user.email+currentOpLabel());
       $('#signOut').style.display='block';
       $('#gateview').classList.remove('is-on');
-      $('#proSwitch').hidden=false;
-      showZone('z-pro');
+      $('#actLoginT').textContent='進入後台';
+      $('#actLoginD').textContent='編輯課程、看悄悄話與統計';
+      if(!STUDENT_ONLY)showZone('z-pro');
       loadAll().then(function(){ if(!OPERATOR) showOpPicker(); });
       loadWhispers();
     }else{
       setConn('','已連線　未登入');
       $('#signOut').style.display='none';
-      $('#proSwitch').hidden=true;
-      showZone('z-student');
+      $('#actLoginT').textContent='講師登入';
+      $('#actLoginD').textContent='登入後可以編輯課程、看悄悄話與統計';
+      if(!STUDENT_ONLY)showZone('z-home');
       LIVE=false;
     }
   });
@@ -1813,17 +1911,78 @@ window.addEventListener('fb-ready',function(){
   });
 })();
 
-/* ---- 學員端 / 後台 切換 ---- */
+/* ---- 模式：學員專用連結 vs 講師控制台 ---- */
+var COURSE_ID=(new URLSearchParams(location.search)).get('c');
+var STUDENT_ONLY=!!COURSE_ID;
+var PREVIEW=false;
+
+function studentLink(){
+  return location.origin+location.pathname+'?c='+(COURSE_ID||(window.fb?window.fb.COURSE:'CPR-4f9a2e'));
+}
+function qrSrc(size){
+  return 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+
+         '&margin=8&data='+encodeURIComponent(studentLink());
+}
+function paintShare(){
+  var link=studentLink();
+  ['#stuLink','#stuLink2'].forEach(function(id){var e=$(id);if(e)e.textContent=link});
+  ['#qrWrap','#qrWrap2'].forEach(function(id){
+    var w=$(id);if(!w)return;
+    w.innerHTML='<img alt="學員入口 QR Code" src="'+qrSrc(600)+'">';
+    w.querySelector('img').addEventListener('error',function(){
+      w.innerHTML='<div class="qrfail">這個環境擋掉了外部圖片，QR 顯示不出來。<br>放到你自己的網域就會正常。<br>連結可以照常複製。</div>';
+    });
+  });
+}
 function showZone(which){
   $$('.zone').forEach(function(z){z.classList.toggle('is-on',z.id===which)});
   var b=$('#proSwitch');
-  b.textContent=which==='z-pro'?'回學員端':'後台';
+  if(STUDENT_ONLY){b.hidden=true;}
+  else if(PREVIEW){b.hidden=true;}
+  else if(which==='z-pro'){b.hidden=false;b.textContent='回控制台';}
+  else if(which==='z-home'){b.hidden=true;}
   window.scrollTo({top:0,behavior:'instant'});
 }
-$('#proSwitch').addEventListener('click',function(){
-  showZone($('#z-pro').classList.contains('is-on')?'z-student':'z-pro');
+$('#proSwitch').addEventListener('click',function(){showZone('z-home')});
+
+function enterPreview(){
+  PREVIEW=true;$('#pvBar').style.display='flex';
+  showZone('z-student');go('p-home');
+}
+$('#pvExit').addEventListener('click',function(){
+  PREVIEW=false;$('#pvBar').style.display='none';showZone('z-home');
 });
-if(location.hash==='#pro')setTimeout(function(){$('#gateview').classList.add('is-on')},300);
+$('#actPreview').addEventListener('click',enterPreview);
+$('#actLogin').addEventListener('click',function(){
+  if(window.fb&&window.fb.auth.currentUser)showZone('z-pro');
+  else $('#gateview').classList.add('is-on');
+});
+$('#actShare').addEventListener('click',function(){
+  var b=$('#shareBox');
+  b.style.display=b.style.display==='none'?'block':'none';
+  if(b.style.display==='block'){paintShare();b.scrollIntoView({behavior:'smooth',block:'nearest'});}
+});
+function copyLink(btn){
+  var v=studentLink();
+  if(navigator.clipboard)navigator.clipboard.writeText(v);
+  toast('連結已複製');
+}
+['#copyLink','#copyLink2'].forEach(function(id){
+  var e=$(id);if(e)e.addEventListener('click',function(){copyLink(e)});
+});
+['#openQR','#openQR2'].forEach(function(id){
+  var e=$(id);if(e)e.addEventListener('click',function(){window.open(qrSrc(900),'_blank','noopener')});
+});
+
+/* 開機分流 */
+if(STUDENT_ONLY){
+  showZone('z-student');
+  var gm=$('.gate-mark');if(gm)gm.style.display='none';
+}else{
+  showZone('z-home');
+  paintShare();
+  if(location.hash==='#pro')setTimeout(function(){$('#gateview').classList.add('is-on')},300);
+}
 
 /* ---- reveal ---- */
 function armFig(sv){
@@ -2144,7 +2303,7 @@ document.addEventListener('click',function(e){
   var t=e.target.closest('[data-url]');
   if(t&&t.dataset.url){window.open(t.dataset.url,'_blank','noopener');}
 });
-renderTiles();renderTileEdit();
+try{renderTiles();renderTileEdit();}catch(e){console.warn('磁磚初始化',e)}
 
 /* ================= 資料層：Firestore ================= */
 var SITE={
@@ -2177,8 +2336,10 @@ function applySite(){
   }).join('')}
   if($('#abSpeak'))$('#abSpeak').innerHTML=tl(ET.speak);
   if($('#abIdea'))$('#abIdea').innerHTML=tl(ET.idea);
-  if($('#abCareer'))$('#abCareer').innerHTML=tl(SITE.career);
+  if($('#abCareer'))$('#abCareer').innerHTML=tl(ET.career);
   renderHero();
+  var ct=$('#conTitle');if(ct)ct.textContent=COURSE.title;
+  var cs=$('#conSub');if(cs)cs.textContent=COURSE.sub;
 }
 function applyForms(){
   var v=function(id,val){var e=$(id);if(e)e.value=val;};
@@ -2216,7 +2377,7 @@ async function saveSite(){
     speaking:ET.speak.map(function(x){return {k:x[0],v:x[1]}}),
     operatorRows:ET.ops.map(function(x){return {k:x[0],v:x[1]}}),
     idea:ET.idea.map(function(x){return {k:x[0],v:x[1]}}),
-    career:SITE.career.map(function(x){return {k:x[0],v:x[1]}}),
+    career:ET.career.map(function(x){return {k:x[0],v:x[1]}}),
     operators:ET.ops.map(function(x){return x[0]}), notify:SITE.notify
   },{merge:true});
   applySite();
@@ -2256,7 +2417,7 @@ async function loadAll(){
       if(v.stats)SITE.stats=v.stats.map(function(x){return [x.n,x.l]});
       if(v.speaking)ET.speak=v.speaking.map(function(x){return [x.k,x.v]});
       if(v.idea)ET.idea=v.idea.map(function(x){return [x.k,x.v]});
-      if(v.career)SITE.career=v.career.map(function(x){return [x.k,x.v]});
+      if(v.career)ET.career=v.career.map(function(x){return [x.k,x.v]});
       if(v.operatorRows)ET.ops=v.operatorRows.map(function(x){return [x.k,x.v]});
       SITE.operators=ET.ops.map(function(x){return x[0]});
       if(v.notify)SITE.notify=Object.assign(SITE.notify,v.notify);
@@ -2272,7 +2433,7 @@ async function loadAll(){
       renderQBank();renderQ();renderExplain();
       if($('#stQ'))$('#stQ').textContent=QBANK.length+' 題';
     }
-    applySite();applyForms();renderET('speak');renderET('idea');renderET('ops');
+    applySite();applyForms();['speak','career','idea','ops'].forEach(renderET);
   }catch(e){console.warn('讀取雲端資料失敗：',e);}
 }
 
@@ -2306,16 +2467,20 @@ var ET={
  speak:[['科技','台積電．緯創．Google 台灣'],['商辦','MEGA 50．曼哈頓金融中心'],
         ['公部門','新北市政府各局處．消防局'],['交通','板橋車站．捷運板橋站．府中站'],
         ['教育','板橋高中．公私立幼兒園．保母協會'],['社福','新北市家庭暴力防治中心']],
- edu:[['碩士','東南科技大學　營建科技與防災研究所'],['學士','輔仁大學　生命科學系'],
-      ['107','內政部消防署訓練中心　消防警察人員教育訓練班']],
+ career:[['現職','新北市政府消防局　新板分隊隊員'],['救護','救護技術員'],
+         ['消防','消防人員．消防署火災搶救訓練合格'],
+         ['教學','企業、學校、政府機關與社區防災及急救教育']],
  idea:[['看得懂','把複雜的專業知識轉化成生活語言'],['記得住','透過故事、案例與情境，讓知識留下來'],
-       ['用得出來','讓學員面對真實狀況時，能夠採取行動']]
+       ['用得出來','讓學員面對真實狀況時，能夠採取行動']],
+ ops:[['Will','尤偉檁．主講'],['Angus','協同操作']]
 };
-var ETMAP={speak:['#etSpeak','#etSpeakN','組'],edu:['#etEdu','#etEduN','筆'],idea:['#etIdea','#etIdeaN','點'],ops:['#etOps','#opCount','人']};
+var ETMAP={speak:['#etSpeak','#etSpeakN','組'],career:['#etEdu','#etEduN','筆'],idea:['#etIdea','#etIdeaN','點'],ops:['#etOps','#opCount','人']};
 function renderET(key){
-  var cfg=ETMAP[key],box=$(cfg[0]);if(!box)return;
-  var list=ET[key];box.innerHTML='';
-  $(cfg[1]).textContent=list.length+' '+cfg[2];
+  var cfg=ETMAP[key];if(!cfg)return;
+  var box=$(cfg[0]), list=ET[key];
+  if(!box||!list)return;
+  box.innerHTML='';
+  var cnt=$(cfg[1]);if(cnt)cnt.textContent=list.length+' '+cfg[2];
   list.forEach(function(row,i){
     var el=document.createElement('div');el.className='et-r';
     el.innerHTML='<input class="et-k" value="'+row[0].replace(/"/g,'&quot;')+'">'+
@@ -2336,7 +2501,7 @@ function renderET(key){
     box.appendChild(el);
   });
 }
-Object.keys(ETMAP).forEach(renderET);
+Object.keys(ETMAP).forEach(function(k){try{renderET(k)}catch(e){console.warn('表格',k,e)}});
 document.addEventListener('click',function(e){
   var b=e.target.closest('[data-add]');if(!b)return;
   ET[b.dataset.add].push(['','']);renderET(b.dataset.add);
@@ -2348,6 +2513,9 @@ document.addEventListener('click',function(e){
   [].slice.call(b.parentElement.children).forEach(function(x){x.classList.toggle('on',x===b)});
 });
 
+/* ---- 安全網：任何單一區塊出錯都不再拖垮其他綁定 ---- */
+function safe(name,fn){try{fn()}catch(e){console.warn('['+name+'] 初始化失敗：',e)}}
+
 /* ---- 補齊後台各按鈕 ---- */
 var courseOpen=true;
 var cc=$('#closeCourse');
@@ -2355,6 +2523,7 @@ if(cc)cc.addEventListener('click',async function(){
   courseOpen=!courseOpen;
   cc.textContent=courseOpen?'關閉課程':'重新開放課程';
   toast(courseOpen?'課程已重新開放':'課程已關閉，舊連結進不來');
+  var so=$('#stOpen');if(so){so.textContent=courseOpen?'開放中':'已關閉';so.className='state-n '+(courseOpen?'live':'off');}
   if(window.fb&&window.fb.auth.currentUser){
     var F=window.fb;
     try{await F.setDoc(F.doc(F.db,'courses',F.COURSE),{isOpen:courseOpen},{merge:true});}
@@ -2367,6 +2536,7 @@ if(rg)rg.addEventListener('click',async function(){
   $('#codeShow').textContent=CODE;
   codePassed=false;
   toast('新代號 '+CODE+'，舊代號立即失效');
+  var sc=$('#stCode');if(sc)sc.textContent=CODE;
   if(window.fb&&window.fb.auth.currentUser){
     var F=window.fb;
     try{await F.setDoc(F.doc(F.db,'courses',F.COURSE,'private','gate'),{code:CODE});}
@@ -2547,7 +2717,7 @@ function wRender(){
     box.appendChild(el);
   });
 }
-wRender();
+try{wRender()}catch(e){console.warn('收件匣',e)}
 var wseg=$('#wSeg');
 if(wseg)wseg.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
@@ -2612,7 +2782,7 @@ function renderQBank(){
     box.appendChild(el);
   });
 }
-renderQBank();
+try{renderQBank()}catch(e){console.warn('題庫',e)}
 var qa=$('#qeAdd');
 if(qa)qa.addEventListener('click',function(){
   QBANK.push({q:'',o:['','','',''],a:0,ex:'',k:'',star:false});
