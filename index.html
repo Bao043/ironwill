@@ -810,6 +810,33 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     </div>
   </section>
 
+  <!-- 通知信箱 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">通知信箱</span><span class="grp-m" id="mailCount">未設定</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">有人送出悄悄話或課程邀約時，內容會寄到這裡設定的信箱。可以設定多個，一行一個，全部都會同時收到。</p>
+
+    <div class="f" style="padding-top:14px"><div class="f-q">收件信箱<span class="req">必填</span></div>
+      <div class="f-hint">一行一個。測試期間可以多放幾個，之後再刪</div>
+      <textarea class="f-ta" id="edEmails" style="min-height:96px" placeholder="920403angus@gmail.com&#10;will@example.com"></textarea></div>
+
+    <div class="section-head"><h2>哪些要寄</h2><span>3</span></div>
+    <div class="toggle-row"><span>傳聲悄悄話</span><span class="sw on" id="nfWhisper" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程邀約</span><span class="sw on" id="nfInvite" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程回饋<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">一堂課三十幾則，建議關閉</em></span><span class="sw" id="nfFeedback" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="toggle-row"><span>信件顯示完整內容<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關閉時只說有新訊息，內容到後台看</em></span><span class="sw" id="nfContent" role="switch" aria-checked="false" tabindex="0"></span></div>
+
+    <div class="section-head"><h2>寄信服務</h2><span>一次性設定</span></div>
+    <p class="sub">瀏覽器不能直接寄信，需要一支免費的 Apps Script 代寄。部署後把網址貼進來。</p>
+    <div class="f" style="padding-top:12px"><div class="f-q">服務網址</div>
+      <input class="f-in" id="edEndpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
+
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-quiet" style="margin:0" data-save="notify">儲存</button>
+      <button class="btn btn-quiet" style="margin:0" id="testMail">寄測試信</button>
+    </div>
+    <p class="hint">沒填服務網址的話信寄不出去，但資料還是會正常進後台收件匣，不會遺失。</p>
+  </div></div>
+
   <!-- 講師介紹 -->
   <section class="page" id="p-about">
     <div class="lead rv">
@@ -1665,20 +1692,6 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <div class="grp-b">
     <p class="sub">有人送出悄悄話或報名時，手機狀態列立刻跳出來。</p>
     <button class="btn btn-quiet" id="notifOn">開啟通知權限</button>
-    <div class="toggle-row" style="margin-top:8px"><span>傳聲悄悄話</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課程邀約</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課程回饋</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="toggle-row"><span>通知顯示內容<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關閉時只說「有一則新訊息」</em></span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="section-head"><h2>通知信箱</h2><span>可多組</span></div>
-    <p class="sub">有人送出悄悄話或報名時，內容會同時寄到這些信箱。一行一個。</p>
-    <div class="f" style="padding-top:12px"><div class="f-q">收件信箱</div>
-      <textarea class="f-ta" id="edEmails" style="min-height:76px" placeholder="920403angus@gmail.com"></textarea></div>
-    <div class="f"><div class="f-q">寄信服務網址</div>
-      <div class="f-hint">Apps Script 部署後的網址，貼進來才會真的寄出</div>
-      <input class="f-in" id="edEndpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
-    <button class="btn btn-quiet" data-save="notify">儲存通知設定</button>
-    <button class="btn btn-quiet" id="testMail">寄一封測試信</button>
-
     <div class="f"><div class="f-q">安靜時段</div><input class="f-in" value="22:00 – 07:00" readonly>
       <div class="f-hint" style="margin-top:8px">這段時間收到的會累積，隔天早上一次通知</div></div>
     <div style="display:flex;gap:10px;margin-top:16px">
@@ -1868,17 +1881,39 @@ function saveWhisper(row,patch){
 window.addEventListener('fb-failed',function(){
   setConn('off','離線．目前顯示示範資料');
 });
+var AUTH_USER=null, AUTH_READY=false, JUST_LOGGED_IN=false;
+function openGate(){
+  if(AUTH_USER){showZone('z-pro');return;}
+  if(!AUTH_READY){toast('正在確認登入狀態…');}
+  $('#gateview').classList.add('is-on');
+}
 window.addEventListener('fb-ready',function(){
   var F=window.fb;
-  setConn('','已連線　未登入');
+  setConn('','連線中…');
   F.onAuthStateChanged(F.auth,function(user){
+    AUTH_USER=user||null;
+    var firstTime=!AUTH_READY;
+    AUTH_READY=true;
     if(user){
       setConn('ok','已登入　'+user.email+currentOpLabel());
       $('#signOut').style.display='block';
-      $('#gateview').classList.remove('is-on');
       $('#actLoginT').textContent='進入後台';
       $('#actLoginD').textContent='編輯課程、看悄悄話與統計';
-      if(!STUDENT_ONLY)showZone('z-pro');
+      if(!STUDENT_ONLY)$('#proSwitch').hidden=false;
+
+      // 只有「這次真的按了登入」才會自動跳進後台。
+      // 首次開頁還原舊的登入狀態時，停在控制台，不打斷正在打字的人。
+      if(JUST_LOGGED_IN){
+        JUST_LOGGED_IN=false;
+        $('#gateview').classList.remove('is-on');
+        if(!STUDENT_ONLY)showZone('z-pro');
+      }else if(firstTime){
+        if($('#gateview').classList.contains('is-on')){
+          $('#gateview').classList.remove('is-on');
+          toast('已用先前的登入進入');
+          if(!STUDENT_ONLY)showZone('z-pro');
+        }
+      }
       loadAll().then(function(){ if(!OPERATOR) showOpPicker(); });
       loadWhispers();loadInvites();
     }else{
@@ -1896,6 +1931,7 @@ window.addEventListener('fb-ready',function(){
     if(!em||!pw){bad.textContent='請輸入帳號與密碼';bad.classList.add('on');return;}
     $('#logGo').textContent='登入中…';
     try{
+      JUST_LOGGED_IN=true;
       await F.signInWithEmailAndPassword(F.auth,em,pw);
       $('#logPass').value='';
     }catch(e){
@@ -1903,11 +1939,16 @@ window.addEventListener('fb-ready',function(){
                'auth/invalid-email':'email 格式不對',
                'auth/too-many-requests':'嘗試太多次，等幾分鐘再試',
                'auth/network-request-failed':'連不到網路'}[e.code]||('登入失敗：'+e.code);
+      JUST_LOGGED_IN=false;
       bad.textContent=msg;bad.classList.add('on');
     }
     $('#logGo').textContent='登入';
   });
-  $('#signOut').addEventListener('click',function(){F.signOut(F.auth);OPERATOR=null;});
+  $('#signOut').addEventListener('click',function(){
+    F.signOut(F.auth);OPERATOR=null;AUTH_USER=null;JUST_LOGGED_IN=false;
+    try{localStorage.removeItem('operator')}catch(e){}
+    toast('已登出');
+  });
   $('#opGo').addEventListener('click',function(){
     var on=$$('#opList .chip.on')[0];
     OPERATOR=on?on.textContent.trim():SITE.operators[0];
@@ -1978,10 +2019,7 @@ $('#pvExit').addEventListener('click',function(){
 });
 $('#actPreview').addEventListener('click',enterPreview);
 $('#actOpen').addEventListener('click',function(){window.open(studentLink(),'_blank','noopener')});
-$('#actLogin').addEventListener('click',function(){
-  if(window.fb&&window.fb.auth.currentUser)showZone('z-pro');
-  else $('#gateview').classList.add('is-on');
-});
+$('#actLogin').addEventListener('click',function(){openGate()});
 $('#actShare').addEventListener('click',function(){
   var b=$('#shareBox');
   b.style.display=b.style.display==='none'?'block':'none';
@@ -2006,7 +2044,7 @@ if(STUDENT_ONLY){
 }else{
   showZone('z-home');
   paintShare();
-  if(location.hash==='#pro')setTimeout(function(){$('#gateview').classList.add('is-on')},300);
+  if(location.hash==='#pro')setTimeout(function(){openGate()},400);
 }
 
 /* ---- reveal ---- */
@@ -2385,6 +2423,18 @@ function applyForms(){
   v('#edTag1',COURSE.tags[0]||'');v('#edTag2',COURSE.tags[1]||'');v('#edTag3',COURSE.tags[2]||'');
   renderHeroPick();
   v('#edEmails',SITE.notify.emails);v('#edEndpoint',SITE.notify.endpoint);
+  [['#nfWhisper','onWhisper'],['#nfInvite','onInvite'],
+   ['#nfFeedback','onFeedback'],['#nfContent','showContent']].forEach(function(p){
+    var e=$(p[0]);if(!e)return;
+    e.classList.toggle('on',!!SITE.notify[p[1]]);
+    e.setAttribute('aria-checked',String(!!SITE.notify[p[1]]));
+  });
+  mailCount();
+}
+function mailCount(){
+  var e=$('#mailCount');if(!e)return;
+  var n=(SITE.notify.emails||'').split(/[\s,;]+/).filter(Boolean).length;
+  e.textContent=n?(n+' 個信箱'+(SITE.notify.endpoint?'':'．未接寄信服務')):'未設定';
 }
 function pullForms(){
   var g=function(id,d){var e=$(id);return e?e.value:d;};
@@ -2395,6 +2445,7 @@ function pullForms(){
   SITE.stats[1][0]=g('#edStat2',SITE.stats[1][0]);
   SITE.notify.emails=g('#edEmails','');
   SITE.notify.endpoint=g('#edEndpoint','');
+  mailCount();
   COURSE.title=g('#edCTitle',COURSE.title);
   COURSE.sub=g('#edCSub',COURSE.sub);
   COURSE.pass=parseInt(g('#edPass',60),10)||60;
@@ -2476,7 +2527,10 @@ async function loadAll(){
 /* ---- 通知 ---- */
 async function notify(kind,title,body){
   var n=SITE.notify;
-  if(!n.endpoint)return;
+  if(kind==='whisper'&&!n.onWhisper)return;
+  if(kind==='invite'&&!n.onInvite)return;
+  if(kind==='feedback'&&!n.onFeedback)return;
+  if(!n.endpoint){console.warn('尚未設定寄信服務網址，信沒有寄出');return;}
   var to=(n.emails||'').split(/[\s,;]+/).filter(Boolean);
   if(!to.length)return;
   try{
@@ -2699,9 +2753,11 @@ if(pb)pb.addEventListener('click',async function(){
 var tm=$('#testMail');
 if(tm)tm.addEventListener('click',async function(){
   pullForms();
-  if(!SITE.notify.endpoint){flash(tm,'請先填寄信服務網址');return;}
+  var to=(SITE.notify.emails||'').split(/[\s,;]+/).filter(Boolean);
+  if(!to.length){flash(tm,'請先填收件信箱');toast('至少要一個信箱');return;}
+  if(!SITE.notify.endpoint){flash(tm,'請先填服務網址');toast('沒有寄信服務，信寄不出去');return;}
   await notify('test','測試通知','這是一封測試信，收到代表設定正確。');
-  flash(tm,'已送出，請查收');
+  flash(tm,'已送出');toast('已送往 '+to.length+' 個信箱，請查收');
 });
 
 /* ---- 測驗開放設定 ---- */
@@ -3095,6 +3151,8 @@ $$('.sw').forEach(function(s){
   function flip(){
     var on=s.classList.toggle('on');
     s.setAttribute('aria-checked',String(on));
+    var NF={nfWhisper:'onWhisper',nfInvite:'onInvite',nfFeedback:'onFeedback',nfContent:'showContent'};
+    if(NF[s.id])SITE.notify[NF[s.id]]=on;
     if(s.id==='wantReply'){
       var box=$('#contactBox');
       box.style.display=on?'block':'none';
@@ -3119,6 +3177,7 @@ $('#fbSend').addEventListener('click',function(){
   if(window.fb){var F=window.fb;
     F.addDoc(F.collection(F.db,'courses',F.COURSE,'feedback'),
       {createdAt:F.serverTimestamp()}).catch(function(e){console.warn('回饋寫入失敗：',e)});}
+  notify('feedback','新的課程回饋','有一份新的課後問卷送出。');
 });
 $('#ivSend').addEventListener('click',function(){
   var g=function(id){var e=$(id);return e?(e.value||'').trim():''};
@@ -3172,7 +3231,7 @@ function stopArm(){clearTimeout(timer);gate.classList.remove('arming');}
 gate.addEventListener('pointerdown',function(e){
   e.preventDefault();gate.classList.add('arming');
   timer=setTimeout(function(){
-    gate.classList.remove('arming');gv.classList.add('is-on');
+    gate.classList.remove('arming');openGate();
     if(navigator.vibrate)navigator.vibrate(12);
   },1100);
 });
