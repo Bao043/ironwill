@@ -810,33 +810,6 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     </div>
   </section>
 
-  <!-- 通知信箱 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">通知信箱</span><span class="grp-m" id="mailCount">未設定</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">有人送出悄悄話或課程邀約時，內容會寄到這裡設定的信箱。可以設定多個，一行一個，全部都會同時收到。</p>
-
-    <div class="f" style="padding-top:14px"><div class="f-q">收件信箱<span class="req">必填</span></div>
-      <div class="f-hint">一行一個。測試期間可以多放幾個，之後再刪</div>
-      <textarea class="f-ta" id="edEmails" style="min-height:96px" placeholder="920403angus@gmail.com&#10;will@example.com"></textarea></div>
-
-    <div class="section-head"><h2>哪些要寄</h2><span>3</span></div>
-    <div class="toggle-row"><span>傳聲悄悄話</span><span class="sw on" id="nfWhisper" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課程邀約</span><span class="sw on" id="nfInvite" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課程回饋<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">一堂課三十幾則，建議關閉</em></span><span class="sw" id="nfFeedback" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="toggle-row"><span>信件顯示完整內容<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關閉時只說有新訊息，內容到後台看</em></span><span class="sw" id="nfContent" role="switch" aria-checked="false" tabindex="0"></span></div>
-
-    <div class="section-head"><h2>寄信服務</h2><span>一次性設定</span></div>
-    <p class="sub">瀏覽器不能直接寄信，需要一支免費的 Apps Script 代寄。部署後把網址貼進來。</p>
-    <div class="f" style="padding-top:12px"><div class="f-q">服務網址</div>
-      <input class="f-in" id="edEndpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
-
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-quiet" style="margin:0" data-save="notify">儲存</button>
-      <button class="btn btn-quiet" style="margin:0" id="testMail">寄測試信</button>
-    </div>
-    <p class="hint">沒填服務網址的話信寄不出去，但資料還是會正常進後台收件匣，不會遺失。</p>
-  </div></div>
-
   <!-- 講師介紹 -->
   <section class="page" id="p-about">
     <div class="lead rv">
@@ -972,8 +945,8 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <!-- 線上測驗 hub -->
   <section class="page" id="p-quiz">
     <div style="padding-top:24px">
-      <div class="meta">線上測驗</div>
-      <h1 class="display" style="font-size:24px;margin-top:8px">兩份測驗，<br>看自己進步多少</h1>
+      <div class="meta" data-txt="quizKicker">線上測驗</div>
+      <h1 class="display" style="font-size:24px;margin-top:8px" data-txt="quizTitle">兩份測驗，看自己進步多少</h1>
     </div>
     <div class="rows" style="margin-top:20px">
       <div class="row" data-gate="p-run"><div class="row-n">前</div><div class="row-b"><div class="row-t">課前測驗</div><div class="row-d">上課前先測，知道自己哪裡不熟</div></div><div class="row-go">→</div></div>
@@ -990,7 +963,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <section class="page" id="p-profile">
     <div style="padding-top:24px">
       <div class="meta">第一部分 · 基本資料</div>
-      <h1 class="display" style="font-size:23px;margin-top:8px">先問五個問題</h1>
+      <h1 class="display" style="font-size:23px;margin-top:8px" data-txt="pfTitle">先問五個問題</h1>
       <p class="sub" style="margin-top:10px">這些不是考題。填了之後才能看出哪些族群學得快、哪些需要多講一次。約 30 秒。</p>
     </div>
 
@@ -1073,7 +1046,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <section class="page" id="p-code">
     <div style="padding-top:26px">
       <div class="meta">上課代號</div>
-      <h1 class="display" style="font-size:24px;margin-top:8px">先輸入今天的代號</h1>
+      <h1 class="display" style="font-size:24px;margin-top:8px" data-txt="codeTitle">先輸入今天的代號</h1>
       <p class="sub" style="margin-top:10px">只有現場上課的人需要填。這是為了讓統計只算真正上過課的人，不然平均會被稀釋，你也看不出自己到底進步多少。</p>
       <input class="code-in" id="codeIn" inputmode="numeric" maxlength="4" placeholder="0000">
       <div class="code-bad" id="codeBad">代號不對。講師會寫在白板上，或直接問一下。</div>
@@ -1133,9 +1106,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <section class="page" id="p-feedback">
     <div id="fbForm">
       <div style="padding-top:24px">
-        <div class="meta" id="fbHead">課後問卷</div>
-        <h1 class="display" style="font-size:23px;margin-top:8px" id="fbTitle">今天這堂課，<br>你覺得如何？</h1>
-        <p class="sub" style="margin-top:8px">感謝您耐心聽完這堂課。幾分鐘就好，您的感想會直接影響下一堂課怎麼安排。</p>
+        <div class="meta" data-txt="fbKicker">課後問卷</div>
+        <h1 class="display" style="font-size:23px;margin-top:8px" data-txt="fbTitle">今天這堂課，你覺得如何？</h1>
+        <p class="sub" style="margin-top:8px" data-txt="fbSub">感謝您耐心聽完這堂課。幾分鐘就好，您的感想會直接影響下一堂課怎麼安排。</p>
 
       </div>
 
@@ -1186,9 +1159,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <section class="page" id="p-invite">
     <div id="ivForm">
       <div style="padding-top:24px">
-        <div class="meta">課程邀約</div>
-        <h1 class="display" style="font-size:23px;margin-top:8px">邀請講師<br>到你的單位</h1>
-        <p class="sub" style="margin-top:10px">送出後三個工作天內會與您聯繫確認時間與內容。</p>
+        <div class="meta" data-txt="ivKicker">課程邀約</div>
+        <h1 class="display" style="font-size:23px;margin-top:8px" data-txt="ivTitle">邀請講師到你的單位</h1>
+        <p class="sub" style="margin-top:10px" data-txt="ivSub">送出後三個工作天內會與您聯繫確認時間與內容。</p>
       </div>
 
       <div class="f"><div class="f-q">單位／企業名稱<span class="req">必填</span></div>
@@ -1249,7 +1222,19 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     </div>
     <div class="done-view" id="ivDone">
       <h2 class="display">報名送出了。</h2>
-      <p class="sub" style="margin-top:10px">三個工作天內會與您聯繫，確認時間、內容與報價。請留意您填寫的 Email。</p>
+      <p class="sub" style="margin-top:10px">系統已經寄了一封確認信到 <b id="ivEcho">您填寫的信箱</b>，請查收。三個工作天內會與您聯繫，確認時間、內容與報價。</p>
+
+      <div class="lock" style="margin-top:18px">
+        <span aria-hidden="true">⚠️</span>
+        <div><b>沒收到確認信的話：</b>先看一下垃圾信匣。還是沒有的話，代表中間可能有問題，請直接寫信給講師，把您的需求再說一次。</div>
+      </div>
+
+      <div class="cts" id="ivFallback" style="display:none">
+        <div class="ct" id="ivMailRow"><div class="ct-m">MAIL</div>
+          <div class="ct-b"><div class="ct-v" id="ivMailV"></div><div class="ct-l">講師信箱．點一下複製</div></div>
+          <div class="ct-go">複製</div></div>
+      </div>
+
       <button class="btn btn-quiet" data-go="p-home" style="margin-top:20px">回課程首頁</button>
     </div>
   </section>
@@ -1257,8 +1242,8 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <!-- 防災知識專區 -->
   <section class="page" id="p-disaster">
     <div style="padding-top:24px">
-      <div class="meta">防災知識專區</div>
-      <h1 class="display" style="font-size:23px;margin-top:8px">火災、地震，<br>還有那些來不及想的事</h1>
+      <div class="meta" data-txt="dsKicker">防災知識專區</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px" data-txt="dsTitle">火災、地震，還有那些來不及想的事</h1>
     </div>
     <div class="rows" style="margin-top:20px" id="listDisaster"></div>
     <p class="note">每開一次文章瀏覽量 +1。後台看得到今日熱門、本週熱門與排行。</p>
@@ -1267,8 +1252,8 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <!-- 急救教育專區 -->
   <section class="page" id="p-firstaid">
     <div style="padding-top:24px">
-      <div class="meta">急救教育專區</div>
-      <h1 class="display" style="font-size:23px;margin-top:8px">在救護車來之前，<br>你可以做的事</h1>
+      <div class="meta" data-txt="faKicker">急救教育專區</div>
+      <h1 class="display" style="font-size:23px;margin-top:8px" data-txt="faTitle">在救護車來之前，你可以做的事</h1>
     </div>
     <div class="rows" style="margin-top:20px" id="listFirstaid"></div>
     <p class="note">兩個專區共用同一套文章系統，只是分類不同。講師可以決定這堂課要開哪一區。</p>
@@ -1294,14 +1279,14 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <section class="page" id="p-whisper">
     <div id="wForm">
       <div style="padding-top:24px">
-        <h1 class="display" style="font-size:24px">想說什麼都可以</h1>
-        <p class="sub" style="margin-top:8px">課堂上沒問完的、覺得怪怪的、或只是想講一句話。</p>
+        <h1 class="display" style="font-size:24px" data-txt="wTitle">想說什麼都可以</h1>
+        <p class="sub" style="margin-top:8px" data-txt="wSub">課堂上沒問完的、覺得怪怪的、或只是想講一句話。</p>
       </div>
       <div class="whisper-box">
         <textarea id="wt" placeholder="在這裡寫下來…"></textarea>
         <div class="whisper-foot"><span id="wc">0 / 500</span><span>不會公開</span></div>
       </div>
-      <div class="lock"><span aria-hidden="true">🔒</span><div><b>只有講師看得到。</b>不會顯示在課程裡，也不會有其他學員看到。系統不記錄姓名，除非你自己寫在內容裡。</div></div>
+      <div class="lock"><span aria-hidden="true">🔒</span><div data-txt="wLock"><b>只有講師看得到。</b>不會顯示在課程裡，也不會有其他學員看到。系統不記錄姓名，除非你自己寫在內容裡。</div></div>
 
       <div class="toggle-row" style="margin-top:6px"><span>希望講師回覆我<em style="font-style:normal;display:block;font-size:12px;color:var(--muted)">留了聯絡方式就不是匿名的了</em></span><span class="sw" id="wantReply" role="switch" aria-checked="false" tabindex="0"></span></div>
       <div id="contactBox" style="display:none">
@@ -1515,6 +1500,51 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 講師介紹 -->
+  <!-- 頁面文字 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">頁面文字</span><span class="grp-m" id="txtTag"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">學員端每一頁的標題與說明都在這裡改。換行請直接按 Enter，學員端會照著斷行。</p>
+    <div id="txtEdit"></div>
+    <button class="btn btn-quiet" data-save="texts">儲存頁面文字</button>
+  </div></div>
+
+  <!-- 通知信箱 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">通知信箱</span><span class="grp-m" id="mailCount">未設定</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">有人送出悄悄話或課程邀約時，內容會寄到這裡設定的信箱。可以設定多個，一行一個，全部都會同時收到。</p>
+
+    <div class="f" style="padding-top:14px"><div class="f-q">收件信箱<span class="req">必填</span></div>
+      <div class="f-hint">一行一個。測試期間可以多放幾個，之後再刪</div>
+      <textarea class="f-ta" id="edEmails" style="min-height:96px" placeholder="920403angus@gmail.com&#10;will@example.com"></textarea>
+      <div class="f-hint" id="mailQuota" style="margin-top:10px">還沒填</div></div>
+
+    <div class="section-head"><h2>哪些要寄</h2><span>3</span></div>
+    <div class="toggle-row"><span>傳聲悄悄話</span><span class="sw on" id="nfWhisper" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程邀約</span><span class="sw on" id="nfInvite" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課程回饋<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">一堂課三十幾則，建議關閉</em></span><span class="sw" id="nfFeedback" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="toggle-row"><span>信件顯示完整內容<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關閉時只說有新訊息，內容到後台看</em></span><span class="sw" id="nfContent" role="switch" aria-checked="false" tabindex="0"></span></div>
+
+    <div class="section-head"><h2>邀約自動回覆</h2><span>寄給對方</span></div>
+    <p class="sub">有人送出課程邀約時，系統立刻回一封確認信給他，讓對方知道信有送到。一則邀約多用 1 個額度。</p>
+    <div class="toggle-row"><span>送出邀約後自動回覆</span><span class="sw on" id="nfAck" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">主旨</div>
+      <input class="f-in" id="edAckSub" placeholder="已收到您的課程邀約"></div>
+    <div class="f"><div class="f-q">內容</div>
+      <div class="f-hint">結尾會自動附上你的 Email，方便對方直接回信</div>
+      <textarea class="f-ta" id="edAckBody" style="min-height:140px" placeholder="您好，已收到您的課程邀約，謝謝您的來信。&#10;&#10;我會在三個工作天內與您聯繫，確認時間、內容與報價。&#10;&#10;如果超過三個工作天沒有收到回覆，可能是信件往來出了問題，再麻煩您直接回覆這封信。"></textarea></div>
+
+    <div class="section-head"><h2>寄信服務</h2><span>一次性設定</span></div>
+    <p class="sub">瀏覽器不能直接寄信，需要一支免費的 Apps Script 代寄。部署後把網址貼進來。</p>
+    <div class="f" style="padding-top:12px"><div class="f-q">服務網址</div>
+      <input class="f-in" id="edEndpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
+
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-quiet" style="margin:0" data-save="notify">儲存</button>
+      <button class="btn btn-quiet" style="margin:0" id="testMail">寄測試信</button>
+    </div>
+    <p class="hint">沒填服務網址的話信寄不出去，但資料還是會正常進後台收件匣，不會遺失。</p>
+  </div></div>
+
   <div class="grp"><div class="grp-h"><span class="grp-t">講師介紹</span><span class="grp-m" id="aboutTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div class="section-head"><h2>影片</h2><span>YouTube</span></div>
@@ -1567,9 +1597,15 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <!-- 知識專區 -->
   <div class="grp"><div class="grp-h"><span class="grp-t">知識專區</span><span class="grp-m" id="artTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <div class="section-head"><h2>文章排行</h2><span>累計瀏覽</span></div>
+    <p class="sub">學員端兩個專區的文章都在這裡管。點標題展開編輯，可以改分類、內文、刪除、調順序。</p>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-quiet" style="margin:0" id="addArticle">新增文章</button>
+      <button class="btn btn-quiet" style="margin:0" data-save="articles">儲存文章</button>
+    </div>
+    <div id="artEdit" style="margin-top:14px"></div>
+
+    <div class="section-head"><h2>瀏覽排行</h2><span>累計</span></div>
     <div id="artRank"></div>
-    <button class="btn btn-quiet" id="addArticle">新增文章</button>
   </div></div>
 
   <!-- 聯絡方式 -->
@@ -2158,50 +2194,51 @@ function renderExplain(){
 renderQ();renderExplain();
 
 /* ---- articles ---- */
-var ARTS={
- disaster:[
-  {t:'住警器裝在哪裡才有用',c:'居家安全',v:1240,d:'2026/08/02',
-   b:['住宅用火災警報器不是裝了就好，位置錯了會慢好幾分鐘。臥室、樓梯間、廚房外側是優先順位，因為半夜起火時你需要的是被叫醒，不是等到聞到味道。','裝在天花板時距離牆面至少 60 公分，裝在牆面時距離天花板 15 至 30 公分。避開冷氣出風口與抽油煙機正上方，氣流會把煙帶走，警報器就聞不到。','每個月按一次測試鈕，聽到聲音就表示電池還活著。十年要整顆換掉，不是換電池而已。']},
-  {t:'火場裡先關門，還是先跑',c:'火災逃生',v:986,d:'2026/07/18',
-   b:['如果門外已經是濃煙，開門跑出去往往比留在房間裡更危險。一扇關上的實心門可以擋住火與大部分的煙，爭取十幾分鐘。','留在房間的話，用濕毛巾或衣物塞住門縫，到窗邊讓外面看得到你，並打 119 告知自己在幾樓哪一間。','能不能跑的判斷很簡單：摸門把燙不燙、門縫有沒有煙。兩個都沒有才考慮開門，而且要側身慢慢開。']},
-  {t:'地震時躲桌子底下，真的安全嗎',c:'地震',v:754,d:'2026/06/30',
-   b:['在台灣的建築結構下，趴下、掩護、穩住仍然是建議做法。桌子擋的不是整棟樓，是掉下來的燈具、天花板、書櫃，那才是地震中最常見的傷害來源。','沒有桌子就靠著堅固的內牆蹲低，護住頭頸，遠離窗戶與高櫃。不要往外衝，掉落物通常在建築物外側。','搖完再移動。第一波停下來之後才是關火、開門、檢查逃生路線的時機。']}],
- firstaid:[
-  {t:'壓胸壓斷肋骨怎麼辦',c:'CPR',v:1580,d:'2026/08/11',
-   b:['肋骨斷掉聽起來很嚇人，但相較於沒有人壓，那是可以接受的代價。心跳停止的人如果沒有立刻 CPR，每過一分鐘存活率大約掉 7 到 10 個百分點。','實際上真正壓斷的比例沒有想像中高，而且台灣有緊急救護的免責保護，善意施救不會因此被追究。','正確的深度與位置可以降低風險：胸骨下半部，手掌根重疊，垂直下壓 5 至 6 公分。']},
-  {t:'AED 會不會電到自己',c:'AED',v:1122,d:'2026/07/25',
-   b:['只要在機器說「請勿接觸病人」時放手，就不會。AED 在分析與放電前都會語音提醒，照著做就好。','要注意的是病人身上有沒有水、金屬、藥物貼片。濕的先擦乾，貼片撕掉再貼，植入式心律調節器的位置避開 2.5 公分。','小孩用兒童貼片或兒童模式，沒有的話成人貼片也可以用，前後貼避免兩片碰在一起。']},
-  {t:'有人噎到，哈姆立克怎麼做',c:'創傷與急症',v:869,d:'2026/07/09',
-   b:['先看他還能不能咳。咳得出聲音就鼓勵他咳，不要拍背也不要亂掏嘴巴，那反而會把東西推更深。','完全咳不出、發不出聲音、雙手掐住脖子，才做腹部快速擠壓。站在後方，拳頭放在肚臍上方、劍突下方，向內向上快速推。','如果對方失去意識，放平開始 CPR，每次要吹氣前看一眼嘴巴，看得到異物才拿出來。']}]
-};
+var ARTICLES=[
+ {id:'a1',cat:'disaster',t:'住警器裝在哪裡才有用',c:'居家安全',v:1240,d:'2026/08/02',
+  b:['住宅用火災警報器不是裝了就好，位置錯了會慢好幾分鐘。臥室、樓梯間、廚房外側是優先順位，因為半夜起火時你需要的是被叫醒，不是等到聞到味道。','裝在天花板時距離牆面至少 60 公分，裝在牆面時距離天花板 15 至 30 公分。避開冷氣出風口與抽油煙機正上方。','每個月按一次測試鈕。十年要整顆換掉，不是換電池而已。']},
+ {id:'a2',cat:'disaster',t:'火場裡先關門，還是先跑',c:'火災逃生',v:986,d:'2026/07/18',
+  b:['如果門外已經是濃煙，開門跑出去往往比留在房間裡更危險。一扇關上的實心門可以擋住火與大部分的煙，爭取十幾分鐘。','留在房間的話，用濕毛巾或衣物塞住門縫，到窗邊讓外面看得到你，並打 119 告知自己在幾樓哪一間。','能不能跑的判斷很簡單：摸門把燙不燙、門縫有沒有煙。']},
+ {id:'a3',cat:'disaster',t:'地震時躲桌子底下，真的安全嗎',c:'地震',v:754,d:'2026/06/30',
+  b:['趴下、掩護、穩住仍然是建議做法。桌子擋的不是整棟樓，是掉下來的燈具、天花板、書櫃，那才是地震中最常見的傷害來源。','沒有桌子就靠著堅固的內牆蹲低，護住頭頸，遠離窗戶與高櫃。','搖完再移動。第一波停下來之後才是關火、開門、檢查逃生路線的時機。']},
+ {id:'a4',cat:'firstaid',t:'壓胸壓斷肋骨怎麼辦',c:'CPR',v:1580,d:'2026/08/11',
+  b:['相較於沒有人壓，肋骨斷掉是可以接受的代價。心跳停止的人如果沒有立刻 CPR，每過一分鐘存活率大約掉 7 到 10 個百分點。','台灣有緊急救護的免責保護，善意施救不會因此被追究。','正確的深度與位置可以降低風險：胸骨下半部，手掌根重疊，垂直下壓 5 至 6 公分。']},
+ {id:'a5',cat:'firstaid',t:'AED 會不會電到自己',c:'AED',v:1122,d:'2026/07/25',
+  b:['只要在機器說「請勿接觸病人」時放手，就不會。AED 在分析與放電前都會語音提醒。','要注意病人身上有沒有水、金屬、藥物貼片。濕的先擦乾，貼片撕掉再貼。','小孩用兒童貼片或兒童模式，沒有的話成人貼片前後貼也可以。']},
+ {id:'a6',cat:'firstaid',t:'有人噎到，哈姆立克怎麼做',c:'創傷與急症',v:869,d:'2026/07/09',
+  b:['先看他還能不能咳。咳得出聲音就鼓勵他咳，不要拍背也不要亂掏嘴巴。','完全咳不出、發不出聲音、雙手掐住脖子，才做腹部快速擠壓。','如果對方失去意識，放平開始 CPR，每次吹氣前看一眼嘴巴。']}
+];
+function artsOf(cat){return ARTICLES.filter(function(a){return a.cat===cat})}
 function buildList(key,el){
-  var box=$(el);box.innerHTML='';
-  ARTS[key].forEach(function(a,i){
+  var box=$(el);if(!box)return;box.innerHTML='';
+  var list=artsOf(key);
+  if(!list.length){box.innerHTML='<div class="empty">這一區還沒有文章。</div>';return;}
+  list.forEach(function(a,i){
     var d=document.createElement('div');d.className='row';
     d.innerHTML='<div class="row-n">'+('0'+(i+1)).slice(-2)+'</div><div class="row-b"><div class="row-t">'+a.t+
       '</div><div class="row-d">'+a.c+'　'+a.d+'　👁 '+a.v.toLocaleString()+'</div></div><div class="row-go">→</div>';
-    d.addEventListener('click',function(){openArt(key,i)});
+    d.addEventListener('click',function(){openArt(a.id)});
     box.appendChild(d);
   });
 }
-function openArt(key,i){
-  var a=ARTS[key][i];a.v++;
+function openArt(id){
+  var a=ARTICLES.filter(function(x){return x.id===id})[0];if(!a)return;
+  a.v++;
   $('#artMeta').textContent=a.c+'　'+a.d+'　👁 '+a.v.toLocaleString();
   $('#artTitle').textContent=a.t;
   $('#artBody').innerHTML=a.b.map(function(p){return '<p>'+p+'</p>'}).join('');
   var more=$('#artMore');more.innerHTML='';
-  ARTS[key].forEach(function(o,j){
-    if(j===i)return;
+  artsOf(a.cat).forEach(function(o){
+    if(o.id===a.id)return;
     var d=document.createElement('div');d.className='row';
     d.innerHTML='<div class="row-b"><div class="row-t" style="font-size:15px">'+o.t+'</div><div class="row-d">'+o.c+'</div></div><div class="row-go">→</div>';
-    d.addEventListener('click',function(){openArt(key,j);window.scrollTo({top:0,behavior:'smooth'})});
+    d.addEventListener('click',function(){openArt(o.id);window.scrollTo({top:0,behavior:'smooth'})});
     more.appendChild(d);
   });
   go('p-article');
   buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
 }
-buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
-renderArtRank();
+try{refreshArts();renderArtEdit();}catch(e){console.warn('文章',e)}
 
 /* ---- 禁止雙指與雙擊縮放 ---- */
 ['gesturestart','gesturechange','gestureend'].forEach(function(ev){
@@ -2348,7 +2385,10 @@ var SITE={
   notice:'',
   topic:'急救',
   operators:['Will','Angus'],
-  notify:{emails:'',endpoint:'',onWhisper:true,onInvite:true,onFeedback:false}
+  notify:{emails:'',endpoint:'',onWhisper:true,onInvite:true,onFeedback:false,
+          ack:true,
+          ackSub:'已收到您的課程邀約',
+          ackBody:'您好，已收到您的課程邀約，謝謝您的來信。\n\n我會在三個工作天內與您聯繫，確認時間、內容與報價。\n\n如果超過三個工作天沒有收到回覆，可能是信件往來中間出了問題，再麻煩您直接回覆這封信。'}
 };
 var COURSE={title:'成人 CPR 與 AED 實務',sub:'三小時實作課',pass:60,
             tags:['實作課','3 小時','2026 / 09 / 14'], icon:'ecg',
@@ -2387,7 +2427,11 @@ function applyForms(){
   v('#edDrive',SITE.drive);v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   v('#edIG',SITE.contact.ig);v('#edLine',SITE.contact.line);
   v('#edTel',SITE.contact.tel);v('#edMail',SITE.contact.mail);
+  v('#edAckSub',SITE.notify.ackSub);v('#edAckBody',SITE.notify.ackBody);
   v('#edEmails',SITE.notify.emails);v('#edEndpoint',SITE.notify.endpoint);
+  var em=$('#edEmails');
+  if(em&&!em.dataset.bound){em.dataset.bound='1';
+    em.addEventListener('input',function(){SITE.notify.emails=em.value;mailCount();});}
   [['#nfWhisper','onWhisper'],['#nfInvite','onInvite'],
    ['#nfFeedback','onFeedback'],['#nfContent','showContent']].forEach(function(p){
     var e=$(p[0]);if(!e)return;
@@ -2397,9 +2441,21 @@ function applyForms(){
   mailCount();
 }
 function mailCount(){
-  var e=$('#mailCount');if(!e)return;
-  var n=(SITE.notify.emails||'').split(/[\s,;]+/).filter(Boolean).length;
-  e.textContent=n?(n+' 個信箱'+(SITE.notify.endpoint?'':'．未接寄信服務')):'未設定';
+  var list=(SITE.notify.emails||'').split(/[\s,;]+/).filter(Boolean);
+  var n=list.length;
+  var e=$('#mailCount');
+  if(e)e.textContent=n?(n+' 個信箱'+(SITE.notify.endpoint?'':'．未接寄信服務')):'未設定';
+  var q=$('#mailQuota');
+  if(q){
+    if(!n){q.textContent='還沒填。一行一個，沒有數量上限。';q.style.color='';}
+    else{
+      var bad=list.filter(function(x){return x.indexOf('@')<0});
+      var perDay=Math.floor(100/n);
+      q.textContent=n+' 個信箱．每則通知用掉 '+n+' 個 Gmail 額度，一天最多約 '+perDay+' 則'+
+        (bad.length?'　⚠ '+bad.length+' 筆看起來不是信箱':'');
+      q.style.color=bad.length?'var(--signal)':'';
+    }
+  }
 }
 function pullForms(){
   var g=function(id,d){var e=$(id);return e?e.value:d;};
@@ -2410,6 +2466,8 @@ function pullForms(){
   SITE.stats[1][0]=g('#edStat2',SITE.stats[1][0]);
   SITE.notify.emails=g('#edEmails','');
   SITE.notify.endpoint=g('#edEndpoint','');
+  SITE.notify.ackSub=g('#edAckSub',SITE.notify.ackSub);
+  SITE.notify.ackBody=g('#edAckBody',SITE.notify.ackBody);
   mailCount();
   COURSE.title=g('#edCTitle',COURSE.title);
   COURSE.sub=g('#edCSub',COURSE.sub);
@@ -2425,7 +2483,7 @@ function refreshTags(){
   set('#courseTag',TILES.filter(function(t){return t.on}).length+' / '+TILES.length+' 開啟');
   set('#qTag','題庫 '+QBANK.length+' 題');
   set('#aboutTag','照片 '+PHOTOS.length+'　影片 '+(1+(SITE.videos&&SITE.videos.more?SITE.videos.more.split('\n').filter(Boolean).length:0)));
-  set('#artTag',(ARTS.disaster.length+ARTS.firstaid.length)+' 篇');
+  set('#artTag',ARTICLES.length+' 篇');
   var ct=[SITE.contact.ig,SITE.contact.line,SITE.contact.tel,SITE.contact.mail].filter(Boolean).length;
   set('#ctTag',ct+' / 4 已填');
   set('#fbTag',FB.length?(FB.length+' 份'):'尚無填答');
@@ -2509,6 +2567,8 @@ async function loadAll(){
       if(v.contact)SITE.contact=Object.assign(SITE.contact,v.contact);
       if(v.drive)SITE.drive=v.drive;if(v.notice)SITE.notice=v.notice;
       if(v.topic)SITE.topic=v.topic;
+      if(v.texts){Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});
+                  applyTexts();renderTxtEdit();}
       if($('#stSite'))$('#stSite').textContent='已同步';}
     var qs=await F.getDocs(F.query(F.collection(F.db,'questions'),F.orderBy('order')));
     if(!qs.empty){
@@ -2521,12 +2581,23 @@ async function loadAll(){
       renderQBank();renderQ();renderExplain();
       if($('#stQ'))$('#stQ').textContent=QBANK.length+' 題';
     }
+    try{
+      var asnap=await F.getDocs(F.query(F.collection(F.db,'articles'),F.orderBy('order')));
+      if(!asnap.empty){
+        ARTICLES.length=0;
+        asnap.forEach(function(d){var v=d.data();
+          ARTICLES.push({id:d.id,cat:v.cat||'disaster',t:v.title||'',c:v.sub||'',
+                         v:v.views||0,d:v.date||'',b:v.body||[]});
+        });
+        refreshArts();renderArtEdit();
+      }
+    }catch(e){console.warn('讀取文章失敗：',e)}
     applySite();applyForms();['speak','career','idea','ops'].forEach(renderET);
   }catch(e){console.warn('讀取雲端資料失敗：',e);}
 }
 
 /* ---- 通知 ---- */
-async function notify(kind,title,body){
+async function notify(kind,title,body,extra){
   var n=SITE.notify;
   if(kind==='whisper'&&!n.onWhisper)return;
   if(kind==='invite'&&!n.onInvite)return;
@@ -2537,8 +2608,8 @@ async function notify(kind,title,body){
   try{
     await fetch(n.endpoint,{method:'POST',mode:'no-cors',
       headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({kind:kind,to:to,title:title,body:body,
-                           course:COURSE.title,at:new Date().toISOString()})});
+      body:JSON.stringify(Object.assign({kind:kind,to:to,title:title,body:body,
+                           course:COURSE.title,at:new Date().toISOString()},extra||{}))});
   }catch(e){console.warn('通知寄送失敗：',e)}
 }
 
@@ -2677,6 +2748,53 @@ document.addEventListener('click',function(e){
 /* ---- 安全網：任何單一區塊出錯都不再拖垮其他綁定 ---- */
 function safe(name,fn){try{fn()}catch(e){console.warn('['+name+'] 初始化失敗：',e)}}
 
+/* ---- 頁面文字 ---- */
+var TXTDEF=[
+ ['quizKicker','線上測驗','測驗 · 小標'],
+ ['quizTitle','兩份測驗，看自己進步多少','測驗 · 標題'],
+ ['codeTitle','先輸入今天的代號','代號頁 · 標題'],
+ ['pfTitle','先問五個問題','基本資料 · 標題'],
+ ['fbKicker','課後問卷','回饋 · 小標'],
+ ['fbTitle','今天這堂課，你覺得如何？','回饋 · 標題'],
+ ['fbSub','感謝您耐心聽完這堂課。幾分鐘就好，您的感想會直接影響下一堂課怎麼安排。','回饋 · 說明'],
+ ['ivKicker','課程邀約','邀約 · 小標'],
+ ['ivTitle','邀請講師到你的單位','邀約 · 標題'],
+ ['ivSub','送出後三個工作天內會與您聯繫確認時間與內容。','邀約 · 說明'],
+ ['dsKicker','防災知識專區','防災 · 小標'],
+ ['dsTitle','火災、地震，還有那些來不及想的事','防災 · 標題'],
+ ['faKicker','急救教育專區','急救 · 小標'],
+ ['faTitle','在救護車來之前，你可以做的事','急救 · 標題'],
+ ['wTitle','想說什麼都可以','悄悄話 · 標題'],
+ ['wSub','課堂上沒問完的、覺得怪怪的、或只是想講一句話。','悄悄話 · 說明'],
+ ['wLock','只有講師看得到。不會顯示在課程裡，也不會有其他學員看到。系統不記錄姓名，除非你自己寫在內容裡。','悄悄話 · 隱私說明']
+];
+var TEXTS={};
+TXTDEF.forEach(function(d){TEXTS[d[0]]=d[1]});
+function applyTexts(){
+  $$('[data-txt]').forEach(function(el){
+    var v=TEXTS[el.dataset.txt];
+    if(v==null)return;
+    el.innerHTML=String(v).replace(/</g,'&lt;').replace(/\n/g,'<br>');
+  });
+}
+function renderTxtEdit(){
+  var box=$('#txtEdit');if(!box)return;box.innerHTML='';
+  TXTDEF.forEach(function(d){
+    var f=document.createElement('div');f.className='f';
+    var long=TEXTS[d[0]].length>30;
+    f.innerHTML='<div class="f-q" style="font-size:13px;color:var(--muted)">'+d[2]+'</div>'+
+      (long?'<textarea class="f-ta" style="min-height:76px"></textarea>'
+           :'<input class="f-in">');
+    var input=f.querySelector('textarea')||f.querySelector('input');
+    input.value=TEXTS[d[0]];
+    input.placeholder=d[1];
+    input.addEventListener('input',function(){TEXTS[d[0]]=input.value;applyTexts();});
+    box.appendChild(f);
+  });
+  var t=$('#txtTag');if(t)t.textContent=TXTDEF.length+' 段';
+}
+try{applyTexts();renderTxtEdit();}catch(e){console.warn('頁面文字',e)}
+
 /* ---- 帳號與密碼 ---- */
 function authErr(e){
   return {'auth/wrong-password':'目前密碼不對',
@@ -2769,13 +2887,64 @@ if(rg)rg.addEventListener('click',async function(){
 var aa=$('#addArticle');
 if(aa)aa.addEventListener('click',function(){
   var d=new Date();
-  ARTS.disaster.unshift({t:'新文章（點兩下改標題）',c:'防災知識',v:0,
+  ARTICLES.unshift({id:'a'+Date.now(),cat:'disaster',t:'',c:'',v:0,
     d:d.getFullYear()+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2),
-    b:['內文還沒寫。']});
-  buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
-  $('#artRank').innerHTML='';renderArtRank();
-  toast('已新增一篇，排在防災知識專區最前面');
+    b:['']});
+  renderArtEdit(true);refreshArts();
+  toast('新增一篇，展開填標題與內文');
 });
+function refreshArts(){
+  buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
+  renderArtRank();
+  var t=$('#artTag');if(t)t.textContent=ARTICLES.length+' 篇';
+}
+function renderArtEdit(openFirst){
+  var box=$('#artEdit');if(!box)return;box.innerHTML='';
+  if(!ARTICLES.length){box.innerHTML='<div class="empty">還沒有文章，按上面新增一篇。</div>';return;}
+  ARTICLES.forEach(function(a,i){
+    var el=document.createElement('div');el.className='qe'+(openFirst&&i===0?' open':'');
+    el.innerHTML='<div class="qe-h"><div class="qe-n">'+(a.cat==='disaster'?'防':'急')+'</div>'+
+      '<div class="qe-t">'+(a.t||'（新文章）')+'</div>'+
+      '<div class="qe-x">👁 '+a.v+'　編輯</div></div>'+
+      '<div class="qe-b">'+
+      '<div class="f" style="padding-top:12px"><div class="f-q" style="font-size:13px;color:var(--muted)">標題</div>'+
+      '<input class="f-in" data-k="t" value="'+(a.t||'').replace(/"/g,'&quot;')+'" placeholder="文章標題"></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">放在哪一區</div>'+
+      '<div class="chips" data-one data-cat><span class="chip'+(a.cat==='disaster'?' on':'')+'" data-c="disaster">防災知識專區</span>'+
+      '<span class="chip'+(a.cat==='firstaid'?' on':'')+'" data-c="firstaid">急救教育專區</span></div></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">小分類</div>'+
+      '<input class="f-in" data-k="c" value="'+(a.c||'').replace(/"/g,'&quot;')+'" placeholder="例如：火災逃生"></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">內文</div>'+
+      '<div class="f-hint">空一行代表分段</div>'+
+      '<textarea class="f-ta" data-k="b" style="min-height:200px" placeholder="第一段…\n\n第二段…">'+(a.b||[]).join('\n\n')+'</textarea></div>'+
+      '<div style="display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap">'+
+      '<span class="startog" data-m="up">↑ 上移</span><span class="startog" data-m="dn">↓ 下移</span>'+
+      '<span class="startog" data-del>刪除這篇</span></div></div>';
+    el.querySelector('.qe-h').addEventListener('click',function(){el.classList.toggle('open')});
+    el.querySelectorAll('[data-k]').forEach(function(f){
+      f.addEventListener('input',function(){
+        if(f.dataset.k==='b')a.b=f.value.split(/\n\s*\n/).map(function(x){return x.trim()}).filter(Boolean);
+        else a[f.dataset.k]=f.value;
+        if(f.dataset.k==='t')el.querySelector('.qe-t').textContent=f.value||'（新文章）';
+        refreshArts();
+      });
+    });
+    el.querySelectorAll('[data-c]').forEach(function(c){
+      c.addEventListener('click',function(){a.cat=c.dataset.c;el.querySelector('.qe-n').textContent=(a.cat==='disaster'?'防':'急');refreshArts();});
+    });
+    el.querySelectorAll('[data-m]').forEach(function(b){
+      b.addEventListener('click',function(){
+        var k=b.dataset.m==='up'?i-1:i+1;if(k<0||k>=ARTICLES.length)return;
+        var t=ARTICLES[i];ARTICLES[i]=ARTICLES[k];ARTICLES[k]=t;
+        renderArtEdit();refreshArts();
+      });
+    });
+    el.querySelector('[data-del]').addEventListener('click',function(){
+      ARTICLES.splice(i,1);renderArtEdit();refreshArts();toast('已刪除');
+    });
+    box.appendChild(el);
+  });
+}
 var rq=$('#resyncQ');
 if(rq)rq.addEventListener('click',function(){toast('題庫已是最新．'+QBANK.length+' 題')});
 
@@ -2788,6 +2957,19 @@ document.addEventListener('click',async function(e){
     if(k==='tiles'){
       var F=window.fb;
       await F.setDoc(F.doc(F.db,'courses',F.COURSE),{tiles:TILES},{merge:true});
+    }
+    else if(k==='texts'){
+      var F3=window.fb;
+      await F3.setDoc(F3.doc(F3.db,'instructors','main'),{texts:TEXTS},{merge:true});
+    }
+    else if(k==='articles'){
+      var F2=window.fb;
+      for(var ai=0;ai<ARTICLES.length;ai++){
+        var a=ARTICLES[ai];
+        await F2.setDoc(F2.doc(F2.db,'articles',a.id),
+          {cat:a.cat,title:a.t,sub:a.c,body:a.b,views:a.v||0,
+           date:a.d,order:ai,published:true});
+      }
     }
     else if(k==='course')await saveCourse();
     else if(k==='questions')await saveQuestions();
@@ -3098,9 +3280,10 @@ if(seg)seg.addEventListener('click',function(e){
   renderTraffic(b.dataset.t);
 });
 function renderArtRank(){
-  var box=$('#artRank');if(!box||box.children.length)return;
-  var all=[].concat(ARTS.disaster,ARTS.firstaid).sort(function(a,b){return b.v-a.v});
-  var max=all[0].v;
+  var box=$('#artRank');if(!box)return;box.innerHTML='';
+  if(!ARTICLES.length){box.innerHTML='<div class="empty">還沒有文章。</div>';return;}
+  var all=ARTICLES.slice().sort(function(a,b){return b.v-a.v});
+  var max=all[0].v||1;
   all.forEach(function(a){
     var r=document.createElement('div');r.className='trow';
     r.innerHTML='<span class="trow-n">'+a.t+'</span><span class="bar"><i style="width:'+(a.v/max*100)+'%"></i></span>'+
@@ -3209,7 +3392,8 @@ $$('.sw').forEach(function(s){
   function flip(){
     var on=s.classList.toggle('on');
     s.setAttribute('aria-checked',String(on));
-    var NF={nfWhisper:'onWhisper',nfInvite:'onInvite',nfFeedback:'onFeedback',nfContent:'showContent'};
+    var NF={nfWhisper:'onWhisper',nfInvite:'onInvite',nfFeedback:'onFeedback',
+            nfContent:'showContent',nfAck:'ack'};
     if(NF[s.id])SITE.notify[NF[s.id]]=on;
     if(s.id==='wantReply'){
       var box=$('#contactBox');
@@ -3257,9 +3441,23 @@ $('#ivSend').addEventListener('click',function(){
     F.addDoc(F.collection(F.db,'invites'),data)
      .then(function(){toast('已送出')})
      .catch(function(e){console.warn('邀約寫入失敗：',e);toast('送出失敗：'+(e.code||e.message))});}
+  var echo=$('#ivEcho');if(echo)echo.textContent=mail;
+  var mine=(SITE.contact.mail||'').trim();
+  var fb2=$('#ivFallback');
+  if(fb2&&mine){
+    fb2.style.display='block';
+    $('#ivMailV').textContent=mine;
+    $('#ivMailRow').setAttribute('data-copy',mine);
+  }
+  var n=SITE.notify;
   notify('invite','新的課程邀約',
-    org+'\n'+data.contact+'　'+mail+'\n'+(picked.join('、')||'未選類型')+'\n'+
-    data.when+'　'+data.headcount+' 人　'+data.place);
+    org+'\n'+data.contact+'　'+mail+'　'+(data.phone||'')+'\n'+
+    (picked.join('、')||'未選類型')+'\n'+
+    data.when+'　'+data.headcount+' 人　'+data.place+'\n'+
+    data.budgetMode+' '+(data.budget||'未填')+(data.note?('\n備註：'+data.note):''),
+    {replyTo:mail,
+     ack:(n.ack&&mail)?{to:mail,subject:n.ackSub,
+        body:n.ackBody+(mine?('\n\n講師信箱：'+mine):'')}:null});
 });
 var wt=$('#wt');
 wt.addEventListener('input',function(){$('#wc').textContent=wt.value.length+' / 500'});
