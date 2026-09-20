@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>急救與課程教學 APP｜可操作原型 v0.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +31,7 @@
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+body{margin:0;touch-action:manipulation;-webkit-text-size-adjust:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);
   font-size:15px;line-height:1.75;letter-spacing:.01em;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 button,input,textarea{font:inherit;color:inherit}
@@ -53,13 +53,17 @@ h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.01em}
 .zone.is-on{display:block}
 
 /* nav bar inside 學員端 */
-.nav{display:flex;align-items:center;gap:12px;padding:16px 0 12px;
-  border-bottom:1px solid var(--line-soft);position:sticky;top:44px;background:var(--paper);z-index:10}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 0 12px;
+  border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:10;
+  padding-top:calc(12px + env(safe-area-inset-top,0px))}
 .nav.hide{display:none}
-.back{background:none;border:0;padding:4px 8px 4px 0;cursor:pointer;font-size:17px;line-height:1;
-  color:var(--ink);transition:transform .2s ease}
-.back:active{transform:translateX(-3px)}
-.nav-t{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.back{display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--line);
+  padding:9px 14px 9px 11px;cursor:pointer;font-size:14px;line-height:1;color:var(--ink);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.back:hover{border-color:var(--ink)}
+.back:active{transform:translateX(-3px);background:var(--surface)}
+.back b{font-size:16px;font-weight:400;line-height:1}
+.nav-t{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:0}
 
 .page{display:none}
 .page.is-on{display:block;animation:pin .3s cubic-bezier(.22,.61,.36,1)}
@@ -746,7 +750,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       <div class="state-c"><div class="state-n" id="stPpl">32</div><div class="state-l">進入人數</div></div>
     </div>
 
-    <div class="section-head"><h2>要做什麼</h2><span>3</span></div>
+    <div class="section-head"><h2>要做什麼</h2><span>4</span></div>
     <div style="border-top:1px solid var(--line)">
       <div class="act" id="actLogin">
         <svg viewBox="0 0 24 24"><path d="M6 10.5V8a6 6 0 0 1 12 0v2.5"/><path d="M4.6 10.5h14.8v9.9H4.6z"/><circle cx="12" cy="15.4" r="1.6"/></svg>
@@ -755,7 +759,12 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       </div>
       <div class="act" id="actPreview">
         <svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>
-        <div class="act-b"><div class="act-t">學員端預覽</div><div class="act-d">用學員的視角看一次，畫面上會標示預覽中</div></div>
+        <div class="act-b"><div class="act-t">學員端預覽</div><div class="act-d">快速檢查版面，送出的表單不會存檔</div></div>
+        <div class="act-go">→</div>
+      </div>
+      <div class="act" id="actOpen">
+        <svg viewBox="0 0 24 24"><path d="M13.5 4.5H19.5V10.5"/><path d="M19.5 4.5L11 13"/><path d="M18 14v5.5H4.5V6H10"/></svg>
+        <div class="act-b"><div class="act-t">開啟正式學員端</div><div class="act-d">用學員真正的網址開新分頁，送出會真的存檔</div></div>
         <div class="act-go">→</div>
       </div>
       <div class="act" id="actShare">
@@ -783,9 +792,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
 <div class="zone" id="z-student">
   <div class="preview-bar" id="pvBar" style="display:none">
-    <span>預覽中 · 這是學員看到的畫面</span><button id="pvExit">離開預覽</button>
+    <span>預覽模式 · 送出不會存檔</span><button id="pvExit">離開預覽</button>
   </div>
-  <div class="nav hide" id="nav"><button class="back" id="back" aria-label="返回">←</button><span class="nav-t" id="navt"></span></div>
+  <div class="nav hide" id="nav"><button class="back" id="back" aria-label="返回"><b>←</b>返回</button><span class="nav-t" id="navt"></span></div>
 
   <!-- 課程首頁 -->
   <section class="page is-on" id="p-home">
@@ -960,7 +969,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div class="f"><div class="f-q">填答人姓名<span class="req">必填</span></div>
       <div class="f-hint">僅供課程表揚及記錄使用，不會公開</div>
-      <input class="f-in" id="pfName" placeholder="王小明"></div>
+      <input class="f-in" id="pfName" id="ivName" placeholder="王小明"></div>
 
     <div class="f"><div class="f-q">年齡<span class="req">必填</span></div>
       <div class="chips" data-one>
@@ -1232,14 +1241,14 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       </div>
 
       <div class="f"><div class="f-q">單位／企業名稱<span class="req">必填</span></div>
-        <input class="f-in" placeholder="例如：○○股份有限公司"></div>
+        <input class="f-in" id="ivOrg" placeholder="例如：○○股份有限公司"></div>
       <div class="f"><div class="f-q">聯絡人<span class="req">必填</span></div>
         <input class="f-in" placeholder="王小明"></div>
       <div class="f"><div class="f-q">Email<span class="req">必填</span></div>
         <div class="f-hint">用於後續課程安排、規劃與報價聯繫</div>
-        <input class="f-in" type="email" inputmode="email" placeholder="name@company.com"></div>
+        <input class="f-in" type="email" inputmode="email" id="ivMail" placeholder="name@company.com"></div>
       <div class="f"><div class="f-q">電話</div>
-        <input class="f-in" inputmode="tel" placeholder="02-0000-0000　或　0912-000-000"></div>
+        <input class="f-in" inputmode="tel" id="ivTel" placeholder="02-0000-0000　或　0912-000-000"></div>
 
       <div class="f"><div class="f-q">課程類型<span class="req">必填</span></div>
         <div class="f-hint">可複選</div>
@@ -1266,12 +1275,12 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
       <div class="f"><div class="f-q">預計上課時間<span class="req">必填</span></div>
         <div class="f-hint">日期與時段，例如 2026/11/18 上午 09:00–12:00</div>
-        <input class="f-in" placeholder="日期與時段"></div>
+        <input class="f-in" id="ivWhen" placeholder="日期與時段"></div>
       <div class="f"><div class="f-q">預計上課人數<span class="req">必填</span></div>
-        <input class="f-in" inputmode="numeric" placeholder="40"></div>
+        <input class="f-in" id="ivPpl" inputmode="numeric" placeholder="40"></div>
       <div class="f"><div class="f-q">上課地點<span class="req">必填</span></div>
         <div class="f-hint">地址或場地名稱，室內外、有無投影設備也可以一起寫</div>
-        <input class="f-in" placeholder="新北市板橋區○○路○號　會議室"></div>
+        <input class="f-in" id="ivPlace" placeholder="新北市板橋區○○路○號　會議室"></div>
 
       <div class="f"><div class="f-q">講師費預算</div>
         <div class="f-hint">先選計算方式，再填金額</div>
@@ -1282,7 +1291,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
         <div class="f-hint" style="margin-top:8px">依機關規定辦理也可以直接寫在下方備註</div></div>
 
       <div class="f"><div class="f-q">其他需求／備註</div>
-        <textarea class="f-ta" placeholder="例如：廠區有 AED 但同仁都不敢用，希望多一點實作時間"></textarea></div>
+        <textarea class="f-ta" id="ivNote" placeholder="例如：廠區有 AED 但同仁都不敢用，希望多一點實作時間"></textarea></div>
 
       <button class="btn" id="ivSend">送出邀約</button>
       <p class="note">送出後會寄到講師信箱並同時發出手機通知。</p>
@@ -1542,14 +1551,29 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 傳聲悄悄話 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">傳聲悄悄話</span><span class="grp-m" id="wCount"></span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">收件匣</span><span class="grp-m" id="inboxCount"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <div class="seg" id="wSeg">
-      <button class="on" data-f="all">全部</button><button data-f="unread">未讀</button>
-      <button data-f="todo">需處理</button><button data-f="trash">垃圾桶</button>
+    <div class="seg" id="boxSeg">
+      <button class="on" data-box="w">傳聲悄悄話</button><button data-box="i">課程邀約</button>
     </div>
-    <div id="wInbox" style="margin-top:6px"></div>
-    <p class="hint">刪掉的會進垃圾桶，可以撈回來。垃圾桶不會自動清空。</p>
+
+    <div id="boxW">
+      <div class="seg" id="wSeg" style="margin-top:10px">
+        <button class="on" data-f="all">全部</button><button data-f="unread">未讀</button>
+        <button data-f="todo">需處理</button><button data-f="trash">垃圾桶</button>
+      </div>
+      <div id="wInbox" style="margin-top:6px"></div>
+      <p class="hint">刪掉的會進垃圾桶，可以撈回來。垃圾桶不會自動清空。</p>
+    </div>
+
+    <div id="boxI" style="display:none">
+      <div class="seg" id="iSeg" style="margin-top:10px">
+        <button class="on" data-f="new">待回覆</button><button data-f="all">全部</button>
+      </div>
+      <div id="iInbox" style="margin-top:6px"></div>
+      <button class="btn btn-quiet" id="reloadInv">重新讀取</button>
+      <p class="hint">送出的邀約會即時進來。點開看完整內容，可以直接複製 Email 或電話。</p>
+    </div>
   </div></div>
 
   <!-- 講師介紹 -->
@@ -1856,7 +1880,7 @@ window.addEventListener('fb-ready',function(){
       $('#actLoginD').textContent='編輯課程、看悄悄話與統計';
       if(!STUDENT_ONLY)showZone('z-pro');
       loadAll().then(function(){ if(!OPERATOR) showOpPicker(); });
-      loadWhispers();
+      loadWhispers();loadInvites();
     }else{
       setConn('','已連線　未登入');
       $('#signOut').style.display='none';
@@ -1953,6 +1977,7 @@ $('#pvExit').addEventListener('click',function(){
   PREVIEW=false;$('#pvBar').style.display='none';showZone('z-home');
 });
 $('#actPreview').addEventListener('click',enterPreview);
+$('#actOpen').addEventListener('click',function(){window.open(studentLink(),'_blank','noopener')});
 $('#actLogin').addEventListener('click',function(){
   if(window.fb&&window.fb.auth.currentUser)showZone('z-pro');
   else $('#gateview').classList.add('is-on');
@@ -2187,6 +2212,17 @@ function openArt(key,i){
 }
 buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
 renderArtRank();
+
+/* ---- 禁止雙指與雙擊縮放 ---- */
+['gesturestart','gesturechange','gestureend'].forEach(function(ev){
+  document.addEventListener(ev,function(e){e.preventDefault()},{passive:false});
+});
+var lastTouch=0;
+document.addEventListener('touchend',function(e){
+  var now=Date.now();
+  if(now-lastTouch<=320)e.preventDefault();
+  lastTouch=now;
+},{passive:false});
 
 /* ---- 提示條 ---- */
 var toastT=null;
@@ -2507,6 +2543,76 @@ document.addEventListener('click',function(e){
   ET[b.dataset.add].push(['','']);renderET(b.dataset.add);
 });
 
+/* ---- 邀約收件匣 ---- */
+var INV=[], iFilter='new';
+async function loadInvites(){
+  var F=window.fb;if(!F||!F.auth.currentUser)return;
+  try{
+    var snap=await F.getDocs(F.query(F.collection(F.db,'invites'),F.orderBy('createdAt','desc')));
+    INV=[];snap.forEach(function(d){var v=d.data();v.id=d.id;INV.push(v)});
+    iRender();
+  }catch(e){console.warn('讀取邀約失敗：',e)}
+}
+function iRender(){
+  var box=$('#iInbox');if(!box)return;
+  var list=iFilter==='new'?INV.filter(function(x){return (x.status||'new')==='new'}):INV;
+  var pend=INV.filter(function(x){return (x.status||'new')==='new'}).length;
+  var un=WMSG.filter(function(w){return w.st==='unread'}).length;
+  var ic=$('#inboxCount');if(ic)ic.textContent=un+' 未讀 · '+pend+' 待回';
+  box.innerHTML='';
+  if(!list.length){box.innerHTML='<div class="empty">目前沒有邀約。</div>';return;}
+  list.forEach(function(v){
+    var el=document.createElement('div');
+    el.className='wi '+((v.status||'new')==='new'?'':'read');
+    var t=(v.types||[]).join('、');
+    el.innerHTML='<div class="wi-h"><span class="wi-dot"></span><div class="wi-t">'+
+      (v.org||'（未填單位）')+((v.status||'new')!=='new'?'<span class="wtag done">已回覆</span>':'')+
+      '<div class="row-d" style="margin-top:3px">'+(t||'未選類型')+'</div></div>'+
+      '<div class="wi-m">'+fmtTime(v.createdAt)+'</div></div>'+
+      '<div class="wi-b">'+
+      '<div class="wi-c"><em>聯絡</em><span>'+(v.contact||'-')+'　'+(v.email||'-')+'　'+(v.phone||'-')+'</span></div>'+
+      '<div class="ans-line"><b>時間</b><span>'+(v.when||'-')+'</span></div>'+
+      '<div class="ans-line"><b>人數</b><span>'+(v.headcount||'-')+'</span></div>'+
+      '<div class="ans-line"><b>地點</b><span>'+(v.place||'-')+'</span></div>'+
+      '<div class="ans-line"><b>預算</b><span>'+(v.budgetMode||'')+'　'+(v.budget||'-')+'</span></div>'+
+      (v.note?'<div class="ans-line"><b>備註</b><span>'+v.note+'</span></div>':'')+
+      '<div class="wact"></div></div>';
+    var act=el.querySelector('.wact');
+    function btn(label,fn){var b=document.createElement('button');b.textContent=label;
+      b.addEventListener('click',function(e){e.stopPropagation();fn()});act.appendChild(b);}
+    btn('複製 Email',function(){if(navigator.clipboard)navigator.clipboard.writeText(v.email||'');toast('已複製')});
+    if(v.phone)btn('複製電話',function(){navigator.clipboard&&navigator.clipboard.writeText(v.phone);toast('已複製')});
+    if((v.status||'new')==='new')btn('標為已回覆',async function(){
+      v.status='replied';iRender();
+      var F=window.fb;
+      try{await F.updateDoc(F.doc(F.db,'invites',v.id),{status:'replied',handledBy:OPERATOR||''})}
+      catch(e){toast('更新失敗')}
+    });
+    btn('刪除',async function(){
+      INV.splice(INV.indexOf(v),1);iRender();
+      var F=window.fb;
+      try{await F.deleteDoc(F.doc(F.db,'invites',v.id))}catch(e){toast('刪除失敗')}
+    });
+    el.querySelector('.wi-h').addEventListener('click',function(){el.classList.toggle('open')});
+    box.appendChild(el);
+  });
+}
+var bseg=$('#boxSeg');
+if(bseg)bseg.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  var w=b.dataset.box==='w';
+  $('#boxW').style.display=w?'block':'none';
+  $('#boxI').style.display=w?'none':'block';
+  if(!w)loadInvites();
+});
+var iseg=$('#iSeg');
+if(iseg)iseg.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  iFilter=b.dataset.f;iRender();
+});
+var ri=$('#reloadInv');
+if(ri)ri.addEventListener('click',function(){loadInvites();toast('已重新讀取')});
+
 /* ---- 分段控制：通用切換 ---- */
 document.addEventListener('click',function(e){
   var b=e.target.closest('.seg button');if(!b)return;
@@ -2669,7 +2775,8 @@ function wRender(){
       });
   var un=WMSG.filter(function(w){return w.st==='unread'}).length;
   var td=WMSG.filter(function(w){return w.st==='todo'}).length;
-  $('#wCount').textContent=un+' 未讀 · '+td+' 需處理';
+  var wc=$('#inboxCount');
+  if(wc)wc.textContent=un+' 未讀 · '+INV.filter(function(x){return (x.status||'new')==='new'}).length+' 待回';
   box.innerHTML='';
   if(!list.length){box.innerHTML='<div class="empty">這裡沒有東西。</div>';return;}
   list.forEach(function(w){
@@ -3006,14 +3113,36 @@ function submitPair(formId,doneId){
   $$('.trace',d).forEach(function(t){setTimeout(function(){t.classList.add('in')},60)});
   window.scrollTo({top:0,behavior:'instant'});
 }
-$('#fbSend').addEventListener('click',function(){submitPair('#fbForm','#fbDone')});
-$('#ivSend').addEventListener('click',function(){
-  submitPair('#ivForm','#ivDone');
-  var picked=$$('#inviteTypes .chip.on').map(function(c){return c.textContent.trim()}).join('、');
+$('#fbSend').addEventListener('click',function(){
+  submitPair('#fbForm','#fbDone');
+  if(PREVIEW){toast('預覽模式：沒有真的送出');return;}
   if(window.fb){var F=window.fb;
-    F.addDoc(F.collection(F.db,'invites'),{types:picked,createdAt:F.serverTimestamp(),status:'new'})
-     .catch(function(e){console.warn('邀約寫入失敗：',e)});}
-  notify('invite','新的課程邀約', picked||'（未選課程類型）');
+    F.addDoc(F.collection(F.db,'courses',F.COURSE,'feedback'),
+      {createdAt:F.serverTimestamp()}).catch(function(e){console.warn('回饋寫入失敗：',e)});}
+});
+$('#ivSend').addEventListener('click',function(){
+  var g=function(id){var e=$(id);return e?(e.value||'').trim():''};
+  var org=g('#ivOrg'), mail=g('#ivMail');
+  if(!org){toast('請填單位／企業名稱');$('#ivOrg').focus();return;}
+  if(!mail||mail.indexOf('@')<0){toast('請填正確的 Email，後續報價要用');$('#ivMail').focus();return;}
+  var picked=$$('#inviteTypes .chip.on').map(function(c){return c.textContent.trim()});
+  var bmOn=$$('#budgetMode .chip.on')[0];
+  var data={
+    org:org, contact:g('#ivName'), email:mail, phone:g('#ivTel'),
+    types:picked, when:g('#ivWhen'), headcount:g('#ivPpl'), place:g('#ivPlace'),
+    budgetMode:bmOn?bmOn.textContent.trim():'每小時預算', budget:g('#budgetAmt'),
+    note:g('#ivNote'), status:'new', sourceCourse:COURSE.title
+  };
+  submitPair('#ivForm','#ivDone');
+  if(PREVIEW){toast('預覽模式：沒有真的送出');return;}
+  if(window.fb){var F=window.fb;
+    data.createdAt=F.serverTimestamp();
+    F.addDoc(F.collection(F.db,'invites'),data)
+     .then(function(){toast('已送出')})
+     .catch(function(e){console.warn('邀約寫入失敗：',e);toast('送出失敗：'+(e.code||e.message))});}
+  notify('invite','新的課程邀約',
+    org+'\n'+data.contact+'　'+mail+'\n'+(picked.join('、')||'未選類型')+'\n'+
+    data.when+'　'+data.headcount+' 人　'+data.place);
 });
 var wt=$('#wt');
 wt.addEventListener('input',function(){$('#wc').textContent=wt.value.length+' / 500'});
@@ -3022,6 +3151,7 @@ $('#wsend').addEventListener('click',function(){
   if(!text){wt.focus();return;}
   var contact=($('#wContact')&&$('#wantReply').classList.contains('on'))?($('#wContact').value||'').trim():'';
   submitPair('#wForm','#wDone');
+  if(PREVIEW){toast('預覽模式：沒有真的送出');return;}
   if(window.fb){
     var F=window.fb;
     F.addDoc(F.collection(F.db,'courses',F.COURSE,'whispers'),{
