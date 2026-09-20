@@ -1593,6 +1593,35 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 通知 -->
+  <!-- 帳號 -->
+  <div class="grp"><div class="grp-h"><span class="grp-t">帳號與密碼</span><span class="grp-m" id="acctTag">未登入</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">這是登入後台用的帳號。改了之後，所有共用這組帳號的人都要用新的密碼登入，記得通知他們。</p>
+
+    <div class="section-head"><h2>變更密碼</h2><span>需要舊密碼</span></div>
+    <div class="f" style="padding-top:12px"><div class="f-q">目前密碼</div>
+      <input class="f-in" id="pwOld" type="password" autocomplete="current-password" placeholder="現在在用的密碼"></div>
+    <div class="f"><div class="f-q">新密碼</div>
+      <div class="f-hint">至少 6 個字元</div>
+      <input class="f-in" id="pwNew" type="password" autocomplete="new-password" placeholder="新密碼"></div>
+    <div class="f"><div class="f-q">再輸入一次</div>
+      <input class="f-in" id="pwNew2" type="password" autocomplete="new-password" placeholder="確認新密碼"></div>
+    <button class="btn btn-quiet" id="pwGo">變更密碼</button>
+
+    <div class="section-head"><h2>變更登入信箱</h2><span>需要驗證</span></div>
+    <p class="sub">新信箱會收到一封驗證信，點了連結才會生效。沒點之前還是用舊信箱登入。</p>
+    <div class="f" style="padding-top:12px"><div class="f-q">目前密碼</div>
+      <input class="f-in" id="emOld" type="password" autocomplete="current-password" placeholder="現在在用的密碼"></div>
+    <div class="f"><div class="f-q">新信箱</div>
+      <input class="f-in" id="emNew" type="email" inputmode="email" placeholder="new@example.com"></div>
+    <button class="btn btn-quiet" id="emGo">寄出驗證信</button>
+
+    <div class="section-head"><h2>忘記密碼</h2><span>備援</span></div>
+    <p class="sub">如果哪天登不進來，按這個會寄重設連結到目前的登入信箱。也可以直接去 Firebase 主控台改。</p>
+    <button class="btn btn-quiet" id="pwReset">寄重設密碼信</button>
+    <p class="hint">改密碼會讓其他裝置的登入失效，那些裝置要重新登入一次。</p>
+  </div></div>
+
   <!-- 操作者 -->
   <div class="grp"><div class="grp-h"><span class="grp-t">操作者名單</span><span class="grp-m" id="opCount"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
@@ -1812,6 +1841,7 @@ window.addEventListener('fb-ready',function(){
       $('#actLoginD').textContent='編輯課程、看悄悄話與統計';
       $('#proSwitch').hidden=false;
       if(STUDENT_ONLY)$('#proSwitch').textContent='後台';
+      var at=$('#acctTag');if(at)at.textContent=user.email;
 
       // 只有「這次真的按了登入」才會自動跳進後台。
       // 首次開頁還原舊的登入狀態時，停在控制台，不打斷正在打字的人。
@@ -2647,6 +2677,68 @@ document.addEventListener('click',function(e){
 /* ---- 安全網：任何單一區塊出錯都不再拖垮其他綁定 ---- */
 function safe(name,fn){try{fn()}catch(e){console.warn('['+name+'] 初始化失敗：',e)}}
 
+/* ---- 帳號與密碼 ---- */
+function authErr(e){
+  return {'auth/wrong-password':'目前密碼不對',
+          'auth/invalid-credential':'目前密碼不對',
+          'auth/weak-password':'新密碼太短，至少 6 個字元',
+          'auth/requires-recent-login':'太久沒登入了，請先登出再登入一次',
+          'auth/email-already-in-use':'這個信箱已經有人用了',
+          'auth/invalid-email':'信箱格式不對',
+          'auth/too-many-requests':'嘗試太多次，等幾分鐘再試',
+          'auth/operation-not-allowed':'Firebase 尚未開啟這項功能'}[e.code]||(e.code||e.message);
+}
+async function reauth(pw){
+  var F=window.fb, u=F.auth.currentUser;
+  var cred=F.EmailAuthProvider.credential(u.email,pw);
+  await F.reauthenticateWithCredential(u,cred);
+  return u;
+}
+var pg2=$('#pwGo');
+if(pg2)pg2.addEventListener('click',async function(){
+  var F=window.fb;
+  if(!F||!F.auth.currentUser){toast('請先登入');return;}
+  var old=$('#pwOld').value, n1=$('#pwNew').value, n2=$('#pwNew2').value;
+  if(!old){toast('請輸入目前密碼');return;}
+  if(n1.length<6){toast('新密碼至少 6 個字元');return;}
+  if(n1!==n2){toast('兩次新密碼不一樣');return;}
+  pg2.textContent='處理中…';
+  try{
+    var u=await reauth(old);
+    await F.updatePassword(u,n1);
+    $('#pwOld').value=$('#pwNew').value=$('#pwNew2').value='';
+    toast('密碼已變更，其他裝置要重新登入');
+  }catch(e){toast('失敗：'+authErr(e))}
+  pg2.textContent='變更密碼';
+});
+var eg=$('#emGo');
+if(eg)eg.addEventListener('click',async function(){
+  var F=window.fb;
+  if(!F||!F.auth.currentUser){toast('請先登入');return;}
+  var old=$('#emOld').value, nm=($('#emNew').value||'').trim();
+  if(!old){toast('請輸入目前密碼');return;}
+  if(!nm||nm.indexOf('@')<0){toast('請輸入正確的新信箱');return;}
+  eg.textContent='寄送中…';
+  try{
+    var u=await reauth(old);
+    await F.verifyBeforeUpdateEmail(u,nm);
+    $('#emOld').value='';
+    toast('驗證信已寄到 '+nm+'，點了連結才生效');
+  }catch(e){toast('失敗：'+authErr(e))}
+  eg.textContent='寄出驗證信';
+});
+var pr=$('#pwReset');
+if(pr)pr.addEventListener('click',async function(){
+  var F=window.fb;
+  if(!F||!F.auth.currentUser){toast('請先登入，或直接去 Firebase 主控台');return;}
+  pr.textContent='寄送中…';
+  try{
+    await F.sendPasswordResetEmail(F.auth,F.auth.currentUser.email);
+    toast('重設信已寄到 '+F.auth.currentUser.email);
+  }catch(e){toast('失敗：'+authErr(e))}
+  pr.textContent='寄重設密碼信';
+});
+
 /* ---- 補齊後台各按鈕 ---- */
 var courseOpen=true;
 var cc=$('#closeCourse');
@@ -3213,7 +3305,9 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc,
          deleteDoc, query, where, orderBy, increment, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+         updatePassword, EmailAuthProvider, reauthenticateWithCredential,
+         sendPasswordResetEmail, verifyBeforeUpdateEmail }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
@@ -3232,6 +3326,8 @@ try{
   window.fb = { db, auth, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc,
                 deleteDoc, query, where, orderBy, increment, serverTimestamp,
                 signInWithEmailAndPassword, onAuthStateChanged, signOut,
+                updatePassword, EmailAuthProvider, reauthenticateWithCredential,
+                sendPasswordResetEmail, verifyBeforeUpdateEmail,
                 COURSE: 'CPR-4f9a2e' };
   window.dispatchEvent(new Event('fb-ready'));
 }catch(e){
