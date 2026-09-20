@@ -747,7 +747,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="state">
       <div class="state-c"><div class="state-n live" id="stOpen">開放中</div><div class="state-l">課程狀態</div></div>
       <div class="state-c"><div class="state-n" id="stCode">8236</div><div class="state-l">上課代號</div></div>
-      <div class="state-c"><div class="state-n" id="stPpl">32</div><div class="state-l">進入人數</div></div>
+      <div class="state-c"><div class="state-n" id="stPpl">—</div><div class="state-l">進入人數</div></div>
     </div>
 
     <div class="section-head"><h2>要做什麼</h2><span>4</span></div>
@@ -976,9 +976,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       <h1 class="display" style="font-size:24px;margin-top:8px">兩份測驗，<br>看自己進步多少</h1>
     </div>
     <div class="rows" style="margin-top:20px">
-      <div class="row" data-gate="p-run"><div class="row-n">前</div><div class="row-b"><div class="row-t">課前測驗<span class="row-tag done">已完成 6/10</span></div><div class="row-d">上課前先測，知道自己哪裡不熟</div></div><div class="row-go">→</div></div>
-      <div class="row" data-gate="p-run"><div class="row-n">後</div><div class="row-b"><div class="row-t">課後測驗<span class="row-tag">未作答</span></div><div class="row-d">4 題．約 2 分鐘</div></div><div class="row-go">→</div></div>
-      <div class="row" data-go="p-top3"><div class="row-n">榜</div><div class="row-b"><div class="row-t">前三名<span class="row-tag">講師已開放</span></div><div class="row-d">成績榜與進步榜，課堂表揚用</div></div><div class="row-go">→</div></div>
+      <div class="row" data-gate="p-run"><div class="row-n">前</div><div class="row-b"><div class="row-t">課前測驗</div><div class="row-d">上課前先測，知道自己哪裡不熟</div></div><div class="row-go">→</div></div>
+      <div class="row" data-gate="p-run"><div class="row-n">後</div><div class="row-b"><div class="row-t">課後測驗</div><div class="row-d" id="postMeta">約 2 分鐘</div></div><div class="row-go">→</div></div>
+      <div class="row" data-go="p-top3"><div class="row-n">榜</div><div class="row-b"><div class="row-t">前三名</div><div class="row-d">成績榜與進步榜，課堂表揚用</div></div><div class="row-go">→</div></div>
       <div class="row" data-go="p-stats"><div class="row-n">計</div><div class="row-b"><div class="row-t">本堂統計</div><div class="row-d">跟全班比、看哪幾題最多人誤會</div></div><div class="row-go">→</div></div>
       <div class="row" data-go="p-explain"><div class="row-n">解</div><div class="row-b"><div class="row-t">題目詳解</div><div class="row-d">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
     </div>
@@ -1056,7 +1056,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
         <p class="sub" style="margin-top:10px" id="scoreS"></p>
       </div>
       <div class="stats" style="margin-top:24px">
-        <div class="stat"><div class="stat-n" id="sPre">60<small>%</small></div><div class="stat-l">課前</div></div>
+        <div class="stat"><div class="stat-n" id="sPre">—</div><div class="stat-l">課前</div></div>
         <div class="stat"><div class="stat-n" id="sPost">—</div><div class="stat-l">課後</div></div>
         <div class="stat"><div class="stat-n" id="sUp" style="color:var(--ok)">—</div><div class="stat-l">進步</div></div>
       </div>
@@ -1086,69 +1086,22 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <!-- 本堂統計 -->
   <section class="page" id="p-stats">
     <div style="padding-top:24px">
-      <div class="meta">本堂統計 · 32 人參與</div>
+      <div class="meta">本堂統計</div>
       <h1 class="display" style="font-size:24px;margin-top:8px">三小時，<br>差別有多大</h1>
     </div>
 
     <div class="section-head"><h2>你自己</h2><span id="myTag">尚未作答</span></div>
     <div class="pair">
-      <div class="pair-c"><div class="pair-n" id="myPre">60<small>%</small></div><div class="pair-l">課前</div></div>
+      <div class="pair-c"><div class="pair-n" id="myPre">—</div><div class="pair-l">課前</div></div>
       <div class="pair-a">→</div>
       <div class="pair-c"><div class="pair-n" id="myPost">—</div><div class="pair-l">課後</div></div>
       <div class="pair-c"><div class="pair-n" id="myUp" style="color:var(--ok)">—</div><div class="pair-l">進步</div></div>
     </div>
     <p class="hint" id="myNote">做完課後測驗就會出現你自己的曲線。</p>
 
-    <div class="section-head"><h2>全班及格率</h2><span>及格線 60 分</span></div>
-    <div class="pair">
-      <div class="pair-c"><div class="pair-n">38<small>%</small></div><div class="pair-l">課前及格</div></div>
-      <div class="pair-a">→</div>
-      <div class="pair-c"><div class="pair-n">91<small>%</small></div><div class="pair-l">課後及格</div></div>
-      <div class="pair-c"><div class="pair-n" style="color:var(--ok)">+53</div><div class="pair-l">百分點</div></div>
-    </div>
-    <div class="brow" style="margin-top:16px"><b>課前</b><span class="bar pre"><i style="width:38%"></i></span><span class="pct">38%</span></div>
-    <div class="brow"><b>課後</b><span class="bar"><i style="width:91%"></i></span><span class="pct">91%</span></div>
-    <p class="hint">平均分從 44 分變成 82 分。上課前十個人裡不到四個及格，現在十個裡有九個。</p>
+    <div class="section-head"><h2>全班統計</h2><span id="clsTag">尚無資料</span></div>
+    <div class="empty">等這堂課的學員作答之後，全班及格率、每題正確率、最多人誤會的題目都會出現在這裡。</div>
 
-    <div class="section-head"><h2>每題正確率</h2><span>課前 → 課後</span></div>
-    <div id="qstats"></div>
-
-    <div class="section-head"><h2>最多人誤會的</h2><span>課後仍答錯</span></div>
-    <p class="sub">這幾題不是因為難，是因為直覺會帶你走錯方向。下次遇到真的狀況，最容易卡在這裡。</p>
-    <div id="missList"></div>
-
-    <div class="section-head"><h2>誰學得比較快</h2><span>依上課經驗</span></div>
-    <p class="sub">第一次上課的人進步幅度最大，但絕對分數還是比上過幾次的人低。這是課前基本資料換來的。</p>
-    <div class="qstat">
-      <div class="qstat-t"><em>0 次</em><span>第一次上課　14 人<span class="delta">+41</span></span></div>
-      <div class="brow"><b>課前</b><span class="bar pre"><i style="width:31%"></i></span><span class="pct">31%</span></div>
-      <div class="brow"><b>課後</b><span class="bar"><i style="width:72%"></i></span><span class="pct">72%</span></div>
-    </div>
-    <div class="qstat">
-      <div class="qstat-t"><em>1–3</em><span>上過 1–3 次　13 人<span class="delta">+34</span></span></div>
-      <div class="brow"><b>課前</b><span class="bar pre"><i style="width:52%"></i></span><span class="pct">52%</span></div>
-      <div class="brow"><b>課後</b><span class="bar"><i style="width:86%"></i></span><span class="pct">86%</span></div>
-    </div>
-    <div class="qstat">
-      <div class="qstat-t"><em>4+</em><span>上過 4 次以上　5 人<span class="delta flat">+11</span></span></div>
-      <div class="brow"><b>課前</b><span class="bar pre"><i style="width:81%"></i></span><span class="pct">81%</span></div>
-      <div class="brow"><b>課後</b><span class="bar"><i style="width:92%"></i></span><span class="pct">92%</span></div>
-    </div>
-    <p class="hint">也可以依年齡、年資、性別切。族群人數少於 5 人時不顯示，人太少的平均沒有意義，也可能認得出是誰。</p>
-
-    <div class="section-head"><h2>跟以前比</h2><span>累計 168 場</span></div>
-    <div class="stats">
-      <div class="stat"><div class="stat-n">4,200<small>+</small></div><div class="stat-l">歷年受訓</div></div>
-      <div class="stat"><div class="stat-n">79<small>%</small></div><div class="stat-l">歷史課後平均</div></div>
-      <div class="stat"><div class="stat-n" style="color:var(--ok)">+3</div><div class="stat-l">本堂高出</div></div>
-    </div>
-    <div class="section-head" style="padding-top:26px"><h2>歷史最常錯</h2><span>課後錯誤率</span></div>
-    <div class="brow" style="margin-top:12px"><b>Q2</b><span class="bar"><i style="width:34%;background:var(--signal)"></i></span><span class="pct">34%</span></div>
-    <div class="row" style="border-top:0;padding-top:6px"><div class="row-b"><div class="row-d">AED 貼片貼好之後要不要離手　★ 重要題</div></div></div>
-    <div class="brow"><b>Q4</b><span class="bar"><i style="width:29%;background:var(--signal)"></i></span><span class="pct">29%</span></div>
-    <div class="row" style="border-top:0;padding-top:6px"><div class="row-b"><div class="row-d">兒童 CPR 的按壓吹氣比例　★ 重要題</div></div></div>
-    <p class="hint">這兩題四年來都在前兩名。講師每一場都會重講一次，但它還是最容易忘。</p>
-    <button class="btn btn-quiet" data-go="p-explain">去看這幾題的詳解</button>
     <p class="note">統計只算有輸入代號的人。沒上課但拿到連結的人可以看，但不會被算進去。</p>
   </section>
 
@@ -1161,37 +1114,8 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       <p class="sub" style="margin-top:10px">同分時，進步幅度大的排前面。</p>
     </div>
 
-    <div class="podium">
-      <div class="pod">
-        <div class="pod-r">1</div>
-        <div class="pod-b"><div class="pod-n">陳○宇</div><div class="pod-m">課前 40% → 課後 100%</div></div>
-        <div class="pod-s">100<small>%</small><em>+60</em></div>
-      </div>
-      <div class="pod">
-        <div class="pod-r">2</div>
-        <div class="pod-b"><div class="pod-n">林○玲</div><div class="pod-m">課前 70% → 課後 100%</div></div>
-        <div class="pod-s">100<small>%</small><em>+30</em></div>
-      </div>
-      <div class="pod">
-        <div class="pod-r">3</div>
-        <div class="pod-b"><div class="pod-n">王○明</div><div class="pod-m">課前 50% → 課後 90%</div></div>
-        <div class="pod-s">90<small>%</small><em>+40</em></div>
-      </div>
-    </div>
+    <div class="empty">還沒有成績。等學員完成課後測驗，成績榜與進步榜會自動產生。</div>
 
-    <div class="section-head"><h2>進步最多</h2><span>另一種表揚</span></div>
-    <p class="sub">分數高不一定是今天學到最多的人。這三位是進步幅度最大的。</p>
-    <div class="rows" style="margin-top:14px">
-      <div class="row"><div class="row-n">1</div><div class="row-b"><div class="row-t" style="font-size:15px">張○文<span class="delta">+70</span></div><div class="row-d">課前 20% → 課後 90%</div></div></div>
-      <div class="row"><div class="row-n">2</div><div class="row-b"><div class="row-t" style="font-size:15px">陳○宇<span class="delta">+60</span></div><div class="row-d">課前 40% → 課後 100%</div></div></div>
-      <div class="row"><div class="row-n">3</div><div class="row-b"><div class="row-t" style="font-size:15px">李○安<span class="delta">+50</span></div><div class="row-d">課前 30% → 課後 80%</div></div></div>
-    </div>
-
-    <div class="section-head"><h2>全班最常錯</h2><span>不列姓名</span></div>
-    <div class="rows">
-      <div class="row"><div class="row-n">Q2</div><div class="row-b"><div class="row-t" style="font-size:15px">AED 貼片貼好之後<span class="star">★</span></div><div class="row-d">31% 答錯．最多人選「繼續按壓不要停」</div></div></div>
-      <div class="row"><div class="row-n">Q4</div><div class="row-b"><div class="row-t" style="font-size:15px">兒童 CPR 按壓吹氣比例<span class="star">★</span></div><div class="row-d">28% 答錯．最多人選「一律 30:2」</div></div></div>
-    </div>
     <p class="note">姓名只顯示姓與末字，中間以 ○ 代替。要顯示全名或完全不顯示，都可以在後台改。</p>
   </section>
 
@@ -1209,10 +1133,10 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <section class="page" id="p-feedback">
     <div id="fbForm">
       <div style="padding-top:24px">
-        <div class="meta">115年 防災及急救教育訓練</div>
-        <h1 class="display" style="font-size:23px;margin-top:8px">課後問卷</h1>
+        <div class="meta" id="fbHead">課後問卷</div>
+        <h1 class="display" style="font-size:23px;margin-top:8px" id="fbTitle">今天這堂課，<br>你覺得如何？</h1>
         <p class="sub" style="margin-top:8px">感謝您耐心聽完這堂課。幾分鐘就好，您的感想會直接影響下一堂課怎麼安排。</p>
-        <div class="meta" style="margin-top:14px">場次　115.09.20 齡活長照</div>
+
       </div>
 
       <div class="f"><div class="f-q">性別<span class="req">必填</span></div>
@@ -1398,13 +1322,13 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 <!-- ================= 後台 ================= -->
 <div class="zone" id="z-pro">
   <div style="padding-top:26px">
-    <div class="meta">進行中 · CPR-4f9a2e</div>
-    <h1 class="display" style="font-size:24px;margin-top:8px">成人 CPR 與 AED 實務</h1>
+    <div class="meta" id="proMeta">進行中 · CPR-4f9a2e</div>
+    <h1 class="display" style="font-size:24px;margin-top:8px" id="proTitle">課程</h1>
   </div>
   <div class="stats" style="margin-top:20px">
-    <div class="stat"><div class="stat-n">32</div><div class="stat-l">進入人數</div></div>
-    <div class="stat"><div class="stat-n">7</div><div class="stat-l">悄悄話</div></div>
-    <div class="stat"><div class="stat-n">+27<small>%</small></div><div class="stat-l">前後測進步</div></div>
+    <div class="stat"><div class="stat-n" id="kpiPpl">—</div><div class="stat-l">進入人數</div></div>
+    <div class="stat"><div class="stat-n" id="kpiW">—</div><div class="stat-l">悄悄話</div></div>
+    <div class="stat"><div class="stat-n" id="kpiInv">—</div><div class="stat-l">待回邀約</div></div>
   </div>
   <div class="conn" id="conn"><span class="conn-d"></span><span id="connT">連線中…</span>
     <button class="conn-x" id="signOut" style="display:none">登出</button></div>
@@ -1413,7 +1337,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <div style="margin-top:20px">
 
   <!-- 課程設定 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">課程設定</span><span class="grp-m">7 / 7 開啟</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">課程設定</span><span class="grp-m" id="courseTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div class="section-head"><h2>課程連結</h2><span>QR</span></div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding-bottom:14px">
@@ -1473,7 +1397,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 線上測驗 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">線上測驗</span><span class="grp-m">題庫 4 題</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">線上測驗</span><span class="grp-m" id="qTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">題目、正解、詳解、重點寫在同一個地方，統計直接算得出來。題目改順序詳解不會錯位。</p>
     <div style="display:flex;gap:10px;margin-top:14px">
@@ -1511,26 +1435,18 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div class="f"><div class="f-q">課程主題</div>
       <div class="f-hint">會自動帶進第 4 題：「過去上過 ___ 教育課程的總次數」</div>
-      <input class="f-in" value="急救"></div>
+      <input class="f-in" id="edTopic" placeholder="急救"></div>
     <p class="hint">開地震課就改成「地震」，防火課就改成「防火」，題目跟著變，統計仍然分開累積。</p>
   </div></div>
 
   <!-- 課程回饋 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">課程回饋</span><span class="grp-m">19 份 · 4.6</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">課程回饋</span><span class="grp-m" id="fbTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <div class="section-head"><h2>本堂結果</h2><span>19 / 32 填答</span></div>
-    <div class="trow"><span class="trow-n">整體課程滿意度</span><span class="bar"><i style="width:92%"></i></span><span class="trow-v">4.6</span></div>
-    <div class="trow"><span class="trow-n">課程內容豐富度</span><span class="bar"><i style="width:88%"></i></span><span class="trow-v">4.4</span></div>
-    <div class="trow"><span class="trow-n">課程難易度</span><span class="bar"><i style="width:62%"></i></span><span class="trow-v">3.1</span></div>
-    <div class="trow"><span class="trow-n">講師表達方式</span><span class="bar"><i style="width:96%"></i></span><span class="trow-v">4.8</span></div>
-    <p class="hint">難易度 3.1 代表大部分人覺得剛好。低於 2 要加深，高於 4 要放慢。</p>
+    <div class="section-head"><h2>本堂結果</h2><span id="fbCount">尚無填答</span></div>
+    <div id="fbStats"></div>
 
-    <div class="section-head"><h2>文字回饋</h2><span>11 則</span></div>
-    <div class="rows">
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px;font-weight:400">實際壓假人那段最有用，之前都只看影片</div><div class="row-d">女性 · 30–39</div></div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px;font-weight:400">希望可以多留一點時間練 AED</div><div class="row-d">男性 · 40–49</div></div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px;font-weight:400">老師講得很清楚，但冷氣太冷了</div><div class="row-d">女性 · 50–59</div></div></div>
-    </div>
+    <div class="section-head"><h2>文字回饋</h2><span id="fbTextN">0 則</span></div>
+    <div id="fbText"></div>
 
     <div class="section-head"><h2>問卷題目</h2><span>7</span></div>
     <p class="sub">改題目會影響之後的統計比較，改之前先想清楚。</p>
@@ -1542,17 +1458,12 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 課程邀約 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">課程邀約</span><span class="grp-m">3 筆待回</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">課程邀約</span><span class="grp-m">表單設定</span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <div class="section-head"><h2>待回覆</h2><span>3</span></div>
-    <div class="rows">
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">緯創電子 / 李專員<span class="wtag todo">3 天內</span></div><div class="row-d">11/18 09:00-12:00　員工 80 人　CPR 教育訓練</div></div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">板橋某某國小 / 陳主任</div><div class="row-d">12/05 全日　教職員 45 人　地震災害應變</div></div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:15px">某某長照機構 / 林小姐</div><div class="row-d">日期待議　照服員 30 人　急病重症急救</div></div></div>
-    </div>
+    <p class="sub">實際的邀約在上面「收件匣」那一組，這裡只設定表單長什麼樣子。</p>
 
     <div class="section-head"><h2>報名須知</h2><span>顯示在表單最上面</span></div>
-    <div class="f" style="padding-top:12px"><textarea class="f-ta" style="min-height:80px">報名完成後三個工作天內會與您聯繫確認時間。若未等到回應，可傳簡訊至 0975-953359。</textarea></div>
+    <div class="f" style="padding-top:12px"><textarea class="f-ta" id="edNotice" style="min-height:80px" placeholder="報名完成後三個工作天內會與您聯繫確認時間。"></textarea></div>
 
     <div class="section-head"><h2>表單欄位</h2><span>9</span></div>
     <div class="toggle-row"><span>期望日期與時間</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
@@ -1604,19 +1515,23 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 講師介紹 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">講師介紹</span><span class="grp-m">照片 6 · 影片 4</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">講師介紹</span><span class="grp-m" id="aboutTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div class="section-head"><h2>影片</h2><span>YouTube</span></div>
-    <div class="f" style="padding-top:12px"><div class="f-q">主打影片</div><input class="f-in" value="youtu.be/kJQP7kiw…" readonly>
-      <div class="f-hint" style="margin-top:8px">在超商倒下的那個人，後來活下來了 · 6:12</div></div>
-    <div class="f"><div class="f-q">其他影片</div><input class="f-in" placeholder="貼上 YouTube 網址，一行一支">
-      <div class="f-hint" style="margin-top:8px">目前 3 支．標題與長度自動抓</div></div>
+    <div class="f" style="padding-top:12px"><div class="f-q">主打影片</div>
+      <div class="f-hint">貼 YouTube 網址，什麼格式都可以</div>
+      <input class="f-in" id="edVidUrl" placeholder="https://youtu.be/…">
+      <input class="f-in" id="edVidTitle" placeholder="影片標題">
+      <input class="f-in" id="edVidNote" placeholder="說明，例如「TED 演講 · 14:20」"></div>
+    <div class="f"><div class="f-q">其他影片</div>
+      <div class="f-hint">一行一支，格式：網址 ｜ 標題 ｜ 說明</div>
+      <textarea class="f-ta" id="edVidMore" style="min-height:96px" placeholder="https://youtu.be/… ｜ 兩分鐘學會壓胸 ｜ 教學短片"></textarea></div>
 
     <div class="section-head"><h2>照片</h2><span>Google Drive 資料夾</span></div>
     <p class="sub">貼整個資料夾的連結，App 列出裡面的照片，你再排順序。檔案留在雲端硬碟。</p>
     <div class="f" style="padding-top:14px"><div class="f-q">資料夾連結</div>
-      <input class="f-in" value="drive.google.com/drive/folders/1Xk9…" readonly>
-      <div class="f-hint" style="margin-top:8px">權限：知道連結的人可檢視．最後同步 09/12 14:18．找到 6 張</div></div>
+      <div class="f-hint">Drive 取得連結．權限選「知道連結的人可檢視」</div>
+      <input class="f-in" id="edDrive" placeholder="https://drive.google.com/drive/folders/…"></div>
     <button class="btn btn-quiet" id="resync">重新同步資料夾</button>
     <div class="section-head" style="padding-top:26px"><h2>排序</h2><span>前三張是開頭</span></div>
     <div id="photoSort"></div>
@@ -1650,7 +1565,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 知識專區 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">知識專區</span><span class="grp-m">6 篇</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">知識專區</span><span class="grp-m" id="artTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div class="section-head"><h2>文章排行</h2><span>累計瀏覽</span></div>
     <div id="artRank"></div>
@@ -1658,16 +1573,16 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   </div></div>
 
   <!-- 聯絡方式 -->
-  <div class="grp"><div class="grp-h"><span class="grp-t">聯絡方式</span><span class="grp-m">3 / 4 啟用</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">聯絡方式</span><span class="grp-m" id="ctTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">學員端顯示哪幾種、報名表要問哪幾種，都在這裡決定。</p>
-    <div class="f" style="padding-top:14px"><div class="f-q">Instagram</div><input class="f-in" value="@rescue.teacher"></div>
+    <div class="f" style="padding-top:14px"><div class="f-q">Instagram</div><input class="f-in" id="edIG" placeholder="@你的帳號"></div>
     <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">LINE ID</div><input class="f-in" value="@rescue-teacher"></div>
+    <div class="f"><div class="f-q">LINE ID</div><input class="f-in" id="edLine" placeholder="@你的 LINE ID"></div>
     <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">電話</div><input class="f-in" value="0975-953359"></div>
+    <div class="f"><div class="f-q">電話</div><input class="f-in" id="edTel" placeholder="0900-000-000"></div>
     <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">Email</div><input class="f-in" placeholder="尚未填寫"></div>
+    <div class="f"><div class="f-q">Email</div><input class="f-in" id="edMail" placeholder="name@example.com"></div>
     <div class="toggle-row"><span>顯示給學員</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="section-head"><h2>顯示位置</h2><span>學員端</span></div>
     <div class="toggle-row"><span>講師介紹頁</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
@@ -1688,7 +1603,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <p class="hint">左欄是顯示在後台的名字，右欄是備註。登入狀態會保留，同一支手機不用每次重新登入。</p>
   </div></div>
 
-  <div class="grp"><div class="grp-h"><span class="grp-t">手機通知</span><span class="grp-m">已開啟</span><span class="grp-c">›</span></div>
+  <div class="grp"><div class="grp-h"><span class="grp-t">手機通知</span><span class="grp-m">推播</span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">有人送出悄悄話或報名時，手機狀態列立刻跳出來。</p>
     <button class="btn btn-quiet" id="notifOn">開啟通知權限</button>
@@ -1796,11 +1711,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <!-- 變更紀錄 -->
   <div class="grp"><div class="grp-h"><span class="grp-t">變更紀錄</span><span class="grp-m">誰改了什麼</span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <div class="rows">
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:14.5px;font-weight:400">重新產生上課代號</div><div class="row-d">今天 13:58</div></div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:14.5px;font-weight:400">修改 Q2 詳解內容</div><div class="row-d">今天 11:20</div></div></div>
-      <div class="row"><div class="row-b"><div class="row-t" style="font-size:14.5px;font-weight:400">關閉「課程回饋」通知</div><div class="row-d">昨天 20:44</div></div></div>
-    </div>
+    <div class="empty">還沒有紀錄。之後每次儲存、改代號、處理訊息都會記在這裡，含操作者名字。</div>
   </div></div>
 
   </div>
@@ -1899,14 +1810,15 @@ window.addEventListener('fb-ready',function(){
       $('#signOut').style.display='block';
       $('#actLoginT').textContent='進入後台';
       $('#actLoginD').textContent='編輯課程、看悄悄話與統計';
-      if(!STUDENT_ONLY)$('#proSwitch').hidden=false;
+      $('#proSwitch').hidden=false;
+      if(STUDENT_ONLY)$('#proSwitch').textContent='後台';
 
       // 只有「這次真的按了登入」才會自動跳進後台。
       // 首次開頁還原舊的登入狀態時，停在控制台，不打斷正在打字的人。
       if(JUST_LOGGED_IN){
         JUST_LOGGED_IN=false;
         $('#gateview').classList.remove('is-on');
-        if(!STUDENT_ONLY)showZone('z-pro');
+        showZone('z-pro');
       }else if(firstTime){
         if($('#gateview').classList.contains('is-on')){
           $('#gateview').classList.remove('is-on');
@@ -1921,6 +1833,7 @@ window.addEventListener('fb-ready',function(){
       $('#signOut').style.display='none';
       $('#actLoginT').textContent='講師登入';
       $('#actLoginD').textContent='登入後可以編輯課程、看悄悄話與統計';
+      $('#proSwitch').hidden=true;
       if(!STUDENT_ONLY)showZone('z-home');
       LIVE=false;
     }
@@ -2002,13 +1915,23 @@ function paintShare(){
 function showZone(which){
   $$('.zone').forEach(function(z){z.classList.toggle('is-on',z.id===which)});
   var b=$('#proSwitch');
-  if(STUDENT_ONLY){b.hidden=true;}
-  else if(PREVIEW){b.hidden=true;}
+  if(PREVIEW){b.hidden=true;}
+  else if(STUDENT_ONLY){
+    // 學員永遠看不到；只有登入過的講師在這支手機上才會出現
+    b.hidden=!AUTH_USER;
+    b.textContent=(which==='z-pro')?'回學員端':'後台';
+  }
   else if(which==='z-pro'){b.hidden=false;b.textContent='回控制台';}
-  else if(which==='z-home'){b.hidden=true;}
+  else{b.hidden=true;}
   window.scrollTo({top:0,behavior:'instant'});
 }
-$('#proSwitch').addEventListener('click',function(){showZone('z-home')});
+$('#proSwitch').addEventListener('click',function(){
+  if(STUDENT_ONLY){
+    showZone($('#z-pro').classList.contains('is-on')?'z-student':'z-pro');
+  }else{
+    showZone('z-home');
+  }
+});
 
 function enterPreview(){
   PREVIEW=true;$('#pvBar').style.display='flex';
@@ -2040,7 +1963,6 @@ function copyLink(btn){
 /* 開機分流 */
 if(STUDENT_ONLY){
   showZone('z-student');
-  var gm=$('.gate-mark');if(gm)gm.style.display='none';
 }else{
   showZone('z-home');
   paintShare();
@@ -2178,7 +2100,7 @@ $('#qnext').addEventListener('click',function(){
     $('#scoreT').textContent='答對 '+right+' / '+QS.length+' 題';
     $('#scoreS').textContent=right===QS.length?'全對。下次有人倒下，你會知道要做什麼。':'錯的那幾題去看詳解，比重做一次有用。';
     $('#sPost').innerHTML=pct+'<small>%</small>';
-    $('#sUp').innerHTML=(pct-60>=0?'+':'')+(pct-60)+'<small>%</small>';
+    $('#sUp').innerHTML='—';
     renderExplain();pushMyScore(pct);
     window.scrollTo({top:0,behavior:'instant'});
   }
@@ -2390,6 +2312,11 @@ var SITE={
           ['救護','救護技術員'],
           ['消防','消防人員．消防署火災搶救訓練合格'],
           ['教學','企業、學校、政府機關與社區防災及急救教育']],
+  videos:{url:'',title:'',note:'',more:''},
+  drive:'',
+  contact:{ig:'',line:'',tel:'',mail:''},
+  notice:'',
+  topic:'急救',
   operators:['Will','Angus'],
   notify:{emails:'',endpoint:'',onWhisper:true,onInvite:true,onFeedback:false}
 };
@@ -2414,6 +2341,9 @@ function applySite(){
   renderHero();
   var ct=$('#conTitle');if(ct)ct.textContent=COURSE.title;
   var cs=$('#conSub');if(cs)cs.textContent=COURSE.sub;
+  if(SITE.videos.title){var pt=$('#plT');if(pt)pt.textContent=SITE.videos.title;}
+  if(SITE.videos.note){var pm=$('#plM');if(pm)pm.textContent=SITE.videos.note;}
+  try{refreshTags()}catch(e){}
 }
 function applyForms(){
   var v=function(id,val){var e=$(id);if(e)e.value=val;};
@@ -2422,6 +2352,11 @@ function applyForms(){
   v('#edCTitle',COURSE.title);v('#edCSub',COURSE.sub);v('#edPass',COURSE.pass);
   v('#edTag1',COURSE.tags[0]||'');v('#edTag2',COURSE.tags[1]||'');v('#edTag3',COURSE.tags[2]||'');
   renderHeroPick();
+  v('#edVidUrl',SITE.videos.url);v('#edVidTitle',SITE.videos.title);
+  v('#edVidNote',SITE.videos.note);v('#edVidMore',SITE.videos.more);
+  v('#edDrive',SITE.drive);v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
+  v('#edIG',SITE.contact.ig);v('#edLine',SITE.contact.line);
+  v('#edTel',SITE.contact.tel);v('#edMail',SITE.contact.mail);
   v('#edEmails',SITE.notify.emails);v('#edEndpoint',SITE.notify.endpoint);
   [['#nfWhisper','onWhisper'],['#nfInvite','onInvite'],
    ['#nfFeedback','onFeedback'],['#nfContent','showContent']].forEach(function(p){
@@ -2450,6 +2385,36 @@ function pullForms(){
   COURSE.sub=g('#edCSub',COURSE.sub);
   COURSE.pass=parseInt(g('#edPass',60),10)||60;
   COURSE.tags=[g('#edTag1',''),g('#edTag2',''),g('#edTag3','')];
+  SITE.videos={url:g('#edVidUrl',''),title:g('#edVidTitle',''),
+               note:g('#edVidNote',''),more:g('#edVidMore','')};
+  SITE.drive=g('#edDrive','');SITE.notice=g('#edNotice','');SITE.topic=g('#edTopic','')||'急救';
+  SITE.contact={ig:g('#edIG',''),line:g('#edLine',''),tel:g('#edTel',''),mail:g('#edMail','')};
+}
+function refreshTags(){
+  var set=function(id,v){var e=$(id);if(e)e.textContent=v};
+  set('#courseTag',TILES.filter(function(t){return t.on}).length+' / '+TILES.length+' 開啟');
+  set('#qTag','題庫 '+QBANK.length+' 題');
+  set('#aboutTag','照片 '+PHOTOS.length+'　影片 '+(1+(SITE.videos&&SITE.videos.more?SITE.videos.more.split('\n').filter(Boolean).length:0)));
+  set('#artTag',(ARTS.disaster.length+ARTS.firstaid.length)+' 篇');
+  var ct=[SITE.contact.ig,SITE.contact.line,SITE.contact.tel,SITE.contact.mail].filter(Boolean).length;
+  set('#ctTag',ct+' / 4 已填');
+  set('#fbTag',FB.length?(FB.length+' 份'):'尚無填答');
+  set('#kpiW',WMSG.length||'—');
+  set('#kpiInv',INV.filter(function(x){return (x.status||'new')==='new'}).length||'—');
+  set('#proTitle',COURSE.title);
+  set('#proMeta',(courseOpen?'進行中':'已關閉')+' · '+(window.fb?window.fb.COURSE:''));
+  renderFb();
+}
+var FB=[];
+function renderFb(){
+  var box=$('#fbStats');if(!box)return;
+  if(!FB.length){
+    box.innerHTML='<div class="empty">還沒有人填。學員送出後，四項平均會出現在這裡。</div>';
+    var c=$('#fbCount');if(c)c.textContent='尚無填答';
+    var t=$('#fbText');if(t)t.innerHTML='<div class="empty">還沒有文字回饋。</div>';
+    var n=$('#fbTextN');if(n)n.textContent='0 則';
+    return;
+  }
 }
 function flash(btn,msg){
   var old=btn.textContent;btn.textContent=msg;
@@ -2465,7 +2430,9 @@ async function saveSite(){
     operatorRows:ET.ops.map(function(x){return {k:x[0],v:x[1]}}),
     idea:ET.idea.map(function(x){return {k:x[0],v:x[1]}}),
     career:ET.career.map(function(x){return {k:x[0],v:x[1]}}),
-    operators:ET.ops.map(function(x){return x[0]}), notify:SITE.notify
+    operators:ET.ops.map(function(x){return x[0]}), notify:SITE.notify,
+    videos:SITE.videos, drive:SITE.drive, contact:SITE.contact,
+    notice:SITE.notice, topic:SITE.topic
   },{merge:true});
   applySite();
 }
@@ -2508,6 +2475,10 @@ async function loadAll(){
       if(v.operatorRows)ET.ops=v.operatorRows.map(function(x){return [x.k,x.v]});
       SITE.operators=ET.ops.map(function(x){return x[0]});
       if(v.notify)SITE.notify=Object.assign(SITE.notify,v.notify);
+      if(v.videos)SITE.videos=Object.assign(SITE.videos,v.videos);
+      if(v.contact)SITE.contact=Object.assign(SITE.contact,v.contact);
+      if(v.drive)SITE.drive=v.drive;if(v.notice)SITE.notice=v.notice;
+      if(v.topic)SITE.topic=v.topic;
       if($('#stSite'))$('#stSite').textContent='已同步';}
     var qs=await F.getDocs(F.query(F.collection(F.db,'questions'),F.orderBy('order')));
     if(!qs.empty){
@@ -2794,30 +2765,22 @@ document.addEventListener('click',function(e){
 var eb=$('#expBtn');
 if(eb)eb.addEventListener('click',function(){
   eb.textContent='產生檔案中…';
-  setTimeout(function(){eb.textContent='已下載　CPR-4f9a2e_20260916.xlsx'},1000);
+  setTimeout(function(){eb.textContent='沒有資料可以匯出'},1000);
   setTimeout(function(){eb.textContent='匯出'},3200);
 });
 var ib=$('#impBtn'), dz=$('#dropZone');
 if(dz)dz.addEventListener('click',function(){
-  dz.textContent='課後問卷_回覆.xlsx　讀到 1,284 列';
+  dz.textContent='尚未選擇檔案';
 });
 if(ib)ib.addEventListener('click',function(){
   ib.textContent='匯入中…';
-  setTimeout(function(){ib.textContent='完成．1,284 筆已併入歷史統計'},1200);
+  setTimeout(function(){ib.textContent='請先選擇檔案'},1200);
   setTimeout(function(){ib.textContent='開始匯入'},3600);
 });
 
 /* ---- 悄悄話收件匣 ---- */
-var WMSG=[
- {t:'壓的時候手會抖，是不是我姿勢錯了',m:'14:32',st:'unread',c:null},
- {t:'想問如果對方有戴假牙要拿掉嗎',m:'14:41',st:'unread',c:null},
- {t:'我們公司 AED 放在鎖起來的櫃子裡，這樣對嗎？想請老師給個建議，我可能要去跟主管講',m:'14:52',st:'todo',c:'LINE：mingchen88'},
- {t:'謝謝老師，我阿公去年就是這樣走的。那時候沒有人會壓。',m:'15:03',st:'read',c:null},
- {t:'我是保全，值班時遇到過一次但不敢做。今天上完比較有底了',m:'15:07',st:'todo',c:'0912-345-678'},
- {t:'可以再教一次哈姆立克嗎，剛剛沒看清楚',m:'15:14',st:'unread',c:null},
- {t:'課程很好，但冷氣真的太冷了',m:'15:20',st:'read',c:null}
-];
-var WTRASH=[{t:'測試測試',m:'13:02',st:'read',c:null}];
+var WMSG=[];
+var WTRASH=[];
 var LIVE=false;   // 連上 Firestore 之後改 true，示範資料就退場
 var wFilter='all';
 function wRender(){
@@ -2988,9 +2951,10 @@ document.addEventListener('click',function(e){
 });
 
 /* ---- 後台：照片排序 ---- */
-var PHOTOS=['消防月宣導_主場.jpg','台積電_編組訓練.jpg','企業內訓_AED.jpg','國小防災課_壓胸.jpg','記者會_現場.jpg','夜間演練_01.jpg'];
+var PHOTOS=[];
 function renderPhotos(){
   var box=$('#photoSort');if(!box)return;box.innerHTML='';
+  if(!PHOTOS.length){box.innerHTML='<div class="empty">還沒有照片。貼上資料夾連結後按「重新同步資料夾」。</div>';return;}
   PHOTOS.forEach(function(n,i){
     var r=document.createElement('div');r.className='sortrow';
     r.innerHTML='<div class="dthumb">'+(i+1)+'</div>'+
@@ -3018,12 +2982,12 @@ if(rs)rs.addEventListener('click',function(){
 
 /* ---- 後台：流量 ---- */
 var TRAFFIC={
- now:[['講師介紹',28],['線上測驗',31],['課程回饋',19],['課程邀約',6],['防災知識專區',14],['急救教育專區',22],['傳聲悄悄話',9],['影片播放',22],['IG 點擊',11]],
- all:[['講師介紹',3120],['線上測驗',2980],['課程回饋',2210],['課程邀約',640],['防災知識專區',1860],['急救教育專區',2440],['傳聲悄悄話',980],['影片播放',2140],['IG 點擊',1180]]
+ now:[['講師介紹',0],['線上測驗',0],['課程回饋',0],['課程邀約',0],['防災知識專區',0],['急救教育專區',0],['傳聲悄悄話',0],['影片播放',0],['IG 點擊',0]],
+ all:[['講師介紹',0],['線上測驗',0],['課程回饋',0],['課程邀約',0],['防災知識專區',0],['急救教育專區',0],['傳聲悄悄話',0],['影片播放',0],['IG 點擊',0]]
 };
 function renderTraffic(which){
   var box=$('#traffic');if(!box)return;
-  var d=TRAFFIC[which],max=Math.max.apply(null,d.map(function(x){return x[1]}));
+  var d=TRAFFIC[which],max=Math.max.apply(null,d.map(function(x){return x[1]}))||1;
   box.innerHTML='';
   d.forEach(function(x,i){
     var sp=i>=7;
@@ -3112,7 +3076,8 @@ var QSTAT=[
  {pre:33,post:72,wrong:'一律 30:2',wpct:21}
 ];
 function renderStats(){
-  var box=$('#qstats');box.innerHTML='';
+  var box=$('#qstats');if(!box)return;
+  box.innerHTML='';
   QS.forEach(function(q,i){
     var st=QSTAT[i],d=st.post-st.pre;
     var el=document.createElement('div');el.className='qstat';
@@ -3124,7 +3089,8 @@ function renderStats(){
   });
   var order=QS.map(function(q,i){return {i:i,q:q,s:QSTAT[i]}})
     .sort(function(a,b){return a.s.post-b.s.post}).slice(0,2);
-  var ml=$('#missList');ml.innerHTML='';
+  var ml=$('#missList');if(!ml)return;
+  ml.innerHTML='';
   order.forEach(function(o){
     var el=document.createElement('div');el.className='miss';
     el.innerHTML='<div class="miss-h"><span>Q'+(o.i+1)+(o.q.star?'　★ 重要題':'')+'</span><span>課後仍答錯 '+(100-o.s.post)+'%</span></div>'+
@@ -3138,8 +3104,8 @@ renderStats();
 function pushMyScore(pct){
   $('#myTag').textContent='已完成';
   $('#myPost').innerHTML=pct+'<small>%</small>';
-  $('#myUp').innerHTML=(pct-60>=0?'+':'')+(pct-60);
-  $('#myNote').textContent=pct>=60?'你從不及格變成及格。全班有 91% 的人跟你一樣。':'還差一點。錯的那幾題去看詳解，不用重做整份。';
+  $('#myUp').innerHTML='—';
+  $('#myNote').textContent=pct>=COURSE.pass?'及格了。':'還差一點，錯的那幾題去看詳解。';
 }
 
 /* ---- scales / switches ---- */
