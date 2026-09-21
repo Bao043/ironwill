@@ -353,9 +353,10 @@ body.editing [data-txt]:focus{outline:2px solid var(--signal);background:var(--s
 
 /* 通用編輯層：每一頁都能原地改 */
 body.editing .pro-switch{display:none!important}
-body.editing .blk{position:relative;outline:1px dashed transparent;outline-offset:3px;
-  transition:outline-color .15s ease}
+body.editing .blk{position:relative;outline:1px dashed transparent;outline-offset:4px;
+  transition:outline-color .15s ease;cursor:pointer}
 body.editing .blk:hover{outline-color:var(--line)}
+body.editing .blk.sel{outline:2px solid var(--signal)!important;outline-offset:4px}
 body.editing .ed-txt{outline:1px dashed rgba(188,53,39,.45);outline-offset:3px;cursor:text;
   border-radius:2px;min-width:1em;display:inline-block}
 body.editing .ed-txt:focus{outline:2px solid var(--signal);background:var(--signal-soft)}
@@ -365,15 +366,34 @@ body.editing .ed-hidden.chip,body.editing .ed-hidden.chip-s{display:inline-block
 body.editing .ed-hidden.f,body.editing .ed-hidden.row,body.editing .ed-hidden.tl{display:block!important}
 body.editing .ed-hidden.row,body.editing .ed-hidden.tl{display:flex!important}
 .ed-del{display:none!important}
-.blk-ed{position:absolute;top:-12px;right:0;display:flex;gap:3px;z-index:6;
+.blk-ed{position:absolute;top:-38px;right:-4px;display:flex;gap:2px;z-index:8;
+  padding:3px;background:var(--signal);box-shadow:0 4px 14px rgba(0,0,0,.3);
   opacity:0;transition:opacity .15s ease;pointer-events:none}
-body.editing .blk:hover>.blk-ed,body.editing .blk:focus-within>.blk-ed,
+.blk-ed::after{content:"";position:absolute;right:14px;bottom:-5px;width:10px;height:10px;
+  background:var(--signal);transform:rotate(45deg)}
 body.editing .blk.sel>.blk-ed{opacity:1;pointer-events:auto}
-@media (hover:none){body.editing .blk>.blk-ed{opacity:1;pointer-events:auto}}
-.blk-ed button{height:24px;min-width:24px;padding:0 6px;border:1px solid var(--ink);
-  background:var(--ink);color:var(--paper);font-size:10.5px;line-height:1;cursor:pointer}
-.blk-ed button.lt{background:var(--paper);color:var(--ink)}
-.chip.blk>.blk-ed,.chip-s.blk>.blk-ed{top:-26px;right:-4px}
+.blk-ed button{position:relative;z-index:1;height:30px;min-width:30px;padding:0 9px;border:0;
+  background:transparent;color:#fff;font-size:12.5px;line-height:1;cursor:pointer}
+.blk-ed button:hover{background:rgba(255,255,255,.18)}
+.blk-ed button.lt{border-left:1px solid rgba(255,255,255,.25)}
+.blk-ed button.pri{background:#fff;color:var(--signal);font-weight:600}
+body.editing .chips .ed-hidden{display:inline-block!important}
+
+/* 選項清單編輯器 */
+.opt-sheet{position:fixed;inset:0;z-index:80;background:rgba(6,9,10,.55);display:none;align-items:flex-end}
+.opt-sheet.on{display:flex}
+.opt-in{width:100%;max-width:560px;margin:0 auto;background:var(--paper);max-height:78vh;overflow-y:auto;
+  padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));
+  animation:sheetUp .28s cubic-bezier(.22,.9,.3,1)}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.opt-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.opt-h b{font-size:16px;flex:1}
+.opt-row{display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--line-soft)}
+.opt-row input{flex:1;min-width:0;background:transparent;border:0;border-bottom:1px solid var(--line);
+  padding:8px 0;font-size:15px}
+.opt-row button{width:34px;height:34px;border:1px solid var(--line);background:none;
+  color:var(--ink-soft);cursor:pointer;flex:none;font-size:12px}
+.opt-row.off input{opacity:.4}
 .ed-dock{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;gap:8px;
   align-items:center;padding:11px 16px;background:var(--signal);color:#fff;font-size:12.5px;
   padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));
@@ -895,6 +915,12 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 <body>
 
 <div class="toast" id="toast"></div>
+<div class="opt-sheet" id="optSheet"><div class="opt-in">
+  <div class="opt-h"><b>編輯選項</b><button class="qbtn" id="optDone">完成</button></div>
+  <div class="hint" style="margin:0 0 6px">改文字、調順序、隱藏或刪除。學員看到的就是這個順序。</div>
+  <div id="optList"></div>
+  <button class="et-add" id="optAdd">＋ 新增選項</button>
+</div></div>
 <div class="ed-dock" id="edDock">
   <b>編輯模式．每一頁都能改</b>
   <button id="edRestore">還原本頁刪除</button>
@@ -1947,7 +1973,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v4.3　2026/09/21';
+var APP_VERSION='v4.4　2026/09/21';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2500,17 +2526,23 @@ try{renderTiles();renderTileEdit();renderMirror();}catch(e){console.warn('磁磚
    載入時把差異套回去。不重畫頁面，所以按鈕的功能都不會壞。 */
 var EDITING=false;
 var PATCH={text:{},ph:{},hide:{},del:{},order:{},add:[]};
-var TEXT_SEL='h1,h2,.sub,.meta,.f-q,.f-hint,.chip,.chip-s,.row-t,.row-d,.row-n,.tl-y,.tl-b,'+
+var TEXT_SEL='h1,h2,.sub,.meta,.f-q,.f-hint,.row-t,.row-d,.row-n,.tl-y,.tl-b,'+
              '.story p,.quote,.note,.hint,.scale-l span,.btn,.lock>div,.who-n,.who-r,'+
              '.section-head>span,.fig-cap>span,.ig-h,.ig-d,.ig-go,.ct-v,.ct-l,.ct-go,.ct-m,'+
              '.strip-m,.whisper-foot>span,.pair-l,.stat-l,.pod-n,.pod-m,.ig-inline';
-var BLOCK_SEL='.f,.section-head,.row,.tl,.chip,.chip-s,.story>p,.lock,.quote,.hint,.note,.btn,'+
-              '.player,.player-b,.ig,.ct,.fig-cap,.figwrap,.strip,.strip-m,.lead,.who,.ig-foot,'+
-              '.whisper-box,.toggle-row,.scale,.stats,.pair,.podium,.miss';
+/* 區塊：頁面的每一個直接子元素，加上常見的列表單位。選項（chip）不算，改用清單編輯 */
+var BLOCK_SEL='.page>*,.f,.section-head,.row,.tl,.story>p,.lock,.quote,.hint,.note,'+
+              '.player-b,.ig,.ct,.fig-cap,.figwrap,.strip,.strip-m,.who,.ig-foot,'+
+              '.whisper-box,.toggle-row,.chips,.pair,.miss,.pod';
+var KEY_SEL=TEXT_SEL+','+BLOCK_SEL+',.chip,.chip-s,input,textarea';
+/* 內容是程式產生的容器：容器本身可以移動隱藏，但裡面的東西由資料控制 */
 var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,'+
-        '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav,'+
-        '#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM,#stage';
-function isDyn(el){return !!el.closest(DYN)}
+        '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav,#stage';
+/* 文字綁在資料上的元素：可以移動，但文字另外處理 */
+var SKIPTXT='#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM';
+var NOBLOCK='#heroCard,#tileGrid,.gate-mark,#pvBar,#nav,script';
+function isDyn(el){var p=el.parentElement;return !!(p&&p.closest(DYN))}
+function cleanText(el){var c=el.cloneNode(true);$$('.blk-ed',c).forEach(function(x){x.remove()});return c.innerText.trim();}
 function wrapFigs(){
   $$('#z-student svg.fig').forEach(function(sv){
     if(!sv.parentElement||sv.parentElement.classList.contains('figwrap'))return;
@@ -2522,22 +2554,24 @@ function assignKeys(){
   wrapFigs();
   $$('#z-student .page').forEach(function(pg){
     var n=0;
-    $$(TEXT_SEL+','+BLOCK_SEL+',input,textarea',pg).forEach(function(el){
-      if(isDyn(el)||el.dataset.k||el.hasAttribute('data-txt'))return;
+    $$(KEY_SEL,pg).forEach(function(el){
+      if(isDyn(el)||el.dataset.k)return;
       el.dataset.k=pg.id+':'+(n++);
     });
     $$('[data-k]',pg).forEach(function(el){
-      if(el.matches(BLOCK_SEL)){
-        var par=el.parentElement;
-        if(par&&!par.dataset.kp)par.dataset.kp=pg.id+':p'+(n++);
-      }
+      var par=el.parentElement;
+      if(par&&!par.dataset.kp&&(el.matches(BLOCK_SEL)||el.matches('.chip,.chip-s')))
+        par.dataset.kp=pg.id+':p'+(n++);
     });
   });
 }
 function byK(k){return document.querySelector('[data-k="'+k+'"]')}
-function isBlock(el){return el.matches&&el.matches(BLOCK_SEL)&&el.dataset.k&&!isDyn(el)}
+function isBlock(el){return !!(el.matches&&el.dataset&&el.dataset.k&&el.matches(BLOCK_SEL)&&
+                      !el.matches(NOBLOCK)&&!isDyn(el))}
+function isChip(el){return !!(el.matches&&el.dataset&&el.dataset.k&&el.matches('.chip,.chip-s'))}
 function reorder(par,keys){
-  var blocks=[].slice.call(par.children).filter(isBlock);
+  var pick=par.classList.contains('chips')?isChip:isBlock;
+  var blocks=[].slice.call(par.children).filter(pick);
   if(!blocks.length)return;
   var marks=blocks.map(function(b){var m=document.createComment('');par.insertBefore(m,b);return m});
   var map={};blocks.forEach(function(b){map[b.dataset.k]=b});
@@ -2565,7 +2599,8 @@ function applyPatch(){
 }
 function recordOrder(par){
   if(!par||!par.dataset.kp)return;
-  PATCH.order[par.dataset.kp]=[].slice.call(par.children).filter(isBlock).map(function(b){return b.dataset.k});
+  var pick=par.classList.contains('chips')?isChip:isBlock;
+  PATCH.order[par.dataset.kp]=[].slice.call(par.children).filter(pick).map(function(b){return b.dataset.k});
 }
 function sib(el,dir){
   var n=dir<0?el.previousElementSibling:el.nextElementSibling;
@@ -2575,15 +2610,22 @@ function sib(el,dir){
 function toolbar(el){
   if(el.querySelector(':scope>.blk-ed'))return;
   var bar=document.createElement('span');bar.className='blk-ed';bar.setAttribute('contenteditable','false');
-  var hasInput=el.querySelector('input,textarea');
-  bar.innerHTML='<button data-a="up">↑</button><button data-a="dn">↓</button>'+
+  var hasInput=el.querySelector(':scope>input,:scope>textarea,:scope>.whisper-box textarea');
+  var isChips=el.classList.contains('chips')||!!el.querySelector(':scope>.chips');
+  var outer=el.parentElement&&el.parentElement.closest('.blk');
+  bar.innerHTML=(isChips?'<button data-a="opt" class="pri">選項</button>':'')+
+    '<button data-a="up">↑</button><button data-a="dn">↓</button>'+
     (hasInput?'<button data-a="ph" class="lt">提示字</button>':'')+
     '<button data-a="hide" class="lt">'+(el.classList.contains('ed-hidden')?'顯示':'隱藏')+'</button>'+
-    '<button data-a="add" class="lt">＋</button><button data-a="del">×</button>';
+    '<button data-a="add" class="lt">＋</button><button data-a="del" class="lt">×</button>'+
+    (outer?'<button data-a="out" class="lt" title="選外層">⤴</button>':'');
   bar.addEventListener('click',function(e){
     e.preventDefault();e.stopPropagation();
     var b=e.target.closest('button');if(!b)return;
     var a=b.dataset.a, par=el.parentElement;
+    if(a==='opt'){openOptSheet(el.classList.contains('chips')?el:el.querySelector('.chips'));return;}
+    if(a==='out'){var o2=el.parentElement.closest('.blk');
+      if(o2){el.classList.remove('sel');o2.classList.add('sel');}return;}
     if(a==='up'||a==='dn'){
       var o=sib(el,a==='up'?-1:1);if(!o)return;
       if(a==='up')par.insertBefore(el,o);else par.insertBefore(o,el);
@@ -2597,7 +2639,7 @@ function toolbar(el){
       if(!confirm('確定刪除這一項？可以用下方「還原本頁刪除」救回來。'))return;
       el.classList.add('ed-del');PATCH.del[el.dataset.k]=true;
     }else if(a==='ph'){
-      var inp=el.querySelector('input,textarea');
+      var inp=el.querySelector('input,textarea');if(!inp)return;
       var v=prompt('輸入框裡的淺色提示字',inp.placeholder||'');
       if(v!=null){inp.placeholder=v;if(inp.dataset.k)PATCH.ph[inp.dataset.k]=v;}
     }else if(a==='add'){
@@ -2620,7 +2662,7 @@ function toolbar(el){
   el.appendChild(bar);
 }
 function makeEditable(el){
-  if(el.hasAttribute('data-txt')||isDyn(el))return;
+  if(el.hasAttribute('data-txt')||isDyn(el)||el.matches(SKIPTXT))return;
   el.classList.add('ed-txt');el.setAttribute('contenteditable','true');
   if(el.dataset.bound3)return;el.dataset.bound3='1';
   el.addEventListener('blur',function(){
@@ -2631,7 +2673,7 @@ function makeEditable(el){
   el.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();el.blur();}});
 }
 function decorate(root){
-  $$(BLOCK_SEL,root).concat(root.matches&&root.matches(BLOCK_SEL)?[root]:[]).forEach(function(el){
+  $$(BLOCK_SEL,root).forEach(function(el){
     if(!isBlock(el))return;el.classList.add('blk');toolbar(el);
   });
   $$(TEXT_SEL,root).concat(root.matches&&root.matches(TEXT_SEL)?[root]:[]).forEach(function(el){
@@ -2641,6 +2683,7 @@ function decorate(root){
   });
 }
 function undecorate(){
+  $$('.blk.sel').forEach(function(x){x.classList.remove('sel')});
   $$('.blk-ed').forEach(function(x){x.remove()});
   $$('.blk').forEach(function(x){x.classList.remove('blk')});
   $$('.ed-txt').forEach(function(x){x.classList.remove('ed-txt');x.removeAttribute('contenteditable')});
@@ -2652,7 +2695,7 @@ function setEditing(on){
     if(on){
       el.setAttribute('contenteditable','true');el.classList.add('ed-txt');
       if(!el.dataset.bound2){el.dataset.bound2='1';
-        el.addEventListener('blur',function(){if(EDITING)TEXTS[el.dataset.txt]=el.innerText.trim();});
+        el.addEventListener('blur',function(){if(EDITING)TEXTS[el.dataset.txt]=cleanText(el);});
         el.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();el.blur();}});
       }
     }else{el.removeAttribute('contenteditable');el.classList.remove('ed-txt');}
@@ -2662,6 +2705,60 @@ function setEditing(on){
   statsEditor();listEditor('#abSpeak','speak');listEditor('#abIdea','idea');
   listEditor('#abCareer','career');bindSiteText();bindPlayerText();
 }
+/* 編輯中：點一下選中區塊，只有選中的才出現按鈕 */
+document.addEventListener('click',function(e){
+  if(!EDITING)return;
+  if(e.target.closest('.blk-ed,.ed-dock,.opt-sheet,.toast'))return;
+  var b=e.target.closest('.blk');
+  $$('.blk.sel').forEach(function(x){if(x!==b)x.classList.remove('sel')});
+  if(b)b.classList.add('sel');
+},true);
+
+/* 選項清單編輯器 */
+var OPT_BOX=null;
+function openOptSheet(box){
+  if(!box)return;OPT_BOX=box;renderOpt();$('#optSheet').classList.add('on');
+}
+function renderOpt(){
+  var list=$('#optList');list.innerHTML='';
+  var chips=[].slice.call(OPT_BOX.children).filter(function(c){return isChip(c)&&!c.classList.contains('ed-del')});
+  chips.forEach(function(c,i){
+    var hid=c.classList.contains('ed-hidden');
+    var r=document.createElement('div');r.className='opt-row'+(hid?' off':'');
+    r.innerHTML='<input value="'+cleanText(c).replace(/"/g,'&quot;')+'">'+
+      '<button data-o="up">↑</button><button data-o="dn">↓</button>'+
+      '<button data-o="hide">'+(hid?'顯':'藏')+'</button><button data-o="del">×</button>';
+    r.querySelector('input').addEventListener('input',function(e){
+      c.textContent=e.target.value;PATCH.text[c.dataset.k]=e.target.value;
+    });
+    r.addEventListener('click',function(e){
+      var b=e.target.closest('button');if(!b)return;
+      var o=b.dataset.o;
+      if(o==='up'&&i>0){OPT_BOX.insertBefore(c,chips[i-1]);recordOrder(OPT_BOX);}
+      else if(o==='dn'&&i<chips.length-1){OPT_BOX.insertBefore(chips[i+1],c);recordOrder(OPT_BOX);}
+      else if(o==='hide'){var h=!hid;c.classList.toggle('ed-hidden',h);PATCH.hide[c.dataset.k]=h;}
+      else if(o==='del'){if(!confirm('刪除這個選項？'))return;c.classList.add('ed-del');PATCH.del[c.dataset.k]=true;}
+      renderOpt();
+    });
+    list.appendChild(r);
+  });
+}
+$('#optAdd').addEventListener('click',function(){
+  var chips=[].slice.call(OPT_BOX.children).filter(isChip);
+  var src=chips[chips.length-1];if(!src)return;
+  var c=src.cloneNode(true);
+  c.removeAttribute('id');c.classList.remove('ed-hidden','ed-del','on');
+  c.textContent='新選項';
+  c.dataset.k=src.dataset.k.split(':')[0]+':n'+Date.now().toString(36);
+  OPT_BOX.appendChild(c);
+  PATCH.add.push({k:c.dataset.k,after:src.dataset.k,html:c.outerHTML});
+  PATCH.text[c.dataset.k]='新選項';
+  recordOrder(OPT_BOX);renderOpt();
+  var ins=$$('#optList input');if(ins.length){ins[ins.length-1].focus();ins[ins.length-1].select();}
+});
+$('#optDone').addEventListener('click',function(){$('#optSheet').classList.remove('on');toast('選項已更新，記得按儲存')});
+$('#optSheet').addEventListener('click',function(e){if(e.target===$('#optSheet'))$('#optSheet').classList.remove('on')});
+
 /* 編輯中：功能按鈕不送出、晶片不切換、代號頁直接放行 */
 document.addEventListener('click',function(e){
   if(!EDITING)return;
@@ -2791,7 +2888,7 @@ function listEditor(boxSel,key,twoCols){
       var bar=document.createElement('span');bar.className='blk-ed';bar.setAttribute('contenteditable','false');
       bar.innerHTML='<button data-a="up">↑</button><button data-a="dn">↓</button>'+
         '<button data-a="hide" class="lt">'+(row[2]?'顯示':'隱藏')+'</button>'+
-        '<button data-a="add" class="lt">＋</button><button data-a="del">×</button>';
+        '<button data-a="add" class="lt">＋</button><button data-a="del" class="lt">×</button>';
       bar.addEventListener('click',function(e){
         e.preventDefault();e.stopPropagation();
         var b=e.target.closest('button');if(!b)return;
@@ -2807,6 +2904,7 @@ function listEditor(boxSel,key,twoCols){
     }
     box.appendChild(el);
   });
+  if(EDITING&&box.classList.contains('blk'))toolbar(box);
   if(EDITING&&!list.length){
     var add=document.createElement('div');add.className='tile-add';add.style.minHeight='56px';
     add.textContent='＋ 新增一行';
@@ -2880,7 +2978,7 @@ function bindSiteText(){
       if(!el.dataset.bs){el.dataset.bs='1';
         el.addEventListener('blur',function(){
           if(!EDITING)return;
-          SITE[p[1]]=el.innerText.replace(/^「|」$/g,'').trim();
+          SITE[p[1]]=cleanText(el).replace(/^「|」$/g,'').trim();
         });}
     }else{el.classList.remove('ed-txt');el.removeAttribute('contenteditable');}
   });
