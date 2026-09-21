@@ -292,6 +292,26 @@ svg.fig.in circle{opacity:1}
   font-family:var(--mono);font-size:20px;width:110px;padding:4px 0}
 .num-edit span{font-size:13.5px;color:var(--muted);flex:1}
 
+/* 編輯模式：學員端原地編輯 */
+.edit-bar{position:sticky;top:0;z-index:45;display:flex;align-items:center;gap:10px;
+  margin:0 -100vw;padding:10px 100vw;background:var(--signal);color:#fff;font-size:12.5px;
+  padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.edit-bar b{font-weight:500}
+.edit-bar button{background:rgba(255,255,255,.2);border:0;color:#fff;padding:6px 12px;
+  font-size:12px;cursor:pointer}
+.edit-bar .sp{margin-left:auto;display:flex;gap:8px}
+body.editing [data-txt]{outline:1px dashed var(--signal);outline-offset:4px;
+  cursor:text;border-radius:2px}
+body.editing [data-txt]:focus{outline:2px solid var(--signal);background:var(--signal-soft)}
+.tile-ed{position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:2}
+.tile-ed button{width:26px;height:26px;border:1px solid var(--line);background:var(--paper);
+  color:var(--ink-soft);font-size:11px;line-height:1;cursor:pointer;padding:0}
+.tile-ed button:hover{border-color:var(--ink);color:var(--ink)}
+.tile.hidden-t{opacity:.35}
+.tile-add{border:1px dashed var(--line);background:none;color:var(--muted);
+  display:grid;place-items:center;min-height:144px;cursor:pointer;font-size:13.5px}
+.tile-add:hover{border-color:var(--ink);color:var(--ink)}
+
 /* 後台：跟學員端視覺區隔 */
 #z-pro{--surface:var(--pro-surface)}
 :root{--pro-surface:#DFE2DC;--pro-tint:rgba(188,53,39,.045)}
@@ -320,7 +340,7 @@ svg.fig.in circle{opacity:1}
   transition:border-color .2s ease,opacity .2s ease}
 .mtile:hover{border-color:var(--ink)}
 .mtile.off{opacity:.38}
-.mtile svg{width:24px;height:24px;fill:none;stroke:var(--ink);stroke-width:1.35;
+.mtile svg{width:24px;height:24px;fill:none;stroke:var(--ink-soft);stroke-width:1.25;
   stroke-linecap:round;stroke-linejoin:round}
 .mtile svg .hot{stroke:var(--signal)}
 .mtile-t{font-size:13.5px;font-weight:500;margin-top:10px;line-height:1.35}
@@ -401,8 +421,8 @@ svg.fig.in circle{opacity:1}
 .hero-mark{display:block;width:100%;height:52px;margin:18px 0 6px;overflow:visible}
 .hero-mark path,.hero-mark circle{fill:none;stroke:var(--signal);stroke-width:1.7;
   stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:640;stroke-dashoffset:640;
-  animation:heroDraw 2.4s cubic-bezier(.22,.61,.36,1) .35s forwards}
+  stroke-dasharray:1100;stroke-dashoffset:1100;
+  animation:heroDraw 4.2s cubic-bezier(.33,.02,.28,1) .5s forwards}
 .hero-mark .soft{stroke:var(--line);stroke-width:1.2}
 @keyframes heroDraw{to{stroke-dashoffset:0}}
 @media (prefers-reduced-motion:reduce){
@@ -424,11 +444,11 @@ svg.fig.in circle{opacity:1}
 .tile:hover{border-color:var(--ink-soft);background:var(--paper)}
 .tile:hover::after{transform:scaleX(1)}
 .tile:active{transform:scale(.978)}
-.tile svg{width:34px;height:34px;fill:none;stroke:var(--ink);stroke-width:1.35;
+.tile svg{width:32px;height:32px;fill:none;stroke:var(--ink-soft);stroke-width:1.25;
   stroke-linecap:round;stroke-linejoin:round;
-  transition:transform .3s cubic-bezier(.22,.61,.36,1)}
-.tile svg .hot{stroke:var(--signal)}
-.tile:hover svg{transform:translateY(-2px) scale(1.06)}
+  transition:transform .32s cubic-bezier(.22,.61,.36,1),stroke .25s ease}
+.tile svg .hot{stroke:var(--signal);stroke-width:1.35}
+.tile:hover svg{stroke:var(--ink);transform:translateY(-2px)}
 .tile-t{font-size:16px;font-weight:500;line-height:1.35;margin-top:18px;letter-spacing:-.01em}
 @media (prefers-reduced-motion:reduce){
   .tile{opacity:1;transform:none;animation:none}
@@ -859,6 +879,10 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 <div class="zone" id="z-student">
   <div class="preview-bar" id="pvBar" style="display:none">
     <span>預覽模式 · 送出不會存檔</span><button id="pvExit">離開預覽</button>
+  </div>
+  <div class="edit-bar" id="edBar" style="display:none">
+    <b>編輯模式</b><span>直接點文字就能改</span>
+    <span class="sp"><button id="edSave">儲存</button><button id="edExit">離開</button></span>
   </div>
   <div class="nav hide" id="nav"><button class="back" id="back" aria-label="返回"><b>←</b>返回</button><span class="nav-t" id="navt"></span></div>
 
@@ -1383,6 +1407,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
   <div class="zone-head"><h2>學員看得到的</h2><span>點磁磚直接去改</span></div>
   <p class="sub" style="margin-top:12px">這就是學員首頁的樣子。點眼睛切換顯示，點磁磚跳到該項目的設定。</p>
+  <button class="btn" id="goEdit" style="margin-top:14px">開啟編輯模式．直接在學員畫面上改</button>
   <div class="mirror" id="mirror"></div>
 
   <div style="margin-top:20px">
@@ -1607,8 +1632,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div style="display:flex;gap:10px;margin-top:16px">
       <button class="btn btn-quiet" style="margin:0" data-save="notify">儲存</button>
       <button class="btn btn-quiet" style="margin:0" id="testMail">寄測試信</button>
+    <button class="btn btn-quiet" style="margin:0" id="testOpen">連線診斷</button>
     </div>
-    <p class="hint">沒填服務網址的話信寄不出去，但資料還是會正常進後台收件匣，不會遺失。</p>
+    <p class="hint">按「連線診斷」會開新分頁，直接顯示 Apps Script 回傳什麼。看到 <b>{"ok":true …}</b> 代表通了；看到 Google 的登入頁或錯誤頁，代表部署時「具有存取權的使用者」沒選「任何人」。</p>
   </div></div>
 
   <div class="grp" id="grp-about"><div class="grp-h"><span class="grp-t">講師介紹</span><span class="grp-m" id="aboutTag"></span><span class="grp-c">›</span></div>
@@ -2150,6 +2176,13 @@ function show(id,isBack){
   if(id==='p-home'){nav.classList.add('hide');}
   else{nav.classList.remove('hide');$('#navt').textContent=TITLES[id]||'';}
   var pg=$('#'+id);
+  // 重新進入表單頁時，把送出後的完成畫面收起來
+  [['p-invite','#ivForm','#ivDone'],['p-feedback','#fbForm','#fbDone'],
+   ['p-whisper','#wForm','#wDone']].forEach(function(t){
+    if(id!==t[0])return;
+    var f=$(t[1]),d=$(t[2]);
+    if(f&&d&&d.classList.contains('is-on')){f.style.display='';d.classList.remove('is-on');}
+  });
   $$('.rv',pg).forEach(function(n){n.classList.remove('in')});
   $$('svg.fig path',pg).forEach(function(pt){
     var L=pt.getTotalLength();pt.style.strokeDasharray=L;pt.style.strokeDashoffset=L;});
@@ -2166,7 +2199,13 @@ function go(id){
 }
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-go]');
-  if(t){e.preventDefault();go(t.dataset.go);}
+  if(t){
+    if(EDITING&&t.classList.contains('tile')){
+      var d=TILES.filter(function(x){return x.on});
+      toast('編輯模式中，先按離開才能進去');return;
+    }
+    e.preventDefault();go(t.dataset.go);
+  }
 });
 $('#back').addEventListener('click',function(){
   stack.pop();var prev=stack[stack.length-1]||'p-home';
@@ -2388,7 +2427,7 @@ function toast(msg){
 
 /* ================= 課程主視覺 ================= */
 var HERO={
- ecg:'<path class="soft" d="M0 30 H120"/><path d="M120 30 L134 30 L142 10 L152 48 L161 22 L170 30 L188 30"/><path class="soft" d="M188 30 H212"/><path d="M212 30 L226 30 L234 12 L244 46 L253 24 L262 30 L276 30"/><path class="soft" d="M276 30 H400"/>',
+ ecg:'<path d="M0 30 L96 30 L104 30 L110 22 L116 30 L150 30 L158 30 L166 8 L176 50 L185 20 L194 30 L228 30 L236 30 L242 23 L248 30 L286 30 L294 30 L302 12 L311 46 L319 24 L328 30 L400 30"/>',
  heart:'<path class="soft" d="M0 30 H132"/><path d="M132 30 L146 30 L154 14 L164 46 L173 22 L182 30 L196 30"/><path class="soft" d="M196 30 H244"/><path d="M290 44s-22-13-22-24a10 10 0 0 1 19-5 10 10 0 0 1 19 5c0 11-22 24-22 24z"/><path class="soft" d="M330 30 H400"/>',
  flame:'<path class="soft" d="M0 30 H150"/><path d="M200 8c10 12 16 19 16 30a16 16 0 1 1-32 0c0-11 6-18 16-30z"/><path class="soft" d="M200 44a7 7 0 0 1-7-7c0-4 3-7 7-12 4 5 7 8 7 12a7 7 0 0 1-7 7z"/><path class="soft" d="M250 30 H400"/>',
  aed:'<path class="soft" d="M0 30 H132"/><path d="M148 12h104a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H148a6 6 0 0 1-6-6V18a6 6 0 0 1 6-6z"/><path d="m205 20-9 14h11l-8 12"/><path class="soft" d="M274 30 H400"/>',
@@ -2418,50 +2457,74 @@ document.addEventListener('click',function(e){
 
 /* ================= 首頁功能磁磚 ================= */
 var ICONS={
- /* 消防帽：講師本人 */
- helmet:'<path d="M4.4 17.2c0-4.9 3.4-8.8 7.6-8.8s7.6 3.9 7.6 8.8"/><path d="M3 17.2h18v2.4H3z"/><path class="hot" d="M12 8.4V4.6"/><path class="hot" d="M9.6 6.2 12 4.2l2.4 2"/>',
- /* 心電圖板夾：測驗 */
- clipboard:'<path d="M7.2 4.4h9.6a1.4 1.4 0 0 1 1.4 1.4v13.4a1.4 1.4 0 0 1-1.4 1.4H7.2a1.4 1.4 0 0 1-1.4-1.4V5.8a1.4 1.4 0 0 1 1.4-1.4z"/><path d="M9.6 3h4.8v2.8H9.6z"/><path class="hot" d="M8.4 13.4h2l1-2.4 1.6 4.4 1.2-2.8h1.4"/>',
- /* 對話星星：回饋 */
- feedback:'<path d="M20 12.6c0 3.4-3.6 6.2-8 6.2-1 0-2-.15-2.9-.42L4.4 20l1.3-3.3A5.9 5.9 0 0 1 4 12.6c0-3.4 3.6-6.2 8-6.2s8 2.8 8 6.2z"/><path class="hot" d="m12 9.6 1.1 2.2 2.4.35-1.75 1.7.4 2.4L12 15.1l-2.15 1.15.4-2.4L8.5 12.15l2.4-.35z"/>',
- /* 信封：邀約 */
- mail:'<path d="M3.6 6.4h16.8v11.2H3.6z"/><path d="m3.6 7 8.4 6 8.4-6"/><path class="hot" d="M3.6 17.6 9.6 12M20.4 17.6 14.4 12"/>',
- /* 住警器與火：防災 */
- alarm:'<path d="M5.2 4.6h13.6v6.2H5.2z"/><circle cx="12" cy="7.7" r="1.5"/><path class="hot" d="M12 13.2c2.2 2.4 3.4 3.8 3.4 5.6a3.4 3.4 0 0 1-6.8 0c0-1.8 1.2-3.2 3.4-5.6z"/>',
- /* AED：急救 */
- aed:'<path d="M4.6 5.6h14.8a1.4 1.4 0 0 1 1.4 1.4v10a1.4 1.4 0 0 1-1.4 1.4H4.6A1.4 1.4 0 0 1 3.2 17V7a1.4 1.4 0 0 1 1.4-1.4z"/><path class="hot" d="m12.8 8.2-2.6 4h3.2l-2.2 3.6"/><path d="M17 9.4v5.2"/>',
- /* 上鎖對話：悄悄話 */
- lock:'<path d="M20 12.8c0 2.7-2.2 4.9-4.9 4.9H9.4L4.8 20.4l1.2-3.5a4.9 4.9 0 0 1-2.2-4.1V8.6c0-2.7 2.2-4.9 4.9-4.9h6.4c2.7 0 4.9 2.2 4.9 4.9z"/><path class="hot" d="M10.4 11.1V9.9a1.6 1.6 0 0 1 3.2 0v1.2"/><path d="M9.7 11.1h4.6v3.3H9.7z"/>',
- /* 外部連結：自訂項目 */
- link:'<path d="M13.6 4.4h6v6"/><path class="hot" d="M19.6 4.4 11.4 12.6"/><path d="M18 14.2v5.4H4.6V6.2H10"/>'
+ /* 統一規則：24 格、邊界留 3、單一輪廓、只有一處紅色細節 */
+ user:'<circle cx="12" cy="8" r="3.5"/><path d="M4.9 20.2c0-3.9 3.2-6.3 7.1-6.3s7.1 2.4 7.1 6.3"/>',
+ quiz:'<path d="M7 4.6h10a1.6 1.6 0 0 1 1.6 1.6v12.8A1.6 1.6 0 0 1 17 20.6H7a1.6 1.6 0 0 1-1.6-1.6V6.2A1.6 1.6 0 0 1 7 4.6z"/><path d="M9.7 3.2h4.6v2.8H9.7z"/><path class="hot" d="m9.2 12.4 2.1 2.1 4.1-4.4"/>',
+ star:'<path d="m12 4 2.42 4.9 5.41.79-3.92 3.81.93 5.39L12 16.35 7.16 18.9l.93-5.39-3.92-3.81 5.41-.79z"/>',
+ mail:'<path d="M3.6 6.2h16.8v11.6H3.6z"/><path class="hot" d="m3.6 6.9 8.4 6.5 8.4-6.5"/>',
+ flame:'<path d="M12 3c3.5 4.1 5.8 6.7 5.8 10.3a5.8 5.8 0 1 1-11.6 0C6.2 9.7 8.5 7.1 12 3z"/><path class="hot" d="M12 19.1a2.7 2.7 0 0 1-2.7-2.7c0-1.6 1.2-2.5 2.7-4.5 1.5 2 2.7 2.9 2.7 4.5a2.7 2.7 0 0 1-2.7 2.7z"/>',
+ heart:'<path d="M20.5 8.5c0-2.6-2.1-4.6-4.5-4.6-1.8 0-3.3 1-4 2.5-.7-1.5-2.2-2.5-4-2.5C5.6 3.9 3.5 5.9 3.5 8.5c0 5.1 8.5 10.8 8.5 10.8s8.5-5.7 8.5-10.8z"/><path class="hot" d="M6.7 11.5h2.4l1.3-2.4 1.8 4.5 1.4-2.1h3.7"/>',
+ lock:'<path d="M20 12.4c0 3.2-3.6 5.8-8 5.8-.95 0-1.86-.12-2.7-.35L4.6 19.8l1.2-3.1A5.6 5.6 0 0 1 4 12.4C4 9.2 7.6 6.6 12 6.6s8 2.6 8 5.8z"/><path class="hot" d="M10.9 12.1v-1a1.1 1.1 0 0 1 2.2 0v1"/><path class="hot" d="M10.3 12.1h3.4v2.9h-3.4z"/>',
+ link:'<path d="M13.8 5.2h5v5"/><path class="hot" d="M18.8 5.2 11.4 12.6"/><path d="M17.4 14v5.4H4.8V6.6H10"/>'
 };
 var TILES=[
- {id:'about',    t:'講師介紹',     icon:'helmet',    go:'p-about',     on:true},
- {id:'quiz',     t:'線上測驗',     icon:'clipboard', go:'p-quiz',      on:true, dot:true},
- {id:'feedback', t:'課程回饋',     icon:'feedback',  gate:'p-feedback',on:true},
- {id:'invite',   t:'課程邀約',     icon:'mail',      go:'p-invite',    on:true},
- {id:'disaster', t:'防災知識專區', icon:'alarm',     go:'p-disaster',  on:true},
- {id:'firstaid', t:'急救教育專區', icon:'aed',       go:'p-firstaid',  on:true},
- {id:'whisper',  t:'傳聲悄悄話',   icon:'lock',      go:'p-whisper',   on:true}
+ {id:'about',    t:'講師介紹',     icon:'user',  go:'p-about',     on:true},
+ {id:'quiz',     t:'線上測驗',     icon:'quiz',  go:'p-quiz',      on:true, dot:true},
+ {id:'feedback', t:'課程回饋',     icon:'star',  gate:'p-feedback',on:true},
+ {id:'invite',   t:'課程邀約',     icon:'mail',  go:'p-invite',    on:true},
+ {id:'disaster', t:'防災知識專區', icon:'flame', go:'p-disaster',  on:true},
+ {id:'firstaid', t:'急救教育專區', icon:'heart', go:'p-firstaid',  on:true},
+ {id:'whisper',  t:'傳聲悄悄話',   icon:'lock',  go:'p-whisper',   on:true}
 ];
 function renderTiles(){
   var grid=$('#tileGrid');if(!grid)return;
-  var vis=TILES.filter(function(t){return t.on});
+  var vis=EDITING?TILES.slice():TILES.filter(function(t){return t.on});
   grid.innerHTML='';
   vis.forEach(function(t,i){
     var wide=(vis.length%2===1&&i===vis.length-1);
     var el=document.createElement('div');
-    el.className='tile'+(wide?' wide':'');
-    el.style.animationDelay=(0.26+i*0.055).toFixed(2)+'s';
+    el.className='tile'+(wide?' wide':'')+((EDITING&&!t.on)?' hidden-t':'');
+    el.style.animationDelay=EDITING?'0s':(0.26+i*0.055).toFixed(2)+'s';
     if(t.url)el.setAttribute('data-url',t.url);
     else if(t.gate)el.setAttribute('data-gate',t.gate);
     else el.setAttribute('data-go',t.go||'p-home');
     el.innerHTML='<svg viewBox="0 0 24 24">'+(ICONS[t.icon]||ICONS.link)+'</svg>'+
-      '<span class="tile-t">'+t.t+'</span>'+
-      (t.dot?'<span class="tile-dot"></span>':'')+
-      (t.quiet?'<span class="tile-q">'+t.quiet+'</span>':'');
+      '<span class="tile-t"'+(EDITING?' contenteditable="true"':'')+'>'+t.t+'</span>'+
+      (t.dot&&!EDITING?'<span class="tile-dot"></span>':'')+
+      (EDITING?'<span class="tile-ed">'+
+        '<button data-e="up" title="上移">↑</button>'+
+        '<button data-e="dn" title="下移">↓</button>'+
+        '<button data-e="hide" title="隱藏">◉</button>'+
+        '<button data-e="del" title="刪除">×</button></span>':'');
+    if(EDITING){
+      el.querySelector('.tile-t').addEventListener('blur',function(ev){
+        t.t=ev.target.innerText.trim()||'未命名';renderTileEdit();renderMirror();
+      });
+      el.querySelector('.tile-t').addEventListener('click',function(ev){ev.stopPropagation()});
+      el.querySelectorAll('[data-e]').forEach(function(b){
+        b.addEventListener('click',function(ev){
+          ev.stopPropagation();
+          var k=b.dataset.e, ix=TILES.indexOf(t);
+          if(k==='hide'){t.on=false;}
+          else if(k==='del'){if(TILES.length>1)TILES.splice(ix,1);}
+          else{var n=k==='up'?ix-1:ix+1;
+               if(n<0||n>=TILES.length)return;
+               var tmp=TILES[ix];TILES[ix]=TILES[n];TILES[n]=tmp;}
+          renderTiles();renderTileEdit();renderMirror();
+        });
+      });
+    }
     grid.appendChild(el);
   });
+  if(EDITING){
+    var add=document.createElement('button');
+    add.className='tile-add';add.textContent='＋ 新增功能';
+    add.addEventListener('click',function(){
+      TILES.push({id:'c'+Date.now(),t:'新功能',icon:'link',url:'',on:true});
+      renderTiles();renderTileEdit();renderMirror();
+    });
+    grid.appendChild(add);
+  }
   var pg=$('#p-home');
   if(pg)setTimeout(function(){$$('.rv',pg).forEach(function(n){n.classList.add('in')})},20);
 }
@@ -2505,6 +2568,48 @@ document.addEventListener('click',function(e){
   if(t&&t.dataset.url){window.open(t.dataset.url,'_blank','noopener');}
 });
 try{renderTiles();renderTileEdit();renderMirror();}catch(e){console.warn('磁磚初始化',e)}
+
+/* ---- 編輯模式 ---- */
+var EDITING=false;
+function setEditing(on){
+  EDITING=on;
+  document.body.classList.toggle('editing',on);
+  $('#edBar').style.display=on?'flex':'none';
+  $$('[data-txt]').forEach(function(el){
+    if(on){
+      el.setAttribute('contenteditable','true');
+      if(!el.dataset.bound2){
+        el.dataset.bound2='1';
+        el.addEventListener('blur',function(){
+          TEXTS[el.dataset.txt]=el.innerText.replace(/\n{2,}/g,'\n').trim();
+        });
+        el.addEventListener('keydown',function(e){
+          if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();el.blur();}
+        });
+      }
+    }else{
+      el.removeAttribute('contenteditable');
+    }
+  });
+  renderTiles();
+}
+$('#goEdit').addEventListener('click',function(){
+  setEditing(true);showZone('z-student');go('p-home');
+  toast('點任何文字就能直接改');
+});
+$('#edExit').addEventListener('click',function(){
+  setEditing(false);showZone('z-pro');
+});
+$('#edSave').addEventListener('click',async function(){
+  if(!window.fb||!window.fb.auth.currentUser){toast('請先登入');return;}
+  var F=window.fb;
+  try{
+    await F.setDoc(F.doc(F.db,'instructors','main'),{texts:TEXTS},{merge:true});
+    await F.setDoc(F.doc(F.db,'courses',F.COURSE),{tiles:TILES,title:COURSE.title},{merge:true});
+    toast('已儲存');logChange('在編輯模式修改頁面');
+    renderTxtEdit();renderTileEdit();renderMirror();
+  }catch(e){toast('儲存失敗：'+(e.code||e.message))}
+});
 
 /* ---- 後台鏡像：所見即所得 ---- */
 var TILEGRP={about:'grp-about',quiz:'grp-quiz',feedback:'grp-feedback',
@@ -3039,6 +3144,20 @@ function renderTxtEdit(){
   var t=$('#txtTag');if(t)t.textContent=TXTDEF.length+' 段';
 }
 try{applyTexts();renderTxtEdit();}catch(e){console.warn('頁面文字',e)}
+
+/* ---- 寄信連線診斷 ---- */
+var tOpen=$('#testOpen');
+if(tOpen)tOpen.addEventListener('click',function(){
+  pullForms();
+  var ep=(SITE.notify.endpoint||'').trim();
+  var to=(SITE.notify.emails||'').split(/[\s,;]+/).filter(Boolean);
+  if(!ep){toast('還沒填服務網址');return;}
+  if(!to.length){toast('還沒填收件信箱');return;}
+  if(ep.indexOf('/exec')<0){toast('網址結尾要是 /exec，不是 /dev');return;}
+  var u=ep+(ep.indexOf('?')>=0?'&':'?')+'diag=1&to='+encodeURIComponent(to.join(','));
+  window.open(u,'_blank','noopener');
+  toast('已開新分頁，看那邊回傳什麼');
+});
 
 /* ---- 帳號與密碼 ---- */
 function authErr(e){
