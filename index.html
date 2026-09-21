@@ -455,6 +455,13 @@ body.dirty #z-pro{padding-bottom:80px}
 
 #verFoot{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);opacity:.6}
 
+/* 回饋的選項分布：選項和人數分開 */
+.dists{display:flex;flex-wrap:wrap;gap:6px}
+.dist{display:inline-flex;align-items:stretch;border:1px solid var(--line);font-size:13px;line-height:1}
+.dist-k{padding:6px 9px;color:var(--ink)}
+.dist-n{padding:6px 8px;background:var(--signal-soft);color:var(--signal);font-family:var(--mono);
+  font-size:12px;border-left:1px solid var(--line);white-space:nowrap}
+
 /* 編輯入口卡片 */
 .edit-entry{display:flex;align-items:center;gap:15px;margin-top:16px;padding:18px 18px;
   border:1px solid var(--signal);background:var(--signal-soft);cursor:pointer;
@@ -799,9 +806,12 @@ body.editing .wrap{padding-bottom:140px}
 /* notification preview */
 .notif{position:fixed;left:12px;right:12px;top:calc(10px + env(safe-area-inset-top,0px));z-index:90;background:var(--surface);
   border:1px solid var(--line);padding:13px 14px;display:flex;gap:12px;
-  transform:translateY(-140%);transition:transform .42s cubic-bezier(.22,.9,.3,1);
+  transform:translateY(calc(-100% - 30px - env(safe-area-inset-top,0px)));
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:transform .42s cubic-bezier(.22,.9,.3,1),opacity .25s ease,visibility 0s linear .42s;
   box-shadow:0 8px 24px rgba(8,12,14,.14)}
-.notif.is-on{transform:none}
+.notif.is-on{transform:none;opacity:1;visibility:visible;pointer-events:auto;
+  transition:transform .42s cubic-bezier(.22,.9,.3,1),opacity .2s ease,visibility 0s}
 .notif-i{width:34px;height:34px;background:var(--ink);color:var(--paper);display:grid;
   place-items:center;flex:none;font-size:16px}
 .notif-b{flex:1;min-width:0}
@@ -1005,7 +1015,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   .f-in{font-size:15.5px}
 
   /* 通知靠右上，不再橫跨整個畫面 */
-  .notif{left:auto;right:20px;top:18px;width:380px}
+  .notif{left:auto;right:20px;top:calc(18px + env(safe-area-inset-top,0px));width:380px}
   .lbox-in{max-width:520px}
   .gate-in{padding-top:16vh}
 }
@@ -2085,7 +2095,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v6.0　2026/09/22';
+var APP_VERSION='v6.2　2026/09/22';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4116,8 +4126,8 @@ async function loadSessBody(code){
         h+='<div class="trow"><span class="trow-n">'+lb+'</span><span class="bar"><i style="width:'+(m/5*100)+'%"></i></span><span class="trow-v">'+m+'</span></div>';
       }else if(TEXT_LABELS.indexOf(lb)<0&&vals.every(function(v){return v.length<=20})){
         var cnt={};vals.forEach(function(v){v.split('、').forEach(function(p){cnt[p]=(cnt[p]||0)+1})});
-        h+='<div class="ans-line"><b>'+lb.slice(0,5)+'</b><span>'+Object.keys(cnt).sort(function(x,y){return cnt[y]-cnt[x]})
-          .map(function(k){return k+' '+cnt[k]}).join('．')+'</span></div>';
+        h+='<div class="ans-line"><b>'+lb.slice(0,5)+'</b><span class="dists">'+Object.keys(cnt).sort(function(x,y){return cnt[y]-cnt[x]})
+          .map(function(k){return '<span class="dist"><span class="dist-k">'+k.replace(/</g,'&lt;')+'</span><span class="dist-n">'+cnt[k]+' 人</span></span>'}).join('')+'</span></div>';
       }else{
         h+='<div class="section-head"><h2 style="font-size:12px">'+lb+'</h2><span>'+vals.length+' 則</span></div>'+
           vals.map(function(v){return '<div class="note" style="margin:6px 0;padding:10px 12px;background:var(--surface)">'+v.replace(/</g,'&lt;')+'</div>'}).join('');
