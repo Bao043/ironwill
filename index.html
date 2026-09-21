@@ -1278,9 +1278,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="rows" style="margin-top:20px">
       <div class="row" data-gate="p-profile"><div class="row-n">前</div><div class="row-b"><div class="row-t">課前測驗</div><div class="row-d">上課前先測，知道自己哪裡不熟</div></div><div class="row-go">→</div></div>
       <div class="row" data-gate="p-name"><div class="row-n">後</div><div class="row-b"><div class="row-t">課後測驗</div><div class="row-d" id="postMeta">約 2 分鐘</div></div><div class="row-go">→</div></div>
-      <div class="row" data-go="p-top3"><div class="row-n">榜</div><div class="row-b"><div class="row-t">前三名</div><div class="row-d">成績榜與進步榜，課堂表揚用</div></div><div class="row-go">→</div></div>
-      <div class="row" data-go="p-stats"><div class="row-n">計</div><div class="row-b"><div class="row-t">本堂統計</div><div class="row-d">跟全班比、看哪幾題最多人誤會</div></div><div class="row-go">→</div></div>
-      <div class="row" data-go="p-explain"><div class="row-n">解</div><div class="row-b"><div class="row-t">題目詳解</div><div class="row-d">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
+      <div class="row" id="rowTop" data-go="p-top3"><div class="row-n">榜</div><div class="row-b"><div class="row-t">前三名</div><div class="row-d">成績榜與進步榜，課堂表揚用</div></div><div class="row-go">→</div></div>
+      <div class="row" id="rowStats" data-go="p-stats"><div class="row-n">計</div><div class="row-b"><div class="row-t">本堂統計</div><div class="row-d">跟全班比、看哪幾題最多人誤會</div></div><div class="row-go">→</div></div>
+      <div class="row" id="rowExp" data-go="p-explain"><div class="row-n">解</div><div class="row-b"><div class="row-t">題目詳解</div><div class="row-d">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
     </div>
     <p class="note">題目、正解、詳解都在同一個地方，所以作答完立刻就有統計，不用等講師另外整理。</p>
   </section>
@@ -1356,15 +1356,16 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
         <p class="sub" style="margin-top:10px" id="scoreS"></p>
       </div>
       <div class="stats" style="margin-top:24px">
-        <div class="stat"><div class="stat-n" id="sPre">—</div><div class="stat-l">課前</div></div>
-        <div class="stat"><div class="stat-n" id="sPost">—</div><div class="stat-l">課後</div></div>
-        <div class="stat"><div class="stat-n" id="sUp" style="color:var(--ok)">—</div><div class="stat-l">進步</div></div>
+        <div class="stat" data-qv="score"><div class="stat-n" id="sPre">—</div><div class="stat-l">課前</div></div>
+        <div class="stat" data-qv="score"><div class="stat-n" id="sPost">—</div><div class="stat-l">課後</div></div>
+        <div class="stat" data-qv="score"><div class="stat-n" id="sUp" style="color:var(--ok)">—</div><div class="stat-l">進步</div></div>
       </div>
-      <button class="btn" data-go="p-stats">看本堂統計</button>
-      <button class="btn btn-quiet" data-go="p-top3">看前三名</button>
-      <button class="btn btn-quiet" data-go="p-explain">看題目詳解</button>
+      <button class="btn" id="goStats" data-go="p-stats">看本堂統計</button>
+      <button class="btn btn-quiet" id="goTop" data-go="p-top3">看前三名</button>
+      <button class="btn btn-quiet" id="goExp" data-go="p-explain">看題目詳解</button>
       <button class="btn btn-quiet" id="qagain">重做一次</button>
-      <p class="note">送出的同時就進統計了，下面那三個數字是全班即時的。</p>
+      <button class="btn btn-quiet" id="goHome">回到首頁</button>
+      <p class="note" data-qv="score">上面的分數只有你自己看得到，不會公開。</p>
     </div>
   </section>
 
@@ -1378,7 +1379,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       <input class="code-in" id="codeIn" inputmode="numeric" maxlength="4" placeholder="0000">
       <div class="code-bad" id="codeBad">代號不對。講師會寫在白板上，或直接問一下。</div>
       <button class="btn" id="codeOk">確認</button>
-      <button class="btn btn-quiet" data-go="p-explain">我只想看題目詳解</button>
+      <button class="btn btn-quiet" id="codeExp" data-go="p-explain">我只想看題目詳解</button>
       <p class="note">詳解跟統計不用代號也看得到，因為那些不會影響數據。代號只擋作答與回饋。</p>
     </div>
   </section>
@@ -1713,19 +1714,13 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div id="qeList" style="margin-top:14px"></div>
     <button class="btn btn-quiet" data-save="questions">儲存題庫</button>
 
-    <div class="section-head"><h2>成績與統計開放給學員</h2><span>6</span></div>
-    <p class="sub">學員看得到哪些，由你決定。全部關掉的話，測驗就只是收資料，學員只看得到自己答完了。</p>
-    <div class="f" style="padding-top:12px"><div class="f-q">分數</div>
-      <div class="chips" data-one><span class="chip on" data-q="score:1">作答後看得到分數</span><span class="chip" data-q="score:0">不顯示分數</span></div></div>
-    <div class="f"><div class="f-q">錯誤的題目</div>
-      <div class="chips" data-one><span class="chip on" data-q="wrong:1">看得到自己錯哪幾題</span><span class="chip" data-q="wrong:0">不顯示錯題</span></div></div>
-    <div class="f"><div class="f-q">題目詳解</div>
-      <div class="chips" data-one><span class="chip on" data-q="exp:now">作答完成立刻公開</span><span class="chip" data-q="exp:later">另行公開（由講師宣布）</span></div>
-      <div class="f-hint" style="margin-top:8px">選「另行公開」時，學員點詳解會看到「講師尚未開放」，你在這裡改成立刻公開就會全部出現</div></div>
-    <div class="toggle-row"><span>全班統計與及格率</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>每題正確率與誤會排行</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>前三名榜單</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>分眾統計（年齡、年資、上課次數）</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="section-head"><h2>作答完學員看得到什麼</h2><span>5</span></div>
+    <p class="sub">關掉的項目，在「線上測驗」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。</p>
+    <div class="toggle-row"><span>分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前、課後分數與進步多少</em></span><span class="sw on" id="qvScore" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>本堂統計<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">全班平均、及格率、最多人誤會的題目</em></span><span class="sw on" id="qvStats" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>題目詳解<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">正解與解析．關掉就等你上課講完再開</em></span><span class="sw on" id="qvExp" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>允許重做<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關掉時，同一堂的課前、課後各只能做一次</em></span><span class="sw" id="qvRetry" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="toggle-row"><span>前三名<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">在「成績與回饋」公布這一堂的前三名，學員才看得到入口</em></span><button class="qbtn" id="qvTopGo">去公布</button></div>
     <div class="f"><div class="f-q">榜單上的姓名怎麼顯示</div>
       <div class="chips" data-one style="margin-top:10px">
         <span class="chip">全名</span><span class="chip on">陳○宇</span><span class="chip">只顯示姓</span><span class="chip">不顯示</span>
@@ -2095,7 +2090,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v6.2　2026/09/22';
+var APP_VERSION='v6.3　2026/09/22';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2253,6 +2248,9 @@ function go(id){
   if(id!==stack[stack.length-1]){stack.push(id);}
   show(id,false);
   if(id==='p-name'||id==='p-profile')prefillName();
+  if(id==='p-quiz'||id==='p-run')checkTopPublished();
+  if(id==='p-explain'&&!quizOpts().exp&&!EDITING){toast('講師還沒開放題目詳解');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
+  if(id==='p-stats'&&!quizOpts().stats&&!EDITING){toast('講師還沒開放本堂統計');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
   if(HITMAP[id])countHit(HITMAP[id]);
   if(id==='p-stats')loadClassStats();
   if(id==='p-top3')loadTop();
@@ -2265,6 +2263,10 @@ document.addEventListener('click',function(e){
   }
 });
 $('#back').addEventListener('click',function(){
+  var cur=stack[stack.length-1];
+  if(cur==='p-run'&&$('#runDone')&&$('#runDone').style.display!=='none'){
+    stack=['p-home','p-quiz'];show('p-quiz',true);return;
+  }
   stack.pop();var prev=stack[stack.length-1]||'p-home';
   if(!stack.length)stack=['p-home'];
   show(prev,true);
@@ -2403,6 +2405,11 @@ $('#qnext').addEventListener('click',function(){
     $('#sPost').innerHTML=mine.post!=null?mine.post+'<small>%</small>':'—';
     $('#sUp').innerHTML=(mine.pre!=null&&mine.post!=null)?((mine.post-mine.pre>=0?'+':'')+(mine.post-mine.pre)):'—';
     saveAttempt(pct);
+    if(!PREVIEW&&!EDITING){try{localStorage.setItem(doneKey(QMODE),'1')}catch(e){}}
+    var st0=$('#scoreT'),ss0=$('#scoreS');
+    if(st0)st0.dataset.full=st0.textContent;if(ss0)ss0.dataset.full=ss0.textContent;
+    stack=['p-home','p-quiz','p-run'];     // 完成後按返回＝回到線上測驗，不會回到題目
+    applyQuizVis();checkTopPublished();
     renderExplain();pushMyScore(pct);
     window.scrollTo({top:0,behavior:'instant'});
   }
@@ -3115,7 +3122,7 @@ var SITE={
 };
 var COURSE={title:'',sub:'',pass:60,
             tags:['實作課','3 小時','2026 / 09 / 14'], icon:'ecg',
-            quiz:{score:true,wrong:true,exp:'now'}};
+            quiz:{score:true,stats:true,exp:true,retry:false}};
 
 /* 講師介紹的資料清單：編輯模式下原地可改 */
 function listEditor(boxSel,key,twoCols){
@@ -3333,6 +3340,9 @@ function applyForms(){
   v('#edVidUrl',SITE.videos.url);v('#edVidTitle',SITE.videos.title);
   v('#edVidNote',SITE.videos.note);v('#edVidMore',SITE.videos.more);
   v('#edDrive',SITE.drive);v('#edPhotos',SITE.photos);photoCheck();v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
+  var qq=quizOpts();
+  [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry]].forEach(function(p){
+    var e=$(p[0]);if(e){e.classList.toggle('on',!!p[1]);e.setAttribute('aria-checked',String(!!p[1]));}});
   var nv=$('#nfViews');if(nv){nv.classList.toggle('on',SITE.showViews!==false);nv.setAttribute('aria-checked',String(SITE.showViews!==false));}
   v('#edIG',SITE.contact.ig);v('#edLine',SITE.contact.line);
   v('#edTel',SITE.contact.tel);v('#edMail',SITE.contact.mail);
@@ -3548,6 +3558,7 @@ function renderAll(){
              renderQBank,renderQ,renderExplain,refreshArts,renderArtEdit,renderTxtEdit];
   steps.forEach(function(fn){try{fn()}catch(e){console.warn('畫面更新',fn.name,e)}});
   try{['speak','career','idea','ops'].forEach(renderET)}catch(e){}
+  try{applyQuizVis()}catch(e){}
 }
 async function loadAll(force){
   var F=window.fb;if(!F)return;
@@ -4016,6 +4027,14 @@ document.addEventListener('click',async function(e){
     toast('已下載');
   }catch(err){toast('匯出失敗：'+(err.code||err.message))}
 });
+
+/* ---- 完成頁：回到首頁；後台：去公布前三名 ---- */
+(function(){
+  var h=$('#goHome');if(h)h.addEventListener('click',function(){stack=['p-home'];show('p-home',true);});
+  var tg=$('#qvTopGo');if(tg)tg.addEventListener('click',function(){
+    var g=$('#grp-feedback');if(g){g.classList.add('open');renderSessions();setTimeout(function(){g.scrollIntoView({behavior:'smooth',block:'start'})},80);}
+  });
+})();
 
 /* ---- 後台頂端「控制台」 ---- */
 (function(){var h=$('#pbHome');if(!h)return;
@@ -4783,6 +4802,10 @@ document.addEventListener('click',function(e){
   if(!t)return;
   e.preventDefault();
   if(EDITING){if(t.closest('#tileGrid'))return;var dd=t.dataset.gate;if(dd==='p-run')dd='p-profile';go(dd);return;}
+  var gm=t.dataset.gate==='p-profile'?'pre':t.dataset.gate==='p-name'?'post':null;
+  if(gm&&isDone(gm)&&!quizOpts().retry&&!EDITING){
+    toast('這一堂的'+(gm==='pre'?'課前':'課後')+'測驗你已經做過了');return;
+  }
   if(hasPassed()){
     var d=t.dataset.gate;
     if(d==='p-run')d=profileName?'p-name':'p-profile';
@@ -4803,6 +4826,34 @@ $('#codeOk').addEventListener('click',function(){
     go(dest);
   }else{$('#codeBad').classList.add('on');}
 });
+/* ---- 作答後學員看得到什麼 ---- */
+var TOP_PUB=false;
+function quizOpts(){
+  var q=(COURSE&&COURSE.quiz)||{};
+  return {score:q.score!==false, stats:q.stats!==false,
+          exp:!(q.exp===false||q.exp==='later'), retry:!!q.retry};
+}
+function applyQuizVis(){
+  var q=quizOpts();
+  var set=function(id,on){var e=$(id);if(e)e.style.display=on?'':'none'};
+  set('#rowStats',q.stats);set('#goStats',q.stats);
+  set('#rowExp',q.exp);set('#goExp',q.exp);set('#codeExp',q.exp);
+  set('#rowTop',TOP_PUB);set('#goTop',TOP_PUB);
+  set('#qagain',q.retry);
+  $$('[data-qv="score"]').forEach(function(e){e.style.display=q.score?'':'none'});
+  var st=$('#scoreT'),ss=$('#scoreS');
+  if(st&&st.dataset.full){st.textContent=q.score?st.dataset.full:'作答完成';}
+  if(ss&&ss.dataset.full){ss.textContent=q.score?ss.dataset.full:'謝謝你，答案已經送出。';}
+}
+function checkTopPublished(){
+  if(!window.fb)return;
+  var F=window.fb;
+  F.getDoc(F.doc(F.db,'questionStats',SID())).then(function(d){
+    var t=d.exists()?d.data().top:null;TOP_PUB=!!(t&&t.score&&t.score.length);applyQuizVis();
+  }).catch(function(){});
+}
+function doneKey(mode){return 'done:'+SID()+':'+mode}
+function isDone(mode){try{return !!localStorage.getItem(doneKey(mode))}catch(e){return false}}
 function prefillName(){
   var n='';try{n=localStorage.getItem('quizName')||''}catch(e){}
   var a=$('#nmIn');if(a&&!a.value)a.value=n||profileName||'';
@@ -5003,6 +5054,8 @@ $$('.sw').forEach(function(s){
     var NF={nfWhisper:'onWhisper',nfInvite:'onInvite',nfFeedback:'onFeedback',
             nfContent:'showContent',nfAck:'ack'};
     if(NF[s.id])SITE.notify[NF[s.id]]=on;
+    var QV={qvScore:'score',qvStats:'stats',qvExp:'exp',qvRetry:'retry'};
+    if(QV[s.id]){COURSE.quiz=COURSE.quiz||{};COURSE.quiz[QV[s.id]]=on;try{applyQuizVis()}catch(e){}}
     if(s.id==='nfViews'){SITE.showViews=on;try{refreshArts()}catch(e){}}
     if(s.id==='wantReply'){
       var box=$('#contactBox');
