@@ -312,6 +312,45 @@ body.editing [data-txt]:focus{outline:2px solid var(--signal);background:var(--s
   display:grid;place-items:center;min-height:144px;cursor:pointer;font-size:13.5px}
 .tile-add:hover{border-color:var(--ink);color:var(--ink)}
 
+/* 後台：狀態列、雙卡片、展開面板 */
+.qrow{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line-soft)}
+.qrow-l{font-size:13px;color:var(--muted);width:66px;flex:none}
+.qrow-v{flex:1;font-size:15px;font-weight:500}
+.qrow-v.code{font-family:var(--mono);font-size:20px;letter-spacing:.24em;color:var(--signal)}
+.qrow-v.off{color:var(--signal)}
+.qbtn{background:none;border:1px solid var(--line);padding:7px 12px;font-size:12.5px;
+  color:var(--ink-soft);cursor:pointer;flex:none;transition:border-color .18s,color .18s}
+.qbtn:hover{border-color:var(--ink);color:var(--ink)}
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.twin-c{border:1px solid var(--line);background:var(--surface);padding:15px 15px 13px;cursor:pointer;
+  transition:border-color .2s ease,background .2s ease}
+.twin-c:hover{border-color:var(--ink-soft)}
+.twin-c.on{border-color:var(--ink);background:var(--paper)}
+.twin-c svg{width:24px;height:24px;fill:none;stroke:var(--ink-soft);stroke-width:1.3;
+  stroke-linecap:round;stroke-linejoin:round}
+.twin-c svg .hot{stroke:var(--signal)}
+.twin-t{font-size:15px;font-weight:600;margin-top:10px}
+.twin-m{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.panel{display:none;border:1px solid var(--ink);border-top:0;padding:4px 14px 18px;
+  background:var(--paper);animation:gin .28s cubic-bezier(.22,.61,.36,1)}
+.panel.on{display:block}
+.pro-foot{margin-top:40px;padding-top:6px}
+
+.figwrap{position:relative}
+
+/* 編輯入口卡片 */
+.edit-entry{display:flex;align-items:center;gap:15px;margin-top:16px;padding:18px 18px;
+  border:1px solid var(--signal);background:var(--signal-soft);cursor:pointer;
+  transition:transform .2s cubic-bezier(.22,.61,.36,1),background .2s ease}
+.edit-entry:hover{background:rgba(188,53,39,.14)}
+.edit-entry:active{transform:scale(.99)}
+.edit-entry svg{width:28px;height:28px;flex:none;fill:none;stroke:var(--ink);stroke-width:1.3;
+  stroke-linecap:round;stroke-linejoin:round}
+.edit-entry svg .hot{stroke:var(--signal)}
+.edit-entry-t{font-size:16.5px;font-weight:600;letter-spacing:-.01em}
+.edit-entry-d{font-size:12.5px;color:var(--ink-soft);margin-top:3px;line-height:1.6}
+.edit-entry-go{margin-left:auto;color:var(--signal);font-size:17px;flex:none}
+
 /* 通用編輯層：每一頁都能原地改 */
 body.editing .pro-switch{display:none!important}
 body.editing .blk{position:relative;outline:1px dashed transparent;outline-offset:3px;
@@ -436,9 +475,13 @@ body.editing .wrap{padding-bottom:140px}
 .icon-pick button.on svg{stroke:var(--signal)}
 
 /* 後台切換鈕 */
-.pro-switch{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;
-  background:var(--ink);color:var(--paper);border:0;padding:12px 18px;font-size:13.5px;
-  font-weight:500;cursor:pointer;box-shadow:0 6px 18px rgba(8,12,14,.18)}
+.pro-switch{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:50;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);
+  padding:9px 14px 9px 12px;font-size:12.5px;font-weight:500;cursor:pointer;
+  display:flex;align-items:center;gap:7px;
+  box-shadow:0 4px 14px rgba(0,0,0,.22);transition:border-color .2s ease}
+.pro-switch:hover{border-color:var(--ink)}
+.pro-switch::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--signal)}
 .pro-switch[hidden]{display:none}
 
 /* 首頁主視覺與功能磁磚 */
@@ -957,7 +1000,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div class="player rv" id="player">
       <div class="player-stage" id="stage"><span class="play"></span></div>
-      <div class="player-b"><div class="player-t" id="plT">還沒設定影片</div><div class="player-m" id="plM">後台 → 講師介紹 → 主打影片</div></div>
+      <div class="player-b"><div class="player-t" id="plT">還沒設定影片</div><div class="player-m" id="plM">後台 → 講師影音與聯絡</div></div>
     </div>
     <p class="hint rv">如果我們能讓意外少發生一點呢？如果能讓更多人在火災發生前知道怎麼預防，在家人倒下時知道怎麼撥打 119，在等待救護車的幾分鐘裡知道怎麼做 CPR — 那麼消防員是不是就有機會，少晚一點到達。</p>
 
@@ -1424,186 +1467,47 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
 <!-- ================= 後台 ================= -->
 <div class="zone" id="z-pro">
-  <div class="pro-bar"><b>後台編輯模式</b><span>學員看不到這裡</span><span class="ver" id="verBar"></span></div>
+  <div class="pro-bar"><b>後台</b><span>學員看不到這裡</span><span class="ver" id="verBar"></span></div>
+
+  <!-- 一、現在的狀況 -->
   <div style="padding-top:22px">
-    <div class="meta" id="proMeta">進行中 · CPR-4f9a2e</div>
-    <h1 class="display" style="font-size:24px;margin-top:8px" id="proTitle">課程</h1>
+    <div class="meta" id="proMeta">進行中</div>
+    <h1 class="display" style="font-size:26px;margin-top:6px" id="proTitle">課程</h1>
   </div>
-  <div class="stats" style="margin-top:20px">
+  <div class="stats" style="margin-top:18px">
     <div class="stat"><div class="stat-n" id="kpiPpl">—</div><div class="stat-l">進入人數</div></div>
     <div class="stat"><div class="stat-n" id="kpiW">—</div><div class="stat-l">悄悄話</div></div>
     <div class="stat"><div class="stat-n" id="kpiInv">—</div><div class="stat-l">待回邀約</div></div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
-    <span class="meta" id="verTag"></span>
-    <button class="theme-btn" id="themeBtn" style="margin-left:auto" aria-label="切換配色">淺色</button>
+  <div class="qrow">
+    <span class="qrow-l">課程</span>
+    <span class="qrow-v" id="stOpen2">開放中</span>
+    <button class="qbtn" id="closeCourse">關閉課程</button>
   </div>
-  <div class="conn" id="conn"><span class="conn-d"></span><span id="connT">連線中…</span>
-    <button class="conn-x" id="signOut" style="display:none">登出</button></div>
-  <p class="hint">下面依功能分組，點標題展開。只有需要改的時候才打開。</p>
+  <div class="qrow">
+    <span class="qrow-l">上課代號</span>
+    <span class="qrow-v code" id="codeShow">8236</span>
+    <button class="qbtn" id="regenCode">換一組</button>
+  </div>
 
-  <div class="zone-head"><h2>學員看得到的</h2><span>點磁磚直接去改</span></div>
-  <p class="sub" style="margin-top:12px">這就是學員首頁的樣子。點眼睛切換顯示，點磁磚跳到該項目的設定。</p>
-  <button class="btn" id="goEdit" style="margin-top:14px">開啟編輯模式．直接在學員畫面上改</button>
-  <div class="mirror" id="mirror"></div>
-
-  <div style="margin-top:20px">
-
-  <!-- 課程設定 -->
-  <div class="grp" id="grp-course"><div class="grp-h"><span class="grp-t">課程設定</span><span class="grp-m" id="courseTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <div class="section-head"><h2>課程連結</h2><span>QR</span></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding-bottom:14px">
-      <div style="font-family:var(--mono);font-size:15px;word-break:break-all">/course/CPR-4f9a2e</div>
-      <button class="btn btn-quiet" id="closeCourse" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">關閉課程</button>
+  <!-- 二、最常做的三件事 -->
+  <div class="edit-entry" id="goEdit">
+    <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path class="hot" d="m13.5 6.5 4 4"/></svg>
+    <div><div class="edit-entry-t">編輯學員畫面</div>
+      <div class="edit-entry-d">學員看得到的一切都在這裡改：文字、欄位、順序、顯示隱藏</div></div>
+    <span class="edit-entry-go">→</span>
+  </div>
+  <div class="twin">
+    <div class="twin-c" data-panel="pnl-inbox">
+      <svg viewBox="0 0 24 24"><path d="M3.6 6.2h16.8v11.6H3.6z"/><path class="hot" d="m3.6 6.9 8.4 6.5 8.4-6.5"/></svg>
+      <div class="twin-t">收件匣</div><div class="twin-m" id="inboxCount">—</div>
     </div>
-    <p class="hint">課程頁是公開的，關閉之後舊連結就進不來。</p>
-
-    <div class="section-head"><h2>上課代號</h2><span>只擋作答與回饋</span></div>
-    <div class="toggle-row"><span>作答與回饋需要代號</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding:16px 0">
-      <div style="font-family:var(--mono);font-size:30px;letter-spacing:.3em;color:var(--signal)" id="codeShow">8236</div>
-      <button class="btn btn-quiet" id="regenCode" style="width:auto;margin:0;padding:10px 14px;font-size:13px;white-space:nowrap">重新產生</button>
+    <div class="twin-c" data-panel="pnl-share">
+      <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/><path class="hot" d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5z"/></svg>
+      <div class="twin-t">學員入口</div><div class="twin-m">連結與 QR</div>
     </div>
-
-    <div class="section-head"><h2>學員看到什麼</h2><span>7 / 7</span></div>
-    <div class="toggle-row"><span>講師介紹</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>線上測驗</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課程回饋</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課程邀約</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>防災知識專區</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>急救教育專區</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>傳聲悄悄話</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">課程名稱</div><input class="f-in" id="edCTitle" value="成人 CPR 與 AED 實務"></div>
-    <div class="f"><div class="f-q">副標</div><input class="f-in" id="edCSub" value="三小時實作課．新北市政府消防局"></div>
-    <div class="f"><div class="f-q">課程標籤</div>
-      <div class="f-hint">顯示在課程名稱上方，最多三個，留空就不顯示</div>
-      <input class="f-in" id="edTag1" value="實作課">
-      <input class="f-in" id="edTag2" value="3 小時">
-      <input class="f-in" id="edTag3" value="2026 / 09 / 14"></div>
-    <div class="f"><div class="f-q">主視覺圖案</div>
-      <div class="icon-pick" id="heroPick"></div></div>
-    <div class="f"><div class="f-q">及格線</div><input class="f-in" id="edPass" value="60" inputmode="numeric"></div>
-    <button class="btn btn-quiet" data-save="course">儲存課程設定</button>
-  </div></div>
-
-  <!-- 學員入口 -->
-  <div class="grp" id="grp-share"><div class="grp-h"><span class="grp-t">學員入口</span><span class="grp-m">連結與 QR</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">投影或列印這個 QR，學員掃了直接進課程頁，看不到任何管理功能。</p>
-    <div class="qrbox"><div id="qrWrap2"></div></div>
-    <div class="linkrow"><span id="stuLink2"></span></div>
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button class="btn btn-quiet" style="margin:0" id="copyLink2">複製連結</button>
-      <button class="btn btn-quiet" style="margin:0" id="openQR2">開啟大圖</button>
-    </div>
-  </div></div>
-
-  <!-- 首頁功能 -->
-  <div class="grp" id="grp-tiles"><div class="grp-h"><span class="grp-t">首頁功能</span><span class="grp-m" id="tileCount"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">決定學員首頁出現哪些功能、順序怎麼排。關掉的整個不出現，不是變灰。排版會自動補齊 — 數量是單數時，最後一項自動變成整列寬。</p>
-    <div class="et" id="tileEdit"></div>
-    <button class="et-add" id="tileAdd">新增自訂功能</button>
-    <button class="btn btn-quiet" data-save="tiles">儲存首頁功能</button>
-    <p class="hint">自訂功能可以填一個外部網址，例如 Google 表單、簡報連結、YouTube 播放清單。學員點了會開新分頁。</p>
-  </div></div>
-
-  <!-- 線上測驗 -->
-  <div class="grp" id="grp-quiz"><div class="grp-h"><span class="grp-t">線上測驗</span><span class="grp-m" id="qTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">題目、正解、詳解、重點寫在同一個地方，統計直接算得出來。題目改順序詳解不會錯位。</p>
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button class="btn btn-quiet" style="margin:0" id="qeAdd">新增題目</button>
-      <button class="btn btn-quiet" style="margin:0" id="qeImport">從舊表單匯入一次</button>
-    </div>
-    <div id="qeList" style="margin-top:14px"></div>
-    <button class="btn btn-quiet" data-save="questions">儲存題庫</button>
-
-    <div class="section-head"><h2>課前基本資料</h2><span>5 題</span></div>
-    <p class="sub">測驗前先問，用來做分眾統計與課前課後配對。</p>
-    <div class="toggle-row" style="margin-top:10px"><span>填答人姓名<em style="font-style:normal;display:block;font-size:12px;color:var(--muted)">拿來接課前課後，關掉就配不起來</em></span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>年齡</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>性別</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>工作年資</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>過去上課次數</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="section-head"><h2>成績與統計開放給學員</h2><span>6</span></div>
-    <p class="sub">學員看得到哪些，由你決定。全部關掉的話，測驗就只是收資料，學員只看得到自己答完了。</p>
-    <div class="f" style="padding-top:12px"><div class="f-q">分數</div>
-      <div class="chips" data-one><span class="chip on" data-q="score:1">作答後看得到分數</span><span class="chip" data-q="score:0">不顯示分數</span></div></div>
-    <div class="f"><div class="f-q">錯誤的題目</div>
-      <div class="chips" data-one><span class="chip on" data-q="wrong:1">看得到自己錯哪幾題</span><span class="chip" data-q="wrong:0">不顯示錯題</span></div></div>
-    <div class="f"><div class="f-q">題目詳解</div>
-      <div class="chips" data-one><span class="chip on" data-q="exp:now">作答完成立刻公開</span><span class="chip" data-q="exp:later">另行公開（由講師宣布）</span></div>
-      <div class="f-hint" style="margin-top:8px">選「另行公開」時，學員點詳解會看到「講師尚未開放」，你在這裡改成立刻公開就會全部出現</div></div>
-    <div class="toggle-row"><span>全班統計與及格率</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>每題正確率與誤會排行</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>前三名榜單</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>分眾統計（年齡、年資、上課次數）</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">榜單上的姓名怎麼顯示</div>
-      <div class="chips" data-one style="margin-top:10px">
-        <span class="chip">全名</span><span class="chip on">陳○宇</span><span class="chip">只顯示姓</span><span class="chip">不顯示</span>
-      </div></div>
-    <p class="hint">分眾統計預設關閉。班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>
-
-    <div class="f"><div class="f-q">課程主題</div>
-      <div class="f-hint">會自動帶進第 4 題：「過去上過 ___ 教育課程的總次數」</div>
-      <input class="f-in" id="edTopic" placeholder="急救"></div>
-    <p class="hint">開地震課就改成「地震」，防火課就改成「防火」，題目跟著變，統計仍然分開累積。</p>
-  </div></div>
-
-  <!-- 課程回饋 -->
-  <div class="grp" id="grp-feedback"><div class="grp-h"><span class="grp-t">課程回饋</span><span class="grp-m" id="fbTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <div class="section-head"><h2>本堂結果</h2><span id="fbCount">尚無填答</span></div>
-    <div id="fbStats"></div>
-
-    <div class="section-head"><h2>文字回饋</h2><span id="fbTextN">0 則</span></div>
-    <div id="fbText"></div>
-
-    <div class="section-head"><h2>問卷題目</h2><span>7</span></div>
-    <p class="sub">改題目會影響之後的統計比較，改之前先想清楚。</p>
-    <div class="rows" style="margin-top:12px">
-      <div class="row" style="cursor:default"><div class="row-b"><div class="row-t" style="font-size:15px">性別　年齡</div><div class="row-d">基本資料．必填</div></div></div>
-      <div class="row" style="cursor:default"><div class="row-b"><div class="row-t" style="font-size:15px">四項 1–5 評分</div><div class="row-d">滿意度．豐富度．難易度．表達方式</div></div></div>
-      <div class="row" style="cursor:default"><div class="row-b"><div class="row-t" style="font-size:15px">其他建議</div><div class="row-d">開放填答</div></div></div>
-    </div>
-  </div></div>
-
-  <!-- 課程邀約 -->
-  <div class="grp" id="grp-invite"><div class="grp-h"><span class="grp-t">課程邀約</span><span class="grp-m">表單設定</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">實際的邀約在上面「收件匣」那一組，這裡只設定表單長什麼樣子。</p>
-
-    <div class="section-head"><h2>報名須知</h2><span>顯示在表單最上面</span></div>
-    <div class="f" style="padding-top:12px"><textarea class="f-ta" id="edNotice" style="min-height:80px" placeholder="報名完成後三個工作天內會與您聯繫確認時間。"></textarea></div>
-
-    <div class="section-head"><h2>表單欄位</h2><span>9</span></div>
-    <div class="toggle-row"><span>期望日期與時間</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>聯絡單位 / 人員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>聯絡電話</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>Email</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>LINE ID</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>Instagram</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="toggle-row"><span>學員對象 / 人數</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>講師費預算</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>備註</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-
-    <div class="section-head"><h2>可報名的課程</h2><span>10</span></div>
-    <p class="sub">勾選的才會出現在報名表的複選清單裡，後面可以標建議時數。</p>
-    <div class="chips" style="margin-top:12px">
-      <span class="chip on">初級火災防範與應變</span><span class="chip on">進階火災防範與應變</span>
-      <span class="chip on">地震災害應變</span><span class="chip on">心肺復甦術教育訓練</span>
-      <span class="chip on">創傷急救教育訓練</span><span class="chip on">急病重症急救教育訓練</span>
-      <span class="chip on">自衛消防編組訓練</span><span class="chip on">居家及工作場域安全評估</span>
-      <span class="chip on">從救護看人生．生命教育</span>
-      <span class="chip on">其他專題課程</span>
-    </div>
-  </div></div>
-
-  <!-- 傳聲悄悄話 -->
-  <div class="grp" id="grp-inbox"><div class="grp-h"><span class="grp-t">收件匣</span><span class="grp-m" id="inboxCount"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
+  </div>
+  <div class="panel" id="pnl-inbox">
     <div class="seg" id="boxSeg">
       <button class="on" data-box="w">傳聲悄悄話</button><button data-box="i">課程邀約</button>
     </div>
@@ -1625,19 +1529,141 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       <button class="btn btn-quiet" id="reloadInv">重新讀取</button>
       <p class="hint">送出的邀約會即時進來。點開看完整內容，可以直接複製 Email 或電話。</p>
     </div>
-  </div></div>
+  </div>
+  <div class="panel" id="pnl-share">
+    <p class="sub">投影或列印這個 QR，學員掃了直接進課程頁，看不到任何管理功能。</p>
+    <div class="qrbox"><div id="qrWrap2"></div></div>
+    <div class="linkrow"><span id="stuLink2"></span></div>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="btn btn-quiet" style="margin:0" id="copyLink2">複製連結</button>
+      <button class="btn btn-quiet" style="margin:0" id="openQR2">開啟大圖</button>
+    </div>
+  </div>
 
-  <!-- 講師介紹 -->
-  <!-- 頁面文字 -->
-  <div class="grp" id="grp-texts"><div class="grp-h"><span class="grp-t">頁面文字</span><span class="grp-m" id="txtTag"></span><span class="grp-c">›</span></div>
+  <!-- 三、內容管理（畫面上改不到的） -->
+  <div class="zone-head"><h2>內容</h2><span>在畫面上改不到的</span></div>
+  <div style="margin-top:4px">
+  <div class="grp" id="grp-quiz"><div class="grp-h"><span class="grp-t">題庫與測驗</span><span class="grp-m" id="qTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <p class="sub">學員端每一頁的標題與說明都在這裡改。換行請直接按 Enter，學員端會照著斷行。</p>
-    <div id="txtEdit"></div>
-    <button class="btn btn-quiet" data-save="texts">儲存頁面文字</button>
+    <p class="sub">題目、正解、詳解、重點寫在同一個地方，統計直接算得出來。題目改順序詳解不會錯位。</p>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-quiet" style="margin:0" id="qeAdd">新增題目</button>
+      <button class="btn btn-quiet" style="margin:0" id="qeImport">從舊表單匯入一次</button>
+    </div>
+    <div id="qeList" style="margin-top:14px"></div>
+    <button class="btn btn-quiet" data-save="questions">儲存題庫</button>
+
+    <div class="section-head"><h2>成績與統計開放給學員</h2><span>6</span></div>
+    <p class="sub">學員看得到哪些，由你決定。全部關掉的話，測驗就只是收資料，學員只看得到自己答完了。</p>
+    <div class="f" style="padding-top:12px"><div class="f-q">分數</div>
+      <div class="chips" data-one><span class="chip on" data-q="score:1">作答後看得到分數</span><span class="chip" data-q="score:0">不顯示分數</span></div></div>
+    <div class="f"><div class="f-q">錯誤的題目</div>
+      <div class="chips" data-one><span class="chip on" data-q="wrong:1">看得到自己錯哪幾題</span><span class="chip" data-q="wrong:0">不顯示錯題</span></div></div>
+    <div class="f"><div class="f-q">題目詳解</div>
+      <div class="chips" data-one><span class="chip on" data-q="exp:now">作答完成立刻公開</span><span class="chip" data-q="exp:later">另行公開（由講師宣布）</span></div>
+      <div class="f-hint" style="margin-top:8px">選「另行公開」時，學員點詳解會看到「講師尚未開放」，你在這裡改成立刻公開就會全部出現</div></div>
+    <div class="toggle-row"><span>全班統計與及格率</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>每題正確率與誤會排行</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>前三名榜單</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>分眾統計（年齡、年資、上課次數）</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="f"><div class="f-q">榜單上的姓名怎麼顯示</div>
+      <div class="chips" data-one style="margin-top:10px">
+        <span class="chip">全名</span><span class="chip on">陳○宇</span><span class="chip">只顯示姓</span><span class="chip">不顯示</span>
+      </div></div>
+    <p class="hint">分眾統計預設關閉。班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>
+
+    
+  
+    <div class="section-head"><h2>及格線</h2><span>分</span></div>
+    <div class="f" style="padding-top:8px"><input class="f-in" id="edPass" value="60" inputmode="numeric"></div>
+    <button class="btn btn-quiet" data-save="course">儲存測驗設定</button>
   </div></div>
 
-  <!-- 通知信箱 -->
-  <div class="grp" id="grp-mail"><div class="grp-h"><span class="grp-t">通知信箱</span><span class="grp-m" id="mailCount">未設定</span><span class="grp-c">›</span></div>
+  <div class="grp" id="grp-articles"><div class="grp-h"><span class="grp-t">知識文章</span><span class="grp-m" id="artTag"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">學員端兩個專區的文章都在這裡管。點標題展開編輯，可以改分類、內文、刪除、調順序。</p>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-quiet" style="margin:0" id="addArticle">新增文章</button>
+      <button class="btn btn-quiet" style="margin:0" data-save="articles">儲存文章</button>
+    </div>
+    <div id="artEdit" style="margin-top:14px"></div>
+
+    <div class="section-head"><h2>瀏覽排行</h2><span>累計</span></div>
+    <div id="artRank"></div>
+  
+  </div></div>
+
+  <div class="grp" id="grp-about"><div class="grp-h"><span class="grp-t">講師影音與聯絡</span><span class="grp-m" id="aboutTag"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>影片</h2><span>YouTube</span></div>
+    <div class="f" style="padding-top:12px"><div class="f-q">主打影片</div>
+      <div class="f-hint">貼 YouTube 網址，什麼格式都可以</div>
+      <input class="f-in" id="edVidUrl" placeholder="https://youtu.be/…">
+      <input class="f-in" id="edVidTitle" placeholder="影片標題">
+      <input class="f-in" id="edVidNote" placeholder="說明，例如「TED 演講 · 14:20」"></div>
+    <div class="f"><div class="f-q">其他影片</div>
+      <div class="f-hint">一行一支，格式：網址 ｜ 標題 ｜ 說明</div>
+      <textarea class="f-ta" id="edVidMore" style="min-height:96px" placeholder="https://youtu.be/… ｜ 兩分鐘學會壓胸 ｜ 教學短片"></textarea></div>
+
+    <div class="section-head"><h2>照片</h2><span>Google Drive 資料夾</span></div>
+    <p class="sub">貼整個資料夾的連結，App 列出裡面的照片，你再排順序。檔案留在雲端硬碟。</p>
+    <div class="f" style="padding-top:14px"><div class="f-q">資料夾連結</div>
+      <div class="f-hint">Drive 取得連結．權限選「知道連結的人可檢視」</div>
+      <input class="f-in" id="edDrive" placeholder="https://drive.google.com/drive/folders/…"></div>
+    <button class="btn btn-quiet" id="resync">重新同步資料夾</button>
+    <div class="section-head" style="padding-top:26px"><h2>排序</h2><span>前三張是開頭</span></div>
+    <div id="photoSort"></div>
+
+    <button class="btn btn-quiet" data-save="site">儲存影片與照片</button>
+  
+    <div class="section-head"><h2>聯絡資料</h2><span>4</span></div>
+    <p class="sub">講師介紹最下面顯示的聯絡資料。不想顯示哪一種，到編輯模式把那一行隱藏。</p>
+    <div class="f" style="padding-top:14px"><div class="f-q">Instagram</div><input class="f-in" id="edIG" placeholder="@你的帳號"></div>
+    <div class="f"><div class="f-q">LINE ID</div><input class="f-in" id="edLine" placeholder="@你的 LINE ID"></div>
+    <div class="f"><div class="f-q">電話</div><input class="f-in" id="edTel" placeholder="0900-000-000"></div>
+    <div class="f"><div class="f-q">Email</div><input class="f-in" id="edMail" placeholder="name@example.com"></div>
+    
+  
+  </div></div>
+
+  </div>
+
+  <!-- 四、數據 -->
+  <div class="zone-head"><h2>數據</h2><span>看結果</span></div>
+  <div style="margin-top:4px">
+  <div class="grp" id="grp-feedback"><div class="grp-h"><span class="grp-t">回饋結果</span><span class="grp-m" id="fbTag"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="section-head"><h2>本堂結果</h2><span id="fbCount">尚無填答</span></div>
+    <div id="fbStats"></div>
+
+    <div class="section-head"><h2>文字回饋</h2><span id="fbTextN">0 則</span></div>
+    <div id="fbText"></div>
+  
+  </div></div>
+
+  <div class="grp" id="grp-traffic"><div class="grp-h"><span class="grp-t">瀏覽流量</span><span class="grp-m">真實計數</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">真實計數。學員每開一次頁面就 +1，影片播放與 IG 點擊分開算。</p>
+    <div id="traffic" style="margin-top:8px"></div>
+  
+  </div></div>
+
+  <div class="grp" id="grp-export"><div class="grp-h"><span class="grp-t">匯出</span><span class="grp-m">CSV</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">下載成 CSV 檔，Excel 和 Google 試算表都能直接開，中文不會變亂碼。</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn btn-quiet" style="margin:0" data-exp="invites">課程邀約</button>
+      <button class="btn btn-quiet" style="margin:0" data-exp="whispers">悄悄話</button>
+      <button class="btn btn-quiet" style="margin:0" data-exp="feedback">課程回饋</button>
+    </div>
+  </div></div>
+
+  </div>
+
+  <!-- 五、系統 -->
+  <div class="zone-head"><h2>系統</h2><span>設定一次就好</span></div>
+  <div style="margin-top:4px">
+  <div class="grp" id="grp-mail"><div class="grp-h"><span class="grp-t">通知信箱</span><span class="grp-m" id="mailCount"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">有人送出悄悄話或課程邀約時，內容會寄到這裡設定的信箱。可以設定多個，一行一個，全部都會同時收到。</p>
 
@@ -1672,94 +1698,12 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <button class="btn btn-quiet" style="margin:0" id="testOpen">連線診斷</button>
     </div>
     <p class="hint">按「連線診斷」會開新分頁，直接顯示 Apps Script 回傳什麼。看到 <b>{"ok":true …}</b> 代表通了；看到 Google 的登入頁或錯誤頁，代表部署時「具有存取權的使用者」沒選「任何人」。</p>
+  
+    <div class="section-head"><h2>手機推播</h2><span>下一階段</span></div>
+    <p class="sub">目前只有 App 開著時會跳出提示。要做到手機鎖定畫面也收得到，需要把網站加入主畫面並串接推播服務，下一階段處理。</p>
   </div></div>
 
-  <div class="grp" id="grp-about"><div class="grp-h"><span class="grp-t">講師介紹</span><span class="grp-m" id="aboutTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <div class="section-head"><h2>影片</h2><span>YouTube</span></div>
-    <div class="f" style="padding-top:12px"><div class="f-q">主打影片</div>
-      <div class="f-hint">貼 YouTube 網址，什麼格式都可以</div>
-      <input class="f-in" id="edVidUrl" placeholder="https://youtu.be/…">
-      <input class="f-in" id="edVidTitle" placeholder="影片標題">
-      <input class="f-in" id="edVidNote" placeholder="說明，例如「TED 演講 · 14:20」"></div>
-    <div class="f"><div class="f-q">其他影片</div>
-      <div class="f-hint">一行一支，格式：網址 ｜ 標題 ｜ 說明</div>
-      <textarea class="f-ta" id="edVidMore" style="min-height:96px" placeholder="https://youtu.be/… ｜ 兩分鐘學會壓胸 ｜ 教學短片"></textarea></div>
-
-    <div class="section-head"><h2>照片</h2><span>Google Drive 資料夾</span></div>
-    <p class="sub">貼整個資料夾的連結，App 列出裡面的照片，你再排順序。檔案留在雲端硬碟。</p>
-    <div class="f" style="padding-top:14px"><div class="f-q">資料夾連結</div>
-      <div class="f-hint">Drive 取得連結．權限選「知道連結的人可檢視」</div>
-      <input class="f-in" id="edDrive" placeholder="https://drive.google.com/drive/folders/…"></div>
-    <button class="btn btn-quiet" id="resync">重新同步資料夾</button>
-    <div class="section-head" style="padding-top:26px"><h2>排序</h2><span>前三張是開頭</span></div>
-    <div id="photoSort"></div>
-
-    <div class="section-head"><h2>首頁大數字</h2><span>可直接改</span></div>
-    <div class="num-edit"><input id="edStat1" value="280+"><span>場演講與教育訓練</span></div>
-    <div class="num-edit"><input id="edStat2" value="16,000+"><span>授課人次</span></div>
-    <p class="hint">改完學員端立刻跟著變。要加第三個數字按下面的新增。</p>
-
-    <div class="section-head"><h2>我站過的講台</h2><span id="etSpeakN"></span></div>
-    <div class="et" id="etSpeak"></div>
-    <button class="et-add" data-add="speak">新增一組</button>
-
-    <div class="section-head"><h2>學歷與訓練</h2><span id="etEduN"></span></div>
-    <div class="et" id="etEdu"></div>
-    <button class="et-add" data-add="career">新增一筆</button>
-
-    <div class="section-head"><h2>教育理念</h2><span id="etIdeaN"></span></div>
-    <div class="et" id="etIdea"></div>
-    <button class="et-add" data-add="idea">新增一點</button>
-    <div style="margin-top:8px"></div>
-
-    <div class="section-head"><h2>文字段落</h2><span>3 段</span></div>
-    <div class="f" style="padding-top:12px"><div class="f-q">開場句</div>
-      <textarea class="f-ta" id="edHeadline" style="min-height:66px">我站在第一線，也站在講台上。</textarea></div>
-    <div class="f"><div class="f-q">引句</div>
-      <textarea class="f-ta" id="edQuote" style="min-height:66px">希望這社會因為有我的存在，能有一點點正向的改變。</textarea></div>
-    <div class="f"><div class="f-q">結尾</div>
-      <textarea class="f-ta" id="edEnd" style="min-height:90px">消防安全，不只是消防員的事。急救，也不只是醫護人員的事。每一個人，都可能成為第一位救援者。</textarea></div>
-    <button class="btn btn-quiet" data-save="site">儲存講師介紹</button>
-  </div></div>
-
-  <!-- 知識專區 -->
-  <div class="grp" id="grp-articles"><div class="grp-h"><span class="grp-t">知識專區</span><span class="grp-m" id="artTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">學員端兩個專區的文章都在這裡管。點標題展開編輯，可以改分類、內文、刪除、調順序。</p>
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button class="btn btn-quiet" style="margin:0" id="addArticle">新增文章</button>
-      <button class="btn btn-quiet" style="margin:0" data-save="articles">儲存文章</button>
-    </div>
-    <div id="artEdit" style="margin-top:14px"></div>
-
-    <div class="section-head"><h2>瀏覽排行</h2><span>累計</span></div>
-    <div id="artRank"></div>
-  </div></div>
-
-  <!-- 聯絡方式 -->
-  <div class="grp" id="grp-contact"><div class="grp-h"><span class="grp-t">聯絡方式</span><span class="grp-m" id="ctTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">學員端顯示哪幾種、報名表要問哪幾種，都在這裡決定。</p>
-    <div class="f" style="padding-top:14px"><div class="f-q">Instagram</div><input class="f-in" id="edIG" placeholder="@你的帳號"></div>
-    <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">LINE ID</div><input class="f-in" id="edLine" placeholder="@你的 LINE ID"></div>
-    <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">電話</div><input class="f-in" id="edTel" placeholder="0900-000-000"></div>
-    <div class="toggle-row"><span>顯示給學員</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">Email</div><input class="f-in" id="edMail" placeholder="name@example.com"></div>
-    <div class="toggle-row"><span>顯示給學員</span><span class="sw" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="section-head"><h2>顯示位置</h2><span>學員端</span></div>
-    <div class="toggle-row"><span>講師介紹頁</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>報名頁底部</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課程首頁頁尾（只放 IG）</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>悄悄話可以留聯絡方式</span><span class="sw on" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <p class="hint">關掉就整列不出現，不是變灰。沒填內容的也會自動隱藏。</p>
-  </div></div>
-
-  <!-- 通知 -->
-  <!-- 帳號 -->
-  <div class="grp" id="grp-account"><div class="grp-h"><span class="grp-t">帳號與密碼</span><span class="grp-m" id="acctTag">未登入</span><span class="grp-c">›</span></div>
+  <div class="grp" id="grp-account"><div class="grp-h"><span class="grp-t">帳號與操作者</span><span class="grp-m" id="acctTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">這是登入後台用的帳號。改了之後，所有共用這組帳號的人都要用新的密碼登入，記得通知他們。</p>
 
@@ -1785,89 +1729,17 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <p class="sub">如果哪天登不進來，按這個會寄重設連結到目前的登入信箱。也可以直接去 Firebase 主控台改。</p>
     <button class="btn btn-quiet" id="pwReset">寄重設密碼信</button>
     <p class="hint">改密碼會讓其他裝置的登入失效，那些裝置要重新登入一次。</p>
-  </div></div>
-
-  </div>
-  <div class="zone-head"><h2>只有你看得到的</h2><span>學員端沒有這些</span></div>
-  <div style="margin-top:12px">
-
-  <!-- 操作者 -->
-  <div class="grp" id="grp-ops"><div class="grp-h"><span class="grp-t">操作者名單</span><span class="grp-m" id="opCount"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
+  
+    <div class="section-head"><h2>操作者名單</h2><span id="opCount"></span></div>
     <p class="sub">共用同一組登入帳號，進入後台時選「這次是誰在操作」。每筆處理紀錄會記在該名字下，不用另外建帳號，也不用把密碼交給別人各自登入。</p>
     <div class="et" id="etOps"></div>
     <button class="et-add" data-add="ops">新增操作者</button>
     <button class="btn btn-quiet" data-save="site">儲存操作者名單</button>
     <p class="hint">左欄是顯示在後台的名字，右欄是備註。登入狀態會保留，同一支手機不用每次重新登入。</p>
+  
   </div></div>
 
-  <div class="grp" id="grp-push"><div class="grp-h"><span class="grp-t">手機通知</span><span class="grp-m">推播</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">有人送出悄悄話或報名時，手機狀態列立刻跳出來。</p>
-    <button class="btn btn-quiet" id="notifOn">開啟通知權限</button>
-    <div class="f"><div class="f-q">安靜時段</div><input class="f-in" value="22:00 – 07:00" readonly>
-      <div class="f-hint" style="margin-top:8px">這段時間收到的會累積，隔天早上一次通知</div></div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-quiet" style="margin:0" data-demo="whisper">預覽悄悄話通知</button>
-      <button class="btn btn-quiet" style="margin:0" data-demo="invite">預覽邀約通知</button>
-    </div>
-    <p class="hint">iPhone 要先把這頁加入主畫面，從那個圖示開啟才收得到。</p>
-  </div></div>
-
-  <!-- 流量 -->
-  <div class="grp" id="grp-traffic"><div class="grp-h"><span class="grp-t">瀏覽流量</span><span class="grp-m">真實計數</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">真實計數。學員每開一次頁面就 +1，影片播放與 IG 點擊分開算。</p>
-    <div id="traffic" style="margin-top:8px"></div>
-  </div></div>
-
-  <!-- 匯出 -->
-  <div class="grp" id="grp-export"><div class="grp-h"><span class="grp-t">匯出資料</span><span class="grp-m">Excel · CSV</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <div class="section-head"><h2>範圍</h2><span>選一個</span></div>
-    <div class="seg"><button class="on">本堂課</button><button>指定期間</button><button>全部</button></div>
-    <div class="section-head"><h2>內容</h2><span>可複選</span></div>
-    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">課程總覽</span><span class="pick-m">1 sheet</span></div>
-    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">學員成績</span><span class="pick-m">課前 / 課後</span></div>
-    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">題目答題統計</span><span class="pick-m">含每個選項被選幾次</span></div>
-    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">課前課後比較</span><span class="pick-m">及格率．平均</span></div>
-    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">個人錯題</span><span class="pick-m">逐人</span></div>
-    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">題目歷史統計</span><span class="pick-m">跨課程累計</span></div>
-    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">課程回饋</span><span class="pick-m">評分．性別年齡</span></div>
-    <div class="pick on"><span class="pick-c">✓</span><span class="pick-n">文字回饋</span><span class="pick-m">逐則</span></div>
-    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">報名紀錄</span><span class="pick-m">含聯絡方式</span></div>
-    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">悄悄話</span><span class="pick-m">敏感．預設不勾</span></div>
-    <div class="pick"><span class="pick-c">✓</span><span class="pick-n">瀏覽統計</span><span class="pick-m">頁面．文章．影片</span></div>
-    <div class="section-head"><h2>格式</h2><span></span></div>
-    <div class="seg"><button class="on">Excel．一個檔多分頁</button><button>CSV．一項一個檔</button></div>
-    <button class="btn" id="expBtn">匯出</button>
-    <p class="hint">Excel 會依勾選的項目分頁，每一頁第一列是欄位名稱，直接丟進樞紐分析就能用。</p>
-  </div></div>
-
-  <!-- 匯入 -->
-  <div class="grp" id="grp-import"><div class="grp-h"><span class="grp-t">匯入舊資料</span><span class="grp-m">歷年問卷</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">以前用 Google 表單收的滿意度問卷可以合併進來，歷史統計會一起算。從試算表下載 CSV 或 Excel 上傳即可。</p>
-    <div class="drop" id="dropZone">點這裡選檔案，或把 CSV / Excel 拖進來</div>
-
-    <div class="section-head"><h2>欄位對應</h2><span>系統先猜，你可以改</span></div>
-    <div class="map"><span class="map-a">整體課程滿意度</span><span class="map-x">→</span><span class="map-b">整體課程滿意度</span></div>
-    <div class="map"><span class="map-a">課程內容豐富度</span><span class="map-x">→</span><span class="map-b">課程內容豐富度</span></div>
-    <div class="map"><span class="map-a">課程難易度</span><span class="map-x">→</span><span class="map-b">課程難易度</span></div>
-    <div class="map"><span class="map-a">講師表達方式</span><span class="map-x">→</span><span class="map-b">講師表達方式</span></div>
-    <div class="map"><span class="map-a">其他建議</span><span class="map-x">→</span><span class="map-b">文字回饋</span></div>
-    <div class="map"><span class="map-a">性別　年齡</span><span class="map-x">→</span><span class="map-b">性別　年齡</span></div>
-    <div class="map"><span class="map-a">時間戳記</span><span class="map-x">→</span><span class="map-b" style="color:var(--muted)">填答時間</span></div>
-    <div class="map"><span class="map-a" style="color:var(--signal)">課程場次</span><span class="map-x">→</span><span class="map-b" style="color:var(--signal)">需要指定歸到哪一堂</span></div>
-
-    <div class="section-head"><h2>場次歸屬</h2><span>必選</span></div>
-    <div class="seg"><button class="on">依「課程場次」欄自動建立歷史課程</button><button>全部歸到同一堂</button></div>
-    <p class="hint">舊資料會標記為「歷史匯入」，統計時算進累計與歷史平均，但不會混進本堂課的數字。匯錯了可以整批復原。</p>
-    <button class="btn" id="impBtn">開始匯入</button>
-  </div></div>
-
-  <!-- 資料同步 -->
-  <div class="grp" id="grp-sync"><div class="grp-h"><span class="grp-t">資料同步</span><span class="grp-m" id="syncTag">尚未上傳</span><span class="grp-c">›</span></div>
+  <div class="grp" id="grp-sync"><div class="grp-h"><span class="grp-t">雲端同步</span><span class="grp-m" id="syncTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">第一次使用時按一次「上傳目前資料」，把程式裡預設的課程、講師介紹、題庫全部寫進 Firebase。之後就在上面各組編輯，按各自的儲存鈕即可。</p>
     <button class="btn" id="seedBtn">上傳目前資料到 Firebase</button>
@@ -1877,41 +1749,24 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="trow"><span class="trow-n">課程設定</span><span class="trow-v" id="stCourse">—</span></div>
     <div class="trow"><span class="trow-n">講師介紹</span><span class="trow-v" id="stSite">—</span></div>
     <div class="trow"><span class="trow-n">題庫</span><span class="trow-v" id="stQ">—</span></div>
+  
   </div></div>
 
-  <!-- 設計語言 -->
-  <div class="grp" id="grp-design"><div class="grp-h"><span class="grp-t">設計語言</span><span class="grp-m">色票與動態</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-  <div class="section-head"><h2>視覺語言</h2><span>v0.5</span></div>
-  <p class="sub">底色是帶點冷調的淺灰，接近現場文件的再生紙，不用純白。純白在手機上亮度太高，長時間讀會累。紅色只當訊號用。</p>
-  <div class="sw-grid">
-    <div class="sw-cell"><div class="sw-chip" style="background:#E8EAE6"></div><div class="sw-name">底色</div><div class="sw-hex">#E8EAE6</div></div>
-    <div class="sw-cell"><div class="sw-chip" style="background:#F1F2EE"></div><div class="sw-name">卡片</div><div class="sw-hex">#F1F2EE</div></div>
-    <div class="sw-cell"><div class="sw-chip" style="background:#131719"></div><div class="sw-name">主文字</div><div class="sw-hex">#131719</div></div>
-    <div class="sw-cell"><div class="sw-chip" style="background:#49535A"></div><div class="sw-name">次文字</div><div class="sw-hex">#49535A</div></div>
-    <div class="sw-cell"><div class="sw-chip" style="background:#CFD3CC"></div><div class="sw-name">細線</div><div class="sw-hex">#CFD3CC</div></div>
-    <div class="sw-cell"><div class="sw-chip" style="background:#BC3527"></div><div class="sw-name">訊號紅</div><div class="sw-hex">#BC3527</div></div>
-  </div>
-  <div class="section-head"><h2>響應式斷點</h2><span>4</span></div>
-  <div class="f"><div class="f-q">≤ 360px　小手機</div><div class="f-hint">SE、mini。統計數字換行排，長條縮短，分組摘要隱藏</div></div>
-  <div class="f"><div class="f-q">375–699px　手機</div><div class="f-hint">基準。單欄，按鈕整條，照片橫向滑動一次一張多</div></div>
-  <div class="f"><div class="f-q">≥ 700px　平板</div><div class="f-hint">按鈕改成內容寬度，開頭照片並排，現場照片一次看三張</div></div>
-  <div class="f"><div class="f-q">≥ 1100px　桌機</div><div class="f-hint">閱讀寬度上限 760px，後台設定分兩欄，統計長條加長</div></div>
-  <p class="hint">字級與內距用 clamp 連續縮放，不是跳三段。所以 390px 跟 414px 的手機看起來會是連續的，不會突然變樣。</p>
-
-  <div class="section-head"><h2>動態原則</h2><span>4</span></div>
-  <div class="f"><div class="f-q">頁面切換：右進左出</div><div class="f-hint">0.3 秒，位移 18px，不用彈跳</div></div>
-  <div class="f"><div class="f-q">心電圖線只畫一次</div><div class="f-hint">進入畫面時觸發，不重播</div></div>
-  <div class="f"><div class="f-q">段落浮現只用在講師介紹</div><div class="f-hint">故事頁需要節奏，清單頁不用</div></div>
-  <div class="f"><div class="f-q">其餘動態都在回應點擊</div><div class="f-hint">選項、播放、送出、展開詳解</div></div>
-  </div></div>
-
-  <!-- 變更紀錄 -->
   <div class="grp" id="grp-log"><div class="grp-h"><span class="grp-t">變更紀錄</span><span class="grp-m">誰改了什麼</span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div id="logList"><div class="empty">登入後載入。</div></div>
+  
   </div></div>
 
+  </div>
+
+  <div class="pro-foot">
+    <div class="conn" id="conn"><span class="conn-d"></span><span id="connT">連線中…</span>
+      <button class="conn-x" id="signOut" style="display:none">登出</button></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+      <span class="meta" id="verTag"></span>
+      <button class="theme-btn" id="themeBtn" style="margin-left:auto">淺色</button>
+    </div>
   </div>
 </div>
 
@@ -2092,7 +1947,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v4.0　2026/09/21';
+var APP_VERSION='v4.3　2026/09/21';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2285,11 +2140,14 @@ function ytEmbed(url){
 }
 function startPlay(url,title,meta){
   var stage=$('#stage');if(!stage)return;
-  if(title)$('#plT').textContent=title;
-  if(meta)$('#plM').textContent=meta;
+  if(title||meta){
+    $('#plT').textContent=title||'';$('#plM').textContent=meta||'';
+    var pb=$('#plT').closest('.player-b');if(pb)pb.style.display='';
+    $('#plM').style.display=meta?'':'none';
+  }
   var src=ytEmbed(url);
   if(!src){
-    stage.innerHTML='<div class="qrfail" style="padding:0 18px">還沒設定影片連結，或這個網址看不出是 YouTube。<br>到後台「講師介紹 → 主打影片」貼上網址。</div>';
+    stage.innerHTML='<div class="qrfail" style="padding:0 18px">還沒設定影片連結，或這個網址看不出是 YouTube。<br>到後台「講師影音與聯絡」貼上網址。</div>';
     return;
   }
   stage.innerHTML='<iframe src="'+src+'" style="position:absolute;inset:0;width:100%;height:100%;border:0"'+
@@ -2483,11 +2341,32 @@ var HERO={
 function renderHero(){
   var box=$('#heroCard');if(!box)return;
   var tags=(COURSE.tags||[]).filter(Boolean);
+  if(EDITING)tags=[0,1,2].map(function(i){return (COURSE.tags||[])[i]||'標籤'});
   box.innerHTML=
     (tags.length?'<div class="hero-tags">'+tags.map(function(t){return '<span>'+t+'</span>'}).join('')+'</div>':'')+
     '<h1 class="display" id="cHomeTitle">'+COURSE.title+'</h1>'+
     '<svg class="hero-mark" viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true">'+
       (HERO[COURSE.icon]||HERO.ecg)+'</svg>';
+  if(EDITING){
+    var sw=document.createElement('button');
+    sw.className='qbtn';sw.textContent='換圖案';sw.style.marginTop='4px';
+    sw.addEventListener('click',function(){
+      var ks=Object.keys(HERO), n=(ks.indexOf(COURSE.icon)+1)%ks.length;
+      COURSE.icon=ks[n];renderHero();
+    });
+    box.appendChild(sw);
+    var h=box.querySelector('h1');
+    h.classList.add('ed-txt');h.setAttribute('contenteditable','true');
+    h.addEventListener('blur',function(){COURSE.title=h.innerText.trim()||COURSE.title});
+    $$('.hero-tags span',box).forEach(function(sp,i){
+      sp.classList.add('ed-txt');sp.setAttribute('contenteditable','true');
+      sp.style.opacity='1';sp.style.transform='none';
+      sp.addEventListener('blur',function(){
+        COURSE.tags=COURSE.tags||[];
+        var v=sp.innerText.trim();COURSE.tags[i]=(v==='標籤')?'':v;
+      });
+    });
+  }
 }
 function renderHeroPick(){
   var box=$('#heroPick');if(!box)return;
@@ -2621,13 +2500,26 @@ try{renderTiles();renderTileEdit();renderMirror();}catch(e){console.warn('磁磚
    載入時把差異套回去。不重畫頁面，所以按鈕的功能都不會壞。 */
 var EDITING=false;
 var PATCH={text:{},ph:{},hide:{},del:{},order:{},add:[]};
-var TEXT_SEL='h1,h2,.sub,.meta,.f-q,.f-hint,.chip,.chip-s,.row-t,.row-d,.tl-y,.tl-b,'+
-             '.story p,.quote,.note,.hint,.scale-l span,.btn,.lock>div,.who-n,.who-r';
-var BLOCK_SEL='.f,.section-head,.row,.tl,.chip,.chip-s,.story>p,.lock,.quote,.hint,.note,.btn';
+var TEXT_SEL='h1,h2,.sub,.meta,.f-q,.f-hint,.chip,.chip-s,.row-t,.row-d,.row-n,.tl-y,.tl-b,'+
+             '.story p,.quote,.note,.hint,.scale-l span,.btn,.lock>div,.who-n,.who-r,'+
+             '.section-head>span,.fig-cap>span,.ig-h,.ig-d,.ig-go,.ct-v,.ct-l,.ct-go,.ct-m,'+
+             '.strip-m,.whisper-foot>span,.pair-l,.stat-l,.pod-n,.pod-m,.ig-inline';
+var BLOCK_SEL='.f,.section-head,.row,.tl,.chip,.chip-s,.story>p,.lock,.quote,.hint,.note,.btn,'+
+              '.player,.player-b,.ig,.ct,.fig-cap,.figwrap,.strip,.strip-m,.lead,.who,.ig-foot,'+
+              '.whisper-box,.toggle-row,.scale,.stats,.pair,.podium,.miss';
 var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,'+
-        '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav';
+        '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav,'+
+        '#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM,#stage';
 function isDyn(el){return !!el.closest(DYN)}
+function wrapFigs(){
+  $$('#z-student svg.fig').forEach(function(sv){
+    if(!sv.parentElement||sv.parentElement.classList.contains('figwrap'))return;
+    var w=document.createElement('div');w.className='figwrap';
+    sv.parentNode.insertBefore(w,sv);w.appendChild(sv);
+  });
+}
 function assignKeys(){
+  wrapFigs();
   $$('#z-student .page').forEach(function(pg){
     var n=0;
     $$(TEXT_SEL+','+BLOCK_SEL+',input,textarea',pg).forEach(function(el){
@@ -2766,7 +2658,9 @@ function setEditing(on){
     }else{el.removeAttribute('contenteditable');el.classList.remove('ed-txt');}
   });
   if(on)decorate($('#z-student'));else undecorate();
-  renderTiles();
+  renderTiles();renderHero();
+  statsEditor();listEditor('#abSpeak','speak');listEditor('#abIdea','idea');
+  listEditor('#abCareer','career');bindSiteText();bindPlayerText();
 }
 /* 編輯中：功能按鈕不送出、晶片不切換、代號頁直接放行 */
 document.addEventListener('click',function(e){
@@ -2801,7 +2695,16 @@ $('#edSave').addEventListener('click',async function(){
   try{
     await F.setDoc(F.doc(F.db,'instructors','main'),
       {texts:TEXTS,patch:JSON.stringify(PATCH)},{merge:true});
-    await F.setDoc(F.doc(F.db,'courses',F.COURSE),{tiles:TILES},{merge:true});
+    await F.setDoc(F.doc(F.db,'courses',F.COURSE),
+      {tiles:TILES,title:COURSE.title,tags:COURSE.tags||[],icon:COURSE.icon},{merge:true});
+    await F.setDoc(F.doc(F.db,'instructors','main'),{
+      headline:SITE.headline,intro:SITE.intro,quote:SITE.quote,ending:SITE.ending,
+      stats:SITE.stats.map(function(x){return {n:x[0],l:x[1]}}),
+      videos:SITE.videos,
+      speaking:ET.speak.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
+      idea:ET.idea.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
+      career:ET.career.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}})
+    },{merge:true});
     toast('已儲存，學員端立即生效');logChange('在編輯模式修改頁面');
     renderTxtEdit();renderTileEdit();renderMirror();
   }catch(e){toast('儲存失敗：'+(e.code||e.message))}
@@ -2868,25 +2771,134 @@ var COURSE={title:'成人 CPR 與 AED 實務',sub:'三小時實作課',pass:60,
             tags:['實作課','3 小時','2026 / 09 / 14'], icon:'ecg',
             quiz:{score:true,wrong:true,exp:'now'}};
 
+/* 講師介紹的資料清單：編輯模式下原地可改 */
+function listEditor(boxSel,key,twoCols){
+  var box=$(boxSel);if(!box)return;
+  var list=ET[key]||[];
+  box.innerHTML='';
+  list.forEach(function(row,i){
+    if(!EDITING&&row[2])return;          // 隱藏的學員看不到
+    var el=document.createElement('div');
+    el.className='tl'+(EDITING?' blk':'')+(row[2]?' ed-hidden':'');
+    el.innerHTML='<div class="tl-y">'+row[0]+'</div><div class="tl-b">'+row[1]+'</div>';
+    if(EDITING){
+      var cells=el.querySelectorAll('.tl-y,.tl-b');
+      cells.forEach(function(c,ci){
+        c.classList.add('ed-txt');c.setAttribute('contenteditable','true');
+        c.addEventListener('blur',function(){row[ci]=c.innerText.trim()});
+        c.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();c.blur()}});
+      });
+      var bar=document.createElement('span');bar.className='blk-ed';bar.setAttribute('contenteditable','false');
+      bar.innerHTML='<button data-a="up">↑</button><button data-a="dn">↓</button>'+
+        '<button data-a="hide" class="lt">'+(row[2]?'顯示':'隱藏')+'</button>'+
+        '<button data-a="add" class="lt">＋</button><button data-a="del">×</button>';
+      bar.addEventListener('click',function(e){
+        e.preventDefault();e.stopPropagation();
+        var b=e.target.closest('button');if(!b)return;
+        var a=b.dataset.a;
+        if(a==='up'&&i>0){var t=list[i];list[i]=list[i-1];list[i-1]=t;}
+        else if(a==='dn'&&i<list.length-1){var t2=list[i];list[i]=list[i+1];list[i+1]=t2;}
+        else if(a==='hide'){row[2]=!row[2];}
+        else if(a==='add'){list.splice(i+1,0,['新項目','內容']);}
+        else if(a==='del'){if(!confirm('確定刪除這一行？'))return;list.splice(i,1);}
+        listEditor(boxSel,key,twoCols);
+      });
+      el.appendChild(bar);
+    }
+    box.appendChild(el);
+  });
+  if(EDITING&&!list.length){
+    var add=document.createElement('div');add.className='tile-add';add.style.minHeight='56px';
+    add.textContent='＋ 新增一行';
+    add.addEventListener('click',function(){list.push(['新項目','內容']);listEditor(boxSel,key,twoCols);});
+    box.appendChild(add);
+  }
+}
+function statsEditor(){
+  var box=$('#abStats');if(!box)return;
+  box.innerHTML='';
+  SITE.stats.forEach(function(x,i){
+    var el=document.createElement('div');el.className='stat'+(EDITING?' blk':'');
+    el.innerHTML='<div class="stat-n">'+x[0]+'</div><div class="stat-l">'+x[1]+'</div>';
+    if(EDITING){
+      el.querySelectorAll('.stat-n,.stat-l').forEach(function(c,ci){
+        c.classList.add('ed-txt');c.setAttribute('contenteditable','true');
+        c.addEventListener('blur',function(){x[ci]=c.innerText.trim()});
+      });
+      var bar=document.createElement('span');bar.className='blk-ed';
+      bar.innerHTML='<button data-a="add" class="lt">＋</button><button data-a="del">×</button>';
+      bar.addEventListener('click',function(e){
+        e.stopPropagation();var b=e.target.closest('button');if(!b)return;
+        if(b.dataset.a==='add')SITE.stats.splice(i+1,0,['0','說明']);
+        else if(SITE.stats.length>1)SITE.stats.splice(i,1);
+        statsEditor();
+      });
+      el.appendChild(bar);
+    }
+    box.appendChild(el);
+  });
+}
+function paintPlayerCaption(){
+  var pt=$('#plT'),pm=$('#plM'),pb=pt?pt.closest('.player-b'):null;
+  if(!pt||!pm)return;
+  var hasUrl=!!(SITE.videos.url||'').trim();
+  var t=SITE.videos.title||'', n=SITE.videos.note||'';
+  if(EDITING){
+    pt.textContent=t||'點這裡輸入影片標題';pm.textContent=n||'點這裡輸入說明（不填就不顯示）';
+    pt.style.opacity=t?'':'.5';pm.style.opacity=n?'':'.5';
+    if(pb)pb.style.display='';
+  }else if(!hasUrl){
+    pt.textContent='還沒設定影片';pm.textContent='後台 → 講師影音與聯絡';
+    pt.style.opacity=pm.style.opacity='';
+    if(pb)pb.style.display='';
+  }else{
+    pt.textContent=t;pm.textContent=n;pt.style.opacity=pm.style.opacity='';
+    // 有影片但沒填標題 → 整條標題列收起來，不顯示提示字
+    if(pb&&!pb.classList.contains('ed-hidden'))pb.style.display=(t||n)?'':'none';
+    pm.style.display=n?'':'none';
+  }
+}
+function bindPlayerText(){
+  [['#plT','title'],['#plM','note']].forEach(function(p){
+    var el=$(p[0]);if(!el)return;
+    if(EDITING){
+      el.classList.add('ed-txt');el.setAttribute('contenteditable','true');el.style.display='';
+      if(!el.dataset.bp){el.dataset.bp='1';
+        el.addEventListener('focus',function(){if(el.style.opacity==='0.5'){el.textContent='';el.style.opacity='';}});
+        el.addEventListener('blur',function(){if(EDITING)SITE.videos[p[1]]=el.innerText.trim();});
+        el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();el.blur()}});}
+    }else{el.classList.remove('ed-txt');el.removeAttribute('contenteditable');}
+  });
+  paintPlayerCaption();
+}
+function bindSiteText(){
+  [['#abHeadline','headline'],['#abIntro','intro'],['#abQuote','quote'],['#abEnd','ending']]
+  .forEach(function(p){
+    var el=$(p[0]);if(!el)return;
+    if(EDITING){
+      el.classList.add('ed-txt');el.setAttribute('contenteditable','true');
+      if(!el.dataset.bs){el.dataset.bs='1';
+        el.addEventListener('blur',function(){
+          if(!EDITING)return;
+          SITE[p[1]]=el.innerText.replace(/^「|」$/g,'').trim();
+        });}
+    }else{el.classList.remove('ed-txt');el.removeAttribute('contenteditable');}
+  });
+}
+
 function applySite(){
   var set=function(id,v){var e=$(id);if(e&&v!=null)e.textContent=v;};
   set('#abHeadline',SITE.headline);set('#abIntro',SITE.intro);
   set('#abQuote','「'+SITE.quote+'」');set('#abEnd',SITE.ending);
-  var st=$('#abStats');
-  if(st)st.innerHTML=SITE.stats.map(function(x){
-    return '<div class="stat"><div class="stat-n">'+x[0]+'</div><div class="stat-l">'+x[1]+'</div></div>';
-  }).join('');
-  function tl(list){return list.map(function(x){
-    return '<div class="tl"><div class="tl-y">'+x[0]+'</div><div class="tl-b">'+x[1]+'</div></div>';
-  }).join('')}
-  if($('#abSpeak'))$('#abSpeak').innerHTML=tl(ET.speak);
-  if($('#abIdea'))$('#abIdea').innerHTML=tl(ET.idea);
-  if($('#abCareer'))$('#abCareer').innerHTML=tl(ET.career);
+  statsEditor();
+  listEditor('#abSpeak','speak');
+  listEditor('#abIdea','idea');
+  listEditor('#abCareer','career');
+  bindSiteText();
   renderHero();
   var ct=$('#conTitle');if(ct)ct.textContent=COURSE.title;
   var cs=$('#conSub');if(cs)cs.textContent=COURSE.sub;
-  if(SITE.videos.title){var pt=$('#plT');if(pt)pt.textContent=SITE.videos.title;}
-  if(SITE.videos.note){var pm=$('#plM');if(pm)pm.textContent=SITE.videos.note;}
+  paintPlayerCaption();
   try{refreshTags()}catch(e){}
 }
 function applyForms(){
@@ -3035,9 +3047,9 @@ async function loadAll(){
     if(m.exists()){var v=m.data();
       ['headline','intro','quote','ending'].forEach(function(k){if(v[k])SITE[k]=v[k]});
       if(v.stats)SITE.stats=v.stats.map(function(x){return [x.n,x.l]});
-      if(v.speaking)ET.speak=v.speaking.map(function(x){return [x.k,x.v]});
-      if(v.idea)ET.idea=v.idea.map(function(x){return [x.k,x.v]});
-      if(v.career)ET.career=v.career.map(function(x){return [x.k,x.v]});
+      if(v.speaking)ET.speak=v.speaking.map(function(x){return [x.k,x.v,!!x.h]});
+      if(v.idea)ET.idea=v.idea.map(function(x){return [x.k,x.v,!!x.h]});
+      if(v.career)ET.career=v.career.map(function(x){return [x.k,x.v,!!x.h]});
       if(v.operatorRows)ET.ops=v.operatorRows.map(function(x){return [x.k,x.v]});
       SITE.operators=ET.ops.map(function(x){return x[0]});
       if(v.notify)SITE.notify=Object.assign(SITE.notify,v.notify);
@@ -3348,6 +3360,66 @@ function renderTxtEdit(){
 }
 try{applyTexts();renderTxtEdit();}catch(e){console.warn('頁面文字',e)}
 
+/* ---- 後台：兩張卡片切換展開面板 ---- */
+$$('.twin-c').forEach(function(c){
+  c.addEventListener('click',function(){
+    var id=c.dataset.panel, open=!$('#'+id).classList.contains('on');
+    $$('.panel').forEach(function(p){p.classList.remove('on')});
+    $$('.twin-c').forEach(function(x){x.classList.remove('on')});
+    if(open){$('#'+id).classList.add('on');c.classList.add('on');
+             if(id==='pnl-share')paintShare();}
+  });
+});
+
+/* ---- 匯出 CSV（真的下載） ---- */
+function csvCell(v){
+  v=(v==null?'':String(v)).replace(/"/g,'""');
+  return /[",\n]/.test(v)?'"'+v+'"':v;
+}
+function downloadCsv(name,rows){
+  var body=rows.map(function(r){return r.map(csvCell).join(',')}).join('\r\n');
+  var blob=new Blob(['\ufeff'+body],{type:'text/csv;charset=utf-8'});   // BOM：Excel 中文不亂碼
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);
+}
+document.addEventListener('click',async function(e){
+  var b=e.target.closest('[data-exp]');if(!b)return;
+  var F=window.fb;
+  if(!F||!F.auth.currentUser){toast('請先登入');return;}
+  var kind=b.dataset.exp, stamp=new Date().toISOString().slice(0,10);
+  try{
+    if(kind==='invites'){
+      var rows=[['時間','單位','聯絡人','Email','電話','課程類型','時間需求','人數','地點','預算','備註','狀態']];
+      INV.forEach(function(v){rows.push([fmtTime(v.createdAt),v.org,v.contact,v.email,v.phone,
+        (v.types||[]).join('、'),v.when,v.headcount,v.place,(v.budgetMode||'')+' '+(v.budget||''),
+        v.note,v.status])});
+      if(rows.length<2){toast('還沒有邀約');return;}
+      downloadCsv('課程邀約_'+stamp+'.csv',rows);
+    }else if(kind==='whispers'){
+      var r2=[['時間','內容','聯絡方式','狀態']];
+      WMSG.concat(WTRASH).forEach(function(w){r2.push([w.m,w.t,w.c||'',w.st])});
+      if(r2.length<2){toast('還沒有悄悄話');return;}
+      downloadCsv('悄悄話_'+stamp+'.csv',r2);
+    }else{
+      var snap=await F.getDocs(F.collection(F.db,'courses',F.COURSE,'feedback'));
+      var labels=[], data=[];
+      snap.forEach(function(d){var v=d.data();
+        (v.fields||[]).forEach(function(f){if(labels.indexOf(f.label)<0)labels.push(f.label)});
+        data.push(v);});
+      if(!data.length){toast('還沒有回饋');return;}
+      var r3=[['時間'].concat(labels)];
+      data.forEach(function(v){
+        var m={};(v.fields||[]).forEach(function(f){m[f.label]=f.value});
+        r3.push([fmtTime(v.createdAt)].concat(labels.map(function(l){return m[l]||''})));
+      });
+      downloadCsv('課程回饋_'+stamp+'.csv',r3);
+    }
+    toast('已下載');
+  }catch(err){toast('匯出失敗：'+(err.code||err.message))}
+});
+
 /* ---- 寄信連線診斷 ---- */
 var tOpen=$('#testOpen');
 if(tOpen)tOpen.addEventListener('click',function(){
@@ -3433,6 +3505,7 @@ if(cc)cc.addEventListener('click',async function(){
   toast(courseOpen?'課程已重新開放':'課程已關閉，舊連結進不來');
   logChange(courseOpen?'重新開放課程':'關閉課程');
   var so=$('#stOpen');if(so){so.textContent=courseOpen?'開放中':'已關閉';so.className='state-n '+(courseOpen?'live':'off');}
+  var so2=$('#stOpen2');if(so2){so2.textContent=courseOpen?'開放中':'已關閉';so2.className='qrow-v'+(courseOpen?'':' off');}
   if(window.fb&&window.fb.auth.currentUser){
     var F=window.fb;
     try{await F.setDoc(F.doc(F.db,'courses',F.COURSE),{isOpen:courseOpen},{merge:true});}
