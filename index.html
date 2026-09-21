@@ -341,6 +341,9 @@ body.editing [data-txt]:focus{outline:2px solid var(--signal);background:var(--s
 
 .figwrap{position:relative}
 
+.ph.img{background-size:cover;background-position:center;color:transparent}
+.lbox-ph.img{background-size:contain;background-repeat:no-repeat;background-position:center;color:transparent}
+
 /* 編輯入口卡片 */
 .edit-entry{display:flex;align-items:center;gap:15px;margin-top:16px;padding:18px 18px;
   border:1px solid var(--signal);background:var(--signal-soft);cursor:pointer;
@@ -1004,7 +1007,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div class="cols" id="tileGrid"></div>
 
-    <div class="ig-foot" data-ig><span class="dotmark"></span><span>@rescue.teacher</span></div>
+    <div class="ig-foot" data-ig><span class="dotmark"></span><span class="ig-handle"></span></div>
     <div class="gate-mark">
       <span class="foot-mark" id="gate"><i></i></span>
       <span id="cHomeMeta">CPR-4f9a2e</span>
@@ -1014,15 +1017,9 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
   <!-- 講師介紹 -->
   <section class="page" id="p-about">
-    <div class="lead rv">
-      <div class="ph lead-big" data-cap="火場勤務現場">照片 4:3</div>
-      <div class="lead-row">
-        <div class="ph" data-cap="TED 演講現場">照片 4:5</div>
-        <div class="ph" data-cap="企業內訓　AED 實際操作">照片 4:5</div>
-      </div>
-    </div>
+    <div class="lead rv" id="abLead"></div>
     <div class="who rv"><span class="who-n">尤偉檁</span><span class="who-r">消防安全 × 急救教育講師</span>
-      <span class="ig-inline" data-ig>@rescue.teacher</span></div>
+      <span class="ig-inline ig-handle" data-ig></span></div>
     <div class="meta rv" style="margin-top:6px">新北市政府消防局・新板分隊隊員</div>
 
     <h1 class="display rv" style="margin-top:22px" id="abHeadline">我站在第一線，<br>也站在講台上。</h1>
@@ -1101,30 +1098,17 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     </div>
 
     <div class="section-head rv"><h2>現場</h2><span>教學與媒體</span></div>
-    <div class="strip rv" id="gal">
-      <div class="ph" data-cap="TED 演講現場">照片 01</div>
-      <div class="ph" data-cap="企業消防安全講座">照片 02</div>
-      <div class="ph" data-cap="幼兒園安全教育">照片 03</div>
-      <div class="ph" data-cap="CPR / AED 實作">照片 04</div>
-      <div class="ph" data-cap="VR 火場體驗">照片 05</div>
-      <div class="ph" data-cap="新聞採訪">照片 06</div>
+    <div class="strip rv" id="gal"></div>
     </div>
-    <div class="strip-m rv">← 左右滑　6 張</div>
+    <div class="strip-m rv" id="galN"></div>
 
     <div class="section-head rv"><h2>聯絡方式</h2><span>四種都可以</span></div>
     <div class="ig rv" data-ig>
       <div class="ig-mark"></div>
-      <div class="ig-b"><div class="ig-h">@rescue.teacher</div><div class="ig-d">每週一則急救小知識．上課花絮與現場紀錄</div></div>
+      <div class="ig-b"><div class="ig-h ig-handle"></div><div class="ig-d">每週一則急救小知識．上課花絮與現場紀錄</div></div>
       <div class="ig-go">追蹤 →</div>
     </div>
-    <div class="cts rv">
-      <div class="ct" data-copy="@rescue-teacher"><div class="ct-m">LINE</div>
-        <div class="ct-b"><div class="ct-v">@rescue-teacher</div><div class="ct-l">回覆最快</div></div>
-        <div class="ct-go">複製</div></div>
-      <div class="ct" data-copy="0975-953359"><div class="ct-m">TEL</div>
-        <div class="ct-b"><div class="ct-v">0975-953359</div><div class="ct-l">可傳簡訊</div></div>
-        <div class="ct-go">複製</div></div>
-    </div>
+    <div class="cts rv" id="abContacts"></div>
 
     <div class="rv" style="margin-top:34px;border-top:1px solid var(--line);padding-top:24px">
       <h2 class="display" style="font-size:21px">如果有一天，<br>意外真的發生了。</h2>
@@ -1217,7 +1201,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     </div>
     <div id="runDone" style="display:none">
       <div style="padding-top:26px">
-        <div class="meta">課後測驗完成</div>
+        <div class="meta" id="runKicker">測驗完成</div>
         <h1 class="display" id="scoreT" style="margin-top:10px"></h1>
         <p class="sub" style="margin-top:10px" id="scoreS"></p>
       </div>
@@ -1265,8 +1249,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     </div>
     <p class="hint" id="myNote">做完課後測驗就會出現你自己的曲線。</p>
 
-    <div class="section-head"><h2>全班統計</h2><span id="clsTag">尚無資料</span></div>
-    <div class="empty">等這堂課的學員作答之後，全班及格率、每題正確率、最多人誤會的題目都會出現在這裡。</div>
+    <div id="clsStats"><div class="empty">讀取中…</div></div>
 
     <p class="note">統計只算有輸入代號的人。沒上課但拿到連結的人可以看，但不會被算進去。</p>
   </section>
@@ -1280,7 +1263,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       <p class="sub" style="margin-top:10px">同分時，進步幅度大的排前面。</p>
     </div>
 
-    <div class="empty">還沒有成績。等學員完成課後測驗，成績榜與進步榜會自動產生。</div>
+    <div id="topList"><div class="empty">讀取中…</div></div>
 
     <p class="note">姓名只顯示姓與末字，中間以 ○ 代替。要顯示全名或完全不顯示，都可以在後台改。</p>
   </section>
@@ -1555,7 +1538,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div id="boxI" style="display:none">
       <div class="seg" id="iSeg" style="margin-top:10px">
-        <button class="on" data-f="new">待回覆</button><button data-f="all">全部</button>
+        <button class="on" data-f="new">待回覆</button><button data-f="all">全部</button><button data-f="trash">垃圾桶</button>
       </div>
       <div id="iInbox" style="margin-top:6px"></div>
       <button class="btn btn-quiet" id="reloadInv">重新讀取</button>
@@ -1606,6 +1589,15 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     
   
+    <div class="section-head"><h2>本堂作答</h2><span id="atCount">—</span></div>
+    <p class="sub">學員作答會自動彙整成全班統計。前三名要你按下公布，學員那邊才看得到。</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <button class="qbtn" id="pubTop">公布前三名</button>
+      <button class="qbtn" id="hideTop">收回前三名</button>
+      <button class="qbtn" id="resetStats">清空本堂統計</button>
+    </div>
+    <div id="proTop" style="margin-top:10px"></div>
+
     <div class="section-head"><h2>及格線</h2><span>分</span></div>
     <div class="f" style="padding-top:8px"><input class="f-in" id="edPass" value="60" inputmode="numeric"></div>
     <button class="btn btn-quiet" data-save="course">儲存測驗設定</button>
@@ -1639,12 +1631,10 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div class="section-head"><h2>照片</h2><span>Google Drive 資料夾</span></div>
     <p class="sub">貼整個資料夾的連結，App 列出裡面的照片，你再排順序。檔案留在雲端硬碟。</p>
-    <div class="f" style="padding-top:14px"><div class="f-q">資料夾連結</div>
-      <div class="f-hint">Drive 取得連結．權限選「知道連結的人可檢視」</div>
-      <input class="f-in" id="edDrive" placeholder="https://drive.google.com/drive/folders/…"></div>
-    <button class="btn btn-quiet" id="resync">重新同步資料夾</button>
-    <div class="section-head" style="padding-top:26px"><h2>排序</h2><span>前三張是開頭</span></div>
-    <div id="photoSort"></div>
+    <div class="f" style="padding-top:14px"><div class="f-q">照片</div>
+      <div class="f-hint">在雲端硬碟對每張照片按「分享 → 知道連結的人可檢視 → 複製連結」，一行貼一張。<br>格式：連結 ｜ 說明　前三張放在講師介紹最上面，其餘放在「現場」</div>
+      <textarea class="f-ta" id="edPhotos" style="min-height:130px" placeholder="https://drive.google.com/file/d/…/view ｜ TED 演講現場"></textarea>
+      <div class="f-hint" id="photoCheck" style="margin-top:8px"></div></div>
 
     <button class="btn btn-quiet" data-save="site">儲存影片與照片</button>
   
@@ -1898,6 +1888,14 @@ window.addEventListener('fb-ready',function(){
     if(!d.exists())return;var v=d.data();
     if(v.texts){Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});applyTexts();}
     if(v.patch){try{PATCH=Object.assign(PATCH,JSON.parse(v.patch));applyPatch();}catch(e){}}
+    ['headline','intro','quote','ending','photos'].forEach(function(k){if(v[k]!=null)SITE[k]=v[k]});
+    if(v.contact)SITE.contact=Object.assign(SITE.contact,v.contact);
+    if(v.videos)SITE.videos=Object.assign(SITE.videos,v.videos);
+    if(v.stats)SITE.stats=v.stats.map(function(x){return [x.n,x.l]});
+    if(v.speaking)ET.speak=v.speaking.map(function(x){return [x.k,x.v,!!x.h]});
+    if(v.idea)ET.idea=v.idea.map(function(x){return [x.k,x.v,!!x.h]});
+    if(v.career)ET.career=v.career.map(function(x){return [x.k,x.v,!!x.h]});
+    try{applySite()}catch(e){}
     if(v.notify){
       ['endpoint','onWhisper','onInvite','onFeedback','showContent','ack'].forEach(function(k){
         if(v.notify[k]!=null)SITE.notify[k]=v.notify[k];
@@ -1908,6 +1906,7 @@ window.addEventListener('fb-ready',function(){
     if(!d.exists())return;var v=d.data();
     if(v.tiles&&v.tiles.length){TILES=v.tiles;renderTiles();}
     if(v.title){COURSE.title=v.title;}
+    if(v.code){CODE=String(v.code);showCode();}
     if(v.tags)COURSE.tags=v.tags;if(v.icon)COURSE.icon=v.icon;
     renderHero();
   }).catch(function(){});
@@ -1938,7 +1937,7 @@ window.addEventListener('fb-ready',function(){
         }
       }
       loadAll().then(function(){ if(!OPERATOR) showOpPicker(); });
-      loadWhispers();loadInvites();loadHits();loadLog();
+      loadWhispers();loadInvites();loadHits();loadLog();refreshAttempts();showCode();
     }else{
       setConn('','已連線　未登入');
       $('#signOut').style.display='none';
@@ -1984,7 +1983,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v4.7　2026/09/21';
+var APP_VERSION='v4.9　2026/09/21';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2138,6 +2137,8 @@ function go(id){
   if(id!==stack[stack.length-1]){stack.push(id);}
   show(id,false);
   if(HITMAP[id])countHit(HITMAP[id]);
+  if(id==='p-stats')loadClassStats();
+  if(id==='p-top3')loadTop();
 }
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-go]');
@@ -2225,8 +2226,11 @@ function renderVidList(){
 /* ---- lightbox ---- */
 document.addEventListener('click',function(e){
   var p=e.target.closest('.ph[data-cap]');if(!p)return;
-  $('#lboxCap').textContent=p.dataset.cap;
-  $('#lboxPh').textContent=p.textContent.trim();
+  if(EDITING)return;
+  $('#lboxCap').textContent=p.dataset.cap||'';
+  var lp=$('#lboxPh');
+  if(p.dataset.src){lp.classList.add('img');lp.style.backgroundImage='url('+p.dataset.src+')';lp.textContent='';}
+  else{lp.classList.remove('img');lp.style.backgroundImage='';lp.textContent=p.textContent.trim();}
   $('#lbox').classList.add('is-on');
 });
 $('#lboxX').addEventListener('click',function(){$('#lbox').classList.remove('is-on')});
@@ -2243,11 +2247,11 @@ var QS=[
  {q:'兒童 CPR 的按壓與吹氣比例？',o:['一律 30:2','單人 30:2，雙人 15:2','一律 15:2','只壓不吹'],a:1,
   ex:'成人固定 30:2。兒童與嬰兒在雙人施救時改為 15:2，因為小孩多為呼吸性的心跳停止，通氣相對更重要。',k:'小孩兩個人救的時候，吹氣要更頻繁。',star:true}
 ];
-var qi=0,answers=[];
+var qi=0,answers=[],QMODE='post',QNAME='';
 function renderQ(){
   var q=QS[qi];
   $('#qbar').style.width=((qi)/QS.length*100+25)+'%';
-  $('#qmeta').textContent='課後測驗 · 第 '+(qi+1)+' 題 / '+QS.length;
+  $('#qmeta').textContent=(QMODE==='pre'?'課前':'課後')+'測驗 · 第 '+(qi+1)+' 題 / '+QS.length;
   $('#qtext').textContent=q.q;
   var box=$('#qopts');box.innerHTML='';
   q.o.forEach(function(t,i){
@@ -2272,8 +2276,14 @@ $('#qnext').addEventListener('click',function(){
     $('#runBody').style.display='none';$('#runDone').style.display='block';
     $('#scoreT').textContent='答對 '+right+' / '+QS.length+' 題';
     $('#scoreS').textContent=right===QS.length?'全對。下次有人倒下，你會知道要做什麼。':'錯的那幾題去看詳解，比重做一次有用。';
-    $('#sPost').innerHTML=pct+'<small>%</small>';
-    $('#sUp').innerHTML='—';
+    $('#runKicker').textContent=(QMODE==='pre'?'課前':'課後')+'測驗完成';
+    var myKey='my:'+(window.fb?window.fb.COURSE:'c');
+    var mine={};try{mine=JSON.parse(localStorage.getItem(myKey)||'{}')}catch(e){}
+    mine[QMODE]=pct;try{localStorage.setItem(myKey,JSON.stringify(mine))}catch(e){}
+    $('#sPre').innerHTML=mine.pre!=null?mine.pre+'<small>%</small>':'—';
+    $('#sPost').innerHTML=mine.post!=null?mine.post+'<small>%</small>':'—';
+    $('#sUp').innerHTML=(mine.pre!=null&&mine.post!=null)?((mine.post-mine.pre>=0?'+':'')+(mine.post-mine.pre)):'—';
+    saveAttempt(pct);
     renderExplain();pushMyScore(pct);
     window.scrollTo({top:0,behavior:'instant'});
   }
@@ -2548,9 +2558,10 @@ var BLOCK_SEL='.page>*,.f,.section-head,.row,.tl,.story>p,.lock,.quote,.hint,.no
 var KEY_SEL=TEXT_SEL+','+BLOCK_SEL+',.chip,.chip-s,input,textarea';
 /* 內容是程式產生的容器：容器本身可以移動隱藏，但裡面的東西由資料控制 */
 var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,'+
-        '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav,#stage';
+        '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav,#stage,'+
+        '#abLead,#gal,#abContacts,#clsStats,#topList';
 /* 文字綁在資料上的元素：可以移動，但文字另外處理 */
-var SKIPTXT='#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM';
+var SKIPTXT='#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM,.ig-handle,#galN,#runKicker,#scoreT,#scoreS';
 var NOBLOCK='#heroCard,#tileGrid,.gate-mark,#pvBar,#nav,script';
 function isDyn(el){var p=el.parentElement;return !!(p&&p.closest(DYN))}
 function cleanText(el){var c=el.cloneNode(true);$$('.blk-ed',c).forEach(function(x){x.remove()});return c.innerText.trim();}
@@ -2715,6 +2726,7 @@ function setEditing(on){
   renderTiles();renderHero();
   statsEditor();listEditor('#abSpeak','speak');listEditor('#abIdea','idea');
   listEditor('#abCareer','career');bindSiteText();bindPlayerText();
+  try{renderPhotos2();renderContacts();}catch(e){}
 }
 /* 編輯中：點一下選中區塊，只有選中的才出現按鈕 */
 document.addEventListener('click',function(e){
@@ -2865,6 +2877,7 @@ var SITE={
           ['消防','消防人員．消防署火災搶救訓練合格'],
           ['教學','企業、學校、政府機關與社區防災及急救教育']],
   videos:{url:'',title:'',note:'',more:''},
+  photos:'',
   drive:'',
   contact:{ig:'',line:'',tel:'',mail:''},
   notice:'',
@@ -2995,6 +3008,77 @@ function bindSiteText(){
   });
 }
 
+/* ---- 照片：雲端硬碟分享連結 → 顯示用網址 ---- */
+function driveId(u){
+  u=String(u||'').trim();
+  var m=u.match(/\/file\/d\/([A-Za-z0-9_-]+)/)||u.match(/[?&]id=([A-Za-z0-9_-]+)/)||u.match(/\/d\/([A-Za-z0-9_-]+)/);
+  if(m)return m[1];
+  return /^[A-Za-z0-9_-]{20,}$/.test(u)?u:null;
+}
+function photoList(){
+  return (SITE.photos||'').split('\n').map(function(l){return l.trim()}).filter(Boolean).map(function(l){
+    var p=l.split('｜');var id=driveId(p[0]);
+    return {id:id,cap:(p[1]||'').trim(),url:id?'https://drive.google.com/thumbnail?id='+id+'&sz=w1600':''};
+  });
+}
+function phHTML(p,cls){
+  if(!p||!p.url)return '<div class="ph '+(cls||'')+'" data-cap="'+((p&&p.cap)||'')+'">照片</div>';
+  return '<div class="ph img '+(cls||'')+'" data-cap="'+p.cap.replace(/"/g,'&quot;')+'" data-src="'+p.url+
+         '" style="background-image:url(\''+p.url+'\')"></div>';
+}
+function renderPhotos2(){
+  var list=photoList().filter(function(p){return p.url});
+  var lead=$('#abLead'), gal=$('#gal'), n=$('#galN');
+  if(lead){
+    var a=list.slice(0,3);
+    if(!a.length){
+      lead.innerHTML=EDITING?'<div class="ph lead-big">還沒有照片．到後台「講師影音與聯絡」貼連結</div>':'';
+      lead.style.display=EDITING?'':'none';
+    }else{
+      lead.style.display='';
+      lead.innerHTML=phHTML(a[0],'lead-big')+(a.length>1?'<div class="lead-row">'+a.slice(1).map(function(p){return phHTML(p)}).join('')+'</div>':'');
+    }
+    if(EDITING&&lead.classList.contains('blk'))toolbar(lead);
+  }
+  if(gal){
+    var b=list.slice(3);
+    gal.innerHTML=b.map(function(p){return phHTML(p)}).join('');
+    var hideSec=!b.length&&!EDITING;
+    gal.style.display=hideSec?'none':'';
+    if(n){n.textContent=b.length?('← 左右滑　'+b.length+' 張'):'';n.style.display=hideSec?'none':'';}
+    var head=gal.previousElementSibling;
+    while(head&&!head.classList.contains('section-head'))head=head.previousElementSibling;
+    if(head&&!head.classList.contains('ed-hidden'))head.style.display=hideSec?'none':'';
+    if(EDITING&&gal.classList.contains('blk'))toolbar(gal);
+  }
+}
+function igHandle(){
+  var h=(SITE.contact.ig||'').trim();
+  if(!h)return '';
+  return h.charAt(0)==='@'?h:'@'+h;
+}
+function renderContacts(){
+  var h=igHandle();
+  $$('.ig-handle').forEach(function(e){e.textContent=h});
+  $$('[data-ig]').forEach(function(e){
+    if(e.closest('.blk')&&EDITING)return;
+    if(!e.classList.contains('ed-hidden'))e.style.display=h?'':'none';
+  });
+  var box=$('#abContacts');if(!box)return;
+  var c=SITE.contact, rows=[];
+  if(c.line)rows.push(['LINE',c.line,'回覆最快']);
+  if(c.tel) rows.push(['TEL',c.tel,'可傳簡訊']);
+  if(c.mail)rows.push(['MAIL',c.mail,'正式公文與報價']);
+  box.innerHTML=rows.map(function(r){
+    return '<div class="ct" data-copy="'+r[1].replace(/"/g,'&quot;')+'"><div class="ct-m">'+r[0]+'</div>'+
+      '<div class="ct-b"><div class="ct-v">'+r[1]+'</div><div class="ct-l">'+r[2]+'</div></div>'+
+      '<div class="ct-go">複製</div></div>';
+  }).join('');
+  box.style.display=rows.length||EDITING?'':'none';
+  if(EDITING&&!rows.length)box.innerHTML='<div class="empty">還沒填 LINE／電話／Email．到後台「講師影音與聯絡」</div>';
+  if(EDITING&&box.classList.contains('blk'))toolbar(box);
+}
+
 function applySite(){
   var set=function(id,v){var e=$(id);if(e&&v!=null)e.textContent=v;};
   set('#abHeadline',SITE.headline);set('#abIntro',SITE.intro);
@@ -3019,7 +3103,7 @@ function applyForms(){
   renderHeroPick();
   v('#edVidUrl',SITE.videos.url);v('#edVidTitle',SITE.videos.title);
   v('#edVidNote',SITE.videos.note);v('#edVidMore',SITE.videos.more);
-  v('#edDrive',SITE.drive);v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
+  v('#edDrive',SITE.drive);v('#edPhotos',SITE.photos);photoCheck();v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   v('#edIG',SITE.contact.ig);v('#edLine',SITE.contact.line);
   v('#edTel',SITE.contact.tel);v('#edMail',SITE.contact.mail);
   v('#edAckSub',SITE.notify.ackSub);v('#edAckBody',SITE.notify.ackBody);
@@ -3069,14 +3153,14 @@ function pullForms(){
   COURSE.tags=[g('#edTag1',''),g('#edTag2',''),g('#edTag3','')];
   SITE.videos={url:g('#edVidUrl',''),title:g('#edVidTitle',''),
                note:g('#edVidNote',''),more:g('#edVidMore','')};
-  SITE.drive=g('#edDrive','');SITE.notice=g('#edNotice','');SITE.topic=g('#edTopic','')||'急救';
+  SITE.drive=g('#edDrive','');SITE.photos=g('#edPhotos',SITE.photos);SITE.notice=g('#edNotice','');SITE.topic=g('#edTopic','')||'急救';
   SITE.contact={ig:g('#edIG',''),line:g('#edLine',''),tel:g('#edTel',''),mail:g('#edMail','')};
 }
 function refreshTags(){
   var set=function(id,v){var e=$(id);if(e)e.textContent=v};
   set('#courseTag',TILES.filter(function(t){return t.on}).length+' / '+TILES.length+' 開啟');
   set('#qTag','題庫 '+QBANK.length+' 題');
-  set('#aboutTag','照片 '+PHOTOS.length+'　影片 '+(1+(SITE.videos&&SITE.videos.more?SITE.videos.more.split('\n').filter(Boolean).length:0)));
+  set('#aboutTag','照片 '+photoList().filter(function(p){return p.url}).length+'　影片 '+(1+(SITE.videos&&SITE.videos.more?SITE.videos.more.split('\n').filter(Boolean).length:0)));
   set('#artTag',ARTICLES.length+' 篇');
   var ct=[SITE.contact.ig,SITE.contact.line,SITE.contact.tel,SITE.contact.mail].filter(Boolean).length;
   set('#ctTag',ct+' / 4 已填');
@@ -3121,7 +3205,7 @@ async function saveSite(){
             onInvite:!!SITE.notify.onInvite,onFeedback:!!SITE.notify.onFeedback,
             showContent:!!SITE.notify.showContent,ack:!!SITE.notify.ack,
             emails:'',ackSub:'',ackBody:''},
-    videos:SITE.videos, drive:SITE.drive, contact:SITE.contact,
+    videos:SITE.videos, drive:SITE.drive, photos:SITE.photos, contact:SITE.contact,
     notice:SITE.notice, topic:SITE.topic
   },{merge:true});
   applySite();
@@ -3153,6 +3237,7 @@ async function loadAll(){
       COURSE.title=d.title||COURSE.title;COURSE.sub=d.subtitle||COURSE.sub;
       COURSE.pass=d.passLine||COURSE.pass;if(d.quiz)COURSE.quiz=d.quiz;
       if(d.tags)COURSE.tags=d.tags;if(d.icon)COURSE.icon=d.icon;
+      if(d.code){CODE=String(d.code);showCode();}
       if(d.tiles&&d.tiles.length){TILES=d.tiles;renderTiles();renderTileEdit();}
       if($('#stCourse'))$('#stCourse').textContent='已同步';}
     var m=await F.getDoc(F.doc(F.db,'instructors','main'));
@@ -3167,7 +3252,8 @@ async function loadAll(){
       if(v.notify)SITE.notify=Object.assign(SITE.notify,v.notify);
       if(v.videos)SITE.videos=Object.assign(SITE.videos,v.videos);
       if(v.contact)SITE.contact=Object.assign(SITE.contact,v.contact);
-      if(v.drive)SITE.drive=v.drive;if(v.notice)SITE.notice=v.notice;
+      if(v.drive)SITE.drive=v.drive;
+      if(v.photos!=null)SITE.photos=v.photos;if(v.notice)SITE.notice=v.notice;
       if(v.topic)SITE.topic=v.topic;
       if(v.texts){Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});
                   applyTexts();renderTxtEdit();}
@@ -3372,12 +3458,14 @@ function loadInvites(){
 }
 function iRender(){
   var box=$('#iInbox');if(!box)return;
-  var list=iFilter==='new'?INV.filter(function(x){return (x.status||'new')==='new'}):INV;
-  var pend=INV.filter(function(x){return (x.status||'new')==='new'}).length;
+  var live=INV.filter(function(x){return x.status!=='deleted'});
+  var list=iFilter==='trash'?INV.filter(function(x){return x.status==='deleted'})
+          :iFilter==='new'?live.filter(function(x){return (x.status||'new')==='new'}):live;
+  var pend=live.filter(function(x){return (x.status||'new')==='new'}).length;
   var un=WMSG.filter(function(w){return w.st==='unread'}).length;
   var ic=$('#inboxCount');if(ic)ic.textContent=un+' 未讀 · '+pend+' 待回';
   box.innerHTML='';
-  if(!list.length){box.innerHTML='<div class="empty">目前沒有邀約。</div>';return;}
+  if(!list.length){box.innerHTML='<div class="empty">'+(iFilter==='trash'?'垃圾桶是空的。':'目前沒有邀約。')+'</div>';return;}
   list.forEach(function(v){
     var el=document.createElement('div');
     el.className='wi '+((v.status||'new')==='new'?'':'read');
@@ -3403,17 +3491,37 @@ function iRender(){
       b.addEventListener('click',function(e){e.stopPropagation();fn()});act.appendChild(b);}
     btn('複製 Email',function(){if(navigator.clipboard)navigator.clipboard.writeText(v.email||'');toast('已複製')});
     if(v.phone)btn('複製電話',function(){navigator.clipboard&&navigator.clipboard.writeText(v.phone);toast('已複製')});
-    if((v.status||'new')==='new')btn('標為已回覆',async function(){
+    if((v.status||'new')==='new'&&v.status!=='deleted')btn('標為已回覆',async function(){
       v.status='replied';iRender();
       var F=window.fb;
       try{await F.updateDoc(F.doc(F.db,'invites',v.id),{status:'replied',handledBy:OPERATOR||''})}
       catch(e){toast('更新失敗')}
     });
-    btn('刪除',async function(){
-      INV.splice(INV.indexOf(v),1);iRender();
-      var F=window.fb;
-      try{await F.deleteDoc(F.doc(F.db,'invites',v.id))}catch(e){toast('刪除失敗')}
-    });
+    var F0=window.fb;
+    function why(e){
+      var c=(e&&e.code)||'';
+      if(c==='permission-denied')return '資料庫規則不允許，請看說明更新規則';
+      if(c==='unavailable')return '網路斷線，稍後再試';
+      return c||(e&&e.message)||'未知錯誤';
+    }
+    if(v.status==='deleted'){
+      btn('復原',async function(){
+        try{await F0.updateDoc(F0.doc(F0.db,'invites',v.id),{status:'new',deletedAt:null});toast('已復原')}
+        catch(e){toast('復原失敗：'+why(e))}
+      });
+      btn('永久刪除',async function(){
+        if(!confirm('永久刪除後救不回來，確定嗎？'))return;
+        try{await F0.deleteDoc(F0.doc(F0.db,'invites',v.id));toast('已永久刪除');logChange('永久刪除一筆邀約')}
+        catch(e){toast('刪除失敗：'+why(e))}
+      });
+    }else{
+      btn('刪除',async function(){
+        try{await F0.updateDoc(F0.doc(F0.db,'invites',v.id),
+               {status:'deleted',deletedAt:F0.serverTimestamp(),handledBy:OPERATOR||''});
+            toast('已移到垃圾桶')}
+        catch(e){toast('刪除失敗：'+why(e))}
+      });
+    }
     el.querySelector('.wi-h').addEventListener('click',function(){el.classList.toggle('open')});
     box.appendChild(el);
   });
@@ -3550,6 +3658,45 @@ document.addEventListener('click',async function(e){
   }catch(err){toast('匯出失敗：'+(err.code||err.message))}
 });
 
+/* ---- 後台：前三名與統計 ---- */
+async function refreshAttempts(){
+  var F=window.fb;if(!F||!F.auth.currentUser)return;
+  try{var r=await buildTop();
+    var c=$('#atCount');if(c)c.textContent=r.count+' 筆作答';
+    var p=$('#proTop');
+    if(p)p.innerHTML=r.score.length?('<div class="hint">目前排名：'+r.score.map(function(x,i){
+      return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　')+'</div>'):'<div class="hint">還沒有課後測驗的成績。</div>';
+  }catch(e){console.warn(e)}
+}
+(function(){
+  var pt=$('#pubTop');
+  if(pt)pt.addEventListener('click',async function(){
+    var F=window.fb;if(!F||!F.auth.currentUser){toast('請先登入');return;}
+    try{
+      var r=await buildTop();
+      if(!r.score.length){toast('還沒有課後測驗的成績');return;}
+      var m=function(x){return {name:maskName(x.name),pre:x.pre==null?null:x.pre,post:x.post}};
+      await F.setDoc(F.doc(F.db,'questionStats',F.COURSE),
+        {top:{score:r.score.map(m),gain:r.gain.map(m),at:F.serverTimestamp()}},{merge:true});
+      toast('已公布，學員重新整理就看得到');logChange('公布前三名');refreshAttempts();
+    }catch(e){toast('公布失敗：'+(e.code||e.message))}
+  });
+  var ht=$('#hideTop');
+  if(ht)ht.addEventListener('click',async function(){
+    var F=window.fb;if(!F||!F.auth.currentUser){toast('請先登入');return;}
+    try{await F.setDoc(F.doc(F.db,'questionStats',F.COURSE),{top:null},{merge:true});
+        toast('已收回');logChange('收回前三名');}
+    catch(e){toast('失敗：'+(e.code||e.message))}
+  });
+  var rs2=$('#resetStats');
+  if(rs2)rs2.addEventListener('click',async function(){
+    var F=window.fb;if(!F||!F.auth.currentUser){toast('請先登入');return;}
+    if(!confirm('清空本堂的全班統計與前三名？學員的作答原始紀錄會保留。'))return;
+    try{await F.setDoc(F.doc(F.db,'questionStats',F.COURSE),{});toast('已清空');logChange('清空本堂統計');}
+    catch(e){toast('失敗：'+(e.code||e.message))}
+  });
+})();
+
 /* ---- 寄信：管理動作 ---- */
 try{var savedPin=localStorage.getItem('mailPin');if(savedPin&&$('#edPin'))$('#edPin').value=savedPin;}catch(e){}
 function bindMail(id,fn){var b=$(id);if(!b)return;b.addEventListener('click',async function(){
@@ -3682,7 +3829,7 @@ if(rg)rg.addEventListener('click',async function(){
   var sc=$('#stCode');if(sc)sc.textContent=CODE;
   if(window.fb&&window.fb.auth.currentUser){
     var F=window.fb;
-    try{await F.setDoc(F.doc(F.db,'courses',F.COURSE,'private','gate'),{code:CODE});}
+    try{await F.setDoc(F.doc(F.db,'courses',F.COURSE),{code:CODE},{merge:true});}
     catch(e){toast('寫入失敗：'+(e.code||e.message))}
   }
 });
@@ -4024,10 +4171,24 @@ if(nOn)nOn.addEventListener('click',function(){
 });
 
 /* ---- Instagram ---- */
-var IG='https://www.instagram.com/rescue.teacher/';
 document.addEventListener('click',function(e){
-  if(e.target.closest('[data-ig]')){countHit('ig');window.open(IG,'_blank','noopener');}
+  if(EDITING)return;
+  if(e.target.closest('[data-ig]')){
+    var h=igHandle();if(!h)return;
+    countHit('ig');window.open('https://www.instagram.com/'+h.slice(1)+'/','_blank','noopener');
+  }
 });
+
+/* ---- 後台：照片連結即時檢查 ---- */
+function photoCheck(){
+  var el=$('#photoCheck');if(!el)return;
+  var ta=$('#edPhotos');if(ta)SITE.photos=ta.value;
+  var all=photoList(), ok=all.filter(function(p){return p.url}).length, bad=all.length-ok;
+  el.textContent=all.length?('認得 '+ok+' 張'+(bad?('，'+bad+' 行看不出是雲端硬碟連結'):'')+'．前 3 張放最上面'):'';
+  el.style.color=bad?'var(--signal)':'';
+  try{renderPhotos2()}catch(e){}
+}
+(function(){var ta=$('#edPhotos');if(ta)ta.addEventListener('input',photoCheck);})();
 
 /* ---- 後台：照片排序 ---- */
 var PHOTOS=[];
@@ -4052,12 +4213,7 @@ function renderPhotos(){
   });
 }
 renderPhotos();
-var rs=$('#resync');
-if(rs)rs.addEventListener('click',function(){
-  rs.textContent='同步中…';
-  setTimeout(function(){rs.textContent='已是最新．6 張'},900);
-  setTimeout(function(){rs.textContent='重新同步資料夾'},2600);
-});
+
 
 /* ---- 後台：流量 ---- */
 renderTraffic();
@@ -4089,6 +4245,10 @@ document.addEventListener('click',function(e){
 
 /* ---- 上課代號 ---- */
 var CODE='8236', codePassed=false, pending=null;
+function showCode(){
+  var a=$('#codeShow');if(a)a.textContent=CODE;
+  var b=$('#stCode');if(b)b.textContent=CODE;
+}
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-gate]');
   if(!t)return;
@@ -4118,22 +4278,25 @@ function enterRun(label){
   tag.textContent=label;
   go('p-run');
 }
+var PROFILE=[];
 $('#pfGo').addEventListener('click',function(){
-  profileName=($('#pfName').value||'').trim()||'這位學員';
-  enterRun('課前測驗 · '+profileName);
+  var n=($('#pfName').value||'').trim();
+  if(!n){toast('請先填姓名，前後測要靠它配對');$('#pfName').focus();return;}
+  profileName=n;QMODE='pre';QNAME=n;
+  PROFILE=collectFields('#p-profile');
+  qi=0;answers=[];$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
+  enterRun('課前測驗 · '+n);
 });
 $('#nmGo').addEventListener('click',function(){
-  var n=($('#nmIn').value||'').trim()||profileName||'這位學員';
+  var n=($('#nmIn').value||'').trim()||profileName||'';
+  if(!n){toast('請填姓名');$('#nmIn').focus();return;}
+  QMODE='post';QNAME=n;
+  qi=0;answers=[];$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
   enterRun('課後測驗 · '+n+'　基本資料已帶入，不再重問');
 });
 
 /* ---- 統計 ---- */
-var QSTAT=[
- {pre:52,post:91,wrong:'3 至 4 公分',wpct:31},
- {pre:28,post:69,wrong:'繼續按壓不要停',wpct:24},
- {pre:64,post:94,wrong:'立刻開始壓胸',wpct:4},
- {pre:33,post:72,wrong:'一律 30:2',wpct:21}
-];
+var QSTAT=[];
 function renderStats(){
   var box=$('#qstats');if(!box)return;
   box.innerHTML='';
@@ -4160,6 +4323,127 @@ function renderStats(){
   });
 }
 renderStats();
+/* ---- 作答存檔與全班彙整 ---- */
+function saveAttempt(pct){
+  if(PREVIEW||EDITING||!window.fb)return;
+  var F=window.fb;
+  var rec={mode:QMODE,name:QNAME,score:pct,answers:answers.slice(),
+           profile:QMODE==='pre'?PROFILE:[],createdAt:F.serverTimestamp()};
+  F.addDoc(F.collection(F.db,'courses',F.COURSE,'attempts'),rec)
+   .catch(function(e){console.warn('作答存檔失敗',e)});
+  var agg={};
+  agg[QMODE]={n:F.increment(1),sum:F.increment(pct),pass:F.increment(pct>=COURSE.pass?1:0)};
+  agg.q={};
+  QS.forEach(function(q,i){
+    var a=answers[i], o={};
+    o[QMODE+'N']=F.increment(1);
+    o[QMODE+'C']=F.increment(a===q.a?1:0);
+    if(a!=null)o[QMODE+'P'+a]=F.increment(1);
+    agg.q[i]=o;
+  });
+  F.setDoc(F.doc(F.db,'questionStats',F.COURSE),agg,{merge:true})
+   .catch(function(e){console.warn('統計彙整失敗',e)});
+}
+function pairHTML(a,b,unit){
+  var d=(typeof a==='number'&&typeof b==='number')?(b-a):null;
+  return '<div class="pair"><div class="pair-c"><div class="pair-n">'+a+(unit||'')+'</div><div class="pair-l">課前</div></div>'+
+    '<div class="pair-a">→</div><div class="pair-c"><div class="pair-n">'+b+(unit||'')+'</div><div class="pair-l">課後</div></div>'+
+    (d!=null?'<div class="pair-c"><div class="pair-n" style="color:var(--ok)">'+(d>=0?'+':'')+d+'</div><div class="pair-l">進步</div></div>':'')+'</div>';
+}
+async function loadClassStats(){
+  var box=$('#clsStats');if(!box)return;
+  var mine={};try{mine=JSON.parse(localStorage.getItem('my:'+(window.fb?window.fb.COURSE:'c'))||'{}')}catch(e){}
+  $('#myPre').innerHTML=mine.pre!=null?mine.pre+'<small>%</small>':'—';
+  $('#myPost').innerHTML=mine.post!=null?mine.post+'<small>%</small>':'—';
+  $('#myUp').innerHTML=(mine.pre!=null&&mine.post!=null)?((mine.post-mine.pre>=0?'+':'')+(mine.post-mine.pre)):'—';
+  $('#myTag').textContent=mine.post!=null?'已完成':mine.pre!=null?'完成課前':'尚未作答';
+  if(!window.fb){box.innerHTML='<div class="empty">離線中，看不到全班統計。</div>';return;}
+  var F=window.fb;
+  try{
+    var d=await F.getDoc(F.doc(F.db,'questionStats',F.COURSE));
+    var v=d.exists()?d.data():{}, pre=v.pre||{n:0}, post=v.post||{n:0};
+    if(!pre.n&&!post.n){
+      box.innerHTML='<div class="empty">還沒有人作答。學員完成測驗後，全班平均、及格率、每題正確率、最多人誤會的題目會出現在這裡。</div>';return;}
+    var avg=function(o){return o.n?Math.round(o.sum/o.n):'—'};
+    var rate=function(o){return o.n?Math.round((o.pass||0)/o.n*100):'—'};
+    var h='<div class="section-head"><h2>全班平均</h2><span>課前 '+pre.n+' 人．課後 '+post.n+' 人</span></div>'+
+          pairHTML(avg(pre),avg(post),'')+
+          '<div class="section-head"><h2>及格率</h2><span>及格線 '+COURSE.pass+' 分</span></div>'+
+          pairHTML(rate(pre),rate(post),'%')+
+          '<div class="section-head"><h2>每題正確率</h2><span>課前 → 課後</span></div>';
+    var miss=[];
+    QS.forEach(function(q,i){
+      var t=(v.q||{})[i]||{};
+      var pr=t.preN?Math.round((t.preC||0)/t.preN*100):null;
+      var po=t.postN?Math.round((t.postC||0)/t.postN*100):null;
+      h+='<div class="qstat"><div class="qstat-t"><em>Q'+(i+1)+'</em><span>'+q.q+(q.star?'<span class="star">★</span>':'')+'</span></div>'+
+        '<div class="brow"><b>課前</b><span class="bar pre"><i style="width:'+(pr||0)+'%"></i></span><span class="pct">'+(pr==null?'—':pr+'%')+'</span></div>'+
+        '<div class="brow"><b>課後</b><span class="bar"><i style="width:'+(po||0)+'%"></i></span><span class="pct">'+(po==null?'—':po+'%')+'</span></div></div>';
+      var base=t.postN?'post':'pre', N=t[base+'N']||0, C=t[base+'C']||0;
+      if(N){
+        var wk=-1,wn=0;for(var k=0;k<q.o.length;k++){if(k!==q.a&&(t[base+'P'+k]||0)>wn){wn=t[base+'P'+k];wk=k;}}
+        miss.push({i:i,q:q,acc:Math.round(C/N*100),wk:wk,wp:Math.round(wn/N*100)});
+      }
+    });
+    miss=miss.filter(function(m){return m.acc<100&&m.wk>=0}).sort(function(a,b){return a.acc-b.acc}).slice(0,2);
+    if(miss.length){
+      h+='<div class="section-head"><h2>最多人誤會的</h2><span>答錯最多的</span></div>';
+      miss.forEach(function(m){
+        h+='<div class="miss"><div class="miss-h"><span>Q'+(m.i+1)+(m.q.star?'　★ 重要題':'')+'</span><span>答錯 '+(100-m.acc)+'%</span></div>'+
+          '<div class="miss-q">'+m.q.q+'</div>'+
+          '<div class="miss-w"><b>'+m.wp+'% 的人選了「'+m.q.o[m.wk]+'」</b><br>'+m.q.ex+'</div></div>';
+      });
+    }
+    box.innerHTML=h;
+  }catch(e){box.innerHTML='<div class="empty">讀取失敗：'+(e.code||e.message)+'</div>'}
+}
+async function loadTop(){
+  var box=$('#topList');if(!box)return;
+  if(!window.fb){box.innerHTML='<div class="empty">離線中。</div>';return;}
+  var F=window.fb;
+  try{
+    var d=await F.getDoc(F.doc(F.db,'questionStats',F.COURSE));
+    var top=d.exists()?d.data().top:null;
+    if(!top||!top.score||!top.score.length){
+      box.innerHTML='<div class="empty">講師還沒公布前三名。</div>';return;}
+    var h='<div class="podium">'+top.score.map(function(r,i){
+      return '<div class="pod"><div class="pod-r">'+(i+1)+'</div><div class="pod-b"><div class="pod-n">'+r.name+
+        '</div><div class="pod-m">課前 '+(r.pre==null?'—':r.pre+'%')+' → 課後 '+r.post+'%</div></div>'+
+        '<div class="pod-s">'+r.post+'<small>%</small>'+(r.pre!=null?'<em>+'+(r.post-r.pre)+'</em>':'')+'</div></div>';
+    }).join('')+'</div>';
+    if(top.gain&&top.gain.length){
+      h+='<div class="section-head"><h2>進步最多</h2><span>另一種表揚</span></div><div class="rows">'+
+        top.gain.map(function(r,i){return '<div class="row" style="cursor:default"><div class="row-n">'+(i+1)+
+          '</div><div class="row-b"><div class="row-t" style="font-size:15px">'+r.name+'<span class="delta">+'+(r.post-r.pre)+
+          '</span></div><div class="row-d">課前 '+r.pre+'% → 課後 '+r.post+'%</div></div></div>'}).join('')+'</div>';
+    }
+    box.innerHTML=h;
+  }catch(e){box.innerHTML='<div class="empty">讀取失敗：'+(e.code||e.message)+'</div>'}
+}
+function maskName(n){
+  var mode=($$('#grp-quiz .chip.on').map(function(c){return c.textContent.trim()})
+             .filter(function(t){return ['全名','陳○宇','只顯示姓','不顯示'].indexOf(t)>=0})[0])||'陳○宇';
+  n=String(n||'').trim();
+  if(mode==='全名')return n;
+  if(mode==='只顯示姓')return n.charAt(0)+'同學';
+  if(mode==='不顯示')return '學員';
+  if(n.length<=2)return n.charAt(0)+'○';
+  return n.charAt(0)+'○'+n.charAt(n.length-1);
+}
+async function buildTop(){
+  var F=window.fb;
+  var snap=await F.getDocs(F.collection(F.db,'courses',F.COURSE,'attempts'));
+  var by={};
+  snap.forEach(function(d){var v=d.data();var k=(v.name||'').trim();if(!k)return;
+    by[k]=by[k]||{name:k};
+    var t=v.createdAt&&v.createdAt.toMillis?v.createdAt.toMillis():0;
+    if(!by[k][v.mode+'T']||t>=by[k][v.mode+'T']){by[k][v.mode]=v.score;by[k][v.mode+'T']=t;}
+  });
+  var list=Object.keys(by).map(function(k){return by[k]}).filter(function(r){return r.post!=null});
+  var score=list.slice().sort(function(a,b){return (b.post-a.post)||(((b.post-(b.pre||0)))-((a.post-(a.pre||0))))}).slice(0,3);
+  var gain=list.filter(function(r){return r.pre!=null}).sort(function(a,b){return (b.post-b.pre)-(a.post-a.pre)}).slice(0,3);
+  return {count:snap.size,score:score,gain:gain};
+}
 function pushMyScore(pct){
   $('#myTag').textContent='已完成';
   $('#myPost').innerHTML=pct+'<small>%</small>';
