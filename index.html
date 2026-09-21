@@ -452,6 +452,8 @@ body.dirty .dirty-bar{display:flex}
 body.dirty .pro-switch{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 body.dirty #z-pro{padding-bottom:80px}
 
+#verFoot{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);opacity:.6}
+
 /* 編輯入口卡片 */
 .edit-entry{display:flex;align-items:center;gap:15px;margin-top:16px;padding:18px 18px;
   border:1px solid var(--signal);background:var(--signal-soft);cursor:pointer;
@@ -470,7 +472,12 @@ body.editing .pro-switch{display:none!important}
 body.editing .blk{position:relative;outline:1px dashed transparent;outline-offset:4px;
   transition:outline-color .15s ease;cursor:pointer}
 body.editing .blk:hover{outline-color:var(--line)}
-body.editing .blk.sel{outline:2px solid var(--signal)!important;outline-offset:4px}
+body.editing .blk.sel{outline:2px solid var(--signal)!important;outline-offset:4px;z-index:30}
+body.editing #tileGrid .tile{overflow:visible}
+#tileGrid .tile>.blk-ed{top:8px;bottom:auto;left:auto;right:8px;flex-wrap:nowrap;max-width:none;padding:2px}
+#tileGrid .tile>.blk-ed button{height:28px;min-width:28px;padding:0 7px;font-size:12px}
+#tileGrid .tile>.blk-ed::after{display:none}
+#tileGrid .tile.wide>.blk-ed{top:50%;transform:translateY(-50%)}
 body.editing .ed-txt{outline:1px dashed rgba(188,53,39,.45);outline-offset:3px;cursor:text;
   border-radius:2px;min-width:1em;display:inline-block}
 body.editing .ed-txt:focus{outline:2px solid var(--signal);background:var(--signal-soft)}
@@ -493,96 +500,6 @@ body.editing .blk.sel>.blk-ed{opacity:1;pointer-events:auto}
 .blk-ed button.pri{background:#fff;color:var(--signal);font-weight:600}
 body.editing .chips .ed-hidden{display:inline-block!important}
 
-/* ===== 長按拖曳：像手機桌面換 App 位置 =====
-   長按任何區塊 0.4 秒，或按住工具列最左邊的 ⋮⋮ 立刻開始拖。
-   只能在同一層裡換位置（跟兄弟元素換），放開就定位。 */
-var DRAG=null;
-function dragPeers(el){
-  if(el.matches('#tileGrid .tile'))return $$('#tileGrid .tile');
-  return [].slice.call(el.parentElement.children).filter(isBlock);
-}
-function startDrag(el,x,y){
-  if(DRAG)return;
-  $$('.blk.sel').forEach(function(b){b.classList.remove('sel')});
-  var r=el.getBoundingClientRect();
-  var g=el.cloneNode(true);
-  $$('.blk-ed',g).forEach(function(b){b.remove()});
-  g.classList.add('drag-ghost');g.classList.remove('sel','blk');
-  g.style.width=r.width+'px';g.style.height=r.height+'px';
-  g.style.left=r.left+'px';g.style.top=r.top+'px';
-  document.body.appendChild(g);
-  el.classList.add('drag-src');
-  document.body.classList.add('dragging');
-  DRAG={el:el,g:g,dx:x-r.left,dy:y-r.top,moved:false};
-  try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
-}
-function moveDrag(x,y){
-  if(!DRAG)return;
-  DRAG.g.style.left=(x-DRAG.dx)+'px';DRAG.g.style.top=(y-DRAG.dy)+'px';
-  // 靠近畫面上下緣時自動捲動
-  if(y<80)window.scrollBy(0,-12);else if(y>innerHeight-110)window.scrollBy(0,12);
-  var hit=document.elementFromPoint(x,y);if(!hit)return;
-  var peers=dragPeers(DRAG.el), tgt=null;
-  for(var i=0;i<peers.length;i++){if(peers[i]!==DRAG.el&&peers[i].contains(hit)){tgt=peers[i];break;}}
-  if(!tgt)return;
-  var r=tgt.getBoundingClientRect();
-  var grid=DRAG.el.matches('#tileGrid .tile')&&Math.abs(r.top-DRAG.el.getBoundingClientRect().top)<r.height/2;
-  var after=grid?(x>r.left+r.width/2):(y>r.top+r.height/2);
-  var par=tgt.parentElement;
-  if(after)par.insertBefore(DRAG.el,tgt.nextSibling);else par.insertBefore(DRAG.el,tgt);
-  DRAG.moved=true;
-}
-function endDrag(){
-  if(!DRAG)return;
-  var d=DRAG;DRAG=null;
-  d.g.remove();d.el.classList.remove('drag-src');
-  document.body.classList.remove('dragging');
-  if(!d.moved)return;
-  document.body.dataset.justDragged='1';
-  setTimeout(function(){delete document.body.dataset.justDragged},350);
-  if(d.el.matches('#tileGrid .tile')){
-    var order=$$('#tileGrid .tile').map(function(t){return t.dataset.tid});
-    TILES.sort(function(a,b){return order.indexOf(a.id)-order.indexOf(b.id)});
-    renderTiles();try{renderTileEdit()}catch(e){}
-  }else{
-    recordOrder(d.el.parentElement);
-  }
-  toast('位置已調整，記得按儲存');
-}
-(function(){
-  var timer=null,sx=0,sy=0,cand=null;
-  function clear(){clearTimeout(timer);timer=null;if(cand)cand.classList.remove('pressing');cand=null;}
-  document.addEventListener('pointerdown',function(e){
-    if(!EDITING||DRAG)return;
-    var grip=e.target.closest('.blk-ed .grip');
-    var el=e.target.closest('#tileGrid .tile, .blk');
-    if(!el)return;
-    if(grip){e.preventDefault();startDrag(el,e.clientX,e.clientY);return;}
-    if(e.target.closest('.blk-ed,input,textarea,.ed-dock'))return;
-    if(document.activeElement&&document.activeElement.isContentEditable&&el.contains(document.activeElement))return;
-    sx=e.clientX;sy=e.clientY;cand=el;
-    timer=setTimeout(function(){
-      if(!cand)return;
-      if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
-      var c=cand;clear();startDrag(c,sx,sy);
-    },420);
-    cand.classList.add('pressing');
-  },true);
-  document.addEventListener('pointermove',function(e){
-    if(DRAG){e.preventDefault();moveDrag(e.clientX,e.clientY);return;}
-    if(timer&&(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8))clear();
-  },{passive:false});
-  ['pointerup','pointercancel'].forEach(function(t){
-    document.addEventListener(t,function(){clear();endDrag();});
-  });
-  // iOS：拖曳時擋住頁面捲動
-  document.addEventListener('touchmove',function(e){if(DRAG)e.preventDefault();},{passive:false});
-  // 拖曳結束後吃掉那一次點擊，避免誤觸
-  document.addEventListener('click',function(e){
-    if(document.body.dataset.justDragged){e.stopPropagation();e.preventDefault();delete document.body.dataset.justDragged;}
-  },true);
-})();
-
 /* 選項清單編輯器 */
 .opt-sheet{position:fixed;inset:0;z-index:80;background:rgba(6,9,10,.55);display:none;align-items:flex-end}
 .opt-sheet.on{display:flex}
@@ -603,7 +520,9 @@ function endDrag(){
   padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));
   box-shadow:0 -6px 20px rgba(8,12,14,.18)}
 body.editing .ed-dock{display:flex}
-.ed-dock b{font-weight:500;margin-right:auto}
+.ed-dock b{font-weight:500;margin-right:auto;white-space:nowrap}
+.ed-dock button{white-space:nowrap}
+@media (max-width:420px){.ed-dock .ed-dock-s{display:none}.ed-dock{gap:6px;padding-left:12px;padding-right:12px}}
 .ed-dock button{background:rgba(255,255,255,.2);border:0;color:#fff;padding:8px 12px;
   font-size:12.5px;cursor:pointer}
 .ed-dock button.pri{background:#fff;color:var(--signal)}
@@ -624,7 +543,9 @@ body.editing .wrap{padding-bottom:140px}
 .pro-bar::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--signal);flex:none}
 .pro-bar b{font-weight:600}
 .pro-bar span{color:var(--muted)}
-.pro-bar .ver{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.pro-bar .ver{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap}
+.pro-bar b,.pro-bar span{white-space:nowrap}
+@media (max-width:420px){.pro-bar .pb-hint{display:none}}
 
 /* 分區標題 */
 .zone-head{display:flex;align-items:baseline;gap:12px;padding:34px 0 6px;
@@ -1137,17 +1058,17 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
 <div class="toast" id="toast"></div>
 <div class="boot-spin"><svg class="boot-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><span>急救防災教育平台</span></div>
-<div class="dirty-bar" id="dirtyBar"><b>有未儲存的變更</b>
+<div class="dirty-bar" id="dirtyBar" hidden><b>有未儲存的變更</b>
   <button id="dirtyCancel">放棄</button><button id="dirtySave" class="pri">全部儲存</button></div>
-<div class="opt-sheet" id="optSheet"><div class="opt-in">
+<div class="opt-sheet" id="optSheet" hidden><div class="opt-in">
   <div class="opt-h"><b>編輯選項</b><button class="qbtn" id="optDone">完成</button></div>
   <div class="hint" style="margin:0 0 6px">改文字、調順序、隱藏或刪除。學員看到的就是這個順序。</div>
   <div id="optList"></div>
   <button class="et-add" id="optAdd">＋ 新增選項</button>
 </div></div>
 <div class="ed-dock" id="edDock">
-  <b>編輯模式．每一頁都能改</b>
-  <button id="edRestore">還原本頁刪除</button>
+  <b>編輯模式<span class="ed-dock-s">．每一頁都能改</span></b>
+  <button id="edRestore">還原刪除</button>
   <button id="edSave" class="pri">儲存</button>
   <button id="edExit">離開</button>
 </div>
@@ -1226,7 +1147,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
     <div class="brand brand-foot"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><span class="brand-n">急救防災教育平台</span></div>
     <div class="gate-mark">
       <span class="foot-mark" id="gate"><i></i></span>
-      <span id="cHomeMeta">CPR-4f9a2e</span>
+      <span id="cHomeMeta">CPR-4f9a2e</span><span class="ver-foot" id="verFoot"></span>
 
     </div>
   </section>
@@ -1361,7 +1282,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
     <div class="f"><div class="f-q">填答人姓名<span class="req">必填</span></div>
       <div class="f-hint">僅供課程表揚及記錄使用，不會公開</div>
-      <input class="f-in" id="pfName" id="ivName" placeholder="王小明"></div>
+      <input class="f-in" id="pfName" placeholder="王小明"></div>
 
     <div class="f"><div class="f-q">年齡<span class="req">必填</span></div>
       <div class="chips" data-one>
@@ -1558,7 +1479,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
       <div class="f"><div class="f-q">單位／企業名稱<span class="req">必填</span></div>
         <input class="f-in" id="ivOrg" placeholder="例如：○○股份有限公司"></div>
       <div class="f"><div class="f-q">聯絡人<span class="req">必填</span></div>
-        <input class="f-in" placeholder="王小明"></div>
+        <input class="f-in" id="ivName" placeholder="王小明"></div>
       <div class="f"><div class="f-q">Email<span class="req">必填</span></div>
         <div class="f-hint">用於後續課程安排、規劃與報價聯繫</div>
         <input class="f-in" type="email" inputmode="email" id="ivMail" placeholder="name@company.com"></div>
@@ -1697,7 +1618,7 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
 
 <!-- ================= 後台 ================= -->
 <div class="zone" id="z-pro">
-  <div class="pro-bar"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><b>急救防災教育平台．後台</b><span>學員看不到這裡</span><span class="ver" id="verBar"></span></div>
+  <div class="pro-bar"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><b>後台</b><span class="pb-hint">學員看不到這裡</span><span class="ver" id="verBar"></span></div>
 
   <!-- 一、現在的狀況 -->
   <div style="padding-top:22px">
@@ -2176,7 +2097,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v5.6　2026/09/21';
+var APP_VERSION='v5.9　2026/09/21';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2196,6 +2117,7 @@ var APP_VERSION='v5.6　2026/09/21';
   });
   var v=$('#verTag');if(v)v.textContent=APP_VERSION;
   var vb=$('#verBar');if(vb)vb.textContent=APP_VERSION;
+  var vf=$('#verFoot');if(vf)vf.textContent=APP_VERSION.split('　')[0];
 })();
 
 /* ---- 模式：學員專用連結 vs 講師控制台 ---- */
@@ -2668,7 +2590,6 @@ function renderTiles(){
       (EDITING?'<span class="blk-ed" contenteditable="false">'+
         '<button data-e="grip" class="grip" title="按住拖曳">⋮⋮</button>'+
         '<button data-e="go" class="pri">進入</button>'+
-        '<button data-e="up" class="lt">↑</button><button data-e="dn">↓</button>'+
         '<button data-e="hide" class="lt">'+(t.on?'隱藏':'顯示')+'</button>'+
         '<button data-e="del" class="lt">×</button></span>':'');
     if(EDITING){
@@ -2981,9 +2902,8 @@ function moveDrag(x,y){
   var peers=dragPeers(DRAG.el), tgt=null;
   for(var i=0;i<peers.length;i++){if(peers[i]!==DRAG.el&&peers[i].contains(hit)){tgt=peers[i];break;}}
   if(!tgt)return;
-  var r=tgt.getBoundingClientRect();
-  var grid=DRAG.el.matches('#tileGrid .tile')&&Math.abs(r.top-DRAG.el.getBoundingClientRect().top)<r.height/2;
-  var after=grid?(x>r.left+r.width/2):(y>r.top+r.height/2);
+  // 像手機桌面：拖到哪一塊上，就搶它的位置
+  var after=peers.indexOf(DRAG.el)<peers.indexOf(tgt);
   var par=tgt.parentElement;
   if(after)par.insertBefore(DRAG.el,tgt.nextSibling);else par.insertBefore(DRAG.el,tgt);
   DRAG.moved=true;
@@ -3042,7 +2962,7 @@ function endDrag(){
 /* 選項清單編輯器 */
 var OPT_BOX=null;
 function openOptSheet(box){
-  if(!box)return;OPT_BOX=box;renderOpt();$('#optSheet').classList.add('on');
+  if(!box)return;OPT_BOX=box;renderOpt();var sh=$('#optSheet');sh.hidden=false;sh.classList.add('on');
 }
 function renderOpt(){
   var list=$('#optList');list.innerHTML='';
@@ -3081,8 +3001,9 @@ $('#optAdd').addEventListener('click',function(){
   recordOrder(OPT_BOX);renderOpt();
   var ins=$$('#optList input');if(ins.length){ins[ins.length-1].focus();ins[ins.length-1].select();}
 });
-$('#optDone').addEventListener('click',function(){$('#optSheet').classList.remove('on');toast('選項已更新，記得按儲存')});
-$('#optSheet').addEventListener('click',function(e){if(e.target===$('#optSheet'))$('#optSheet').classList.remove('on')});
+function closeOpt(){var sh=$('#optSheet');sh.classList.remove('on');sh.hidden=true;}
+$('#optDone').addEventListener('click',function(){closeOpt();toast('選項已更新，記得按儲存')});
+$('#optSheet').addEventListener('click',function(e){if(e.target===$('#optSheet'))closeOpt()});
 
 /* 編輯中：功能按鈕不送出、晶片不切換、代號頁直接放行 */
 document.addEventListener('click',function(e){
@@ -3102,7 +3023,7 @@ $('#goEdit').addEventListener('click',function(){
 });
 $('#edExit').addEventListener('click',function(){
   $$('.ed-txt').forEach(function(x){x.blur()});
-  setEditing(false);showZone('z-pro');
+  setEditing(false);try{applyForms()}catch(e){}showZone('z-pro');
 });
 $('#edRestore').addEventListener('click',function(){
   var pg=$('#z-student .page.is-on');if(!pg)return;
@@ -3128,6 +3049,7 @@ $('#edSave').addEventListener('click',async function(){
       career:ET.career.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}})
     },{merge:true});
     toast('已儲存，學員端立即生效');logChange('在編輯模式修改頁面');refreshCache();
+    try{applyForms()}catch(e){}
     renderTxtEdit();renderTileEdit();renderMirror();
   }catch(e){toast('儲存失敗：'+(e.code||e.message))}
 });
@@ -3395,6 +3317,9 @@ function applySite(){
   var ct=$('#conTitle');if(ct)ct.textContent=COURSE.title;
   var cs=$('#conSub');if(cs)cs.textContent=COURSE.sub;
   paintPlayerCaption();
+  try{renderVidList()}catch(e){console.warn('影片清單',e)}
+  try{renderPhotos2()}catch(e){console.warn('照片',e)}
+  try{renderContacts()}catch(e){console.warn('聯絡',e)}
   try{refreshTags()}catch(e){}
 }
 function applyForms(){
@@ -3446,18 +3371,19 @@ function pullForms(){
   SITE.ending=g('#edEnd',SITE.ending);
   SITE.stats[0][0]=g('#edStat1',SITE.stats[0][0]);
   SITE.stats[1][0]=g('#edStat2',SITE.stats[1][0]);
-  SITE.notify.emails=g('#edEmails','');
-  SITE.notify.endpoint=g('#edEndpoint','');
+  SITE.notify.emails=g('#edEmails',SITE.notify.emails||'');
+  SITE.notify.endpoint=g('#edEndpoint',SITE.notify.endpoint||'');
 
   mailCount();
   COURSE.title=g('#edCTitle',COURSE.title);
   COURSE.sub=g('#edCSub',COURSE.sub);
   COURSE.pass=parseInt(g('#edPass',60),10)||60;
-  COURSE.tags=[g('#edTag1',''),g('#edTag2',''),g('#edTag3','')];
-  SITE.videos={url:g('#edVidUrl',''),title:g('#edVidTitle',''),
-               note:g('#edVidNote',''),more:g('#edVidMore','')};
-  SITE.drive=g('#edDrive','');SITE.photos=g('#edPhotos',SITE.photos);SITE.notice=g('#edNotice','');SITE.topic=g('#edTopic','')||'急救';
-  SITE.contact={ig:g('#edIG',''),line:g('#edLine',''),tel:g('#edTel',''),mail:g('#edMail','')};
+  var ot=COURSE.tags||[];COURSE.tags=[g('#edTag1',ot[0]||''),g('#edTag2',ot[1]||''),g('#edTag3',ot[2]||'')];
+  var ov=SITE.videos||{};
+  SITE.videos={url:g('#edVidUrl',ov.url||''),title:g('#edVidTitle',ov.title||''),
+               note:g('#edVidNote',ov.note||''),more:g('#edVidMore',ov.more||'')};
+  SITE.drive=g('#edDrive',SITE.drive||'');SITE.photos=g('#edPhotos',SITE.photos);SITE.notice=g('#edNotice',SITE.notice||'');SITE.topic=g('#edTopic',SITE.topic||'')||'急救';
+  var oc=SITE.contact||{};SITE.contact={ig:g('#edIG',oc.ig||''),line:g('#edLine',oc.line||''),tel:g('#edTel',oc.tel||''),mail:g('#edMail',oc.mail||'')};
 }
 function refreshTags(){
   var set=function(id,v){var e=$(id);if(e)e.textContent=v};
@@ -3470,7 +3396,7 @@ function refreshTags(){
   set('#fbTag',FB.length?(FB.length+' 份'):'尚無填答');
   updateCounts();
   set('#stPpl',HITS.about!=null?(HITS.about||0):'—');
-  set('#proTitle',COURSE.title);
+  set('#proTitle',COURSE.title||'未命名課程．到編輯學員畫面改');
   set('#proMeta',(courseOpen?'進行中':'已關閉')+' · '+(window.fb?window.fb.COURSE:''));
   renderFb();
 }
@@ -4068,7 +3994,7 @@ document.addEventListener('click',async function(e){
 
 /* ---- 後台：未儲存的變更 ---- */
 var DIRTY=false;
-function setDirty(v){DIRTY=!!v;document.body.classList.toggle('dirty',DIRTY);}
+function setDirty(v){DIRTY=!!v;document.body.classList.toggle('dirty',DIRTY);var b=$('#dirtyBar');if(b)b.hidden=!DIRTY;}
 (function(){
   var pro=$('#z-pro');if(!pro)return;
   // 這些是按了就立刻生效的，不算「未儲存」
