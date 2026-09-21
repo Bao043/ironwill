@@ -28,9 +28,9 @@
   --signal:#E2564A; --signal-soft:rgba(226,86,74,.14); --ok:#6FA189; --deep:#050708;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
 body{margin:0;touch-action:manipulation;-webkit-text-size-adjust:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);
-  font-size:15px;line-height:1.75;letter-spacing:.01em;overflow-x:hidden}
+  font-size:15px;line-height:1.75;letter-spacing:.01em;overflow-x:clip}
 a{color:inherit;text-decoration:none}
 button,input,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--signal);outline-offset:3px}
@@ -244,7 +244,9 @@ svg.fig.in circle{opacity:1}
 .grp.open .grp-h{border-bottom:1px solid var(--line-soft)}
 .grp-h:hover{padding-left:5px}
 .grp-t{flex:1;font-size:17.5px;font-weight:700;letter-spacing:-.02em}
-.grp-m{font-family:var(--mono);font-size:11px;color:var(--muted);flex:none}
+.grp-m{font-family:var(--mono);font-size:11px;color:var(--muted);flex:0 1 auto;min-width:0;
+  max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp-t{min-width:0}
 .grp-c{font-size:13px;color:var(--line);flex:none;transition:transform .25s cubic-bezier(.22,.61,.36,1),color .2s}
 .grp.open .grp-c{transform:rotate(90deg);color:var(--signal)}
 .grp-b{display:none;padding:4px 0 30px 12px;border-left:2px solid var(--line-soft);margin-left:2px}
@@ -294,7 +296,8 @@ svg.fig.in circle{opacity:1}
 
 /* 編輯模式：學員端原地編輯 */
 .edit-bar{position:sticky;top:0;z-index:45;display:flex;align-items:center;gap:10px;
-  margin:0 -100vw;padding:10px 100vw;background:var(--signal);color:#fff;font-size:12.5px;
+  padding:10px 0;background:var(--signal);color:#fff;font-size:12.5px;
+  box-shadow:0 0 0 100vmax var(--signal);clip-path:inset(0 -100vmax);
   padding-top:calc(10px + env(safe-area-inset-top,0px))}
 .edit-bar b{font-weight:500}
 .edit-bar button{background:rgba(255,255,255,.2);border:0;color:#fff;padding:6px 12px;
@@ -366,7 +369,7 @@ body.editing .ed-hidden.chip,body.editing .ed-hidden.chip-s{display:inline-block
 body.editing .ed-hidden.f,body.editing .ed-hidden.row,body.editing .ed-hidden.tl{display:block!important}
 body.editing .ed-hidden.row,body.editing .ed-hidden.tl{display:flex!important}
 .ed-del{display:none!important}
-.blk-ed{position:absolute;top:-38px;right:-4px;display:flex;gap:2px;z-index:8;
+.blk-ed{position:absolute;top:-38px;right:0;max-width:100%;flex-wrap:wrap;display:flex;gap:2px;z-index:8;
   padding:3px;background:var(--signal);box-shadow:0 4px 14px rgba(0,0,0,.3);
   opacity:0;transition:opacity .15s ease;pointer-events:none}
 .blk-ed::after{content:"";position:absolute;right:14px;bottom:-5px;width:10px;height:10px;
@@ -413,7 +416,8 @@ body.editing .wrap{padding-bottom:140px}
   pointer-events:none;z-index:0}
 #z-pro>*{position:relative;z-index:1}
 .pro-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;
-  margin:0 -100vw;padding:11px 100vw;background:var(--ink);color:var(--paper);
+  padding:11px 0;background:var(--ink);color:var(--paper);
+  box-shadow:0 0 0 100vmax var(--ink);clip-path:inset(0 -100vmax);
   font-size:12.5px;letter-spacing:.04em;
   padding-top:calc(11px + env(safe-area-inset-top,0px))}
 .pro-bar b{font-weight:500}
@@ -1973,7 +1977,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v4.4　2026/09/21';
+var APP_VERSION='v4.5　2026/09/21';
 (function(){
   var root=document.documentElement;
   function apply(t){
