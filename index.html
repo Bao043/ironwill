@@ -1697,43 +1697,43 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   <div style="margin-top:4px">
   <div class="grp" id="grp-mail"><div class="grp-h"><span class="grp-t">通知信箱</span><span class="grp-m" id="mailCount"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <p class="sub">有人送出悄悄話或課程邀約時，內容會寄到這裡設定的信箱。可以設定多個，一行一個，全部都會同時收到。</p>
+    <p class="sub">學員送出悄悄話或邀約時，寄一封通知給你。收件人存在 Apps Script 裡，要輸入管理密碼才能改，別人拿到網址也沒辦法亂寄。</p>
 
-    <div class="f" style="padding-top:14px"><div class="f-q">收件信箱<span class="req">必填</span></div>
-      <div class="f-hint">一行一個。測試期間可以多放幾個，之後再刪</div>
-      <textarea class="f-ta" id="edEmails" style="min-height:96px" placeholder="920403angus@gmail.com&#10;will@example.com"></textarea>
-      <div class="f-hint" id="mailQuota" style="margin-top:10px">還沒填</div></div>
+    <div class="section-head"><h2>連線</h2><span>一次性設定</span></div>
+    <div class="f" style="padding-top:8px"><div class="f-q">Apps Script 網址</div>
+      <input class="f-in" id="edEndpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
+    <div class="f"><div class="f-q">管理密碼</div>
+      <div class="f-hint">跟 Apps Script 裡 ADMIN_PIN 設的一樣。只存在這支裝置上，不會上傳</div>
+      <input class="f-in" id="edPin" type="password" autocomplete="off" placeholder="你設的管理密碼"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="qbtn" id="mailStatus">讀取目前設定</button>
+      <button class="qbtn" id="testMail">寄測試信</button>
+      <button class="qbtn" id="testOpen">連線診斷</button>
+    </div>
+    <div class="hint" id="mailMsg" style="min-height:1.5em"></div>
 
-    <div class="section-head"><h2>哪些要寄</h2><span>3</span></div>
+    <div class="section-head"><h2>收件人</h2><span id="mailCount">未設定</span></div>
+    <div class="f" style="padding-top:8px">
+      <textarea class="f-ta" id="edEmails" style="min-height:90px" placeholder="920403angus@gmail.com&#10;一行一個"></textarea>
+      <div class="f-hint" id="mailQuota" style="margin-top:8px"></div></div>
+    <button class="qbtn" id="setRcpt" style="margin-top:12px">更新收件人</button>
+
+    <div class="section-head"><h2>哪些要寄</h2><span>4</span></div>
     <div class="toggle-row"><span>傳聲悄悄話</span><span class="sw on" id="nfWhisper" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>課程邀約</span><span class="sw on" id="nfInvite" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>課程回饋<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">一堂課三十幾則，建議關閉</em></span><span class="sw" id="nfFeedback" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="toggle-row"><span>信件顯示完整內容<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關閉時只說有新訊息，內容到後台看</em></span><span class="sw" id="nfContent" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <div class="toggle-row"><span>信件顯示悄悄話內容<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關閉時只說有新訊息</em></span><span class="sw" id="nfContent" role="switch" aria-checked="false" tabindex="0"></span></div>
+    <button class="btn btn-quiet" data-save="notify">儲存這些開關</button>
 
     <div class="section-head"><h2>邀約自動回覆</h2><span>寄給對方</span></div>
-    <p class="sub">有人送出課程邀約時，系統立刻回一封確認信給他，讓對方知道信有送到。一則邀約多用 1 個額度。</p>
     <div class="toggle-row"><span>送出邀約後自動回覆</span><span class="sw on" id="nfAck" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="f"><div class="f-q">主旨</div>
-      <input class="f-in" id="edAckSub" placeholder="已收到您的課程邀約"></div>
+    <div class="f"><div class="f-q">主旨</div><input class="f-in" id="edAckSub" placeholder="已收到您的課程邀約"></div>
     <div class="f"><div class="f-q">內容</div>
-      <div class="f-hint">結尾會自動附上你的 Email，方便對方直接回信</div>
-      <textarea class="f-ta" id="edAckBody" style="min-height:140px" placeholder="您好，已收到您的課程邀約，謝謝您的來信。&#10;&#10;我會在三個工作天內與您聯繫，確認時間、內容與報價。&#10;&#10;如果超過三個工作天沒有收到回覆，可能是信件往來出了問題，再麻煩您直接回覆這封信。"></textarea></div>
-
-    <div class="section-head"><h2>寄信服務</h2><span>一次性設定</span></div>
-    <p class="sub">瀏覽器不能直接寄信，需要一支免費的 Apps Script 代寄。部署後把網址貼進來。</p>
-    <div class="f" style="padding-top:12px"><div class="f-q">服務網址</div>
-      <input class="f-in" id="edEndpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
-
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-quiet" style="margin:0" data-save="notify">儲存</button>
-      <button class="btn btn-quiet" style="margin:0" id="testMail">寄測試信</button>
-    <button class="btn btn-quiet" style="margin:0" id="testOpen">連線診斷</button>
-    </div>
-    <p class="hint">按「連線診斷」會開新分頁，直接顯示 Apps Script 回傳什麼。看到 <b>{"ok":true …}</b> 代表通了；看到 Google 的登入頁或錯誤頁，代表部署時「具有存取權的使用者」沒選「任何人」。</p>
-  
-    <div class="section-head"><h2>手機推播</h2><span>下一階段</span></div>
-    <p class="sub">目前只有 App 開著時會跳出提示。要做到手機鎖定畫面也收得到，需要把網站加入主畫面並串接推播服務，下一階段處理。</p>
-  </div></div>
+      <div class="f-hint">想讓對方能直接找到你，把你的信箱寫在內容裡</div>
+      <textarea class="f-ta" id="edAckBody" style="min-height:130px" placeholder="您好，已收到您的課程邀約，謝謝您的來信。&#10;&#10;我會在三個工作天內與您聯繫，確認時間、內容與報價。"></textarea></div>
+    <button class="qbtn" id="setAck" style="margin-top:12px">更新自動回覆</button>
+    <p class="hint">為了防濫用：同一個信箱六小時內只會收到一次自動回覆，每六小時最多 20 封。</p>
+</div></div>
 
   <div class="grp" id="grp-account"><div class="grp-h"><span class="grp-t">帳號與操作者</span><span class="grp-m" id="acctTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
@@ -1898,6 +1898,11 @@ window.addEventListener('fb-ready',function(){
     if(!d.exists())return;var v=d.data();
     if(v.texts){Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});applyTexts();}
     if(v.patch){try{PATCH=Object.assign(PATCH,JSON.parse(v.patch));applyPatch();}catch(e){}}
+    if(v.notify){
+      ['endpoint','onWhisper','onInvite','onFeedback','showContent','ack'].forEach(function(k){
+        if(v.notify[k]!=null)SITE.notify[k]=v.notify[k];
+      });
+    }
   }).catch(function(){});
   F.getDoc(F.doc(F.db,'courses',F.COURSE)).then(function(d){
     if(!d.exists())return;var v=d.data();
@@ -1979,7 +1984,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v4.6　2026/09/21';
+var APP_VERSION='v4.7　2026/09/21';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3056,8 +3061,7 @@ function pullForms(){
   SITE.stats[1][0]=g('#edStat2',SITE.stats[1][0]);
   SITE.notify.emails=g('#edEmails','');
   SITE.notify.endpoint=g('#edEndpoint','');
-  SITE.notify.ackSub=g('#edAckSub',SITE.notify.ackSub);
-  SITE.notify.ackBody=g('#edAckBody',SITE.notify.ackBody);
+
   mailCount();
   COURSE.title=g('#edCTitle',COURSE.title);
   COURSE.sub=g('#edCSub',COURSE.sub);
@@ -3112,7 +3116,11 @@ async function saveSite(){
     operatorRows:ET.ops.map(function(x){return {k:x[0],v:x[1]}}),
     idea:ET.idea.map(function(x){return {k:x[0],v:x[1]}}),
     career:ET.career.map(function(x){return {k:x[0],v:x[1]}}),
-    operators:ET.ops.map(function(x){return x[0]}), notify:SITE.notify,
+    operators:ET.ops.map(function(x){return x[0]}),
+    notify:{endpoint:SITE.notify.endpoint||'',onWhisper:!!SITE.notify.onWhisper,
+            onInvite:!!SITE.notify.onInvite,onFeedback:!!SITE.notify.onFeedback,
+            showContent:!!SITE.notify.showContent,ack:!!SITE.notify.ack,
+            emails:'',ackSub:'',ackBody:''},
     videos:SITE.videos, drive:SITE.drive, contact:SITE.contact,
     notice:SITE.notice, topic:SITE.topic
   },{merge:true});
@@ -3259,16 +3267,34 @@ async function notify(kind,title,body,extra){
   if(kind==='whisper'&&!n.onWhisper)return;
   if(kind==='invite'&&!n.onInvite)return;
   if(kind==='feedback'&&!n.onFeedback)return;
-  if(!n.endpoint){console.warn('尚未設定寄信服務網址，信沒有寄出');return;}
-  var to=(n.emails||'').split(/[\s,;]+/).filter(Boolean);
-  if(!to.length)return;
+  if(!n.endpoint){console.warn('尚未設定寄信服務網址');return;}
   try{
-    await fetch(n.endpoint,{method:'POST',mode:'no-cors',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify(Object.assign({kind:kind,to:to,title:title,body:body,
-                           course:COURSE.title,at:new Date().toISOString()},extra||{}))});
+    // 不告訴 Apps Script 寄給誰：收件人存在它那邊
+    await fetch(n.endpoint,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(Object.assign({kind:kind,title:title,body:body,
+        course:COURSE.title,at:new Date().toISOString()},extra||{}))});
   }catch(e){console.warn('通知寄送失敗：',e)}
 }
+async function mailAdmin(payload){
+  var ep=(($('#edEndpoint')||{}).value||SITE.notify.endpoint||'').trim();
+  var pin=(($('#edPin')||{}).value||'').trim();
+  if(!ep)throw new Error('還沒填 Apps Script 網址');
+  if(ep.indexOf('/exec')<0)throw new Error('網址結尾要是 /exec');
+  if(!pin)throw new Error('還沒填管理密碼');
+  try{localStorage.setItem('mailPin',pin)}catch(e){}
+  var r;
+  try{
+    r=await fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(Object.assign({pin:pin},payload))});
+  }catch(e){
+    throw new Error('連不到 Apps Script。最常見原因：部署時「具有存取權的使用者」選成「任何具有 Google 帳戶的使用者」，要改成「任何人」');
+  }
+  var t=await r.text();
+  var j;try{j=JSON.parse(t)}catch(e){throw new Error('Apps Script 回傳的不是資料，可能還是舊版程式，記得重新部署')}
+  if(!j.ok)throw new Error(j.error||'失敗');
+  return j;
+}
+function mailMsg(t,bad){var m=$('#mailMsg');if(m){m.textContent=t;m.style.color=bad?'var(--signal)':''}}
 
 /* ---- 操作者 ---- */
 var OPERATOR=null;
@@ -3524,16 +3550,47 @@ document.addEventListener('click',async function(e){
   }catch(err){toast('匯出失敗：'+(err.code||err.message))}
 });
 
+/* ---- 寄信：管理動作 ---- */
+try{var savedPin=localStorage.getItem('mailPin');if(savedPin&&$('#edPin'))$('#edPin').value=savedPin;}catch(e){}
+function bindMail(id,fn){var b=$(id);if(!b)return;b.addEventListener('click',async function(){
+  var old=b.textContent;b.textContent='處理中…';
+  try{await fn();}catch(e){mailMsg(e.message,true);toast(e.message.slice(0,24));}
+  b.textContent=old;
+});}
+bindMail('#mailStatus',async function(){
+  var j=await mailAdmin({action:'status'});
+  $('#edEmails').value=(j.recipients||[]).join('\n');
+  if(j.ack){$('#edAckSub').value=j.ack.subject||'';$('#edAckBody').value=j.ack.body||'';}
+  SITE.notify.emails=$('#edEmails').value;mailCount();
+  mailMsg('已讀取．收件人 '+(j.recipients||[]).length+' 個．今天還能寄 '+j.quota+' 封');
+});
+bindMail('#setRcpt',async function(){
+  var list=($('#edEmails').value||'').split(/[\s,;]+/).filter(Boolean);
+  var bad=list.filter(function(x){return x.indexOf('@')<0});
+  if(bad.length)throw new Error('這幾個看起來不是信箱：'+bad.join('、'));
+  var j=await mailAdmin({action:'setRecipients',emails:list});
+  SITE.notify.emails=list.join('\n');mailCount();
+  mailMsg('收件人已更新：'+(j.recipients||[]).join('、'));toast('收件人已更新');
+  logChange('更新通知收件人');
+});
+bindMail('#setAck',async function(){
+  await mailAdmin({action:'setAck',subject:$('#edAckSub').value,body:$('#edAckBody').value});
+  mailMsg('自動回覆內容已更新');toast('自動回覆已更新');logChange('更新邀約自動回覆');
+});
+bindMail('#testMail',async function(){
+  var j=await mailAdmin({action:'test'});
+  mailMsg('測試信已寄出，給 '+j.sent+' 個收件人．今天還能寄 '+j.quota+' 封');
+  toast('測試信已寄出');
+});
+
 /* ---- 寄信連線診斷 ---- */
 var tOpen=$('#testOpen');
 if(tOpen)tOpen.addEventListener('click',function(){
   pullForms();
   var ep=(SITE.notify.endpoint||'').trim();
-  var to=(SITE.notify.emails||'').split(/[\s,;]+/).filter(Boolean);
   if(!ep){toast('還沒填服務網址');return;}
-  if(!to.length){toast('還沒填收件信箱');return;}
   if(ep.indexOf('/exec')<0){toast('網址結尾要是 /exec，不是 /dev');return;}
-  var u=ep+(ep.indexOf('?')>=0?'&':'?')+'diag=1&to='+encodeURIComponent(to.join(','));
+  var u=ep+(ep.indexOf('?')>=0?'&':'?')+'diag=1';
   window.open(u,'_blank','noopener');
   toast('已開新分頁，看那邊回傳什麼');
 });
@@ -3742,8 +3799,9 @@ if(pb)pb.addEventListener('click',async function(){
   pb.textContent='讀取中…';await loadAll();flash(pb,'已更新');
   setTimeout(function(){pb.textContent='重新讀取雲端資料'},1800);
 });
-var tm=$('#testMail');
-if(tm)tm.addEventListener('click',async function(){
+var tmOld=null;
+var tm=null;
+if(tmOld)tmOld.addEventListener('click',async function(){
   pullForms();
   var to=(SITE.notify.emails||'').split(/[\s,;]+/).filter(Boolean);
   if(!to.length){flash(tm,'請先填收件信箱');toast('至少要一個信箱');return;}
@@ -4212,9 +4270,7 @@ $('#ivSend').addEventListener('click',function(){
     (picked.join('、')||'未選類型')+'\n'+
     data.when+'　'+data.headcount+' 人　'+data.place+'\n'+
     data.budgetMode+' '+(data.budget||'未填')+(data.note?('\n備註：'+data.note):''),
-    {replyTo:mail,
-     ack:(n.ack&&mail)?{to:mail,subject:n.ackSub,
-        body:n.ackBody+(mine?('\n\n講師信箱：'+mine):'')}:null});
+    {replyTo:mail, ackTo:(n.ack&&mail)?mail:''});
 });
 var wt=$('#wt');
 wt.addEventListener('input',function(){$('#wc').textContent=wt.value.length+' / 500'});
