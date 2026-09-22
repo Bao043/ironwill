@@ -2201,7 +2201,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v6.7　2026/09/22';
+var APP_VERSION='v6.8　2026/09/22';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4419,9 +4419,32 @@ function bindMail(id,fn){var b=$(id);if(!b)return;b.addEventListener('click',asy
   try{await fn();}catch(e){mailMsg(e.message,true);toast(e.message.slice(0,24));}
   b.textContent=old;
 });}
+(function(){
+  var g=$('#grp-mail');if(!g)return;
+  var auto=false;
+  g.querySelector('.grp-h').addEventListener('click',function(){
+    setTimeout(async function(){
+      if(!g.classList.contains('open'))return;
+      var ta=$('#edEmails');
+      if(ta&&!ta.value){try{var c=localStorage.getItem('mailRcpt');if(c){ta.value=c;SITE.notify.emails=c;mailCount();
+        mailMsg('先顯示這支手機上次讀到的，正在跟 Apps Script 確認…');}}catch(e){}}
+      var ep=(($('#edEndpoint')||{}).value||'').trim(),pin=(($('#edPin')||{}).value||'').trim();
+      if(auto||!ep||!pin)return;auto=true;
+      try{
+        var j=await mailAdmin({action:'status'});
+        ta.value=(j.recipients||[]).join('\n');SITE.notify.emails=ta.value;mailCount();
+        try{localStorage.setItem('mailRcpt',ta.value)}catch(e){}
+        if(j.ack){$('#edAckSub').value=j.ack.subject||'';$('#edAckBody').value=j.ack.body||'';}
+        mailMsg((j.recipients||[]).length?('已讀取．收件人 '+j.recipients.length+' 個．今天還能寄 '+j.quota+' 封')
+                                          :'Apps Script 裡還沒有收件人，填好後按「更新收件人」');
+      }catch(e){auto=false;mailMsg(e.message,true);}
+    },60);
+  });
+})();
 bindMail('#mailStatus',async function(){
   var j=await mailAdmin({action:'status'});
   $('#edEmails').value=(j.recipients||[]).join('\n');
+  try{localStorage.setItem('mailRcpt',$('#edEmails').value)}catch(e){}
   if(j.ack){$('#edAckSub').value=j.ack.subject||'';$('#edAckBody').value=j.ack.body||'';}
   SITE.notify.emails=$('#edEmails').value;mailCount();
   mailMsg('已讀取．收件人 '+(j.recipients||[]).length+' 個．今天還能寄 '+j.quota+' 封');
@@ -4432,6 +4455,7 @@ bindMail('#setRcpt',async function(){
   if(bad.length)throw new Error('這幾個看起來不是信箱：'+bad.join('、'));
   var j=await mailAdmin({action:'setRecipients',emails:list});
   SITE.notify.emails=list.join('\n');mailCount();
+  try{localStorage.setItem('mailRcpt',SITE.notify.emails)}catch(e){}
   mailMsg('收件人已更新：'+(j.recipients||[]).join('、'));toast('收件人已更新');
   logChange('更新通知收件人');
 });
