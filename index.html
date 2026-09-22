@@ -2234,7 +2234,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v7.4　2026/09/22';
+var APP_VERSION='v7.5　2026/09/22';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2840,6 +2840,8 @@ var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tile
 /* 文字綁在資料上的元素：可以移動，但文字另外處理 */
 var SKIPTXT='#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM,.ig-handle,#galN,#runKicker,#scoreT,#scoreS';
 var NOBLOCK='#tileGrid,.gate-mark,#pvBar,#nav,script';
+var DATA_BLOCKS=DYN+',.player,#brandPlate';
+function isDataBlock(el){return !!(el&&el.matches&&el.matches(DATA_BLOCKS))}
 function isDyn(el){var p=el.parentElement;return !!(p&&p.closest(DYN))}
 function cleanText(el){var c=el.cloneNode(true);$$('.blk-ed',c).forEach(function(x){x.remove()});return c.innerText.trim();}
 function wrapFigs(){
@@ -2882,6 +2884,8 @@ function applyPatch(){
   (PATCH.add||[]).forEach(function(a){
     if(byK(a.k))return;
     var src=byK(a.after);if(!src)return;
+    if(isDataBlock(src))return;                     // 資料區塊的複製品一律不長出來（避免死副本）
+    if(/ab-portrait|class="mosaic|class="pgal|id="stage/.test(a.html||''))return;
     var tmp=document.createElement('div');tmp.innerHTML=a.html;
     var el=tmp.firstElementChild;if(!el)return;
     src.parentNode.insertBefore(el,src.nextSibling);
@@ -2891,7 +2895,7 @@ function applyPatch(){
   $$('.ed-hidden').forEach(function(e){e.classList.remove('ed-hidden')});
   $$('.ed-del').forEach(function(e){e.classList.remove('ed-del')});
   Object.keys(PATCH.hide||{}).forEach(function(k){var e=byK(k);if(e&&PATCH.hide[k])e.classList.add('ed-hidden')});
-  Object.keys(PATCH.del||{}).forEach(function(k){var e=byK(k);if(e&&PATCH.del[k])e.classList.add('ed-del')});
+  Object.keys(PATCH.del||{}).forEach(function(k){var e=byK(k);if(e&&PATCH.del[k]&&!isDataBlock(e))e.classList.add('ed-del')});
   Object.keys(PATCH.order||{}).forEach(function(pk){
     var par=document.querySelector('[data-kp="'+pk+'"]');if(par)reorder(par,PATCH.order[pk]);
   });
@@ -2917,7 +2921,7 @@ function toolbar(el){
     '<button data-a="up" class="lt">↑</button><button data-a="dn">↓</button>'+
     (hasInput?'<button data-a="ph" class="lt">提示字</button>':'')+
     '<button data-a="hide" class="lt">'+(el.classList.contains('ed-hidden')?'顯示':'隱藏')+'</button>'+
-    '<button data-a="add" class="lt">＋</button><button data-a="del" class="lt">×</button>'+
+    (isDataBlock(el)?'':'<button data-a="add" class="lt">＋</button><button data-a="del" class="lt">×</button>')+
     (outer?'<button data-a="out" class="lt" title="選外層">⤴</button>':'');
   bar.addEventListener('click',function(e){
     e.preventDefault();e.stopPropagation();
