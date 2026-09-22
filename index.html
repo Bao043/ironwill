@@ -470,17 +470,29 @@ body.dirty #z-pro{padding-bottom:80px}
 /* ===== 照片：不裁切、分區、多的收起來 ===== */
 .ab-portrait{margin-top:6px;display:block!important;grid-template-columns:none!important}
 .ab-portrait img{display:block;width:100%;height:auto;max-height:72vh;object-fit:contain;background:var(--surface)}
-.pgal{columns:2;column-gap:10px;margin-top:14px}
-.pgal .gp{break-inside:avoid;margin:0 0 10px;cursor:zoom-in;position:relative;background:var(--surface);display:block}
-.pgal .gp img{display:block;width:100%;height:auto;transition:opacity .4s ease}
+.pgal{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  margin-top:14px;padding-bottom:8px;scrollbar-width:none}
+.pgal::-webkit-scrollbar{display:none}
+.pgal .gp{flex:none;height:190px;min-width:110px;scroll-snap-align:start;background:var(--surface);cursor:zoom-in;position:relative}
+.pgal .gp img{height:100%;width:auto;display:block;transition:opacity .4s ease}
 .pgal .gp img[data-loading]{opacity:0}
-.pgal .gp.more{display:none}
-.pgal.open .gp.more{display:block;animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) both}
-.gal-more{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:2px;padding:12px;
-  border:1px solid var(--line);background:none;color:var(--ink);font-size:13.5px;cursor:pointer}
+.pgal .gp.ok{min-width:0;background:none}
+.pgal.open{flex-wrap:wrap;overflow:visible;scroll-snap-type:none}
+.pgal.open .gp{height:120px;animation:fadeUp .4s cubic-bezier(.22,.61,.36,1) both}
+.gal-bar{display:flex;align-items:center;gap:10px;margin-top:4px}
+.gal-hint{font-size:12px;color:var(--muted);flex:1}
+.gal-more{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;flex:none;
+  border:1px solid var(--line);background:none;color:var(--ink);font-size:13px;cursor:pointer}
 .gal-more b{font-family:var(--mono);font-weight:500;color:var(--signal)}
+.mosaic{position:relative;width:100%;margin:6px auto 0}
+.mosaic img{position:absolute;display:block;object-fit:cover;background:var(--surface);cursor:zoom-in;
+  transition:opacity .45s ease}
+.mosaic img[data-loading]{opacity:0}
+.mosaic:not(.laid){height:min(56vw,420px);background:var(--surface)}
+.mosaic:not(.laid) img{visibility:hidden}
+.ab-portrait .mosaic img{max-height:none;max-width:none}
 @media (min-width:760px){
-  .pgal{columns:3}
+  .pgal .gp{height:230px}.pgal.open .gp{height:150px}
   /* 平板：個人照在左，自我介紹在右 */
   #p-about.is-on{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);column-gap:34px;align-items:start}
   #p-about>*{grid-column:1/-1;min-width:0}
@@ -1177,7 +1189,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="state">
       <div class="state-c"><div class="state-n live" id="stOpen">—</div><div class="state-l">本堂開始</div></div>
       <div class="state-c"><div class="state-n" id="stCode">8236</div><div class="state-l">本堂代號</div></div>
-      <div class="state-c"><div class="state-n" id="stPpl">—</div><div class="state-l">進入人數</div></div>
+      <div class="state-c"><div class="state-n" id="stPpl">—</div><div class="state-l">本堂輸入代號</div></div>
     </div>
 
     <div class="section-head"><h2>要做什麼</h2><span>4</span></div>
@@ -1717,7 +1729,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <h1 class="display" style="font-size:26px;margin-top:6px" id="proTitle">課程</h1>
   </div>
   <div class="stats" style="margin-top:18px">
-    <div class="stat"><div class="stat-n" id="kpiPpl">—</div><div class="stat-l">進入人數</div></div>
+    <div class="stat"><div class="stat-n" id="kpiPpl">—</div><div class="stat-l">本堂輸入代號</div></div>
     <div class="stat" data-jump="w" style="cursor:pointer"><div class="stat-n" id="kpiW">—</div><div class="stat-l">悄悄話 ›</div></div>
     <div class="stat" data-jump="i" style="cursor:pointer"><div class="stat-n" id="kpiInv">—</div><div class="stat-l">待回邀約 ›</div></div>
   </div>
@@ -1846,14 +1858,33 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <p class="sub">貼整個資料夾的連結，App 列出裡面的照片，你再排順序。檔案留在雲端硬碟。</p>
     <div class="f" style="padding-top:14px"><div class="f-q">照片</div>
       <div class="f-hint">每一區貼一個雲端硬碟「資料夾」連結（資料夾設成知道連結的人可檢視），按讀取後點選要顯示的照片，點的順序就是顯示順序。每區先顯示 4 張，其他收在「看全部」裡。<br>讀取資料夾要用到「通知信箱」裡的 Apps Script 網址和管理密碼。</div></div>
+      <div class="section-head"><h2>講師介紹最上面的三張</h2><span>各選一張</span></div>
+      <div class="f-hint">會依照片是直的還橫的自動拼在一起，不裁切。三張可以來自同一個資料夾。</div>
       <div class="gal-ed" data-sec="portrait">
         <div class="f-q" style="margin-top:18px">個人照<span class="gal-cnt" data-cnt="portrait"></span></div>
-        <div class="f-hint">選一張．放在講師介紹最上面，平板上和自我介紹並排</div>
+        <div class="f-hint">直的或橫的都可以</div>
         <div style="display:flex;gap:8px;margin-top:8px">
           <input class="f-in" data-folder="portrait" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:0">
           <button class="qbtn" data-readf="portrait">讀取</button></div>
         <div class="gal-pick" data-pick="portrait"></div>
       </div>
+      <div class="gal-ed" data-sec="hdRescue">
+        <div class="f-q" style="margin-top:18px">救護現場<span class="gal-cnt" data-cnt="hdRescue"></span></div>
+        <div class="f-hint">一張</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input class="f-in" data-folder="hdRescue" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:0">
+          <button class="qbtn" data-readf="hdRescue">讀取</button></div>
+        <div class="gal-pick" data-pick="hdRescue"></div>
+      </div>
+      <div class="gal-ed" data-sec="hdFire">
+        <div class="f-q" style="margin-top:18px">救災現場<span class="gal-cnt" data-cnt="hdFire"></span></div>
+        <div class="f-hint">一張</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input class="f-in" data-folder="hdFire" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:0">
+          <button class="qbtn" data-readf="hdFire">讀取</button></div>
+        <div class="gal-pick" data-pick="hdFire"></div>
+      </div>
+      <div class="section-head"><h2>相簿</h2><span>每區可選多張</span></div>
       <div class="gal-ed" data-sec="teach">
         <div class="f-q" style="margin-top:18px">演講與教學<span class="gal-cnt" data-cnt="teach"></span></div>
         <div class="f-hint">放在「我站過的講台」下面</div>
@@ -2201,7 +2232,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v6.8　2026/09/22';
+var APP_VERSION='v7.0　2026/09/22';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2331,6 +2362,7 @@ var TITLES={'p-about':'講師介紹','p-quiz':'線上測驗','p-run':'課後測�
   'p-article':'文章','p-whisper':'傳聲悄悄話'};
 var stack=['p-home'];
 function show(id,isBack){
+  if(id==='p-about')requestAnimationFrame(function(){try{layoutMosaic()}catch(e){}});
   $$('.page').forEach(function(p){
     p.classList.remove('is-on','back');
     if(p.id===id){p.classList.add('is-on');if(isBack)p.classList.add('back');}
@@ -2359,6 +2391,7 @@ function go(id){
   if(id!==stack[stack.length-1]){stack.push(id);}
   show(id,false);
   if(id==='p-name'||id==='p-profile')prefillName();
+
   if(id==='p-quiz'||id==='p-run')checkTopPublished();
   if(id==='p-explain'&&!quizOpts().exp&&!EDITING){toast('講師還沒開放題目詳解');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
   if(id==='p-stats'&&!quizOpts().stats&&!EDITING){toast('講師還沒開放本堂統計');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
@@ -3190,7 +3223,8 @@ var SITE={
           ['教學','企業、學校、政府機關與社區防災及急救教育']],
   videos:{url:'',title:'',note:'',more:''},
   photos:'',
-  gallery:{portrait:{folder:'',ids:[]},teach:{folder:'',ids:[]},field:{folder:'',ids:[]},media:{folder:'',ids:[]}},
+  gallery:{portrait:{folder:'',ids:[]},hdRescue:{folder:'',ids:[]},hdFire:{folder:'',ids:[]},
+           teach:{folder:'',ids:[]},field:{folder:'',ids:[]},media:{folder:'',ids:[]}},
   showViews:true,
   drive:'',
   contact:{ig:'',line:'',tel:'',mail:''},
@@ -3356,7 +3390,8 @@ function phHTML(p,cls){
   return '<div class="ph img '+(cls||'')+'" data-cap="'+p.cap.replace(/"/g,'&quot;')+'" data-src="'+p.url+
          '" style="background-image:url(\''+p.url+'\')"></div>';
 }
-var GAL_SEC={portrait:'個人照',teach:'演講與教學',field:'勤務與救災',media:'媒體與活動'};
+var GAL_SEC={portrait:'個人照',hdRescue:'救護現場',hdFire:'救災現場',teach:'演講與教學',field:'勤務與救災',media:'媒體與活動'};
+var GAL_SINGLE={portrait:1,hdRescue:1,hdFire:1};
 var GAL_SHOW=4;
 function galIds(sec){
   var g=(SITE.gallery||{})[sec];if(g&&g.ids&&g.ids.length)return g.ids.slice();
@@ -3370,10 +3405,11 @@ function driveImg(id,w){return 'https://drive.google.com/thumbnail?id='+id+'&sz=
 function galleryHTML(sec){
   var ids=galIds(sec);if(!ids.length)return '';
   var h='<div class="pgal" data-gal="'+sec+'">'+ids.map(function(id,i){
-    return '<div class="gp'+(i>=GAL_SHOW?' more':'')+'" data-gi="'+i+'"><img loading="lazy" decoding="async" data-loading alt="" '+
-      'onload="this.removeAttribute(\'data-loading\')" src="'+driveImg(id,900)+'"></div>';
+    return '<div class="gp" data-gi="'+i+'"><img loading="lazy" decoding="async" data-loading alt="" '+
+      'onload="this.removeAttribute(\'data-loading\');this.parentNode.classList.add(\'ok\')" src="'+driveImg(id,900)+'"></div>';
   }).join('')+'</div>';
-  if(ids.length>GAL_SHOW)h+='<button class="gal-more" data-galmore="'+sec+'">看全部 <b>'+ids.length+'</b> 張</button>';
+  if(ids.length>2)h+='<div class="gal-bar"><span class="gal-hint">← 左右滑看更多</span>'+
+    '<button class="gal-more" data-galmore="'+sec+'">展開全部 <b>'+ids.length+'</b> 張</button></div>';
   return h;
 }
 function placeGallery(sec,afterEl){
@@ -3392,16 +3428,63 @@ function renderBrandPlate(){
     el.innerHTML='<img alt="IRON WILL" src="'+LOGO_SRC+'"><span>講師品牌</span>';
     st.parentNode.insertBefore(el,st.nextSibling);}
 }
+function headIds(){
+  return ['portrait','hdRescue','hdFire'].map(function(k){return galIds(k)[0]}).filter(Boolean);
+}
+/* 依照片實際比例拼版，三張都不裁切：
+   個人照直的 → 左邊個人照，右邊兩張上下疊，兩邊一樣高
+   個人照橫的 → 上面個人照，下面兩張並排，一樣高 */
+function layoutMosaic(){
+  var box=$('#mosaic');if(!box)return;
+  var ims=$$('img',box);if(!ims.length)return;
+  var r=ims.map(function(im){return im.naturalWidth&&im.naturalHeight?im.naturalWidth/im.naturalHeight:(im.dataset.hd==='0'?0.75:1.5)});
+  var W=(box.parentNode&&box.parentNode.clientWidth)||box.clientWidth||0, g=6;
+  if(!W){box.classList.remove('laid');
+    if((box._tries=(box._tries||0)+1)<60)requestAnimationFrame(layoutMosaic);return;}
+  box._tries=0;
+  var maxH=Math.min(window.innerHeight*0.62,560), pos=[], H;
+  if(ims.length===1){
+    var h1=W/r[0];if(h1>maxH)h1=maxH;var w1=h1*r[0];
+    pos=[[ (W-w1)/2,0,w1,h1 ]];H=h1;
+  }else if(ims.length===2){
+    var h2=(W-g)/(r[0]+r[1]);if(h2>maxH)h2=maxH;var tw=h2*(r[0]+r[1])+g,x0=(W-tw)/2;
+    pos=[[x0,0,h2*r[0],h2],[x0+h2*r[0]+g,0,h2*r[1],h2]];H=h2;
+  }else if(r[0]<1){
+    var p=r[0],a=r[1],b=r[2];
+    var W2=(W-g-p*g)/(1+p*(1/a+1/b)), hA=W2/a, hB=W2/b; H=hA+g+hB; var W1=p*H;
+    var k=H>maxH?maxH/H:1, off=(W-(W1+g+W2)*k)/2;
+    pos=[[off,0,W1*k,H*k],[off+(W1+g)*k,0,W2*k,hA*k],[off+(W1+g)*k,(hA+g)*k,W2*k,hB*k]];H=H*k;
+  }else{
+    var h0=W/r[0], hr=(W-g)/(r[1]+r[2]); H=h0+g+hr;
+    var k2=H>maxH?maxH/H:1, off2=(W-W*k2)/2;
+    pos=[[off2,0,W*k2,h0*k2],[off2,(h0+g)*k2,hr*r[1]*k2,hr*k2],[off2+(hr*r[1]+g)*k2,(h0+g)*k2,hr*r[2]*k2,hr*k2]];H=H*k2;
+  }
+  ims.forEach(function(im,i){var q=pos[i];if(!q)return;
+    im.style.left=q[0]+'px';im.style.top=q[1]+'px';im.style.width=q[2]+'px';im.style.height=q[3]+'px';});
+  box.style.height=H+'px';
+  box.classList.add('laid');
+}
+window.addEventListener('resize',function(){try{layoutMosaic()}catch(e){}});
+(function(){   // 講師介紹從隱藏變成顯示、或寬度改變時，重新拼一次
+  var lead=$('#abLead');if(!lead||!window.ResizeObserver)return;
+  new ResizeObserver(function(){try{layoutMosaic()}catch(e){}}).observe(lead);
+})();
 function renderGalleries(){
   try{renderBrandPlate()}catch(e){}
   var lead=$('#abLead');
   if(lead){
-    var pid=galIds('portrait')[0];
+    var hd=headIds();
     lead.className='lead rv ab-portrait'+(lead.classList.contains('in')?' in':'')+(lead.classList.contains('blk')?' blk':'');
-    lead.innerHTML=pid?'<img alt="講師照片" src="'+driveImg(pid,1400)+'" data-gal-portrait>':
-      (EDITING?'<div class="empty">還沒選個人照．到後台「講師影音與聯絡 → 照片」</div>':'');
-    lead.style.display=(pid||EDITING)?'':'none';
+    lead.innerHTML=hd.length?'<div class="mosaic" id="mosaic">'+hd.map(function(id,i){
+        return '<img alt="" data-loading data-hd="'+i+'" src="'+driveImg(id,1400)+'">';}).join('')+'</div>':
+      (EDITING?'<div class="empty">還沒選照片．到後台「講師影音與聯絡 → 照片」</div>':'');
+    lead.style.display=(hd.length||EDITING)?'':'none';
     if(EDITING&&lead.classList.contains('blk'))toolbar(lead);
+    $$('#mosaic img').forEach(function(im){
+      im.addEventListener('load',function(){im.removeAttribute('data-loading');layoutMosaic();});
+      if(im.complete&&im.naturalWidth)im.removeAttribute('data-loading');
+    });
+    layoutMosaic();
   }
   var sp=$('#abSpeak'),ca=$('#abCareer');
   if(sp)placeGallery('teach',sp);
@@ -3421,12 +3504,14 @@ document.addEventListener('click',function(e){
   var m=e.target.closest('[data-galmore]');
   if(m){var g=document.querySelector('.pgal[data-gal="'+m.dataset.galmore+'"]');if(!g)return;
     var open=g.classList.toggle('open');var n=galIds(m.dataset.galmore).length;
-    m.innerHTML=open?'收起來':'看全部 <b>'+n+'</b> 張';
+    m.innerHTML=open?'收合':'展開全部 <b>'+n+'</b> 張';
+    var hint=m.parentNode.querySelector('.gal-hint');if(hint)hint.style.visibility=open?'hidden':'';
     if(!open)g.scrollIntoView({behavior:'smooth',block:'center'});return;}
   if(EDITING)return;
   var p=e.target.closest('.pgal .gp');
   if(p){var sec=p.closest('.pgal').dataset.gal;openLbox(galIds(sec),+p.dataset.gi,GAL_SEC[sec]);return;}
-  if(e.target.closest('[data-gal-portrait]'))openLbox(galIds('portrait'),0,'');
+  var hi=e.target.closest('#mosaic img');
+  if(hi)openLbox(headIds(),+hi.dataset.hd,'');
 });
 var LB={ids:[],i:0,cap:''};
 function openLbox(ids,i,cap){
@@ -3709,6 +3794,7 @@ function applyPayload(p){
       if(v.drive)SITE.drive=v.drive;
       if(v.photos!=null)SITE.photos=v.photos;
       if(v.gallery)Object.keys(v.gallery).forEach(function(k){SITE.gallery[k]=Object.assign({folder:'',ids:[]},v.gallery[k])});
+      Object.keys(GAL_SEC).forEach(function(k){if(!SITE.gallery[k])SITE.gallery[k]={folder:'',ids:[]}});
       if(v.showViews!=null)SITE.showViews=v.showViews;
       if(v.texts)Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});
       if(v.patch){try{PATCH=Object.assign({text:{},ph:{},hide:{},del:{},order:{},add:[]},JSON.parse(v.patch));}
@@ -4957,6 +5043,12 @@ function galPaint(sec){
   var g=SITE.gallery[sec], files=FOLDER_FILES[sec];
   var cnt=document.querySelector('[data-cnt="'+sec+'"]');if(cnt)cnt.textContent=g.ids.length?('已選 '+g.ids.length+' 張'):'';
   var inp=document.querySelector('[data-folder="'+sec+'"]');if(inp&&!inp.value)inp.value=g.folder||'';
+  var ed=box.closest('.gal-ed');
+  if(ed&&!ed.querySelector('[data-clearg]')){
+    var cb=document.createElement('button');cb.className='qbtn';cb.dataset.clearg=sec;cb.textContent='清除這一區';cb.style.marginTop='8px';
+    ed.appendChild(cb);
+  }
+  if(ed){var c2=ed.querySelector('[data-clearg]');if(c2)c2.style.display=(g.ids.length||g.folder||files)?'':'none';}
   if(!files){
     // 還沒讀資料夾：先把已選的列出來（可以取消）
     box.innerHTML=g.ids.map(function(id,i){return '<div class="gpk on" data-gid="'+id+'" style="background-image:url(\''+driveImg(id,300)+'\')"><b>'+(i+1)+'</b></div>'}).join('')||
@@ -4967,6 +5059,7 @@ function galPaint(sec){
     var k=g.ids.indexOf(f.id);
     return '<div class="gpk'+(k>=0?' on':'')+'" data-gid="'+f.id+'" title="'+f.name.replace(/"/g,'')+'" style="background-image:url(\''+driveImg(f.id,300)+'\')"><b>'+(k+1)+'</b></div>';
   }).join('')||'<div class="gmsg">這個資料夾裡沒有照片</div>';
+  if(files.length)box.insertAdjacentHTML('beforeend','<div class="gmsg">點一下選取，再點一下取消．亮的是會顯示的'+(GAL_SINGLE[sec]?'（這區只能選一張）':'')+'</div>');
 }
 function galPaintAll(){Object.keys(GAL_SEC).forEach(galPaint)}
 document.addEventListener('click',async function(e){
@@ -4982,11 +5075,20 @@ document.addEventListener('click',async function(e){
     }catch(err){toast(err.message.slice(0,40));mailMsg&&mailMsg(err.message,true);}
     r.textContent=old;return;
   }
+  var cl=e.target.closest('[data-clearg]');
+  if(cl){
+    var sc=cl.dataset.clearg;
+    if(!confirm('清除「'+GAL_SEC[sc]+'」選過的照片和資料夾連結？（雲端硬碟裡的照片不會被刪）'))return;
+    SITE.gallery[sc]={folder:'',ids:[]};delete FOLDER_FILES[sc];
+    var fi=document.querySelector('[data-folder="'+sc+'"]');if(fi)fi.value='';
+    setDirty(true);galPaint(sc);try{renderGalleries()}catch(err){}
+    toast('已清除，記得按全部儲存');return;
+  }
   var k=e.target.closest('.gal-pick .gpk');
   if(k){
     var sec2=k.closest('[data-pick]').dataset.pick, g=SITE.gallery[sec2], id=k.dataset.gid, at=g.ids.indexOf(id);
     if(at>=0)g.ids.splice(at,1);
-    else{if(sec2==='portrait')g.ids=[id];else g.ids.push(id);}
+    else{if(GAL_SINGLE[sec2])g.ids=[id];else g.ids.push(id);}
     setDirty(true);galPaint(sec2);try{renderGalleries()}catch(err){}
   }
 });
