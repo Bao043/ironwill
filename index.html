@@ -244,13 +244,13 @@ svg.fig.in circle{opacity:1}
 .who{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:18px}
 .zy{display:inline-flex;align-items:center;gap:1px;vertical-align:baseline}
 .zy-t{display:flex;align-items:center;gap:0}
-.zy-b{writing-mode:vertical-rl;text-orientation:upright;font-size:.30em;line-height:1.08;
+.zy-b{writing-mode:vertical-rl;text-orientation:upright;font-size:.33em;line-height:1.08;
   letter-spacing:0;color:var(--muted);font-family:var(--sans);font-weight:400}
-.zy-m{font-size:.26em;color:var(--muted);font-family:var(--sans);line-height:1;margin-left:.06em;
+.zy-m{font-size:.29em;color:var(--muted);font-family:var(--sans);line-height:1;margin-left:.06em;
   align-self:center;transform:translateY(-.12em)}
 .zy-m.light{align-self:flex-start;transform:translateY(-.1em)}
-.who-n{font-size:23px;font-weight:600;white-space:nowrap;flex:none;letter-spacing:.04em}
-.who-r{font-size:12.5px;color:var(--muted);flex:1 1 auto;min-width:0}
+.who-n{font-size:27px;font-weight:600;white-space:nowrap;flex:none;letter-spacing:.04em}
+.who-r{font-size:14px;color:var(--muted);flex:1 1 auto;min-width:0}
 
 /* scope + chips */
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
@@ -585,6 +585,12 @@ body.dirty #z-pro{padding-bottom:80px}
   .hero-card h1{font-size:44px}
   #p-home.is-on{padding-top:26px}
   .row-t{font-size:17px}.sub,.hint,.note{font-size:15px}
+  #abHeadline{font-size:36px;line-height:1.45}
+  #abIntro,.story p,.p{font-size:17px;line-height:1.95}
+  .who-n{font-size:31px}.who-r{font-size:15px}
+  .stat-n{font-size:30px}.stat-l{font-size:13px}
+  .gal-line{font-size:20px}
+  .ct-v,.ig-h{font-size:15.5px}.ct-l,.ig-d{font-size:13.5px}
 }
 
 /* 編輯模式：品牌區塊的小工具列 */
@@ -604,15 +610,29 @@ body.dirty #z-pro{padding-bottom:80px}
 .brand-head .bh-s{font-family:var(--mono);font-size:8px;letter-spacing:.09em;color:var(--muted);margin-top:3px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.bh-beacon{position:relative;width:34px;height:34px;flex:none;display:grid;place-items:center}
-.bh-beacon i{position:absolute;border-radius:50%;background:var(--signal)}
-.bh-beacon i:nth-child(1){width:7px;height:7px;animation:bcCore 2.4s ease-in-out infinite}
-.bh-beacon i:nth-child(2),.bh-beacon i:nth-child(3){width:7px;height:7px;opacity:0;
-  animation:bcRing 2.4s cubic-bezier(.22,.7,.3,1) infinite}
-.bh-beacon i:nth-child(3){animation-delay:1.2s}
-@keyframes bcCore{0%,100%{opacity:.55}50%{opacity:1}}
-@keyframes bcRing{0%{transform:scale(1);opacity:.55}70%{opacity:0}100%{transform:scale(4.4);opacity:0}}
-@media (prefers-reduced-motion:reduce){.bh-beacon i{animation:none}.bh-beacon i:nth-child(2),.bh-beacon i:nth-child(3){display:none}}
+.bh-heart{width:36px;height:36px;flex:none;display:grid;place-items:center}
+.bh-heart svg{width:32px;height:32px;overflow:visible}
+.bh-heart path{fill:none;stroke:var(--signal);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.bh-heart .hl,.bh-heart .hr{transform-origin:13px 14px}
+.bh-heart .hl{animation:mendL 5s cubic-bezier(.3,.8,.35,1) infinite}
+.bh-heart .hr{animation:mendR 5s cubic-bezier(.3,.8,.35,1) infinite}
+@keyframes mendL{
+  0%{transform:translate(-2.6px,1.1px) rotate(-7deg);opacity:.55}
+  26%{transform:translate(-2.6px,1.1px) rotate(-7deg);opacity:.55}
+  48%{transform:translate(0,0) rotate(0);opacity:1}
+  56%{transform:translate(0,0) scale(1.14);opacity:1}
+  64%{transform:translate(0,0) scale(1);opacity:1}
+  88%{transform:translate(0,0) rotate(0);opacity:1}
+  100%{transform:translate(-2.6px,1.1px) rotate(-7deg);opacity:.55}}
+@keyframes mendR{
+  0%{transform:translate(2.6px,1.1px) rotate(7deg);opacity:.55}
+  26%{transform:translate(2.6px,1.1px) rotate(7deg);opacity:.55}
+  48%{transform:translate(0,0) rotate(0);opacity:1}
+  56%{transform:translate(0,0) scale(1.14);opacity:1}
+  64%{transform:translate(0,0) scale(1);opacity:1}
+  88%{transform:translate(0,0) rotate(0);opacity:1}
+  100%{transform:translate(2.6px,1.1px) rotate(7deg);opacity:.55}}
+@media (prefers-reduced-motion:reduce){.bh-heart .hl,.bh-heart .hr{animation:none}}
 @media (min-width:700px){.brand-head img{width:86px}.brand-head .bh-n{font-size:22px}.brand-head .bh-s{font-size:10px}}
 
 /* 題目圖片 */
@@ -890,17 +910,21 @@ body.editing .wrap{padding-bottom:140px}
 
 /* contact block */
 .cts{border-top:1px solid var(--line);margin-top:16px}
-.ct{display:flex;align-items:center;gap:13px;padding:14px 2px;border-bottom:1px solid var(--line-soft);cursor:pointer}
-.ct-m svg{width:19px;height:19px;fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.ct-m{width:34px;height:34px;border:1.4px solid var(--ink);border-radius:9px;flex:none;display:grid;
+.cts{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.ct{display:flex;align-items:center;gap:14px;border:1px solid var(--line);padding:15px 16px;cursor:pointer;
+  transition:border-color .2s ease,transform .2s cubic-bezier(.22,.61,.36,1)}
+.ct:hover{border-color:var(--ink)}
+.ct:active{transform:scale(.99)}
+.ct-m svg{width:21px;height:21px;fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ct-m{width:42px;height:42px;border:1.6px solid var(--ink);border-radius:12px;flex:none;display:grid;
   place-items:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.02em}
 .ct-m.ig{position:relative}
 .ct-m.ig::before{content:"";width:13px;height:13px;border:1.4px solid var(--ink);border-radius:50%}
 .ct-m.ig::after{content:"";position:absolute;top:7px;right:7px;width:3.5px;height:3.5px;border-radius:50%;background:var(--signal)}
 .ct-b{flex:1;min-width:0}
-.ct-v{font-family:var(--mono);font-size:14px}
-.ct-l{font-size:12px;color:var(--muted);margin-top:2px}
-.ct-go{font-size:12.5px;color:var(--muted);flex:none}
+.ct-v{font-family:var(--mono);font-size:14.5px;letter-spacing:.04em;overflow-wrap:anywhere}
+.ct-l{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.6}
+.ct-go{font-size:13px;color:var(--muted);flex:none}
 
 /* whisper inbox */
 .wi{border-bottom:1px solid var(--line-soft);padding:14px 0}
@@ -981,7 +1005,7 @@ body.editing .wrap{padding-bottom:140px}
 
 /* instagram */
 .ig{display:flex;align-items:center;gap:14px;border:1px solid var(--line);padding:15px 16px;
-  margin-top:16px;cursor:pointer;transition:border-color .2s ease,transform .2s cubic-bezier(.22,.61,.36,1)}
+  margin-top:10px;cursor:pointer;transition:border-color .2s ease,transform .2s cubic-bezier(.22,.61,.36,1)}
 .ig:hover{border-color:var(--ink)}
 .ig:active{transform:scale(.99)}
 .ig-mark{width:42px;height:42px;border:1.6px solid var(--ink);border-radius:12px;display:grid;
@@ -2298,7 +2322,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v8.0　2026/09/23';
+var APP_VERSION='v8.2　2026/09/23';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3551,7 +3575,12 @@ function renderBrandHead(){
     el=document.createElement('div');el.id='brandHead';el.className='brand-head';
     el.innerHTML='<img alt="IRON WILL" src="'+EMBLEM_SRC+'" decoding="async">'+
       '<div class="bh-t"><div class="bh-n" data-brand="name"></div><div class="bh-s" data-brand="sub"></div></div>'+
-      '<span class="bh-beacon" aria-hidden="true"><i></i><i></i><i></i></span>';
+      '<span class="bh-heart" aria-hidden="true">'+
+      '<svg viewBox="0 0 26 26"><g class="hl">'+
+      '<path d="M13 21.6C13 21.6 4.2 15.8 4.2 10.4A4.3 4.3 0 0 1 13 7.6L14.1 10.2 11.6 12.1 14 14.4 11.8 16.6 13 21.6Z"/></g>'+
+      '<g class="hr">'+
+      '<path d="M13 21.6C13 21.6 21.8 15.8 21.8 10.4A4.3 4.3 0 0 0 13 7.6L14.1 10.2 11.6 12.1 14 14.4 11.8 16.6 13 21.6Z"/></g>'+
+      '</svg></span>';
     lead.parentNode.insertBefore(el,lead);
   }
   var n=$('.bh-n',el), sb=$('.bh-s',el);
@@ -3619,7 +3648,8 @@ function layoutMosaic(){
     if((box._tries=(box._tries||0)+1)<60)requestAnimationFrame(layoutMosaic);return;}
   box._tries=0;
   var wide=W>560;
-  var maxH=Math.min(window.innerHeight*(wide?0.52:0.62), wide?620:560), pos=[], H;
+  if(wide)W=Math.min(W,640);                       // 大螢幕：照片不要佔滿整個寬度
+  var maxH=Math.min(window.innerHeight*(wide?0.42:0.62), wide?460:560), pos=[], H;
   if(ims.length===1){
     var h1=W/r[0];if(h1>maxH)h1=maxH;var w1=h1*r[0];
     pos=[[ (W-w1)/2,0,w1,h1 ]];H=h1;
@@ -3636,7 +3666,8 @@ function layoutMosaic(){
     var k2=H>maxH?maxH/H:1, off2=(W-W*k2)/2;
     pos=[[off2,0,W*k2,h0*k2],[off2,(h0+g)*k2,hr*r[1]*k2,hr*k2],[off2+(hr*r[1]+g)*k2,(h0+g)*k2,hr*r[2]*k2,hr*k2]];H=H*k2;
   }
-  ims.forEach(function(im,i){var q=pos[i];if(!q)return;
+  var off0=(((box.parentNode&&box.parentNode.clientWidth)||W)-W)/2;
+  ims.forEach(function(im,i){var q=pos[i];if(!q)return;q=[q[0]+off0,q[1],q[2],q[3]];
     im.style.left=q[0]+'px';im.style.top=q[1]+'px';im.style.width=q[2]+'px';im.style.height=q[3]+'px';});
   box.style.height=H+'px';
   box.classList.add('laid');
@@ -3800,7 +3831,7 @@ function renderContacts(){
   box.innerHTML=rows.map(function(r){
     return '<div class="ct" data-copy="'+r[1].replace(/"/g,'&quot;')+'"><div class="ct-m">'+(CT_ICON[r[0]]||r[0])+'</div>'+
       '<div class="ct-b"><div class="ct-v">'+r[1]+'</div><div class="ct-l">'+r[2]+'</div></div>'+
-      '<div class="ct-go">複製</div></div>';
+      '<div class="ct-go">複製 →</div></div>';
   }).join('');
   box.style.display=rows.length||EDITING?'':'none';
   if(EDITING&&!rows.length)box.innerHTML='<div class="empty">還沒填 LINE／電話／Email．到後台「講師影音與聯絡」</div>';
