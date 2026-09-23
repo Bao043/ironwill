@@ -635,6 +635,24 @@ body.dirty #z-pro{padding-bottom:80px}
 @media (prefers-reduced-motion:reduce){.bh-heart .hl,.bh-heart .hr{animation:none}}
 @media (min-width:700px){.brand-head img{width:86px}.brand-head .bh-n{font-size:22px}.brand-head .bh-s{font-size:10px}}
 
+/* 完整課程 */
+.course-more{width:100%;margin-top:14px;padding:13px;border:1px solid var(--line);background:none;color:var(--ink);
+  font-size:14px;cursor:pointer;transition:border-color .2s ease}
+.course-more:hover{border-color:var(--ink)}
+.course-more b{font-family:var(--mono);font-weight:500;color:var(--signal)}
+.course-wrap{display:none;margin-top:12px}
+.course-wrap.on{display:block;animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) both}
+.course{border:1px solid var(--line);padding:18px 16px;margin-top:10px}
+.course-k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--signal)}
+.course-t{font-size:17px;font-weight:600;margin-top:8px}
+.course-d{font-size:14px;line-height:1.9;color:var(--muted);margin:10px 0 0}
+.course-m{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:14px;font-size:13px}
+.course-m em{font-style:normal;color:var(--muted);font-size:11.5px;letter-spacing:.06em;display:block;margin-bottom:3px}
+.course-go{margin-top:16px;padding:11px 16px;border:1px solid var(--line);background:none;color:var(--ink);
+  font-size:13.5px;cursor:pointer}
+.course-go:hover{border-color:var(--signal);color:var(--signal)}
+@media (min-width:700px){.course-t{font-size:19px}.course-d{font-size:15px}}
+
 /* 檔案下載 */
 .fl{display:flex;align-items:center;gap:14px;border:1px solid var(--line);padding:15px 16px;margin-top:10px;cursor:pointer;
   transition:border-color .2s ease,transform .2s cubic-bezier(.22,.61,.36,1)}
@@ -1985,6 +2003,12 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 
     <div class="section-head"><h2>照片</h2><span>Google Drive 資料夾</span></div>
     <p class="sub">貼整個資料夾的連結，App 列出裡面的照片，你再排順序。檔案留在雲端硬碟。</p>
+    <div class="section-head"><h2>完整課程說明</h2><span id="cwCount"></span></div>
+    <p class="sub">學員在「授課範圍」按「查看完整課程」時看到的內容。每一堂寫清楚上什麼、大概多久、適合誰。</p>
+    <div id="courseEdit"></div>
+    <button class="et-add" id="courseAdd">新增一堂</button>
+    <button class="btn btn-quiet" data-save="site">儲存課程說明</button>
+
     <div class="section-head"><h2>授課範圍</h2><span id="etScopeN"></span></div>
     <p class="sub">顯示在講師介紹頁，學員點任一類會直接帶去課程邀約。左欄是英文標籤，右欄是中文說明。</p>
     <div class="et" id="etScope"></div>
@@ -2360,7 +2384,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v8.6　2026/09/23';
+var APP_VERSION='v8.7　2026/09/23';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3051,7 +3075,12 @@ function applyPatch(){
     var el=tmp.firstElementChild;if(!el)return;
     src.parentNode.insertBefore(el,src.nextSibling);
   });
-  Object.keys(PATCH.text||{}).forEach(function(k){var e=byK(k);if(e)e.innerHTML=PATCH.text[k]});
+  Object.keys(PATCH.text||{}).forEach(function(k){
+    var e=byK(k);if(!e)return;
+    var t=PATCH.text[k];
+    if(!String(t||'').replace(/<[^>]*>/g,'').trim()){delete PATCH.text[k];return;}   // 空白＝沒改過，保留原本的字
+    e.innerHTML=t;
+  });
   Object.keys(PATCH.ph||{}).forEach(function(k){var e=byK(k);if(e)e.placeholder=PATCH.ph[k]});
   $$('.ed-hidden').forEach(function(e){e.classList.remove('ed-hidden')});
   $$('.ed-del').forEach(function(e){e.classList.remove('ed-del')});
@@ -3131,9 +3160,15 @@ function makeEditable(el){
   if(el.hasAttribute('data-txt')||isDyn(el)||el.matches(SKIPTXT))return;
   el.classList.add('ed-txt');el.setAttribute('contenteditable','true');
   if(el.dataset.bound3)return;el.dataset.bound3='1';
+  if(!el.dataset.orig)el.dataset.orig=el.innerHTML;
   el.addEventListener('blur',function(){
     if(!EDITING||!el.dataset.k)return;
     var c=el.cloneNode(true);$$('.blk-ed',c).forEach(function(x){x.remove()});
+    var plain=c.innerHTML.replace(/<[^>]*>/g,'').trim();
+    if(!plain){                                   // 清成空白：還原成原本的字
+      el.innerHTML=el.dataset.orig||'';delete PATCH.text[el.dataset.k];
+      toast('文字不能空白，已還原');return;
+    }
     PATCH.text[el.dataset.k]=c.innerHTML;
   });
   el.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();el.blur();}});
@@ -3400,6 +3435,13 @@ var SITE={
   brand:{head:{on:true,name:'IRON WILL',sub:'FIRE SAFETY × FIRST AID EDUCATION'},banner:{on:true},foot:'IRON WILL｜教育平台'},
   ruby:'檁=ㄌㄧㄣˇ',
   files:{folder:'',items:[]},
+  courses:[
+    {k:'FIRE',t:'消防安全 × 防災教育',d:'從火災怎麼發生講到怎麼逃：住警器、滅火器、避難動線與濃煙中的判斷。用真實案例說明為什麼「先關門」和「不搭電梯」會救命。',h:'90 分鐘 ～ 3 小時',w:'企業、學校、社區、公部門',hidden:false},
+    {k:'RESCUE',t:'緊急救護 × CPR × AED',d:'成人與兒童 CPR、AED 操作、異物哽塞處理。一人一台安妮實作到手熟，並練習在慌亂中如何分工與求救。',h:'3 小時（含實作）',w:'企業、學校、社區，建議 10～40 人',hidden:false},
+    {k:'SAFETY',t:'居家 × 企業 × 工作場域安全',d:'帶著檢查表走一遍你的空間：電線、鋰電池、瓦斯、逃生路線與消防設備位置，當場找出風險並提出改善。',h:'2 小時 ～ 半天',w:'企業安衛人員、住戶管委會',hidden:false},
+    {k:'PREPARE',t:'企業防災 × 災害應變',d:'自衛消防編組、疏散演練規劃、地震與停電時的應變流程。協助建立一份你們單位真的做得到的應變計畫。',h:'半天 ～ 一天',w:'企業、工廠、醫療與長照機構',hidden:false},
+    {k:'LIFE',t:'生命教育 × 從救護看人生',d:'從救護現場的真實故事談選擇與生命。適合當作開學、季會或訓練場合的主題演講。',h:'60 ～ 90 分鐘',w:'學校、企業、社團',hidden:false}
+  ],
   gallery:{portrait:{folder:'',ids:[]},hdRescue:{folder:'',ids:[]},hdFire:{folder:'',ids:[]},
            teach:{folder:'',ids:[]},field:{folder:'',ids:[]},media:{folder:'',ids:[]}},
   showViews:true,
@@ -3649,6 +3691,14 @@ function renderFiles(){
   }).join('');
 }
 document.addEventListener('click',function(e){
+  var cm=e.target.closest('#courseMore');
+  if(cm){
+    var w=$('#courseWrap');if(!w)return;
+    var on=w.classList.toggle('on');
+    cm.innerHTML=on?'收合課程':'查看完整課程 <b>'+w.children.length+'</b> 堂 →';
+    if(!on)cm.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
   var f=e.target.closest('[data-file]');if(!f||EDITING)return;
   window.open('https://drive.google.com/file/d/'+f.dataset.file+'/view','_blank','noopener');
   countHit('files');
@@ -3660,6 +3710,20 @@ function renderScope(){
     return '<div class="scope-r" data-go="p-invite"><span class="scope-k">'+String(r[0]).replace(/</g,'&lt;')+
       '</span><span class="scope-v">'+String(r[1]).replace(/</g,'&lt;')+'</span><span class="scope-go">邀約 →</span></div>';
   }).join('');
+  var cs=(SITE.courses||[]).filter(function(c){return EDITING||!c.hidden});
+  if(cs.length){
+    box.insertAdjacentHTML('beforeend',
+      '<button class="course-more" id="courseMore">查看完整課程 <b>'+cs.length+'</b> 堂 →</button>'+
+      '<div class="course-wrap" id="courseWrap">'+cs.map(function(c){
+        return '<div class="course'+(c.hidden?' blk-off':'')+'">'+
+          '<div class="course-k">'+String(c.k||'').replace(/</g,'&lt;')+'</div>'+
+          '<div class="course-t">'+String(c.t||'').replace(/</g,'&lt;')+'</div>'+
+          '<p class="course-d">'+String(c.d||'').replace(/</g,'&lt;')+'</p>'+
+          '<div class="course-m"><span><em>建議時數</em>'+String(c.h||'—').replace(/</g,'&lt;')+'</span>'+
+          '<span><em>適合對象</em>'+String(c.w||'—').replace(/</g,'&lt;')+'</span></div>'+
+          '<button class="course-go" data-go="p-invite">邀這一堂 →</button></div>';
+      }).join('')+'</div>');
+  }
   var h=box.previousElementSibling;
   if(h&&h.classList.contains('section-head')){var sp=$('span',h);if(sp&&!sp.classList.contains('ed-txt'))sp.textContent=list.length+' 類．點一下帶你去邀約';}
 }
@@ -3968,7 +4032,7 @@ function applyForms(){
   v('#edVidUrl',SITE.videos.url);v('#edVidTitle',SITE.videos.title);
   v('#edVidNote',SITE.videos.note);v('#edVidMore',SITE.videos.more);
   v('#edDrive',SITE.drive);v('#edRuby',SITE.ruby||'');v('#edFilesFolder',SITE.files.folder||'');
-  try{renderFileEdit()}catch(e){}try{galPaintAll()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
+  try{renderFileEdit()}catch(e){}try{renderCourseEdit()}catch(e){}try{galPaintAll()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   var qq=quizOpts();
   [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry]].forEach(function(p){
     var e=$(p[0]);if(e){e.classList.toggle('on',!!p[1]);e.setAttribute('aria-checked',String(!!p[1]));}});
@@ -4059,7 +4123,7 @@ async function saveSite(){
     career:ET.career.map(function(x){return {k:x[0],v:x[1]}}),
     operators:ET.ops.map(function(x){return x[0]}),
     operatorRows:ET.ops.map(function(x){return {k:x[0],v:x[1]||''}}),
-    brand:SITE.brand, galText:SITE.galText||{}, ruby:SITE.ruby||'', files:SITE.files,
+    brand:SITE.brand, galText:SITE.galText||{}, ruby:SITE.ruby||'', files:SITE.files, courses:SITE.courses,
     notify:{endpoint:SITE.notify.endpoint||'',onWhisper:!!SITE.notify.onWhisper,
             onInvite:!!SITE.notify.onInvite,onFeedback:!!SITE.notify.onFeedback,
             showContent:!!SITE.notify.showContent,ack:!!SITE.notify.ack,
@@ -4169,6 +4233,7 @@ function applyPayload(p){
       }
       if(v.ruby!=null)SITE.ruby=v.ruby;
       if(v.files)SITE.files=Object.assign({folder:'',items:[]},v.files);
+      if(v.courses&&v.courses.length)SITE.courses=v.courses;
       if(v.texts)Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});
       if(v.patch){try{PATCH=Object.assign({text:{},ph:{},hide:{},del:{},order:{},add:[]},JSON.parse(v.patch));}
                   catch(e){console.warn('編輯資料壞掉',e)}}
@@ -5417,6 +5482,44 @@ document.addEventListener('click',function(e){
     var h=igHandle();if(!h)return;
     countHit('ig');window.open('https://www.instagram.com/'+h.slice(1)+'/','_blank','noopener');
   }
+});
+
+/* ---- 後台：完整課程說明 ---- */
+function renderCourseEdit(){
+  var box=$('#courseEdit');if(!box)return;
+  var L=SITE.courses||[];
+  var c1=$('#cwCount');if(c1)c1.textContent=L.filter(function(c){return !c.hidden}).length+' 堂';
+  box.innerHTML=L.map(function(c,i){
+    return '<div class="qe open" data-ci="'+i+'"><div class="qe-h"><div class="qe-t">'+String(c.k||'')+'　'+String(c.t||'').replace(/</g,'&lt;')+'</div>'+
+      '<div class="qe-x">'+(c.hidden?'已隱藏':'顯示中')+'</div></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">英文標籤</div><input class="f-in" data-ck="k" value="'+String(c.k||'').replace(/"/g,'&quot;')+'"></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">課程名稱</div><input class="f-in" data-ck="t" value="'+String(c.t||'').replace(/"/g,'&quot;')+'"></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">上什麼</div><textarea class="f-in" rows="3" data-ck="d">'+String(c.d||'').replace(/</g,'&lt;')+'</textarea></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">建議時數</div><input class="f-in" data-ck="h" value="'+String(c.h||'').replace(/"/g,'&quot;')+'" placeholder="例如：3 小時（含實作）"></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">適合對象</div><input class="f-in" data-ck="w" value="'+String(c.w||'').replace(/"/g,'&quot;')+'" placeholder="例如：企業、學校，10～40 人"></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;padding-bottom:12px">'+
+      '<button class="qbtn" data-ca="up">↑ 上移</button><button class="qbtn" data-ca="dn">↓ 下移</button>'+
+      '<button class="qbtn" data-ca="hide">'+(c.hidden?'顯示':'隱藏')+'</button><button class="qbtn" data-ca="del">刪除</button></div></div>';
+  }).join('')||'<div class="empty">還沒有課程說明</div>';
+}
+document.addEventListener('input',function(e){
+  var k=e.target.dataset&&e.target.dataset.ck;if(!k)return;
+  var i=+e.target.closest('[data-ci]').dataset.ci;
+  SITE.courses[i][k]=e.target.value;setDirty(true);try{renderScope()}catch(err){}
+});
+document.addEventListener('click',function(e){
+  if(e.target.id==='courseAdd'){
+    (SITE.courses=SITE.courses||[]).push({k:'NEW',t:'新的課程',d:'',h:'',w:'',hidden:false});
+    setDirty(true);renderCourseEdit();try{renderScope()}catch(err){}return;
+  }
+  var a=e.target.dataset&&e.target.dataset.ca;if(!a)return;
+  var box=e.target.closest('[data-ci]');if(!box)return;
+  var i=+box.dataset.ci,L=SITE.courses;
+  if(a==='up'&&i>0)L.splice(i-1,0,L.splice(i,1)[0]);
+  else if(a==='dn'&&i<L.length-1)L.splice(i+1,0,L.splice(i,1)[0]);
+  else if(a==='hide')L[i].hidden=!L[i].hidden;
+  else if(a==='del'){if(!confirm('刪除「'+(L[i].t||'')+'」這一堂的說明？'))return;L.splice(i,1);}
+  setDirty(true);renderCourseEdit();try{renderScope()}catch(err){}
 });
 
 /* ---- 後台：檔案下載 ---- */
