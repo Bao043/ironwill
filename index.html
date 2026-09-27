@@ -658,6 +658,21 @@ body.dirty #z-pro{padding-bottom:80px}
 .vcard-m{font-size:12.5px;color:var(--muted);margin-top:4px}
 @media (min-width:700px){.vcard-t{font-size:17px}}
 
+/* 心電圖：像監視器一樣掃過去 */
+.hero-ekg .ekg{stroke-linecap:round;stroke-linejoin:round;stroke-width:1.9;
+  stroke-dasharray:1400;stroke-dashoffset:1400;animation:ekgSweep 4.6s linear infinite}
+@keyframes ekgSweep{0%{stroke-dashoffset:1400}62%{stroke-dashoffset:0}
+  86%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:.18}}
+@media (prefers-reduced-motion:reduce){.hero-ekg .ekg{animation:none;stroke-dashoffset:0}}
+
+/* 首頁三欄標籤 */
+.hero-tags{display:flex;gap:0;margin:0 0 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-wrap:nowrap}
+.hero-tags .ht{flex:1;min-width:0;padding:11px 6px;text-align:center}
+.hero-tags .ht+.ht{border-left:1px solid var(--line)}
+.hero-tags .ht-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--signal)}
+.hero-tags .ht-v{font-size:12.5px;margin-top:4px;color:var(--ink);overflow-wrap:anywhere}
+@media (min-width:700px){.hero-tags .ht-k{font-size:11px}.hero-tags .ht-v{font-size:14.5px}}
+
 /* 首頁品牌圖放下方時 */
 .home-banner{height:132px;margin-top:26px;background-image:
   linear-gradient(180deg,var(--paper) 0,rgba(14,17,20,.25) 26%,rgba(14,17,20,.25) 74%,var(--paper) 100%),var(--home-banner);
@@ -677,7 +692,7 @@ body.dirty #z-pro{padding-bottom:80px}
   background-image:linear-gradient(180deg,rgba(218,221,216,0) 46%,rgba(218,221,216,.78) 78%,var(--paper) 100%),var(--home-banner)}
 .hero-card.hero-brand .hero-tags{margin-bottom:11px}
 @media (min-width:700px){.hero-card.hero-brand{padding-top:150px}.hero-card.hero-brand::before{height:148px}}
-.hero-card.hero-brand .hero-tags span,.hero-tags span{font-size:10px;padding:4px 8px;letter-spacing:.04em}
+
 
 /* 編輯模式：列上的小按鈕 */
 .rowx{border:1px solid var(--signal);background:none;color:var(--signal);font-size:11.5px;padding:4px 9px;
@@ -2437,7 +2452,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v9.6　2026/09/26';
+var APP_VERSION='v9.7　2026/09/26';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2942,7 +2957,7 @@ function toast(msg){
 
 /* ================= 課程主視覺 ================= */
 var HERO={
- ecg:'<path d="M0 30 L96 30 L104 30 L110 22 L116 30 L150 30 L158 30 L166 8 L176 50 L185 20 L194 30 L228 30 L236 30 L242 23 L248 30 L286 30 L294 30 L302 12 L311 46 L319 24 L328 30 L400 30"/>',
+ ecg:'<path class="ekg" d="M0 34 H26 C32 34 34 26 40 26 C46 26 48 34 54 34 H70 L76 36 L82 6 L90 58 L97 30 L103 34 H120 C132 34 132 20 144 20 C156 20 156 34 168 34 H196 C202 34 204 26 210 26 C216 26 218 34 224 34 H240 L246 36 L252 6 L260 58 L267 30 L273 34 H290 C302 34 302 20 314 20 C326 20 326 34 338 34 H400"/>',
  heart:'<path class="soft" d="M0 30 H132"/><path d="M132 30 L146 30 L154 14 L164 46 L173 22 L182 30 L196 30"/><path class="soft" d="M196 30 H244"/><path d="M290 44s-22-13-22-24a10 10 0 0 1 19-5 10 10 0 0 1 19 5c0 11-22 24-22 24z"/><path class="soft" d="M330 30 H400"/>',
  flame:'<path class="soft" d="M0 30 H150"/><path d="M200 8c10 12 16 19 16 30a16 16 0 1 1-32 0c0-11 6-18 16-30z"/><path class="soft" d="M200 44a7 7 0 0 1-7-7c0-4 3-7 7-12 4 5 7 8 7 12a7 7 0 0 1-7 7z"/><path class="soft" d="M250 30 H400"/>',
  aed:'<path class="soft" d="M0 30 H132"/><path d="M148 12h104a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H148a6 6 0 0 1-6-6V18a6 6 0 0 1 6-6z"/><path d="m205 20-9 14h11l-8 12"/><path class="soft" d="M274 30 H400"/>',
@@ -2951,12 +2966,19 @@ var HERO={
 };
 function renderHero(){
   var box=$('#heroCard');if(!box)return;
-  var tags=(COURSE.tags||[]).filter(Boolean);
-  if(EDITING)tags=[0,1,2].map(function(i){return (COURSE.tags||[])[i]||'標籤'});
+  var raw=(COURSE.tags||[]);
+  var tags=EDITING?[0,1,2].map(function(i){return raw[i]||'ENGLISH｜中文'}):raw.filter(Boolean);
+  var cell=function(t,i){
+    var q=String(t).split(/[｜|]/);
+    var k=q.length>1?q[0].trim():'', v=(q.length>1?q.slice(1).join('｜'):q[0]).trim();
+    return '<div class="ht">'+
+      ((k||EDITING)?'<div class="ht-k'+(EDITING?' ed-txt':'')+'"'+(EDITING?' contenteditable="true"':'')+' data-tg="'+i+':0">'+(k||'ENGLISH')+'</div>':'')+
+      '<div class="ht-v'+(EDITING?' ed-txt':'')+'"'+(EDITING?' contenteditable="true"':'')+' data-tg="'+i+':1">'+v+'</div></div>';
+  };
   box.innerHTML=
-    (tags.length?'<div class="hero-tags">'+tags.map(function(t){return '<span>'+t+'</span>'}).join('')+'</div>':'')+
+    (tags.length?'<div class="hero-tags">'+tags.map(cell).join('')+'</div>':'')+
     '<h1 class="display" id="cHomeTitle">'+COURSE.title+'</h1>'+
-    '<svg class="hero-mark" viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true">'+
+    '<svg class="hero-mark'+(!COURSE.icon||COURSE.icon==='ecg'?' hero-ekg':'')+'" viewBox="0 0 400 64" preserveAspectRatio="none" aria-hidden="true">'+
       (HERO[COURSE.icon]||HERO.ecg)+'</svg>';
   if(EDITING){
     var sw=document.createElement('button');
@@ -2970,12 +2992,15 @@ function renderHero(){
     var h=box.querySelector('h1');
     h.classList.add('ed-txt');h.setAttribute('contenteditable','true');
     h.addEventListener('blur',function(){COURSE.title=h.innerText.trim()||COURSE.title});
-    $$('.hero-tags span',box).forEach(function(sp,i){
-      sp.classList.add('ed-txt');sp.setAttribute('contenteditable','true');
-      sp.style.opacity='1';sp.style.transform='none';
-      sp.addEventListener('blur',function(){
+    $$('[data-tg]',box).forEach(function(el){
+      el.addEventListener('blur',function(){
+        var a=el.dataset.tg.split(':'), i=+a[0];
         COURSE.tags=COURSE.tags||[];
-        var v=sp.innerText.trim();COURSE.tags[i]=(v==='標籤')?'':v;
+        var cur=String(COURSE.tags[i]||'').split(/[｜|]/);
+        var k=(cur.length>1?cur[0]:'').trim(), v=(cur.length>1?cur.slice(1).join('｜'):cur[0]||'').trim();
+        if(a[1]==='0')k=el.innerText.trim();else v=el.innerText.trim();
+        if(k==='ENGLISH')k='';if(v==='中文')v='';
+        COURSE.tags[i]=(k?k+'｜':'')+v;setDirty(true);
       });
     });
   }
