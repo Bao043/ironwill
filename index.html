@@ -658,15 +658,26 @@ body.dirty #z-pro{padding-bottom:80px}
 .vcard-m{font-size:12.5px;color:var(--muted);margin-top:4px}
 @media (min-width:700px){.vcard-t{font-size:17px}}
 
+/* 首頁品牌圖放下方時 */
+.home-banner{height:132px;margin-top:26px;background-image:
+  linear-gradient(180deg,var(--paper) 0,rgba(14,17,20,.25) 26%,rgba(14,17,20,.25) 74%,var(--paper) 100%),var(--home-banner);
+  background-size:cover;background-position:center;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+[data-theme="light"] .home-banner{background-image:
+  linear-gradient(180deg,var(--paper) 0,rgba(218,221,216,.25) 26%,rgba(218,221,216,.25) 74%,var(--paper) 100%),var(--home-banner)}
+@media (min-width:700px){.home-banner{height:180px}}
+
 /* 首頁：banner 與標題合成一塊 */
-.hero-card.hero-brand{margin-top:0;padding:128px 0 4px;position:relative;isolation:isolate}
-.hero-card.hero-brand::before{content:"";position:absolute;left:0;right:0;top:0;height:126px;z-index:-1;
+.hero-card.hero-brand{margin-top:0;padding:104px 0 4px;position:relative;isolation:isolate}
+.hero-card.hero-brand::before{content:"";position:absolute;left:0;right:0;top:0;height:102px;z-index:-1;
   background-image:linear-gradient(180deg,rgba(14,17,20,0) 46%,rgba(14,17,20,.72) 78%,var(--paper) 100%),var(--home-banner);
   background-size:cover;background-position:center 34%;background-repeat:no-repeat}
 [data-theme="light"] .hero-card.hero-brand::before{
   background-image:linear-gradient(180deg,rgba(218,221,216,0) 46%,rgba(218,221,216,.78) 78%,var(--paper) 100%),var(--home-banner)}
 .hero-card.hero-brand .hero-tags{margin-bottom:11px}
-@media (min-width:700px){.hero-card.hero-brand{padding-top:186px}.hero-card.hero-brand::before{height:184px}}
+@media (min-width:700px){.hero-card.hero-brand{padding-top:150px}.hero-card.hero-brand::before{height:148px}}
+.hero-card.hero-brand .hero-tags span,.hero-tags span{font-size:10px;padding:4px 8px;letter-spacing:.04em}
 
 /* 編輯模式：列上的小按鈕 */
 .rowx{border:1px solid var(--signal);background:none;color:var(--signal);font-size:11.5px;padding:4px 9px;
@@ -2052,6 +2063,11 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <button class="et-add" data-add="scope">新增一類</button>
     <button class="btn btn-quiet" data-save="site">儲存授課範圍</button>
 
+    <div class="f" style="padding-top:14px"><div class="f-q">首頁品牌圖位置</div>
+      <div class="f-hint">學員首頁的 IRON WILL 主視覺要放哪裡。</div>
+      <div class="chips" data-one id="homePos" style="margin-top:8px">
+        <span class="chip" data-hp="top">放最上面</span><span class="chip" data-hp="bottom">放最下面</span>
+        <span class="chip" data-hp="off">不顯示</span></div></div>
     <div class="f" style="padding-top:14px"><div class="f-q">難字注音</div>
       <div class="f-hint">名字或課程名稱裡有人不會唸的字寫在這裡，畫面上會自動標注音。格式：檁=ㄌㄧㄣˇ，一行一個。</div>
       <textarea class="f-in" id="edRuby" rows="2" placeholder="檁=ㄌㄧㄣˇ"></textarea></div>
@@ -2421,7 +2437,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v9.5　2026/09/26';
+var APP_VERSION='v9.6　2026/09/26';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3081,7 +3097,7 @@ var TEXT_SEL='h1,h2,.sub,.meta,.f-q,.f-hint,.row-t,.row-d,.row-n,.tl-y,.tl-b,'+
 var BLOCK_SEL='.page>*,.f,.section-head,.row,.tl,.story>p,.lock,.quote,.hint,.note,'+
               '.player-b,.ig,.ct,.fig-cap,.figwrap,.strip,.strip-m,.who,.ig-foot,'+
               '.whisper-box,.toggle-row,.chips,.pair,.miss,.pod,'+
-              '.stats,.scope,.cts,.brand-head,.brand-banner,#fileList,.course-wrap';
+              '.stats,.scope,.cts,.brand-head,.brand-banner,#fileList,.course-wrap,.galx';
 var KEY_SEL=TEXT_SEL+','+BLOCK_SEL+',.chip,.chip-s,input,textarea';
 /* 內容是程式產生的容器：容器本身可以移動隱藏，但裡面的東西由資料控制 */
 var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,'+
@@ -3090,7 +3106,7 @@ var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tile
 /* 文字綁在資料上的元素：可以移動，但文字另外處理 */
 var SKIPTXT='#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM,.ig-handle,#galN,#runKicker,#scoreT,#scoreS';
 var NOBLOCK='#tileGrid,.gate-mark,#pvBar,#nav,script';
-var DATA_BLOCKS=DYN+',.player,#brandPlate';
+var DATA_BLOCKS=DYN+',.player,#brandPlate,#brandHead,.galx';
 function isDataBlock(el){return !!(el&&el.matches&&el.matches(DATA_BLOCKS))}
 function isDyn(el){var p=el.parentElement;return !!(p&&p.closest(DYN))}
 function cleanText(el){var c=el.cloneNode(true);$$('.blk-ed',c).forEach(function(x){x.remove()});return c.innerText.trim();}
@@ -3177,8 +3193,25 @@ function sib(el,dir){
   while(n&&!isBlock(n))n=dir<0?n.previousElementSibling:n.nextElementSibling;
   return n;
 }
+function keyDyn(){
+  // 相簿、品牌頁首等是繪製時才插入的，補上以 id 為準的固定編號，才能移動與記住位置
+  ['brandHead','brandPlate','galx-teach','galx-field','galx-media'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    var pg=el.closest('.page');if(!pg)return;
+    if(!el.dataset.k)el.dataset.k=pg.id+':#'+id;
+  });
+}
+function applyOrderOnly(){
+  Object.keys(PATCH.order||{}).forEach(function(pk){
+    var par=document.querySelector('[data-kp="'+pk+'"]');
+    if(!par&&/:p\d+$/.test(pk))par=document.getElementById(pk.split(':')[0]);
+    if(par)reorder(par,PATCH.order[pk]);
+  });
+}
 function ensureToolbars(){
+  keyDyn();
   if(!EDITING)return;
+  $$('#z-student .page').forEach(function(pg){decorate(pg)});
   $$('#z-student .blk').forEach(function(el){
     if(!el.querySelector(':scope>.blk-ed'))toolbar(el);      // 內容重畫會把工具列洗掉，這裡補回來
   });
@@ -3517,7 +3550,7 @@ var SITE={
           ['教學','企業、學校、政府機關與社區防災及急救教育']],
   videos:{url:'',title:'',note:'',more:''},
   photos:'',
-  brand:{head:{on:true,name:'IRON WILL',sub:'FIRE SAFETY × FIRST AID EDUCATION'},banner:{on:true},foot:'IRON WILL｜教育平台'},
+  brand:{head:{on:true,name:'IRON WILL',sub:'FIRE SAFETY × FIRST AID EDUCATION'},banner:{on:true},foot:'IRON WILL｜教育平台',homePos:'top'},
   ruby:'檁=ㄌㄧㄣˇ',
   ctNote:{ig:'現場紀錄與上課花絮',line:'回覆最快',tel:'可傳簡訊',mail:'講師個人信箱'},
   files:{folder:'',items:[]},
@@ -3852,9 +3885,19 @@ function renderScope(){
 }
 function renderHomeHero(){
   var hero=$('#heroCard');if(!hero)return;
-  var old=$('#homeHero');if(old)old.remove();            // 舊版的獨立 banner 區塊
-  var on=!(SITE.brand&&SITE.brand.home===false);
-  hero.classList.toggle('hero-brand',on);
+  var pos=(SITE.brand&&SITE.brand.homePos)||'top';
+  if(SITE.brand&&SITE.brand.home===false)pos='off';
+  hero.classList.toggle('hero-brand',pos==='top');
+  var foot=$('#homeBanner');
+  if(pos==='bottom'){
+    if(!foot){
+      var host=$('.ig-foot')||$('.brand-foot')||$('#tileGrid');
+      if(host&&host.parentNode){
+        foot=document.createElement('div');foot.id='homeBanner';foot.className='home-banner rv in';
+        host.parentNode.insertBefore(foot,host);
+      }
+    }
+  }else if(foot)foot.remove();
 }
 function renderBrandHead(){
   var lead=$('#abLead');if(!lead||!lead.parentNode)return;
@@ -4178,6 +4221,8 @@ function applyForms(){
   renderHeroPick();
   v('#edVidUrl',SITE.videos.url);v('#edVidTitle',SITE.videos.title);
   v('#edVidNote',SITE.videos.note);v('#edVidMore',SITE.videos.more);
+  var hp=(SITE.brand&&SITE.brand.homePos)||'top';
+  $$('#homePos .chip').forEach(function(c){c.classList.toggle('on',c.dataset.hp===hp)});
   v('#edDrive',SITE.drive);v('#edRuby',SITE.ruby||'');v('#edFilesFolder',SITE.files.folder||'');
   try{renderFileEdit()}catch(e){}try{renderCourseEdit()}catch(e){}try{galPaintAll()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   var qq=quizOpts();
@@ -4378,6 +4423,7 @@ function applyPayload(p){
         if(v.brand.head)SITE.brand.head=Object.assign({},SITE.brand.head,v.brand.head);
         if(v.brand.banner)SITE.brand.banner=Object.assign({},SITE.brand.banner,v.brand.banner);
         if(v.brand.foot!=null)SITE.brand.foot=v.brand.foot;
+        if(v.brand.homePos)SITE.brand.homePos=v.brand.homePos;
       }
       if(v.ruby!=null)SITE.ruby=v.ruby;
       if(v.ctNote)SITE.ctNote=Object.assign({},SITE.ctNote,v.ctNote);
@@ -4423,7 +4469,7 @@ function renderAll(){
   try{['speak','career','idea','ops','scope'].forEach(renderET)}catch(e){}
   try{renderScope()}catch(e){}
   try{renderHomeHero()}catch(e){}
-  setTimeout(function(){try{ensureToolbars()}catch(e){}},0);
+  setTimeout(function(){try{keyDyn();applyOrderOnly();ensureToolbars();}catch(e){}},0);
   try{renderFiles()}catch(e){}
   try{applyQuizVis()}catch(e){}
   try{applyRuby()}catch(e){}
@@ -4953,6 +4999,10 @@ function renderSessions(){
   loadSessBody(SEL_SESSION);
 }
 document.addEventListener('click',function(e){
+  var hp=e.target.closest('#homePos [data-hp]');
+  if(hp){SITE.brand.homePos=hp.dataset.hp;setDirty(true);
+    $$('#homePos .chip').forEach(function(c){c.classList.toggle('on',c===hp)});
+    try{renderHomeHero()}catch(err){}return;}
   var c=e.target.closest('#sessPick [data-sess]');if(!c)return;
   SEL_SESSION=c.dataset.sess;renderSessions();
 });
