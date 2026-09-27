@@ -2421,7 +2421,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v9.4　2026/09/26';
+var APP_VERSION='v9.5　2026/09/26';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3080,7 +3080,8 @@ var TEXT_SEL='h1,h2,.sub,.meta,.f-q,.f-hint,.row-t,.row-d,.row-n,.tl-y,.tl-b,'+
 /* 區塊：頁面的每一個直接子元素，加上常見的列表單位。選項（chip）不算，改用清單編輯 */
 var BLOCK_SEL='.page>*,.f,.section-head,.row,.tl,.story>p,.lock,.quote,.hint,.note,'+
               '.player-b,.ig,.ct,.fig-cap,.figwrap,.strip,.strip-m,.who,.ig-foot,'+
-              '.whisper-box,.toggle-row,.chips,.pair,.miss,.pod';
+              '.whisper-box,.toggle-row,.chips,.pair,.miss,.pod,'+
+              '.stats,.scope,.cts,.brand-head,.brand-banner,#fileList,.course-wrap';
 var KEY_SEL=TEXT_SEL+','+BLOCK_SEL+',.chip,.chip-s,input,textarea';
 /* 內容是程式產生的容器：容器本身可以移動隱藏，但裡面的東西由資料控制 */
 var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,'+
@@ -3175,6 +3176,12 @@ function sib(el,dir){
   var n=dir<0?el.previousElementSibling:el.nextElementSibling;
   while(n&&!isBlock(n))n=dir<0?n.previousElementSibling:n.nextElementSibling;
   return n;
+}
+function ensureToolbars(){
+  if(!EDITING)return;
+  $$('#z-student .blk').forEach(function(el){
+    if(!el.querySelector(':scope>.blk-ed'))toolbar(el);      // 內容重畫會把工具列洗掉，這裡補回來
+  });
 }
 function toolbar(el){
   if(el.querySelector(':scope>.blk-ed'))return;
@@ -3286,6 +3293,7 @@ function setEditing(on){
   try{applyRuby()}catch(e){}
   try{applyBrandFoot()}catch(e){}
   try{bindGalText()}catch(e){}
+  setTimeout(function(){try{ensureToolbars()}catch(e){}},0);
 }
 /* 編輯中：點一下選中區塊，只有選中的才出現按鈕 */
 document.addEventListener('click',function(e){
@@ -4415,9 +4423,11 @@ function renderAll(){
   try{['speak','career','idea','ops','scope'].forEach(renderET)}catch(e){}
   try{renderScope()}catch(e){}
   try{renderHomeHero()}catch(e){}
+  setTimeout(function(){try{ensureToolbars()}catch(e){}},0);
   try{renderFiles()}catch(e){}
   try{applyQuizVis()}catch(e){}
   try{applyRuby()}catch(e){}
+  setTimeout(function(){try{ensureToolbars()}catch(e){}},0);
   try{applyBrandFoot()}catch(e){}
 }
 async function loadAll(force){
@@ -5261,24 +5271,24 @@ function renderArtEdit(openFirst){
       '<div class="qe-x">👁 '+artViews(a)+'　編輯</div></div>'+
       '<div class="qe-b">'+
       '<div class="f" style="padding-top:12px"><div class="f-q" style="font-size:13px;color:var(--muted)">標題</div>'+
-      '<input class="f-in" data-k="t" value="'+(a.t||'').replace(/"/g,'&quot;')+'" placeholder="文章標題"></div>'+
+      '<input class="f-in" data-ak="t" value="'+(a.t||'').replace(/"/g,'&quot;')+'" placeholder="文章標題"></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">放在哪一區</div>'+
       '<div class="chips" data-one data-cat><span class="chip'+(a.cat==='disaster'?' on':'')+'" data-c="disaster">防災知識專區</span>'+
       '<span class="chip'+(a.cat==='firstaid'?' on':'')+'" data-c="firstaid">急救教育專區</span></div></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">小分類</div>'+
-      '<input class="f-in" data-k="c" value="'+(a.c||'').replace(/"/g,'&quot;')+'" placeholder="例如：火災逃生"></div>'+
+      '<input class="f-in" data-ak="c" value="'+(a.c||'').replace(/"/g,'&quot;')+'" placeholder="例如：火災逃生"></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">內文</div>'+
       '<div class="f-hint">空一行代表分段</div>'+
-      '<textarea class="f-ta" data-k="b" style="min-height:200px" placeholder="第一段…\n\n第二段…">'+(a.b||[]).join('\n\n')+'</textarea></div>'+
+      '<textarea class="f-ta" data-ak="b" style="min-height:200px" placeholder="第一段…\n\n第二段…">'+(a.b||[]).join('\n\n')+'</textarea></div>'+
       '<div style="display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap">'+
       '<span class="startog" data-m="up">↑ 上移</span><span class="startog" data-m="dn">↓ 下移</span>'+
       '<span class="startog" data-del>刪除這篇</span></div></div>';
     el.querySelector('.qe-h').addEventListener('click',function(){el.classList.toggle('open')});
-    el.querySelectorAll('[data-k]').forEach(function(f){
+    el.querySelectorAll('[data-ak]').forEach(function(f){
       f.addEventListener('input',function(){
-        if(f.dataset.k==='b')a.b=f.value.split(/\n\s*\n/).map(function(x){return x.trim()}).filter(Boolean);
-        else a[f.dataset.k]=f.value;
-        if(f.dataset.k==='t')el.querySelector('.qe-t').textContent=f.value||'（新文章）';
+        if(f.dataset.ak==='b')a.b=f.value.split(/\n\s*\n/).map(function(x){return x.trim()}).filter(Boolean);
+        else a[f.dataset.ak]=f.value;
+        if(f.dataset.ak==='t')el.querySelector('.qe-t').textContent=f.value||'（新文章）';
         refreshArts();
       });
     });
@@ -5549,18 +5559,18 @@ function renderQBank(){
       (q.q||'（新題目）')+'</div><div class="qe-x">'+(q.star?'★':'')+'　編輯</div></div>'+
       '<div class="qe-b">'+
       '<div class="f" style="padding-top:12px"><div class="f-q" style="font-size:13px;color:var(--muted)">題幹</div>'+
-      '<input class="f-in" value="'+(q.q||'').replace(/"/g,'&quot;')+'" data-k="q"></div>'+
+      '<input class="f-in" value="'+(q.q||'').replace(/"/g,'&quot;')+'" data-qk="q"></div>'+
       '<div style="margin-top:14px"><div class="f-q" style="font-size:13px;color:var(--muted)">選項．點圓圈設為正解</div>'+
       q.o.map(function(t,k){return '<div class="oedit"><span class="radio'+(k===q.a?' on':'')+'" data-a="'+k+'"></span>'+
         '<span class="oedit-k">'+'ABCD'[k]+'</span><input value="'+t.replace(/"/g,'&quot;')+'" data-o="'+k+'"></div>'}).join('')+
       '</div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">題目圖片（雲端硬碟連結或網址，可留空）</div>'+
-      '<input class="f-in" value="'+(q.img||'').replace(/"/g,'&quot;')+'" data-k="img" placeholder="https://drive.google.com/file/d/…/view"></div>'+
+      '<input class="f-in" value="'+(q.img||'').replace(/"/g,'&quot;')+'" data-qk="img" placeholder="https://drive.google.com/file/d/…/view"></div>'+
       (qImg(q.img,600)?'<img src="'+qImg(q.img,600)+'" alt="" style="width:100%;max-height:200px;object-fit:contain;background:var(--surface);margin-top:8px">':'')+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">詳解</div>'+
-      '<textarea class="f-ta" style="min-height:84px" data-k="ex">'+(q.ex||'')+'</textarea></div>'+
+      '<textarea class="f-ta" style="min-height:84px" data-qk="ex">'+(q.ex||'')+'</textarea></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">一句重點</div>'+
-      '<input class="f-in" value="'+(q.k||'').replace(/"/g,'&quot;')+'" data-k="k"></div>'+
+      '<input class="f-in" value="'+(q.k||'').replace(/"/g,'&quot;')+'" data-qk="k"></div>'+
       '<div style="display:flex;gap:10px;align-items:center;margin-top:16px">'+
       '<span class="startog'+(q.star?' on':'')+'" data-star>★ 重要題</span>'+
       '<span class="startog" data-del>刪除</span></div>'+
@@ -5572,10 +5582,10 @@ function renderQBank(){
         el.querySelectorAll('.radio').forEach(function(x){x.classList.toggle('on',x===r)});
       });
     });
-    el.querySelectorAll('[data-k]').forEach(function(f){
+    el.querySelectorAll('[data-qk]').forEach(function(f){
       f.addEventListener('input',function(){
-        q[f.dataset.k]=f.value;
-        if(f.dataset.k==='q')el.querySelector('.qe-t').textContent=f.value||'（新題目）';
+        q[f.dataset.qk]=f.value;
+        if(f.dataset.qk==='q')el.querySelector('.qe-t').textContent=f.value||'（新題目）';
       });
     });
     el.querySelectorAll('[data-o]').forEach(function(f){
