@@ -666,8 +666,8 @@ body.dirty #z-pro{padding-bottom:80px}
 @media (prefers-reduced-motion:reduce){.hero-ekg .ekg{animation:none;stroke-dashoffset:0}}
 
 /* 首頁三欄標籤 */
-.hero-tags{display:flex;gap:0;margin:0 0 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-wrap:nowrap}
-.hero-tags .ht{flex:1;min-width:0;padding:11px 6px;text-align:center}
+.hero-tags{display:flex;gap:0;margin:14px 0 2px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-wrap:nowrap}
+.hero-tags .ht{flex:1;min-width:0;padding:12px 6px;text-align:center}
 .hero-tags .ht+.ht{border-left:1px solid var(--line)}
 .hero-tags .ht-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--signal)}
 .hero-tags .ht-v{font-size:12.5px;margin-top:4px;color:var(--ink);overflow-wrap:anywhere}
@@ -675,7 +675,7 @@ body.dirty #z-pro{padding-bottom:80px}
 
 /* 首頁品牌圖放下方時 */
 .home-banner{height:132px;margin-top:26px;background-image:
-  linear-gradient(180deg,var(--paper) 0,rgba(14,17,20,.25) 26%,rgba(14,17,20,.25) 74%,var(--paper) 100%),var(--home-banner);
+  linear-gradient(180deg,var(--paper) 0,rgba(14,17,20,.48) 26%,rgba(14,17,20,.48) 74%,var(--paper) 100%),var(--home-banner);
   background-size:cover;background-position:center;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
           mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
@@ -686,11 +686,11 @@ body.dirty #z-pro{padding-bottom:80px}
 /* 首頁：banner 與標題合成一塊 */
 .hero-card.hero-brand{margin-top:0;padding:104px 0 4px;position:relative;isolation:isolate}
 .hero-card.hero-brand::before{content:"";position:absolute;left:0;right:0;top:0;height:102px;z-index:-1;
-  background-image:linear-gradient(180deg,rgba(14,17,20,0) 46%,rgba(14,17,20,.72) 78%,var(--paper) 100%),var(--home-banner);
+  background-image:linear-gradient(180deg,rgba(14,17,20,.46) 0,rgba(14,17,20,.4) 30%,rgba(14,17,20,.82) 74%,var(--paper) 100%),var(--home-banner);
   background-size:cover;background-position:center 34%;background-repeat:no-repeat}
 [data-theme="light"] .hero-card.hero-brand::before{
-  background-image:linear-gradient(180deg,rgba(218,221,216,0) 46%,rgba(218,221,216,.78) 78%,var(--paper) 100%),var(--home-banner)}
-.hero-card.hero-brand .hero-tags{margin-bottom:11px}
+  background-image:linear-gradient(180deg,rgba(218,221,216,.3) 0,rgba(218,221,216,.35) 30%,rgba(218,221,216,.85) 74%,var(--paper) 100%),var(--home-banner)}
+.hero-card.hero-brand .hero-tags{margin-bottom:6px}
 @media (min-width:700px){.hero-card.hero-brand{padding-top:150px}.hero-card.hero-brand::before{height:148px}}
 
 
@@ -2452,7 +2452,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v9.7　2026/09/26';
+var APP_VERSION='v9.8　2026/09/26';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2968,18 +2968,28 @@ function renderHero(){
   var box=$('#heroCard');if(!box)return;
   var raw=(COURSE.tags||[]);
   var tags=EDITING?[0,1,2].map(function(i){return raw[i]||'ENGLISH｜中文'}):raw.filter(Boolean);
+  var splitTag=function(t){
+    t=String(t||'').trim();
+    var q=t.split(/[｜|]/);
+    if(q.length>1)return [q[0].trim(),q.slice(1).join('｜').trim()];
+    // 舊格式：「消防安全 FIRE SAFETY」→ 英文當小標、中文當內容
+    var m=t.match(/^([^A-Za-z]*[\u4e00-\u9fff][^A-Za-z]*)\s+([A-Za-z0-9 .&×-]+)$/);
+    if(m)return [m[2].trim(),m[1].trim()];
+    var m2=t.match(/^([A-Za-z0-9 .&×-]+)\s+([^A-Za-z]+)$/);
+    if(m2)return [m2[1].trim(),m2[2].trim()];
+    return ['',t];
+  };
   var cell=function(t,i){
-    var q=String(t).split(/[｜|]/);
-    var k=q.length>1?q[0].trim():'', v=(q.length>1?q.slice(1).join('｜'):q[0]).trim();
+    var pair=splitTag(t), k=pair[0], v=pair[1];
     return '<div class="ht">'+
       ((k||EDITING)?'<div class="ht-k'+(EDITING?' ed-txt':'')+'"'+(EDITING?' contenteditable="true"':'')+' data-tg="'+i+':0">'+(k||'ENGLISH')+'</div>':'')+
       '<div class="ht-v'+(EDITING?' ed-txt':'')+'"'+(EDITING?' contenteditable="true"':'')+' data-tg="'+i+':1">'+v+'</div></div>';
   };
   box.innerHTML=
-    (tags.length?'<div class="hero-tags">'+tags.map(cell).join('')+'</div>':'')+
     '<h1 class="display" id="cHomeTitle">'+COURSE.title+'</h1>'+
     '<svg class="hero-mark'+(!COURSE.icon||COURSE.icon==='ecg'?' hero-ekg':'')+'" viewBox="0 0 400 64" preserveAspectRatio="none" aria-hidden="true">'+
-      (HERO[COURSE.icon]||HERO.ecg)+'</svg>';
+      (HERO[COURSE.icon]||HERO.ecg)+'</svg>'+
+    (tags.length?'<div class="hero-tags">'+tags.map(cell).join('')+'</div>':'');
   if(EDITING){
     var sw=document.createElement('button');
     sw.className='qbtn';sw.textContent='換圖案';sw.style.marginTop='4px';
