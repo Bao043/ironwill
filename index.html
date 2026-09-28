@@ -658,6 +658,24 @@ body.dirty #z-pro{padding-bottom:80px}
 .vcard-m{font-size:12.5px;color:var(--muted);margin-top:4px}
 @media (min-width:700px){.vcard-t{font-size:17px}}
 
+/* 投影揭曉 */
+.reveal{position:fixed;inset:0;z-index:120;background:var(--paper);display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:32px 24px;text-align:center}
+.reveal.on{display:flex;animation:fadeIn .35s ease both}
+.reveal .rv-k{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--signal)}
+.reveal .rv-q{font-size:clamp(18px,3.4vw,30px);color:var(--muted);margin:0}
+.reveal .rv-n{font-family:var(--mono);font-size:clamp(66px,20vw,190px);line-height:1;font-weight:500}
+.reveal .rv-n small{font-size:.32em;color:var(--muted);margin-left:.1em}
+.reveal .rv-real{color:var(--signal)}
+.reveal .rv-gap{font-size:clamp(16px,2.6vw,24px);color:var(--muted)}
+.reveal .rv-btn{margin-top:22px;padding:15px 34px;border:1px solid var(--line);background:none;color:var(--ink);
+  font-size:16px;cursor:pointer}
+.reveal .rv-btn:hover{border-color:var(--signal);color:var(--signal)}
+.reveal .rv-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;border:1px solid var(--line);
+  background:none;color:var(--muted);font-size:13px;padding:7px 12px;cursor:pointer}
+.reveal .pop{animation:popIn .6s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes popIn{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
 /* 心電圖：像監視器一樣掃過去 */
 .hero-ekg .ekg{stroke-linecap:round;stroke-linejoin:round;stroke-width:1.9;
   stroke-dasharray:1400;stroke-dashoffset:1400;animation:ekgSweep 4.6s linear infinite}
@@ -1628,6 +1646,13 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <div class="meta" style="margin-top:12px" id="qmeta">課後測驗 · 第 1 題 / 4</div>
       <h2 style="font-size:18px;line-height:1.7;margin-top:10px" id="qtext"></h2>
       <div id="qImgWrap" style="display:none"></div>
+      <div id="guessBox" style="display:none">
+        <div class="pg-k" style="margin-bottom:6px">最後一題</div>
+        <h2 style="font-size:20px;line-height:1.7;margin:0">你覺得自己會拿幾分？</h2>
+        <p class="hint" style="margin-top:8px">滿分 100 分．此題不計分，答完就知道結果</p>
+        <select id="guessSel" class="f-in" style="margin-top:14px;font-family:var(--mono);font-size:20px;text-align:center"></select>
+        <button class="btn" id="guessGo" style="margin-top:14px">送出並看結果</button>
+      </div>
       <div id="qopts" style="margin-top:14px"></div>
       <button class="btn" id="qnext">選一個答案</button>
     </div>
@@ -2009,6 +2034,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="toggle-row"><span>分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前、課後分數與進步多少</em></span><span class="sw on" id="qvScore" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>本堂統計<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">全班平均、及格率、最多人誤會的題目</em></span><span class="sw on" id="qvStats" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>題目詳解<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">正解與解析．關掉就等你上課講完再開</em></span><span class="sw on" id="qvExp" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>作答完讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">最後多一題「你覺得自己會拿幾分」（不計分）．上課時可以投影出來對照實際平均</em></span><span class="sw" id="qvGuess" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>允許重做<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關掉時，同一堂的課前、課後各只能做一次</em></span><span class="sw" id="qvRetry" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>前三名<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">在「成績與回饋」公布這一堂的前三名，學員才看得到入口</em></span><button class="qbtn" id="qvTopGo">去公布</button></div>
     <div class="f"><div class="f-q">榜單上的姓名怎麼顯示</div>
@@ -2452,7 +2478,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v9.8　2026/09/26';
+var APP_VERSION='v9.9　2026/09/28';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2844,6 +2870,7 @@ $('#qnext').addEventListener('click',function(){
   else{
     var right=answers.filter(function(v,i){return v===QS[i].a}).length;
     var pct=Math.round(right/QS.length*100);
+    if(quizOpts().guess&&GUESS==null){askGuess(pct);return;}
     $('#runBody').style.display='none';$('#runDone').style.display='block';
     $('#scoreT').textContent='答對 '+right+' / '+QS.length+' 題';
     $('#scoreS').textContent=right===QS.length?'全對。下次有人倒下，你會知道要做什麼。':'錯的那幾題去看詳解，比重做一次有用。';
@@ -2865,8 +2892,30 @@ $('#qnext').addEventListener('click',function(){
   }
 });
 $('#qagain').addEventListener('click',function(){
-  qi=0;answers=[];$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
+  qi=0;answers=[];GUESS=null;$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
 });
+var GUESS=null;
+function askGuess(pct){
+  var sel=$('#guessSel');if(!sel)return;
+  if(!sel.options.length){
+    var h='';for(var v=0;v<=100;v+=5)h+='<option value="'+v+'"'+(v===50?' selected':'')+'>'+v+' 分</option>';
+    sel.innerHTML=h;
+  }
+  $('#qbody')&&($('#qbody').style.display='none');
+  $$('#runBody > *').forEach(function(e){if(e.id!=='guessBox')e.style.display='none'});
+  $('#runBody').style.display='';$('#runDone').style.display='none';
+  $('#guessBox').style.display='block';
+  $('#qmeta')&&($('#qmeta').style.display='');
+  var meta=$('#qmeta');if(meta){meta.style.display='';meta.textContent=(QMODE==='pre'?'課前測驗':'課後測驗')+' · 預估分數';}
+  window.scrollTo({top:0,behavior:'instant'});
+  var go=$('#guessGo');
+  go.onclick=function(){
+    GUESS=+sel.value;
+    $('#guessBox').style.display='none';
+    $$('#runBody > *').forEach(function(e){e.style.display=''});
+    $('#qnext').click();     // 回到原本的完成流程
+  };
+}
 function renderExplain(){
   var box=$('#explainList');box.innerHTML='';
   QS.forEach(function(q,i){
@@ -4261,7 +4310,7 @@ function applyForms(){
   v('#edDrive',SITE.drive);v('#edRuby',SITE.ruby||'');v('#edFilesFolder',SITE.files.folder||'');
   try{renderFileEdit()}catch(e){}try{renderCourseEdit()}catch(e){}try{galPaintAll()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   var qq=quizOpts();
-  [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry]].forEach(function(p){
+  [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry],['#qvGuess',qq.guess]].forEach(function(p){
     var e=$(p[0]);if(e){e.classList.toggle('on',!!p[1]);e.setAttribute('aria-checked',String(!!p[1]));}});
   var nv=$('#nfViews');if(nv){nv.classList.toggle('on',SITE.showViews!==false);nv.setAttribute('aria-checked',String(SITE.showViews!==false));}
   v('#edIG',SITE.contact.ig);v('#edLine',SITE.contact.line);
@@ -5066,6 +5115,16 @@ async function loadSessBody(code){
     h+='<div class="section-head"><h2>測驗</h2><span>課前 → 課後</span></div>'+
        '<div class="ans-line"><b>平均分</b><span>'+a(pre)+' → '+a(post)+'</span></div>'+
        '<div class="ans-line"><b>及格率</b><span>'+r(pre)+' → '+r(post)+'</span></div>';
+    ['pre','post'].forEach(function(m){
+      var g=st[m+'Guess'];if(!g||!g.n)return;
+      var ga=Math.round(g.sum/g.n), ra=Math.round((g.real||0)/g.n), d=ra-ga;
+      h+='<div class="section-head"><h2>'+(m==='pre'?'課前':'課後')+'．預估 vs 實際</h2><span>'+g.n+' 人預估</span></div>'+
+        '<div class="stats" style="margin-top:8px">'+
+        '<div class="stat"><div class="stat-n">'+ga+'</div><div class="stat-l">大家猜自己幾分</div></div>'+
+        '<div class="stat"><div class="stat-n">'+ra+'</div><div class="stat-l">實際平均</div></div>'+
+        '<div class="stat"><div class="stat-n" style="color:'+(d<0?'var(--signal)':'var(--ok)')+'">'+(d>0?'+':'')+d+'</div><div class="stat-l">落差</div></div></div>'+
+        '<button class="qbtn" data-reveal="'+m+':'+ga+':'+ra+':'+g.n+'" style="margin-top:10px">投影給大家看 →</button>';
+    });
     if(code!=='all'){
       var pub=st.top&&st.top.score&&st.top.score.length;
       h+='<div class="section-head"><h2>前三名</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
@@ -5724,6 +5783,32 @@ document.addEventListener('click',function(e){
   }
 });
 
+/* ---- 投影：預估 vs 實際 ---- */
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-reveal]');if(!b)return;
+  var q=b.dataset.reveal.split(':'), mode=q[0], guess=+q[1], real=+q[2], n=+q[3];
+  var box=$('#revealBox');
+  if(!box){box=document.createElement('div');box.id='revealBox';box.className='reveal';document.body.appendChild(box);}
+  var step=1;
+  function paint(){
+    box.innerHTML='<button class="rv-x" data-rvclose>關閉</button>'+
+      '<div class="rv-k">'+(mode==='pre'?'課前測驗':'課後測驗')+'　'+n+' 人作答</div>'+
+      (step===1?
+        '<p class="rv-q">大家猜自己會拿幾分？</p><div class="rv-n pop">'+guess+'<small>分</small></div>'+
+        '<button class="rv-btn" data-rvnext>揭曉實際平均 →</button>'
+       :'<p class="rv-q">大家猜 '+guess+' 分．實際平均是</p>'+
+        '<div class="rv-n rv-real pop">'+real+'<small>分</small></div>'+
+        '<div class="rv-gap">'+(real<guess?('比想像中少了 '+(guess-real)+' 分'):(real>guess?('比想像中多了 '+(real-guess)+' 分'):'剛好猜中'))+'</div>'+
+        '<button class="rv-btn" data-rvback>再看一次預估</button>');
+  }
+  paint();box.classList.add('on');
+  box.onclick=function(ev){
+    if(ev.target.closest('[data-rvclose]')){box.classList.remove('on');return;}
+    if(ev.target.closest('[data-rvnext]')){step=2;paint();return;}
+    if(ev.target.closest('[data-rvback]')){step=1;paint();return;}
+  };
+});
+
 /* ---- 後台：完整課程說明 ---- */
 function renderCourseEdit(){
   var box=$('#courseEdit');if(!box)return;
@@ -6014,7 +6099,7 @@ var TOP_PUB=false;
 function quizOpts(){
   var q=(COURSE&&COURSE.quiz)||{};
   return {score:q.score!==false, stats:q.stats!==false,
-          exp:!(q.exp===false||q.exp==='later'), retry:!!q.retry};
+          exp:!(q.exp===false||q.exp==='later'), retry:!!q.retry, guess:!!q.guess};
 }
 function applyQuizVis(){
   var q=quizOpts();
@@ -6052,7 +6137,7 @@ var PROFILE=[];
 $('#pfGo').addEventListener('click',function(){
   var n=($('#pfName').value||'').trim();
   if(!n){toast('請先填姓名，前後測要靠它配對');$('#pfName').focus();return;}
-  profileName=n;QMODE='pre';QNAME=n;useQuestions('pre');
+  profileName=n;QMODE='pre';QNAME=n;GUESS=null;useQuestions('pre');
   try{localStorage.setItem('quizName',n)}catch(e){}
   PROFILE=collectFields('#p-profile');
   qi=0;answers=[];$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
@@ -6062,7 +6147,7 @@ $('#nmGo').addEventListener('click',function(){
   var n=($('#nmIn').value||'').trim()||profileName||'';
   try{if(n)localStorage.setItem('quizName',n)}catch(e){}
   if(!n){toast('請填姓名');$('#nmIn').focus();return;}
-  QMODE='post';QNAME=n;useQuestions('post');
+  QMODE='post';QNAME=n;GUESS=null;useQuestions('post');
   qi=0;answers=[];$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
   enterRun('課後測驗 · '+n+'　基本資料已帶入，不再重問');
 });
@@ -6076,11 +6161,13 @@ function saveAttempt(pct){
   if(PREVIEW||EDITING||!window.fb)return;
   var F=window.fb;
   var rec={session:CODE,mode:QMODE,name:QNAME,score:pct,answers:answers.slice(),
+           guess:(GUESS==null?null:GUESS),
            profile:QMODE==='pre'?PROFILE:[],createdAt:F.serverTimestamp()};
   F.addDoc(F.collection(F.db,'courses',F.COURSE,'attempts'),rec)
    .catch(function(e){console.warn('作答存檔失敗',e)});
   var agg={};
   agg[QMODE]={n:F.increment(1),sum:F.increment(pct),pass:F.increment(pct>=COURSE.pass?1:0)};
+  if(GUESS!=null)agg[QMODE+'Guess']={n:F.increment(1),sum:F.increment(GUESS),real:F.increment(pct)};
   agg.q={};
   QS.forEach(function(q,i){
     var a=answers[i], o={};
@@ -6220,7 +6307,7 @@ $$('.sw').forEach(function(s){
     var NF={nfWhisper:'onWhisper',nfInvite:'onInvite',nfFeedback:'onFeedback',
             nfContent:'showContent',nfAck:'ack'};
     if(NF[s.id])SITE.notify[NF[s.id]]=on;
-    var QV={qvScore:'score',qvStats:'stats',qvExp:'exp',qvRetry:'retry'};
+    var QV={qvScore:'score',qvStats:'stats',qvExp:'exp',qvRetry:'retry',qvGuess:'guess'};
     if(QV[s.id]){COURSE.quiz=COURSE.quiz||{};COURSE.quiz[QV[s.id]]=on;try{applyQuizVis()}catch(e){}}
     if(s.id==='nfViews'){SITE.showViews=on;try{refreshArts()}catch(e){}}
     if(s.id==='wantReply'){
