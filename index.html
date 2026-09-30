@@ -2553,7 +2553,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.8　2026/09/30';
+var APP_VERSION='v10.9　2026/09/30';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2724,7 +2724,8 @@ function go(id){
   if(id==='p-explain'&&!EDITING){
     var qo=quizOpts(),hasR=!!(myRes('pre')||myRes('post'));
     if(qo.level===0||(!hasR&&!qo.exp)){toast(hasR?'講師還沒公布成績，下課後就能看':'講師還沒開放題目詳解');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
-    if(stack[stack.length-2]!=='p-run')REV_MODE=null;
+    if(stack[stack.length-2]!=='p-run'&&!REV_KEEP)REV_MODE=null;
+    REV_KEEP=false;
     renderExplain();
   }
   if(id==='p-stats'&&!quizOpts().stats&&!EDITING){toast('講師還沒開放本堂統計');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
@@ -3009,7 +3010,7 @@ function askGuess(pct){
 }
 function resKey(mode){return 'res:'+SID()+':'+mode}
 function myRes(mode){try{return JSON.parse(localStorage.getItem(resKey(mode))||'null')}catch(e){return null}}
-var REV_MODE=null;
+var REV_MODE=null,REV_KEEP=false;
 function renderExplain(){
   var box=$('#explainList');if(!box)return;
   var q=quizOpts(),rp=myRes('pre'),rq=myRes('post');
@@ -6448,7 +6449,10 @@ document.addEventListener('click',function(e){
   var gm=t.dataset.gate==='p-profile'?'pre':t.dataset.gate==='p-name'?'post':null;
   if(gm&&!quizOpts()[gm]){toast('講師還沒開放'+(gm==='pre'?'課前':'課後')+'測驗');return;}
   if(gm&&isDone(gm)&&!quizOpts().retry&&!EDITING){
-    toast('這一堂的'+(gm==='pre'?'課前':'課後')+'測驗你已經做過了');return;
+    var nm=(gm==='pre'?'課前':'課後'),rr=myRes(gm),lv0=quizOpts().level;
+    if(!rr){toast('這一堂的'+nm+'測驗你已經做過了（這次是在更新前送出的，沒有存到每題對錯）');return;}
+    if(lv0===0){toast(nm+'測驗你已經做過了．講師公布後，到「我的成績」看結果');return;}
+    REV_MODE=gm;REV_KEEP=true;go('p-explain');return;
   }
   if(hasPassed()){
     var d=t.dataset.gate;
@@ -6484,12 +6488,12 @@ function applyQuizVis(){
   var q=quizOpts();
   var set=function(id,on){var e=$(id);if(e)e.style.display=on?'':'none'};
   set('#rowStats',q.stats);set('#goStats',q.stats);
-  var rp=myRes('pre'),rq=myRes('post'),has=!!(rp||rq);
-  set('#rowExp',has||q.exp||EDITING);set('#goExp',q.marks);set('#codeExp',q.exp);
+  var rp=myRes('pre'),rq=myRes('post'),has=!!(rp||rq),did=isDone('pre')||isDone('post');
+  set('#rowExp',has||did||q.exp||EDITING);set('#goExp',q.marks);set('#codeExp',q.exp);
   var rd=$('#rowExpD');
   if(rd){
     var sc=[rp?'課前 '+rp.score+' 分':'',rq?'課後 '+rq.score+' 分':''].filter(Boolean).join('．');
-    rd.textContent=!has?'看題目、正解和解析'
+    rd.textContent=!has?(did?'這堂的作答在更新前送出，沒有存到每題對錯':'看題目、正解和解析')
       :q.level===0?'講師還沒公布，下課後就能在這裡看'
       :q.level===1?sc
       :q.level===2?sc+'．看自己錯哪幾題'
