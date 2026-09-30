@@ -2530,7 +2530,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.5　2026/09/29';
+var APP_VERSION='v10.6　2026/09/29';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4765,7 +4765,7 @@ async function mailAdmin(payload){
     throw new Error('連不到 Apps Script。最常見原因：部署時「具有存取權的使用者」選成「任何具有 Google 帳戶的使用者」，要改成「任何人」');
   }
   var t=await r.text();
-  var j;try{j=JSON.parse(t)}catch(e){throw new Error('Apps Script 回傳的不是資料，可能還是舊版程式，記得重新部署')}
+  var j;try{j=JSON.parse(t)}catch(e){throw new Error('Apps Script 回傳的不是資料：連結可能不是資料夾、資料夾沒開分享，或 Apps Script 需要重新部署')}
   if(!j.ok)throw new Error(j.error||'失敗');
   return j;
 }
@@ -5543,7 +5543,9 @@ function artMediaUI(el,a){
       return '<div class="am-row" data-ami="'+i+'"><div class="am-th" style="background-image:url(\''+thumb(m)+'\')">'+
         (m.type!=='img'?'<i class="am-tag">'+(m.type==='yt'?'YT':'影片')+'</i>':'')+'</div>'+
         '<div class="am-b"><input class="f-in" data-amcap value="'+String(m.cap||'').replace(/"/g,'&quot;')+'" placeholder="說明文字（可留空）">'+
-        '<select class="am-sel" data-amat>'+opts+'</select></div>'+
+        '<div style="display:flex;gap:6px"><select class="am-sel" data-amat style="flex:1">'+opts+'</select>'+
+        (m.type==='yt'?'':'<select class="am-sel" data-amtype style="width:auto"><option value="img"'+(m.type==='img'?' selected':'')+'>照片</option><option value="video"'+(m.type==='video'?' selected':'')+'>影片</option></select>')+
+        '</div></div>'+
         '<div class="am-btn"><button data-amup>↑</button><button data-amdn>↓</button><button data-amdel>×</button></div></div>';
     }).join('');
   }
@@ -5551,7 +5553,17 @@ function artMediaUI(el,a){
     var t=e.target;
     if(t.closest('[data-amread]')){
       var url=(el.querySelector('[data-amf]').value||'').trim();
-      if(!url){toast('先貼資料夾連結');return;}
+      if(!url){toast('先貼資料夾或檔案連結');return;}
+      if(!/\/folders\//.test(url)){        // 單一檔案連結：直接加入，不用讀資料夾
+        var ids=[];(url.match(/[^\s,，]+/g)||[]).forEach(function(u){var d=driveId(u);if(d&&ids.indexOf(d)<0)ids.push(d)});
+        if(!ids.length){toast('看不出是雲端硬碟連結');return;}
+        var added=0;
+        ids.forEach(function(id){if(a.media.some(function(m){return m.id===id}))return;
+          a.media.push({type:'img',id:id,cap:'',at:-1});added++;});
+        el.querySelector('[data-amf]').value='';setDirty(true);paintList();paintPick();
+        toast(added?('已加入 '+added+' 個．如果是影片，在下面把類型改成「影片」'):'已經加過了');
+        return;
+      }
       var btn=t.closest('[data-amread]'),old=btn.textContent;btn.textContent='讀取中…';
       try{
         var j=await mailAdmin({action:'listFolder',folder:url,kind:'all'});
@@ -5587,6 +5599,7 @@ function artMediaUI(el,a){
   el.addEventListener('change',function(e){
     var row=e.target.closest('[data-ami]');if(!row)return;
     if(e.target.matches('[data-amat]')){var n=(a.b||[]).length,v=+e.target.value;a.media[+row.dataset.ami].at=(v>=n?-1:v);setDirty(true);}
+    if(e.target.matches('[data-amtype]')){a.media[+row.dataset.ami].type=e.target.value;setDirty(true);paintList();}
     if(e.target.matches('[data-ak="b"]'))paintList();
   });
   var ta=el.querySelector('[data-ak="b"]');if(ta)ta.addEventListener('blur',paintList);
@@ -5612,8 +5625,8 @@ function renderArtEdit(openFirst){
       '<div class="f-hint">空一行代表分段</div>'+
       '<textarea class="f-ta" data-ak="b" style="min-height:200px" placeholder="第一段…\n\n第二段…">'+(a.b||[]).join('\n\n')+'</textarea></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">照片與影片</div>'+
-      '<div class="f-hint">貼雲端硬碟資料夾連結按讀取，點選要放進文章的照片或影片（資料夾要設成知道連結的人可檢視）；也可以直接貼 YouTube 網址。</div>'+
-      '<div style="display:flex;gap:8px;margin-top:8px"><input class="f-in" data-amf value="'+(a.mediaFolder||'').replace(/"/g,'&quot;')+'" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:0;margin-top:0"><button class="qbtn" data-amread>讀取</button></div>'+
+      '<div class="f-hint">兩種方式：貼「資料夾」連結按讀取，再點選要用的；或貼「單一檔案」連結按加入（可一次貼多個，用空格或換行隔開）。檔案或資料夾都要設成知道連結的人可檢視。也可以直接貼 YouTube 網址。</div>'+
+      '<div style="display:flex;gap:8px;margin-top:8px"><input class="f-in" data-amf value="'+(a.mediaFolder||'').replace(/"/g,'&quot;')+'" placeholder="資料夾連結或檔案連結" style="flex:1;min-width:0;margin-top:0"><button class="qbtn" data-amread>讀取／加入</button></div>'+
       '<div class="am-pick" data-ampick></div>'+
       '<div style="display:flex;gap:8px;margin-top:10px"><input class="f-in" data-amyt placeholder="YouTube 網址" style="flex:1;min-width:0;margin-top:0"><button class="qbtn" data-amytadd>加入</button></div>'+
       '<div data-amlist style="margin-top:6px"></div></div>'+
