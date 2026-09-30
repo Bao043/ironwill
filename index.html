@@ -2054,20 +2054,20 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <button class="btn btn-quiet" id="qeAdd">＋ 新增題目</button>
     <button class="btn btn-quiet" data-save="questions">儲存題庫</button>
 
-    <div class="section-head"><h2>作答完學員看得到什麼</h2><span>5</span></div>
-    <p class="sub">關掉的項目，在「線上測驗」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。</p>
+    <div class="section-head"><h2>開放哪些測驗</h2><span>2</span></div>
+    <p class="sub">關掉後，學員在「線上測驗」看不到那一份的入口。例如開場只開課前，下課前再打開課後。</p>
+    <div class="toggle-row"><span>課前測驗<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">學員看得到「課前測驗」入口</em></span><span class="sw on" id="qvPre" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <div class="toggle-row"><span>課後測驗<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">學員看得到「課後測驗」入口</em></span><span class="sw on" id="qvPost" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <button class="btn btn-quiet" data-save="course">儲存開放設定</button>
+
+    <div class="section-head"><h2>作答完學員看得到什麼</h2><span>6</span></div>
+    <p class="sub">關掉的項目，在「線上測驗」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。前三名與姓名顯示方式在「成績與回饋」設定。</p>
     <div class="toggle-row"><span>分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前、課後分數與進步多少</em></span><span class="sw on" id="qvScore" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>本堂統計<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">全班平均、及格率、最多人誤會的題目</em></span><span class="sw on" id="qvStats" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>題目詳解<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">正解與解析．關掉就等你上課講完再開</em></span><span class="sw on" id="qvExp" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>課前測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">最後多一題「你覺得自己會拿幾分」（不計分）．上課時可投影出來對照實際平均</em></span><span class="sw" id="qvGuessPre" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>課後測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前課後可以分開決定，例如只在課前問</em></span><span class="sw" id="qvGuessPost" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>允許重做<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關掉時，同一堂的課前、課後各只能做一次</em></span><span class="sw" id="qvRetry" role="switch" aria-checked="false" tabindex="0"></span></div>
-    <div class="toggle-row"><span>前三名<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">在「成績與回饋」公布這一堂的前三名，學員才看得到入口</em></span><button class="qbtn" id="qvTopGo">去公布</button></div>
-    <div class="f"><div class="f-q">榜單上的姓名怎麼顯示</div>
-      <div class="chips" data-one style="margin-top:10px">
-        <span class="chip">全名</span><span class="chip on">陳○宇</span><span class="chip">只顯示姓</span><span class="chip">不顯示</span>
-      </div></div>
-    <p class="hint">分眾統計預設關閉。班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>
 
     
   
@@ -2504,7 +2504,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.3　2026/09/29';
+var APP_VERSION='v10.4　2026/09/29';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4333,7 +4333,7 @@ function applyForms(){
   try{renderFileEdit()}catch(e){}try{renderCourseEdit()}catch(e){}try{galPaintAll()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   var qq=quizOpts();
   [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry],
-   ['#qvGuessPre',qq.guessPre],['#qvGuessPost',qq.guessPost]].forEach(function(p){
+   ['#qvGuessPre',qq.guessPre],['#qvGuessPost',qq.guessPost],['#qvPre',qq.pre],['#qvPost',qq.post]].forEach(function(p){
     var e=$(p[0]);if(e){e.classList.toggle('on',!!p[1]);e.setAttribute('aria-checked',String(!!p[1]));}});
   var nv=$('#nfViews');if(nv){nv.classList.toggle('on',SITE.showViews!==false);nv.setAttribute('aria-checked',String(SITE.showViews!==false));}
   v('#edIG',SITE.contact.ig);v('#edLine',SITE.contact.line);
@@ -5043,9 +5043,6 @@ document.addEventListener('click',async function(e){
 /* ---- 完成頁：回到首頁；後台：去公布前三名 ---- */
 (function(){
   var h=$('#goHome');if(h)h.addEventListener('click',function(){stack=['p-home'];show('p-home',true);});
-  var tg=$('#qvTopGo');if(tg)tg.addEventListener('click',function(){
-    var g=$('#grp-feedback');if(g){g.classList.add('open');renderSessions();setTimeout(function(){g.scrollIntoView({behavior:'smooth',block:'start'})},80);}
-  });
 })();
 
 /* ---- 後台頂端「控制台」 ---- */
@@ -5158,13 +5155,19 @@ async function loadSessBody(code){
       '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">'+
       '<button class="btn" style="margin:0;flex:1;min-width:150px" data-show data-mode="pre"'+(pre.n?'':' disabled')+'>投影課前 →</button>'+
       '<button class="btn" style="margin:0;flex:1;min-width:150px" data-show data-mode="post"'+(post.n?'':' disabled')+'>投影課後 →</button></div>'+
-      '<p class="hint">課前測驗做完投影課前；下課前做完課後測驗再投影課後，最後會多一頁進步幅度。上面的勾選改完記得按全部儲存。</p>';
+      '<p class="hint">課前測驗做完投影課前；下課前做完課後測驗再投影課後，最後會多一頁進步幅度。上面的勾選改完記得按全部儲存。</p>'+
+      '<div class="f" style="border-bottom:0"><div class="f-q">姓名怎麼顯示</div>'+
+      '<div class="f-hint">投影的第一名、學員看到的前三名都用這個設定</div>'+
+      '<div class="chips" style="margin-top:10px">'+['全名','陳○宇','只顯示姓','不顯示'].map(function(x){
+        return '<span class="chip'+(quizOpts().nameMode===x?' on':'')+'" data-namemode="'+x+'">'+x+'</span>';
+      }).join('')+'</div></div>';
     if(code!=='all'){
       var pub=st.top&&st.top.score&&st.top.score.length;
-      h+='<div class="section-head"><h2>前三名</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
+      h+='<div class="section-head"><h2>前三名榜單</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
          '<div class="toggle-row"><span>對學員公布這一堂的前三名<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">'+
          (pub?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　'):'打開後學員在「線上測驗 → 前三名」看得到')+
-         '</em></span><span class="sw'+(pub?' on':'')+'" data-top="'+code+'" role="switch" aria-checked="'+(!!pub)+'" tabindex="0"></span></div>';
+         '</em></span><span class="sw'+(pub?' on':'')+'" data-top="'+code+'" role="switch" aria-checked="'+(!!pub)+'" tabindex="0"></span></div>'+
+         '<p class="hint">改了姓名顯示方式之後，要把這個開關關掉再打開，學員看到的榜單才會更新。分眾統計預設關閉：班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>';
     }
     // 回饋：分數題算平均，選項題算分布，文字題列出來
     var TEXT_LABELS=$$('#fbForm .f').filter(function(f){return f.querySelector('textarea')})
@@ -5817,6 +5820,13 @@ document.addEventListener('click',function(e){
   }
 });
 
+/* ---- 姓名顯示方式（投影與前三名共用） ---- */
+document.addEventListener('click',function(e){
+  var c=e.target.closest('[data-namemode]');if(!c)return;
+  COURSE.quiz=COURSE.quiz||{};COURSE.quiz.nameMode=c.dataset.namemode;
+  $$('[data-namemode]').forEach(function(x){x.classList.toggle('on',x===c)});
+  setDirty(true);
+});
 /* ---- 上課投影：課前、課後分開播 ---- */
 function projOn(k){var P=COURSE.proj||{};return P[k]!==false}
 function projTop(at,mode){
@@ -6197,6 +6207,7 @@ document.addEventListener('click',function(e){
   e.preventDefault();
   if(EDITING){if(t.closest('#tileGrid'))return;var dd=t.dataset.gate;if(dd==='p-run')dd='p-profile';go(dd);return;}
   var gm=t.dataset.gate==='p-profile'?'pre':t.dataset.gate==='p-name'?'post':null;
+  if(gm&&!quizOpts()[gm]){toast('講師還沒開放'+(gm==='pre'?'課前':'課後')+'測驗');return;}
   if(gm&&isDone(gm)&&!quizOpts().retry&&!EDITING){
     toast('這一堂的'+(gm==='pre'?'課前':'課後')+'測驗你已經做過了');return;
   }
@@ -6227,7 +6238,8 @@ function quizOpts(){
   return {score:q.score!==false, stats:q.stats!==false,
           exp:!(q.exp===false||q.exp==='later'), retry:!!q.retry,
           guessPre:(q.guessPre!=null?!!q.guessPre:!!q.guess),      // 舊設定（單一開關）自動沿用
-          guessPost:(q.guessPost!=null?!!q.guessPost:!!q.guess)};
+          guessPost:(q.guessPost!=null?!!q.guessPost:!!q.guess),
+          pre:q.pre!==false, post:q.post!==false, nameMode:q.nameMode||'陳○宇'};
 }
 function applyQuizVis(){
   var q=quizOpts();
@@ -6236,6 +6248,8 @@ function applyQuizVis(){
   set('#rowExp',q.exp);set('#goExp',q.exp);set('#codeExp',q.exp);
   set('#rowTop',TOP_PUB);set('#goTop',TOP_PUB);
   set('#qagain',q.retry);
+  $$('#p-quiz [data-gate="p-profile"]').forEach(function(e){e.style.display=(q.pre||EDITING)?'':'none'});
+  $$('#p-quiz [data-gate="p-name"]').forEach(function(e){e.style.display=(q.post||EDITING)?'':'none'});
   $$('[data-qv="score"]').forEach(function(e){e.style.display=q.score?'':'none'});
   var st=$('#scoreT'),ss=$('#scoreS');
   if(st&&st.dataset.full){st.textContent=q.score?st.dataset.full:'作答完成';}
@@ -6393,8 +6407,7 @@ async function loadTop(){
   }catch(e){box.innerHTML='<div class="empty">讀取失敗：'+(e.code||e.message)+'</div>'}
 }
 function maskName(n){
-  var mode=($$('#grp-quiz .chip.on').map(function(c){return c.textContent.trim()})
-             .filter(function(t){return ['全名','陳○宇','只顯示姓','不顯示'].indexOf(t)>=0})[0])||'陳○宇';
+  var mode=quizOpts().nameMode;
   n=String(n||'').trim();
   if(mode==='全名')return n;
   if(mode==='只顯示姓')return n.charAt(0)+'同學';
@@ -6435,7 +6448,7 @@ $$('.sw').forEach(function(s){
     var NF={nfWhisper:'onWhisper',nfInvite:'onInvite',nfFeedback:'onFeedback',
             nfContent:'showContent',nfAck:'ack'};
     if(NF[s.id])SITE.notify[NF[s.id]]=on;
-    var QV={qvScore:'score',qvStats:'stats',qvExp:'exp',qvRetry:'retry',qvGuessPre:'guessPre',qvGuessPost:'guessPost'};
+    var QV={qvScore:'score',qvStats:'stats',qvExp:'exp',qvRetry:'retry',qvGuessPre:'guessPre',qvGuessPost:'guessPost',qvPre:'pre',qvPost:'post'};
     if(QV[s.id]){COURSE.quiz=COURSE.quiz||{};COURSE.quiz[QV[s.id]]=on;try{applyQuizVis()}catch(e){}}
     if(s.id==='nfViews'){SITE.showViews=on;try{refreshArts()}catch(e){}}
     if(s.id==='wantReply'){
