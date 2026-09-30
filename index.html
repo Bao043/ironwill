@@ -665,7 +665,8 @@ body.dirty #z-pro{padding-bottom:80px}
 .am-vid .play::after{border-left-color:#fff!important}
 .am-vid.playing .play{display:none}
 .am-vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0d0f;opacity:0;transition:opacity .35s}
-.am-vid iframe.ready{opacity:1}
+.am-vid iframe.ready,.am-vid.am-drive iframe{opacity:1}
+.am-vid.am-drive{cursor:default}
 .am-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
 @media (min-width:760px){.am-pick{grid-template-columns:repeat(6,1fr)}}
 .am-pick .gpk{position:relative;aspect-ratio:1;background:var(--surface) center/cover no-repeat;cursor:pointer;border:2px solid transparent;opacity:.45}
@@ -2448,7 +2449,7 @@ window.addEventListener('fb-ready',function(){
   setConn('','連線中…');
   loadHits();
   // 所有人（含學員）都讀一次完整資料，讀完才淡入
-  loadAll().then(function(){bootDone();if(!STUDENT_ONLY)watchSession();},bootDone);
+  loadAll().then(function(){bootDone();watchCourse();if(!STUDENT_ONLY)watchSession();},function(){bootDone();watchCourse();});
   F.onAuthStateChanged(F.auth,function(user){
     AUTH_USER=user||null;
     var firstTime=!AUTH_READY;
@@ -2529,8 +2530,24 @@ window.addEventListener('fb-ready',function(){
   try{OPERATOR=localStorage.getItem('operator')||null}catch(e){}
 });
 
+/* ---- 課程設定即時同步：講師儲存後，學員不用重開就會更新 ---- */
+var unsubC=null;
+function watchCourse(){
+  var F=window.fb;if(!F||unsubC)return;
+  unsubC=F.onSnapshot(F.doc(F.db,'courses',F.COURSE),function(d){
+    if(!d.exists())return;
+    if(AUTH_USER&&DIRTY)return;           // 講師正在改還沒存：不要蓋掉
+    var v=d.data();
+    if(v.quiz)COURSE.quiz=v.quiz;
+    if(v.proj)COURSE.proj=v.proj;
+    if(v.passLine)COURSE.pass=v.passLine;
+    if(v.sessions&&v.sessions.length)SESSIONS=v.sessions;
+    if(v.code&&String(v.code)!==CODE){CODE=String(v.code);try{showCode()}catch(e){}}
+    try{applyQuizVis();checkTopPublished();}catch(e){}
+  },function(e){console.warn('課程設定同步失敗',e)});
+}
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.6　2026/09/29';
+var APP_VERSION='v10.7　2026/09/30';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -5488,7 +5505,8 @@ function mediaKind(f){
 function artMediaHTML(m,idx){
   var cap=m.cap?'<figcaption>'+String(m.cap).replace(/</g,'&lt;')+'</figcaption>':'';
   if(m.type==='img')return '<figure class="art-media"><img loading="lazy" alt="" data-amimg="'+idx+'" src="'+driveImg(m.id,1600)+'">'+cap+'</figure>';
-  var th=m.type==='yt'?ytThumb(m.id):driveImg(m.id,1200);
+  if(m.type==='video')return '<figure class="art-media"><div class="am-vid am-drive"><iframe loading="lazy" title="影片" src="https://drive.google.com/file/d/'+m.id+'/preview" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe></div>'+cap+'</figure>';
+  var th=ytThumb(m.id);
   return '<figure class="art-media"><div class="am-vid" data-amvid="'+idx+'" style="background-image:url(\''+th+'\')"><span class="play"></span></div>'+cap+'</figure>';
 }
 function artBodyHTML(a){
