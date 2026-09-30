@@ -656,6 +656,32 @@ body.dirty #z-pro{padding-bottom:80px}
 .guess-grid button.on{border-color:var(--signal);color:var(--signal);background:var(--signal-soft)}
 @media (min-width:700px){.guess-grid{grid-template-columns:repeat(7,1fr)}.guess-now{font-size:64px}}
 
+/* 文章裡的照片與影片 */
+.art-media{margin:6px 0 24px}
+.art-media img{display:block;width:100%;height:auto;max-height:80vh;object-fit:contain;background:var(--surface);cursor:zoom-in}
+.art-media figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.6}
+.am-vid{position:relative;aspect-ratio:16/9;background:#0b0d0f center/cover no-repeat;cursor:pointer;overflow:hidden}
+.am-vid .play{position:absolute;inset:0;margin:auto;width:58px;height:58px;border:0;background:rgba(12,14,16,.62)}
+.am-vid .play::after{border-left-color:#fff!important}
+.am-vid.playing .play{display:none}
+.am-vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0d0f;opacity:0;transition:opacity .35s}
+.am-vid iframe.ready{opacity:1}
+.am-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+@media (min-width:760px){.am-pick{grid-template-columns:repeat(6,1fr)}}
+.am-pick .gpk{position:relative;aspect-ratio:1;background:var(--surface) center/cover no-repeat;cursor:pointer;border:2px solid transparent;opacity:.45}
+.am-pick .gpk.on{opacity:1;border-color:var(--signal)}
+.am-pick .gpk b{position:absolute;top:4px;right:4px;width:20px;height:20px;background:var(--signal);color:#fff;font:600 12px/20px var(--mono);text-align:center;display:none}
+.am-pick .gpk.on b{display:block}
+.am-pick .gmsg{grid-column:1/-1;font-size:12.5px;color:var(--muted)}
+.am-tag{position:absolute;left:4px;bottom:4px;font-style:normal;font-size:10px;background:rgba(0,0,0,.7);color:#fff;padding:1px 5px}
+.am-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-soft)}
+.am-th{position:relative;width:64px;height:64px;flex:none;background:var(--surface) center/cover no-repeat}
+.am-b{flex:1;min-width:0}
+.am-b .f-in{margin-top:0;font-size:14px}
+.am-sel{margin-top:6px;width:100%;background:var(--paper);color:var(--ink);border:1px solid var(--line);padding:7px 8px;font-size:13px}
+.am-btn{display:flex;flex-direction:column;gap:4px;flex:none}
+.am-btn button{width:30px;height:26px;border:1px solid var(--line);background:none;color:var(--ink-soft);cursor:pointer;font-size:11px}
+
 /* 上課投影 */
 .reveal{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;
   background:radial-gradient(120% 90% at 50% 38%,var(--surface) 0,var(--paper) 62%);
@@ -2457,7 +2483,7 @@ window.addEventListener('fb-ready',function(){
         }
       }
       loadAll().then(function(){ if(!OPERATOR) showOpPicker(); });
-      loadWhispers();loadInvites();loadLog();refreshAttempts();showCode();watchSession();renderSessions();
+      loadHits();loadWhispers();loadInvites();loadLog();refreshAttempts();showCode();watchSession();renderSessions();
     }else{
       setConn('','已連線　未登入');
       $('#signOut').style.display='none';
@@ -2504,7 +2530,7 @@ window.addEventListener('fb-ready',function(){
 });
 
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.4　2026/09/29';
+var APP_VERSION='v10.5　2026/09/29';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3006,7 +3032,7 @@ function openArt(id){
   countHit('art_'+a.id);
   $('#artMeta').textContent=a.c+'　'+a.d+(showV()?'　👁 '+artViews(a).toLocaleString():'');
   $('#artTitle').textContent=a.t;
-  $('#artBody').innerHTML=a.b.map(function(p){return '<p>'+p+'</p>'}).join('');
+  CUR_ART=a;$('#artBody').innerHTML=artBodyHTML(a);
   var more=$('#artMore');more.innerHTML='';
   artsOf(a.cat).forEach(function(o){
     if(o.id===a.id)return;
@@ -4463,7 +4489,7 @@ async function saveArticles(){
   old.forEach(function(d){if(!keep[d.id])jobs.push(F.deleteDoc(F.doc(F.db,'articles',d.id)))});
   ARTICLES.forEach(function(a,ai){
     jobs.push(F.setDoc(F.doc(F.db,'articles',a.id),
-      {cat:a.cat,title:a.t,sub:a.c,body:a.b,date:a.d,order:ai,published:true}));
+      {cat:a.cat,title:a.t,sub:a.c,body:a.b,date:a.d,order:ai,published:true,media:a.media||[],mediaFolder:a.mediaFolder||''}));
   });
   await Promise.all(jobs);
 }
@@ -4563,7 +4589,7 @@ function applyPayload(p){
       ARTICLES.length=0;
       p.articles.forEach(function(v){
         ARTICLES.push({id:v.id,cat:v.cat||'disaster',t:v.title||'',c:v.sub||'',
-                       v:0,d:v.date||'',b:v.body||[]});
+                       v:0,d:v.date||'',b:v.body||[],media:v.media||[],mediaFolder:v.mediaFolder||''});
       });
     }
   }catch(e){console.warn('套用資料失敗',e)}
@@ -4652,8 +4678,16 @@ function rulesMsg(what,e){
 }
 function loadHits(){
   var F=window.fb;if(!F)return;
-  if(unsubH)unsubH();
-  unsubH=F.onSnapshot(F.doc(F.db,'questionStats',F.COURSE+'__views'),
+  if(unsubH){unsubH();unsubH=null;}
+  var ref=F.doc(F.db,'questionStats',F.COURSE+'__views');
+  if(!F.auth.currentUser){      // 學員：只讀一次，不要即時監聽（人多時會大量消耗讀取額度）
+    F.getDoc(ref).then(function(d){
+      HITS=d.exists()?d.data():{};
+      try{buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');}catch(e){}
+    }).catch(function(){});
+    return;
+  }
+  unsubH=F.onSnapshot(ref,
     function(d){
       HITS=d.exists()?d.data():{};
       renderTraffic();
@@ -5442,6 +5476,122 @@ function refreshArts(){
   renderArtRank();
   var t=$('#artTag');if(t)t.textContent=ARTICLES.length+' 篇';
 }
+/* ---- 文章裡的照片與影片 ---- */
+var ART_FOLDER={};
+var VIDEO_EXT=/\.(mp4|mov|m4v|webm|avi|mkv|3gp)$/i, IMG_EXT=/\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i;
+function mediaKind(f){
+  var m=String(f.mimeType||f.mime||'');
+  if(m.indexOf('video/')===0||VIDEO_EXT.test(f.name||''))return 'video';
+  if(m.indexOf('image/')===0||IMG_EXT.test(f.name||''))return 'img';
+  return '';
+}
+function artMediaHTML(m,idx){
+  var cap=m.cap?'<figcaption>'+String(m.cap).replace(/</g,'&lt;')+'</figcaption>':'';
+  if(m.type==='img')return '<figure class="art-media"><img loading="lazy" alt="" data-amimg="'+idx+'" src="'+driveImg(m.id,1600)+'">'+cap+'</figure>';
+  var th=m.type==='yt'?ytThumb(m.id):driveImg(m.id,1200);
+  return '<figure class="art-media"><div class="am-vid" data-amvid="'+idx+'" style="background-image:url(\''+th+'\')"><span class="play"></span></div>'+cap+'</figure>';
+}
+function artBodyHTML(a){
+  var ps=a.b||[],media=a.media||[],out='';
+  var at=function(m){var n=+m.at;return (m.at==null||n<0||n>ps.length)?ps.length:n};
+  for(var k=0;k<=ps.length;k++){
+    media.forEach(function(m,idx){if(at(m)===k)out+=artMediaHTML(m,idx)});
+    if(k<ps.length)out+='<p>'+ps[k]+'</p>';
+  }
+  return out;
+}
+var CUR_ART=null;
+document.addEventListener('click',function(e){
+  if(EDITING||!CUR_ART)return;
+  var im=e.target.closest('[data-amimg]');
+  if(im){
+    var imgs=(CUR_ART.media||[]).filter(function(m){return m.type==='img'});
+    var me=CUR_ART.media[+im.dataset.amimg];
+    openLbox(imgs.map(function(m){return m.id}),imgs.indexOf(me),'');return;
+  }
+  var v=e.target.closest('[data-amvid]');
+  if(v&&!v.querySelector('iframe')){
+    var m=CUR_ART.media[+v.dataset.amvid];if(!m)return;
+    var fr=document.createElement('iframe');
+    fr.src=m.type==='yt'?'https://www.youtube-nocookie.com/embed/'+m.id+'?autoplay=1&rel=0&playsinline=1'
+                        :'https://drive.google.com/file/d/'+m.id+'/preview';
+    fr.allowFullscreen=true;fr.setAttribute('allow','autoplay;encrypted-media;picture-in-picture;fullscreen');
+    fr.addEventListener('load',function(){fr.classList.add('ready')});
+    v.appendChild(fr);v.classList.add('playing');countHit('video');
+  }
+});
+function artMediaUI(el,a){
+  a.media=a.media||[];
+  var pick=el.querySelector('[data-ampick]'),list=el.querySelector('[data-amlist]');
+  function thumb(m){return m.type==='yt'?ytThumb(m.id):driveImg(m.id,300)}
+  function paintPick(){
+    var files=ART_FOLDER[a.id];
+    if(!files){pick.innerHTML='';return;}
+    if(!files.length){pick.innerHTML='<div class="gmsg">這個資料夾裡沒有照片或影片</div>';return;}
+    pick.innerHTML=files.map(function(f){
+      var on=a.media.some(function(m){return m.id===f.id});
+      return '<div class="gpk'+(on?' on':'')+'" data-amid="'+f.id+'" data-amk="'+f.k+'" title="'+String(f.name).replace(/"/g,'')+
+        '" style="background-image:url(\''+driveImg(f.id,300)+'\')">'+(f.k==='video'?'<i class="am-tag">影片</i>':'')+'<b>✓</b></div>';
+    }).join('')+'<div class="gmsg">點一下加入文章，再點一下拿掉</div>';
+  }
+  function paintList(){
+    var n=(a.b||[]).length;
+    if(!a.media.length){list.innerHTML='<div class="hint">還沒有照片或影片</div>';return;}
+    list.innerHTML=a.media.map(function(m,i){
+      var at=(m.at==null||+m.at<0||+m.at>n)?n:+m.at,opts='';
+      for(var k=0;k<=n;k++)opts+='<option value="'+k+'"'+(k===at?' selected':'')+'>'+(k===0?'文章最上面':k===n?'文章最後面':'第 '+k+' 段後面')+'</option>';
+      return '<div class="am-row" data-ami="'+i+'"><div class="am-th" style="background-image:url(\''+thumb(m)+'\')">'+
+        (m.type!=='img'?'<i class="am-tag">'+(m.type==='yt'?'YT':'影片')+'</i>':'')+'</div>'+
+        '<div class="am-b"><input class="f-in" data-amcap value="'+String(m.cap||'').replace(/"/g,'&quot;')+'" placeholder="說明文字（可留空）">'+
+        '<select class="am-sel" data-amat>'+opts+'</select></div>'+
+        '<div class="am-btn"><button data-amup>↑</button><button data-amdn>↓</button><button data-amdel>×</button></div></div>';
+    }).join('');
+  }
+  el.addEventListener('click',async function(e){
+    var t=e.target;
+    if(t.closest('[data-amread]')){
+      var url=(el.querySelector('[data-amf]').value||'').trim();
+      if(!url){toast('先貼資料夾連結');return;}
+      var btn=t.closest('[data-amread]'),old=btn.textContent;btn.textContent='讀取中…';
+      try{
+        var j=await mailAdmin({action:'listFolder',folder:url,kind:'all'});
+        ART_FOLDER[a.id]=(j.files||[]).map(function(f){return {id:f.id,name:f.name,k:mediaKind(f)}}).filter(function(f){return f.k});
+        a.mediaFolder=url;setDirty(true);paintPick();
+        toast('讀到 '+ART_FOLDER[a.id].length+' 個照片／影片');
+      }catch(err){toast(err.message.slice(0,40))}
+      btn.textContent=old;return;
+    }
+    var g=t.closest('[data-amid]');
+    if(g){
+      var id=g.dataset.amid,at=a.media.findIndex(function(m){return m.id===id});
+      if(at>=0)a.media.splice(at,1);else a.media.push({type:g.dataset.amk,id:id,cap:'',at:-1});
+      setDirty(true);paintPick();paintList();refreshArts();return;
+    }
+    if(t.closest('[data-amytadd]')){
+      var inp=el.querySelector('[data-amyt]'),yid=ytId(inp.value);
+      if(!yid){toast('看不出是 YouTube 網址');return;}
+      a.media.push({type:'yt',id:yid,cap:'',at:-1});inp.value='';setDirty(true);paintList();return;
+    }
+    var row=t.closest('[data-ami]');if(!row)return;
+    var i=+row.dataset.ami,L=a.media;
+    if(t.closest('[data-amup]')&&i>0)L.splice(i-1,0,L.splice(i,1)[0]);
+    else if(t.closest('[data-amdn]')&&i<L.length-1)L.splice(i+1,0,L.splice(i,1)[0]);
+    else if(t.closest('[data-amdel]')){if(!confirm('把這個從文章拿掉？（雲端硬碟裡的檔案不會被刪）'))return;L.splice(i,1);}
+    else return;
+    setDirty(true);paintList();paintPick();
+  });
+  el.addEventListener('input',function(e){
+    var row=e.target.closest('[data-ami]');if(!row)return;
+    if(e.target.matches('[data-amcap]')){a.media[+row.dataset.ami].cap=e.target.value;setDirty(true);}
+  });
+  el.addEventListener('change',function(e){
+    var row=e.target.closest('[data-ami]');if(!row)return;
+    if(e.target.matches('[data-amat]')){var n=(a.b||[]).length,v=+e.target.value;a.media[+row.dataset.ami].at=(v>=n?-1:v);setDirty(true);}
+    if(e.target.matches('[data-ak="b"]'))paintList();
+  });
+  var ta=el.querySelector('[data-ak="b"]');if(ta)ta.addEventListener('blur',paintList);
+  paintPick();paintList();
+}
 function renderArtEdit(openFirst){
   var box=$('#artEdit');if(!box)return;box.innerHTML='';
   if(!ARTICLES.length){box.innerHTML='<div class="empty">還沒有文章，按上面新增一篇。</div>';return;}
@@ -5461,6 +5611,12 @@ function renderArtEdit(openFirst){
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">內文</div>'+
       '<div class="f-hint">空一行代表分段</div>'+
       '<textarea class="f-ta" data-ak="b" style="min-height:200px" placeholder="第一段…\n\n第二段…">'+(a.b||[]).join('\n\n')+'</textarea></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">照片與影片</div>'+
+      '<div class="f-hint">貼雲端硬碟資料夾連結按讀取，點選要放進文章的照片或影片（資料夾要設成知道連結的人可檢視）；也可以直接貼 YouTube 網址。</div>'+
+      '<div style="display:flex;gap:8px;margin-top:8px"><input class="f-in" data-amf value="'+(a.mediaFolder||'').replace(/"/g,'&quot;')+'" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:0;margin-top:0"><button class="qbtn" data-amread>讀取</button></div>'+
+      '<div class="am-pick" data-ampick></div>'+
+      '<div style="display:flex;gap:8px;margin-top:10px"><input class="f-in" data-amyt placeholder="YouTube 網址" style="flex:1;min-width:0;margin-top:0"><button class="qbtn" data-amytadd>加入</button></div>'+
+      '<div data-amlist style="margin-top:6px"></div></div>'+
       '<div style="display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap">'+
       '<span class="startog" data-m="up">↑ 上移</span><span class="startog" data-m="dn">↓ 下移</span>'+
       '<span class="startog" data-del>刪除這篇</span></div></div>';
@@ -5484,8 +5640,10 @@ function renderArtEdit(openFirst){
       });
     });
     el.querySelector('[data-del]').addEventListener('click',function(){
+      if(!confirm('刪除「'+(a.t||'這篇文章')+'」？'))return;
       ARTICLES.splice(i,1);renderArtEdit();refreshArts();toast('已刪除');
     });
+    artMediaUI(el,a);
     box.appendChild(el);
   });
 }
