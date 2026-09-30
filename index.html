@@ -1630,7 +1630,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <div class="row" data-gate="p-name"><div class="row-n">後</div><div class="row-b"><div class="row-t">課後測驗</div><div class="row-d" id="postMeta">約 2 分鐘</div></div><div class="row-go">→</div></div>
       <div class="row" id="rowTop" data-go="p-top3"><div class="row-n">榜</div><div class="row-b"><div class="row-t">前三名</div><div class="row-d">成績榜與進步榜，課堂表揚用</div></div><div class="row-go">→</div></div>
       <div class="row" id="rowStats" data-go="p-stats"><div class="row-n">計</div><div class="row-b"><div class="row-t">本堂統計</div><div class="row-d">跟全班比、看哪幾題最多人誤會</div></div><div class="row-go">→</div></div>
-      <div class="row" id="rowExp" data-go="p-explain"><div class="row-n">解</div><div class="row-b"><div class="row-t">題目詳解</div><div class="row-d">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
+      <div class="row" id="rowExp" data-go="p-explain"><div class="row-n">績</div><div class="row-b"><div class="row-t">我的成績</div><div class="row-d" id="rowExpD">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
     </div>
     <p class="note">題目、正解、詳解都在同一個地方，所以作答完立刻就有統計，不用等講師另外整理。</p>
   </section>
@@ -1721,7 +1721,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       </div>
       <button class="btn" id="goStats" data-go="p-stats">看本堂統計</button>
       <button class="btn btn-quiet" id="goTop" data-go="p-top3">看前三名</button>
-      <button class="btn btn-quiet" id="goExp" data-go="p-explain">看題目詳解</button>
+      <button class="btn btn-quiet" id="goExp" data-go="p-explain">看我錯哪幾題</button>
       <button class="btn btn-quiet" id="qagain">重做一次</button>
       <button class="btn btn-quiet" id="goHome">回到首頁</button>
       <p class="note" data-qv="score">上面的分數只有你自己看得到，不會公開。</p>
@@ -2087,11 +2087,17 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="toggle-row"><span>課後測驗<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">學員看得到「課後測驗」入口</em></span><span class="sw on" id="qvPost" role="switch" aria-checked="true" tabindex="0"></span></div>
     <button class="btn btn-quiet" data-save="course">儲存開放設定</button>
 
-    <div class="section-head"><h2>作答完學員看得到什麼</h2><span>6</span></div>
+    <div class="section-head"><h2>作答結果開放到哪裡</h2><span>課前、課後共用</span></div>
+    <p class="sub">上課中可以先不公布，下課再往右調。學員不用重開 App，在「線上測驗 → 我的成績」就能回頭看自己的課前、課後結果。</p>
+    <div class="chips" data-one id="qvLevel" style="margin-top:12px">
+      <span class="chip" data-lv="0">先不公布</span><span class="chip" data-lv="1">只給分數</span>
+      <span class="chip" data-lv="2">分數＋對錯</span><span class="chip" data-lv="3">分數＋對錯＋詳解</span></div>
+    <div class="hint" id="qvLevelNote" style="margin-top:10px"></div>
+    <button class="btn btn-quiet" data-save="course">儲存開放設定</button>
+
+    <div class="section-head"><h2>作答完學員看得到什麼</h2><span>4</span></div>
     <p class="sub">關掉的項目，在「線上測驗」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。前三名與姓名顯示方式在「成績與回饋」設定。</p>
-    <div class="toggle-row"><span>分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前、課後分數與進步多少</em></span><span class="sw on" id="qvScore" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>本堂統計<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">全班平均、及格率、最多人誤會的題目</em></span><span class="sw on" id="qvStats" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>題目詳解<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">正解與解析．關掉就等你上課講完再開</em></span><span class="sw on" id="qvExp" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>課前測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">最後多一題「你覺得自己會拿幾分」（不計分）．上課時可投影出來對照實際平均</em></span><span class="sw" id="qvGuessPre" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>課後測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前課後可以分開決定，例如只在課前問</em></span><span class="sw" id="qvGuessPost" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>允許重做<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關掉時，同一堂的課前、課後各只能做一次</em></span><span class="sw" id="qvRetry" role="switch" aria-checked="false" tabindex="0"></span></div>
@@ -2547,7 +2553,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.7　2026/09/30';
+var APP_VERSION='v10.8　2026/09/30';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2715,7 +2721,12 @@ function go(id){
   if(id==='p-name'||id==='p-profile')prefillName();
 
   if(id==='p-quiz'||id==='p-run')checkTopPublished();
-  if(id==='p-explain'&&!quizOpts().exp&&!EDITING){toast('講師還沒開放題目詳解');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
+  if(id==='p-explain'&&!EDITING){
+    var qo=quizOpts(),hasR=!!(myRes('pre')||myRes('post'));
+    if(qo.level===0||(!hasR&&!qo.exp)){toast(hasR?'講師還沒公布成績，下課後就能看':'講師還沒開放題目詳解');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
+    if(stack[stack.length-2]!=='p-run')REV_MODE=null;
+    renderExplain();
+  }
   if(id==='p-stats'&&!quizOpts().stats&&!EDITING){toast('講師還沒開放本堂統計');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
   if(HITMAP[id])countHit(HITMAP[id]);
   if(id==='p-stats')loadClassStats();
@@ -2952,6 +2963,8 @@ $('#qnext').addEventListener('click',function(){
     $('#sUp').innerHTML=(mine.pre!=null&&mine.post!=null)?((mine.post-mine.pre>=0?'+':'')+(mine.post-mine.pre)):'—';
     saveAttempt(pct);
     if(!PREVIEW&&!EDITING){try{localStorage.setItem(doneKey(QMODE),'1')}catch(e){}}
+    try{localStorage.setItem(resKey(QMODE),JSON.stringify({score:pct,right:right,n:QS.length,answers:answers.slice(),set:ACTIVE[QMODE],at:Date.now()}))}catch(e){}
+    REV_MODE=QMODE;
     var st0=$('#scoreT'),ss0=$('#scoreS');
     if(st0)st0.dataset.full=st0.textContent;if(ss0)ss0.dataset.full=ss0.textContent;
     stack=['p-home','p-quiz','p-run'];     // 完成後按返回＝回到線上測驗，不會回到題目
@@ -2994,25 +3007,47 @@ function askGuess(pct){
     $('#qnext').click();     // 回到原本的完成流程
   };
 }
+function resKey(mode){return 'res:'+SID()+':'+mode}
+function myRes(mode){try{return JSON.parse(localStorage.getItem(resKey(mode))||'null')}catch(e){return null}}
+var REV_MODE=null;
 function renderExplain(){
-  var box=$('#explainList');box.innerHTML='';
-  QS.forEach(function(q,i){
-    var mine=answers[i], ok=mine===q.a;
-    var d=document.createElement('div');d.className='ans'+(i===0?' open':'');
-    var mineTxt=mine==null?'未作答':('ABCD'[mine]+'　'+q.o[mine]);
-    d.innerHTML='<div class="ans-h"><div class="ans-q">Q'+(i+1)+'　'+q.q+(q.star?'<span class="star">★</span>':'')+
-      '</div><div class="ans-s '+(mine==null?'':(ok?'yes':'no'))+'">'+(mine==null?'—':(ok?'答對':'答錯'))+'</div></div>'+
-      '<div class="ans-b">'+
-      (ok?'':'<div class="ans-line"><b>你的答案</b><span>'+mineTxt+'</span></div>')+
-      '<div class="ans-line"><b>正確答案</b><span>'+'ABCD'[q.a]+'　'+q.o[q.a]+'</span></div>'+
-      (qImg(q.img,1000)?'<img class="ans-img" src="'+qImg(q.img,1000)+'" alt="" data-qimg>':'')+
-      '<div class="ans-line"><b>解析</b><span>'+q.ex+'</span></div>'+
-      '<div class="ans-line"><b>重點</b><span>'+q.k+'</span></div></div>';
+  var box=$('#explainList');if(!box)return;
+  var q=quizOpts(),rp=myRes('pre'),rq=myRes('post');
+  var mode=REV_MODE||(rq?'post':rp?'pre':'post'),res=mode==='pre'?rp:rq;
+  var pass=(COURSE&&COURSE.pass)||60;
+  var items=(res&&SETS[res.set]?SETS[res.set].items:modeItems(mode))||[];
+  var h='';
+  if(rp&&rq)h+='<div class="seg" id="revSeg" style="margin-bottom:14px"><button data-rm="pre"'+(mode==='pre'?' class="on"':'')+'>課前測驗</button>'+
+                '<button data-rm="post"'+(mode==='post'?' class="on"':'')+'>課後測驗</button></div>';
+  if(res){
+    if(q.level===0){box.innerHTML=h+'<div class="empty">講師還沒公布成績，下課後就能在這裡看。</div>';bindSeg();return;}
+    h+='<div class="stats" style="margin-bottom:6px"><div class="stat"><div class="stat-n">'+res.score+'<small>分</small></div><div class="stat-l">'+(mode==='pre'?'課前':'課後')+'分數</div></div>'+
+       '<div class="stat"><div class="stat-n">'+res.right+'<small>/'+res.n+'</small></div><div class="stat-l">答對題數</div></div>'+
+       '<div class="stat"><div class="stat-n" style="color:'+(res.score>=pass?'var(--ok)':'var(--signal)')+'">'+(res.score>=pass?'及格':'未及格')+'</div><div class="stat-l">及格線 '+pass+'</div></div></div>';
+    if(q.level===1){box.innerHTML=h+'<p class="hint">講師目前只公布分數，錯哪幾題稍後才會開放。</p>';bindSeg();return;}
+  }else if(!q.exp){box.innerHTML=h+'<div class="empty">你還沒做這份測驗。</div>';bindSeg();return;}
+  if(res&&!q.exp)h+='<p class="hint" style="margin-bottom:6px">講師目前開放到「對錯」。正解與解析稍後才會開放，先想想錯的那幾題為什麼錯。</p>';
+  box.innerHTML=h;
+  items.forEach(function(it,i){
+    var mine=res?res.answers[i]:null, ok=mine===it.a;
+    var d=document.createElement('div');d.className='ans'+((res&&!ok)||(!res&&i===0)?' open':'');
+    var mineTxt=mine==null?'未作答':('ABCD'[mine]+'　'+(it.o[mine]||''));
+    var body='';
+    if(res)body+='<div class="ans-line"><b>你的答案</b><span>'+mineTxt+'</span></div>';
+    if(q.exp)body+='<div class="ans-line"><b>正確答案</b><span>'+'ABCD'[it.a]+'　'+it.o[it.a]+'</span></div>'+
+      (qImg(it.img,1000)?'<img class="ans-img" src="'+qImg(it.img,1000)+'" alt="" data-qimg>':'')+
+      (it.ex?'<div class="ans-line"><b>解析</b><span>'+it.ex+'</span></div>':'')+
+      (it.k?'<div class="ans-line"><b>重點</b><span>'+it.k+'</span></div>':'');
+    d.innerHTML='<div class="ans-h"><div class="ans-q">Q'+(i+1)+'　'+it.q+(it.star?'<span class="star">★</span>':'')+
+      '</div><div class="ans-s '+(res?(ok?'yes':'no'):'')+'">'+(res?(mine==null?'未答':(ok?'答對':'答錯')):'')+'</div></div>'+
+      '<div class="ans-b">'+body+'</div>';
     d.querySelector('.ans-h').addEventListener('click',function(){d.classList.toggle('open')});
     box.appendChild(d);
   });
+  bindSeg();
+  function bindSeg(){var sg=$('#revSeg');if(sg)sg.onclick=function(e){var b=e.target.closest('[data-rm]');if(!b)return;REV_MODE=b.dataset.rm;renderExplain();};}
 }
-renderQ();renderExplain();
+renderQ();
 
 /* ---- articles ---- */
 var ARTICLES=[
@@ -4375,6 +4410,7 @@ function applyForms(){
   v('#edDrive',SITE.drive);v('#edRuby',SITE.ruby||'');v('#edFilesFolder',SITE.files.folder||'');
   try{renderFileEdit()}catch(e){}try{renderCourseEdit()}catch(e){}try{galPaintAll()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   var qq=quizOpts();
+  try{paintLevel()}catch(e){}
   [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry],
    ['#qvGuessPre',qq.guessPre],['#qvGuessPost',qq.guessPost],['#qvPre',qq.pre],['#qvPost',qq.post]].forEach(function(p){
     var e=$(p[0]);if(e){e.classList.toggle('on',!!p[1]);e.setAttribute('aria-checked',String(!!p[1]));}});
@@ -6009,6 +6045,20 @@ document.addEventListener('click',function(e){
   }
 });
 
+/* ---- 作答結果開放到哪裡 ---- */
+var LV_NOTE=['學員交卷後只看到「已送出」，看不到分數和對錯。','學員看得到自己的課前、課後分數，看不到錯哪幾題。',
+  '學員看得到分數和自己每一題的對錯，但看不到正確答案和解析。','全部公開：分數、每題對錯、正確答案、解析與重點。'];
+function paintLevel(){
+  var lv=quizOpts().level;
+  $$('#qvLevel [data-lv]').forEach(function(c){c.classList.toggle('on',+c.dataset.lv===lv)});
+  var n=$('#qvLevelNote');if(n)n.textContent=LV_NOTE[lv]||'';
+}
+document.addEventListener('click',function(e){
+  var c=e.target.closest('#qvLevel [data-lv]');if(!c)return;
+  var lv=+c.dataset.lv;COURSE.quiz=COURSE.quiz||{};
+  COURSE.quiz.level=lv;COURSE.quiz.score=lv>=1;COURSE.quiz.exp=lv>=3;
+  setDirty(true);setTimeout(paintLevel,0);
+});
 /* ---- 姓名顯示方式（投影與前三名共用） ---- */
 document.addEventListener('click',function(e){
   var c=e.target.closest('[data-namemode]');if(!c)return;
@@ -6424,8 +6474,8 @@ $('#codeOk').addEventListener('click',function(){
 var TOP_PUB=false;
 function quizOpts(){
   var q=(COURSE&&COURSE.quiz)||{};
-  return {score:q.score!==false, stats:q.stats!==false,
-          exp:!(q.exp===false||q.exp==='later'), retry:!!q.retry,
+  var lv=q.level!=null?+q.level:((q.exp===false||q.exp==='later')?(q.score===false?0:1):(q.score===false?0:3));  // 舊設定自動換算
+  return {level:lv, score:lv>=1, marks:lv>=2, exp:lv>=3, stats:q.stats!==false, retry:!!q.retry,
           guessPre:(q.guessPre!=null?!!q.guessPre:!!q.guess),      // 舊設定（單一開關）自動沿用
           guessPost:(q.guessPost!=null?!!q.guessPost:!!q.guess),
           pre:q.pre!==false, post:q.post!==false, nameMode:q.nameMode||'陳○宇'};
@@ -6434,7 +6484,21 @@ function applyQuizVis(){
   var q=quizOpts();
   var set=function(id,on){var e=$(id);if(e)e.style.display=on?'':'none'};
   set('#rowStats',q.stats);set('#goStats',q.stats);
-  set('#rowExp',q.exp);set('#goExp',q.exp);set('#codeExp',q.exp);
+  var rp=myRes('pre'),rq=myRes('post'),has=!!(rp||rq);
+  set('#rowExp',has||q.exp||EDITING);set('#goExp',q.marks);set('#codeExp',q.exp);
+  var rd=$('#rowExpD');
+  if(rd){
+    var sc=[rp?'課前 '+rp.score+' 分':'',rq?'課後 '+rq.score+' 分':''].filter(Boolean).join('．');
+    rd.textContent=!has?'看題目、正解和解析'
+      :q.level===0?'講師還沒公布，下課後就能在這裡看'
+      :q.level===1?sc
+      :q.level===2?sc+'．看自己錯哪幾題'
+      :sc+'．含正解與解析';
+  }
+  var ge=$('#goExp');if(ge)ge.textContent=q.exp?'看我的對錯與詳解':'看我錯哪幾題';
+  if($('#p-explain')&&$('#p-explain').classList.contains('is-on'))renderExplain();
+  if($('#p-stats')&&$('#p-stats').classList.contains('is-on')&&!q.score){['#myPre','#myPost','#myUp'].forEach(function(i){var e=$(i);if(e)e.innerHTML='—'});
+    var mn=$('#myNote');if(mn)mn.textContent='講師公布後，這裡會出現你自己的分數。';}
   set('#rowTop',TOP_PUB);set('#goTop',TOP_PUB);
   set('#qagain',q.retry);
   $$('#p-quiz [data-gate="p-profile"]').forEach(function(e){e.style.display=(q.pre||EDITING)?'':'none'});
@@ -6442,7 +6506,7 @@ function applyQuizVis(){
   $$('[data-qv="score"]').forEach(function(e){e.style.display=q.score?'':'none'});
   var st=$('#scoreT'),ss=$('#scoreS');
   if(st&&st.dataset.full){st.textContent=q.score?st.dataset.full:'作答完成';}
-  if(ss&&ss.dataset.full){ss.textContent=q.score?ss.dataset.full:'謝謝你，答案已經送出。';}
+  if(ss&&ss.dataset.full){ss.textContent=q.score?ss.dataset.full:'謝謝你，答案已經送出。講師公布後，可以在「線上測驗 → 我的成績」回頭看。';}
 }
 function checkTopPublished(){
   if(!window.fb)return;
@@ -6521,6 +6585,7 @@ function pairHTML(a,b,unit){
 async function loadClassStats(){
   var box=$('#clsStats');if(!box)return;
   var mine={};try{mine=JSON.parse(localStorage.getItem('my:'+(window.fb?window.fb.COURSE:'c'))||'{}')}catch(e){}
+  if(!quizOpts().score)mine={};
   $('#myPre').innerHTML=mine.pre!=null?mine.pre+'<small>%</small>':'—';
   $('#myPost').innerHTML=mine.post!=null?mine.post+'<small>%</small>':'—';
   $('#myUp').innerHTML=(mine.pre!=null&&mine.post!=null)?((mine.post-mine.pre>=0?'+':'')+(mine.post-mine.pre)):'—';
@@ -6620,6 +6685,7 @@ async function buildTop(code){
 }
 function pushMyScore(pct){
   $('#myTag').textContent='已完成';
+  if(!quizOpts().score){$('#myNote').textContent='講師公布後，這裡會出現你自己的分數。';return;}
   $('#myPost').innerHTML=pct+'<small>%</small>';
   $('#myUp').innerHTML='—';
   $('#myNote').textContent=pct>=COURSE.pass?'及格了。':'還差一點，錯的那幾題去看詳解。';
