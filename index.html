@@ -1616,7 +1616,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <p class="sub" style="margin-top:14px" id="abEnd">消防安全，不只是消防員的事。急救，也不只是醫護人員的事。每一個人，都可能成為第一位救援者。</p>
       <button class="btn btn-quiet" data-go="p-invite">課程邀約</button>
     </div>
-    <p class="note">照片與影片是佔位。文案取自你的個人品牌稿，需要微調隨時說。</p>
+    <p class="note" hidden></p>
   </section>
 
   <!-- 線上測驗 hub -->
@@ -1632,7 +1632,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <div class="row" id="rowStats" data-go="p-stats"><div class="row-n">計</div><div class="row-b"><div class="row-t">本堂統計</div><div class="row-d">跟全班比、看哪幾題最多人誤會</div></div><div class="row-go">→</div></div>
       <div class="row" id="rowExp" data-go="p-explain"><div class="row-n">績</div><div class="row-b"><div class="row-t">我的成績</div><div class="row-d" id="rowExpD">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
     </div>
-    <p class="note">題目、正解、詳解都在同一個地方，所以作答完立刻就有統計，不用等講師另外整理。</p>
+    <p class="note" hidden></p>
   </section>
 
 
@@ -1734,12 +1734,12 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div style="padding-top:26px">
       <div class="meta">上課代號</div>
       <h1 class="display" style="font-size:24px;margin-top:8px" data-txt="codeTitle">先輸入今天的代號</h1>
-      <p class="sub" style="margin-top:10px">只有現場上課的人需要填。這是為了讓統計只算真正上過課的人，不然平均會被稀釋，你也看不出自己到底進步多少。</p>
+      <p class="sub" style="margin-top:10px">代號請看講師的投影或白板。</p>
       <input class="code-in" id="codeIn" inputmode="numeric" maxlength="4" placeholder="0000">
       <div class="code-bad" id="codeBad">代號不對。講師會寫在白板上，或直接問一下。</div>
       <button class="btn" id="codeOk">確認</button>
       <button class="btn btn-quiet" id="codeExp" data-go="p-explain">我只想看題目詳解</button>
-      <p class="note">詳解跟統計不用代號也看得到，因為那些不會影響數據。代號只擋作答與回饋。</p>
+      <p class="note" hidden></p>
     </div>
   </section>
 
@@ -1761,7 +1761,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 
     <div id="clsStats"><div class="empty">讀取中…</div></div>
 
-    <p class="note">統計只算有輸入代號的人。沒上課但拿到連結的人可以看，但不會被算進去。</p>
+    <p class="note" hidden></p>
   </section>
 
 
@@ -1775,7 +1775,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 
     <div id="topList"><div class="empty">讀取中…</div></div>
 
-    <p class="note">姓名只顯示姓與末字，中間以 ○ 代替。要顯示全名或完全不顯示，都可以在後台改。</p>
+    <p class="note" hidden></p>
   </section>
 
   <!-- 詳解 -->
@@ -1785,7 +1785,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <h1 class="display" style="font-size:23px;margin-top:8px">錯的那幾題，<br>才是要記住的</h1>
     </div>
     <div style="margin-top:20px" id="explainList"></div>
-    <p class="note">★ 是講師標記的重要題。答錯的自動收進「我的錯題」，之後可以只看錯題。</p>
+    <p class="note">★ 是講師標記的重點題。</p>
   </section>
 
   <!-- 課程回饋 -->
@@ -1829,7 +1829,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
         <textarea class="f-ta" placeholder="想到什麼寫什麼"></textarea></div>
 
       <button class="btn" id="fbSend">送出回饋</button>
-      <p class="note">不記名。場次不用選，你從哪一堂課進來系統就知道了。</p>
+      <p class="note">不記名，請放心填寫。</p>
     </div>
     <div class="done-view" id="fbDone">
       <h2 class="display">謝謝你的回饋。</h2>
@@ -1900,7 +1900,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
         <textarea class="f-ta" id="ivNote" placeholder="例如：廠區有 AED 但同仁都不敢用，希望多一點實作時間"></textarea></div>
 
       <button class="btn" id="ivSend">送出邀約</button>
-      <p class="note">送出後會寄到講師信箱並同時發出手機通知。</p>
+      <p class="note" hidden></p>
     </div>
     <div class="done-view" id="ivDone">
       <h2 class="display">報名送出了。</h2>
@@ -1928,7 +1928,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <h1 class="display" style="font-size:23px;margin-top:8px" data-txt="dsTitle">火災、地震，還有那些來不及想的事</h1>
     </div>
     <div class="rows" style="margin-top:20px" id="listDisaster"></div>
-    <p class="note">每開一次文章瀏覽量 +1。後台看得到今日熱門、本週熱門與排行。</p>
+    <p class="note" hidden></p>
   </section>
 
   <!-- 急救教育專區 -->
@@ -1938,7 +1938,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <h1 class="display" style="font-size:23px;margin-top:8px" data-txt="faTitle">在救護車來之前，你可以做的事</h1>
     </div>
     <div class="rows" style="margin-top:20px" id="listFirstaid"></div>
-    <p class="note">兩個專區共用同一套文章系統，只是分類不同。講師可以決定這堂課要開哪一區。</p>
+    <p class="note" hidden></p>
   </section>
 
   <!-- 文章 -->
@@ -1963,7 +1963,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <h1 class="display rv" id="filesTitle">上課用得到的教材</h1>
     <p class="p rv" id="filesSub">講義、流程卡、自我檢查表。點一下就能開啟或下載，手機也看得到。</p>
     <div class="rv" id="fileList"></div>
-    <p class="note rv" id="filesNote">檔案存在講師的雲端硬碟，開啟後可以直接下載或列印。</p>
+    <p class="note rv" id="filesNote">開啟後可以直接下載或列印。</p>
   </section>
   <section class="page" id="p-whisper">
     <div id="wForm">
@@ -2553,7 +2553,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.9　2026/09/30';
+var APP_VERSION='v10.10　2026/09/30';
 (function(){
   var root=document.documentElement;
   function apply(t){
