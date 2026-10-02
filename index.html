@@ -2574,7 +2574,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.15　2026/10/02';
+var APP_VERSION='v10.16　2026/10/03';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4104,7 +4104,7 @@ function fetchFileBlob(it,job){
 function fvPaint(){
   var v=$('#fileView');if(!v)return;var b=$('.fview-dl',v);
   b.disabled=false;
-  if(FV.file)b.textContent='儲存到手機';
+  if(FV.file)b.textContent='下載';
   else if(FV.err)b.textContent='用雲端硬碟下載';
   else{b.textContent='準備中…';b.disabled=true;}
 }
@@ -4112,7 +4112,7 @@ function fvDownload(){
   var it=FV.it;if(!it)return;
   if(FV.file){
     var f=FV.file;
-    if(navigator.canShare&&navigator.canShare({files:[f]})){
+    if(fvTouch()&&navigator.canShare&&navigator.canShare({files:[f]})){
       navigator.share({files:[f]}).catch(function(e){if(e&&e.name!=='AbortError')fvSaveLink(f);});
     }else fvSaveLink(f);
     return;
@@ -4120,6 +4120,7 @@ function fvDownload(){
   // 沒辦法透過 Apps Script 取得：退回用雲端硬碟開啟
   window.open('https://drive.google.com/file/d/'+encodeURIComponent(it.id)+'/view','_blank','noopener');
 }
+function fvTouch(){return !!(window.matchMedia&&matchMedia('(pointer:coarse)').matches)}
 function fvSaveLink(f){
   var url=URL.createObjectURL(f),a=document.createElement('a');
   a.href=url;a.download=f.name;document.body.appendChild(a);a.click();
@@ -4131,7 +4132,7 @@ function openFileView(it){
     v=document.createElement('div');v.id='fileView';v.className='fview';
     v.innerHTML='<div class="fview-h"><button class="back" data-fvclose><b>←</b>返回</button>'+
       '<div class="fview-t"></div><button class="fview-dl" data-fvdl>準備中…</button></div>'+
-      '<div class="fview-b"></div><div class="fview-n">按「儲存到手機」會跳出分享選單，選「儲存到檔案」或「儲存影像」</div>';
+      '<div class="fview-b"></div><div class="fview-n"></div>';
     document.body.appendChild(v);
     v.addEventListener('click',function(e){
       if(e.target.closest('[data-fvclose]'))closeFileView();
@@ -4150,6 +4151,9 @@ function openFileView(it){
   var media=body.querySelector('img,iframe'),sp=body.querySelector('.fv-spin');
   media.addEventListener('load',function(){if(sp)sp.remove()});
   media.addEventListener('error',function(){if(sp)sp.remove()});
+  $('.fview-n',v).textContent=fvTouch()
+    ?'按「下載」會跳出分享選單，選「儲存到檔案」或「儲存影像」'
+    :'按「下載」會存到這台電腦的下載資料夾';
   fvPaint();fetchFileBlob(it,FV.job);
   v.classList.add('on');document.body.style.overflow='hidden';
 }
