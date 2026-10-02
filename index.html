@@ -656,6 +656,16 @@ body.dirty #z-pro{padding-bottom:80px}
 .guess-grid button.on{border-color:var(--signal);color:var(--signal);background:var(--signal-soft)}
 @media (min-width:700px){.guess-grid{grid-template-columns:repeat(7,1fr)}.guess-now{font-size:64px}}
 
+/* 檔案預覽 */
+.fview{position:fixed;inset:0;z-index:110;background:var(--paper);display:none;flex-direction:column}
+.fview.on{display:flex;animation:fadeIn .25s ease both}
+.fview-h{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;border-bottom:1px solid var(--line)}
+.fview-t{flex:1;min-width:0;font-size:15px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fview-dl{flex:none;background:var(--ink);color:var(--paper);padding:9px 16px;font-size:14px;font-weight:600}
+.fview-b{flex:1;min-height:0;background:var(--surface);display:flex;align-items:center;justify-content:center;overflow:auto}
+.fview-b iframe{width:100%;height:100%;border:0;display:block;background:var(--surface)}
+.fview-b img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.fview-n{font-size:11.5px;color:var(--muted);text-align:center;padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px))}
 /* 文章置頂、搜尋 */
 .art-pin{flex:none;width:34px;height:30px;border:1px solid var(--line);background:none;cursor:pointer;
   font-size:14px;filter:grayscale(1);opacity:.4;margin-right:4px}
@@ -2561,7 +2571,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.13　2026/10/01';
+var APP_VERSION='v10.14　2026/10/02';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4053,7 +4063,7 @@ function renderFiles(){
     return '<div class="fl'+(f.hidden?' blk-off':'')+'" data-file="'+f.id+'">'+
       '<div class="fl-m">'+fileKind(f.name)+'</div>'+
       '<div class="fl-b"><div class="fl-t">'+String(f.label||f.name).replace(/</g,'&lt;')+'</div>'+
-      '<div class="fl-d">'+(f.note?String(f.note).replace(/</g,'&lt;'):'點一下開啟')+'</div></div>'+
+      '<div class="fl-d">'+(f.note?String(f.note).replace(/</g,'&lt;'):'點一下預覽或下載')+'</div></div>'+
       '<div class="fl-go">開啟 →</div></div>';
   }).join('');
 }
@@ -4067,9 +4077,34 @@ document.addEventListener('click',function(e){
     return;
   }
   var f=e.target.closest('[data-file]');if(!f||EDITING)return;
-  window.open('https://drive.google.com/file/d/'+f.dataset.file+'/view','_blank','noopener');
-  countHit('files');
+  var it=(SITE.files.items||[]).filter(function(x){return x.id===f.dataset.file})[0]||{id:f.dataset.file,name:''};
+  openFileView(it);countHit('files');
 });
+/* 檔案：在 App 裡預覽，不跳去雲端硬碟 App */
+function openFileView(it){
+  var v=$('#fileView');
+  if(!v){
+    v=document.createElement('div');v.id='fileView';v.className='fview';
+    v.innerHTML='<div class="fview-h"><button class="back" data-fvclose><b>←</b>返回</button>'+
+      '<div class="fview-t"></div><a class="fview-dl" target="_blank" rel="noopener">下載</a></div>'+
+      '<div class="fview-b"></div><div class="fview-n">預覽是雲端硬碟提供的．要存到手機請按右上角「下載」</div>';
+    document.body.appendChild(v);
+    v.addEventListener('click',function(e){if(e.target.closest('[data-fvclose]'))closeFileView()});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&v.classList.contains('on'))closeFileView()});
+  }
+  var name=String(it.label||it.name||'檔案');
+  $('.fview-t',v).textContent=name;
+  $('.fview-dl',v).href='https://drive.google.com/uc?export=download&id='+encodeURIComponent(it.id);
+  var isImg=/\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(it.name||'');
+  $('.fview-b',v).innerHTML=isImg
+    ?'<img alt="" src="'+driveImg(it.id,2000)+'">'
+    :'<iframe title="'+name.replace(/"/g,'')+'" src="https://drive.google.com/file/d/'+encodeURIComponent(it.id)+'/preview" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+  v.classList.add('on');document.body.style.overflow='hidden';
+}
+function closeFileView(){
+  var v=$('#fileView');if(!v)return;
+  v.classList.remove('on');$('.fview-b',v).innerHTML='';document.body.style.overflow='';
+}
 document.addEventListener('focusout',function(e){
   if(!EDITING)return;
   var t=e.target;if(!t.dataset)return;
@@ -4528,7 +4563,6 @@ function refreshTags(){
   set('#artTag',ARTICLES.length+' 篇');
   var ct=[SITE.contact.ig,SITE.contact.line,SITE.contact.tel,SITE.contact.mail].filter(Boolean).length;
   set('#ctTag',ct+' / 4 已填');
-  set('#fbTag',FB.length?(FB.length+' 份'):'尚無填答');
   updateCounts();
 
   set('#proTitle',COURSE.title||'未命名課程．到編輯學員畫面改');
@@ -4980,7 +5014,7 @@ function updateCounts(){
   var set=function(id,v){var e=$(id);if(e)e.textContent=v};
   set('#kpiW',c.wUnread?(c.wUnread+' 新'):c.wAll);
   set('#kpiInv',c.iPend);
-  set('#inboxCount',c.wUnread+' 未讀 · '+c.iPend+' 待回');
+  set('#inboxCount','悄悄話 '+c.wAll+(c.wUnread?'（'+c.wUnread+' 未讀）':'')+' · 邀約 '+c.iPend+' 待回');
 }
 function iRender(){
   var box=$('#iInbox');if(!box)return;
@@ -5251,7 +5285,6 @@ function renderSessions(){
     return '<span class="chip'+(SEL_SESSION===x.code?' on':'')+'" data-sess="'+x.code+'">'+
       (x.code===CODE?'本堂 ':'')+x.code+(x.at?'　'+fmtDate(x.at):'')+'</span>';
   }).join('')+'<span class="chip'+(SEL_SESSION==='all'?' on':'')+'" data-sess="all">全部合計</span>';
-  var tag=$('#fbTag');if(tag)tag.textContent=list.length+' 堂紀錄';
   loadSessBody(SEL_SESSION);
 }
 document.addEventListener('click',function(e){
@@ -5375,6 +5408,8 @@ async function paintSessBody(code,D0){
        '<button class="qbtn" data-dl="fb" data-code="'+code+'">回饋紀錄（'+D.fb.length+'）</button></div>';
     box.innerHTML=h;
     SESS_CACHE={code:code,D:D};
+    var tg=$('#fbTag');
+    if(tg)tg.textContent=(code==='all'?'全部':code===CODE?'本堂':'第 '+code+' 堂')+'．作答 '+D.at.length+'．回饋 '+D.fb.length;
   }catch(err){box.innerHTML='<div class="empty" style="color:var(--signal)">讀取失敗：'+(err.code||err.message)+'</div>'}
 }
 var SESS_CACHE=null;
