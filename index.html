@@ -2574,7 +2574,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.16　2026/10/03';
+var APP_VERSION='v10.19　2026/10/03';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4085,14 +4085,20 @@ document.addEventListener('click',function(e){
 });
 /* 檔案：在 App 裡預覽，不跳去雲端硬碟 App．下載走 Apps Script，再用手機的分享選單存檔 */
 var FV={it:null,file:null,err:null,job:0};
+// Apps Script 還沒裝好下載功能時，不要一直去敲它（舊版會回一封信）．30 分鐘內同一支裝置只試一次
+function gfBadKey(ep){return 'gf-bad:'+ep}
+function gfIsBad(ep){try{var t=+localStorage.getItem(gfBadKey(ep))||0;return Date.now()-t<30*60*1000}catch(e){return false}}
+function gfMarkBad(ep){try{localStorage.setItem(gfBadKey(ep),String(Date.now()))}catch(e){}}
 function fetchFileBlob(it,job){
   var ep=((SITE.notify&&SITE.notify.endpoint)||'').trim();
   if(!ep){FV.err='no-endpoint';fvPaint();return;}
+  if(gfIsBad(ep)){FV.err='no-support';fvPaint();return;}
   fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getFile',id:it.id})})
     .then(function(r){return r.text()})
     .then(function(t){
       if(job!==FV.job)return;
-      var j;try{j=JSON.parse(t)}catch(e){throw new Error('old-script')}
+      var j;try{j=JSON.parse(t)}catch(e){gfMarkBad(ep);throw new Error('old-script')}
+      if(j.ok&&!j.data){gfMarkBad(ep);throw new Error('no-support')}   // 回了東西但不是檔案：Apps Script 沒有下載功能
       if(!j.ok||!j.data)throw new Error(j.error||'fail');
       var bin=atob(j.data),u8=new Uint8Array(bin.length);
       for(var i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
