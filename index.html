@@ -656,6 +656,11 @@ body.dirty #z-pro{padding-bottom:80px}
 .guess-grid button.on{border-color:var(--signal);color:var(--signal);background:var(--signal-soft)}
 @media (min-width:700px){.guess-grid{grid-template-columns:repeat(7,1fr)}.guess-now{font-size:64px}}
 
+/* 文章置頂、搜尋 */
+.art-pin{flex:none;width:34px;height:30px;border:1px solid var(--line);background:none;cursor:pointer;
+  font-size:14px;filter:grayscale(1);opacity:.4;margin-right:4px}
+.art-pin.on{filter:none;opacity:1;border-color:var(--signal);background:var(--signal-soft)}
+.art-search{margin:4px 0 2px}
 /* 文章裡的照片與影片 */
 .art-media{margin:6px 0 24px}
 .art-media img{display:block;width:100%;height:auto;max-height:80vh;object-fit:contain;background:var(--surface);cursor:zoom-in}
@@ -742,25 +747,23 @@ body.dirty #z-pro{padding-bottom:80px}
 .hero-tags .ht-v{font-size:12.5px;margin-top:4px;color:var(--ink);overflow-wrap:anywhere}
 @media (min-width:700px){.hero-tags .ht-k{font-size:11px}.hero-tags .ht-v{font-size:14.5px}}
 
-/* 首頁品牌圖放下方時 */
-.home-banner{height:132px;margin-top:26px;background-image:
-  linear-gradient(180deg,var(--paper) 0,rgba(14,17,20,.48) 26%,rgba(14,17,20,.48) 74%,var(--paper) 100%),var(--home-banner);
+/* 首頁品牌圖放下方時：圖片保持原色，只用遮罩讓邊緣融進背景（深淺色通用） */
+.home-banner{height:150px;margin-top:26px;background-image:var(--home-banner);
   background-size:cover;background-position:center;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-          mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-[data-theme="light"] .home-banner{background-image:
-  linear-gradient(180deg,var(--paper) 0,rgba(218,221,216,.25) 26%,rgba(218,221,216,.25) 74%,var(--paper) 100%),var(--home-banner)}
-@media (min-width:700px){.home-banner{height:180px}}
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent),linear-gradient(180deg,transparent,#000 14%,#000 86%,transparent);
+  -webkit-mask-composite:source-in;
+          mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent),linear-gradient(180deg,transparent,#000 14%,#000 86%,transparent);
+          mask-composite:intersect}
+@media (min-width:700px){.home-banner{height:200px}}
 
-/* 首頁：banner 與標題合成一塊 */
-.hero-card.hero-brand{margin-top:0;padding:104px 0 4px;position:relative;isolation:isolate}
-.hero-card.hero-brand::before{content:"";position:absolute;left:0;right:0;top:0;height:102px;z-index:-1;
-  background-image:linear-gradient(180deg,rgba(14,17,20,.46) 0,rgba(14,17,20,.4) 30%,rgba(14,17,20,.82) 74%,var(--paper) 100%),var(--home-banner);
-  background-size:cover;background-position:center 34%;background-repeat:no-repeat}
-[data-theme="light"] .hero-card.hero-brand::before{
-  background-image:linear-gradient(180deg,rgba(218,221,216,.3) 0,rgba(218,221,216,.35) 30%,rgba(218,221,216,.85) 74%,var(--paper) 100%),var(--home-banner)}
+/* 首頁：banner 與標題合成一塊．圖片不再蓋色，只有底部淡出到背景 */
+.hero-card.hero-brand{margin-top:0;padding:128px 0 4px;position:relative;isolation:isolate}
+.hero-card.hero-brand::before{content:"";position:absolute;left:0;right:0;top:0;height:124px;z-index:-1;
+  background-image:var(--home-banner);background-size:cover;background-position:center 34%;background-repeat:no-repeat;
+  -webkit-mask-image:linear-gradient(180deg,#000 0,#000 66%,transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0,#000 66%,transparent 100%)}
 .hero-card.hero-brand .hero-tags{margin-bottom:6px}
-@media (min-width:700px){.hero-card.hero-brand{padding-top:150px}.hero-card.hero-brand::before{height:148px}}
+@media (min-width:700px){.hero-card.hero-brand{padding-top:186px}.hero-card.hero-brand::before{height:180px}}
 
 
 /* 編輯模式：列上的小按鈕 */
@@ -2125,14 +2128,19 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
   <div class="grp" id="grp-articles"><div class="grp-h"><span class="grp-t">知識文章</span><span class="grp-m" id="artTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div class="toggle-row"><span>學員端顯示瀏覽次數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關掉後學員看不到 👁 數字，後台照樣記錄</em></span><span class="sw on" id="nfViews" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <p class="sub">學員端兩個專區的文章都在這裡管。點標題展開編輯，可以改分類、內文、刪除、調順序。</p>
+    <p class="sub">學員端兩個專區的文章都在這裡管。按 📌 置頂，那篇會固定在專區最上面（最近置頂的排最前）；其他文章照日期由新到舊。點標題展開編輯。</p>
     <div style="display:flex;gap:10px;margin-top:14px">
       <button class="btn btn-quiet" style="margin:0" id="addArticle">新增文章</button>
       <button class="btn btn-quiet" style="margin:0" data-save="articles">儲存文章</button>
     </div>
-    <div id="artEdit" style="margin-top:14px"></div>
+    <input class="f-in" id="artQ" type="search" placeholder="搜尋標題、分類或內文" style="margin-top:16px">
+    <div class="chips" id="artF" style="margin-top:10px">
+      <span class="chip on" data-af="all">全部</span><span class="chip" data-af="disaster">防災</span>
+      <span class="chip" data-af="firstaid">急救</span><span class="chip" data-af="pinned">📌 置頂</span></div>
+    <div class="hint" id="artCount" style="margin-top:8px"></div>
+    <div id="artEdit" style="margin-top:6px"></div>
 
-    <div class="section-head"><h2>瀏覽排行</h2><span>累計</span></div>
+    <div class="section-head"><h2>瀏覽排行</h2><span>累計．前 20 名</span></div>
     <div id="artRank"></div>
   
   </div></div>
@@ -2522,7 +2530,7 @@ window.addEventListener('fb-ready',function(){
     $('#logGo').textContent='登入';
   });
   $('#signOut').addEventListener('click',function(){
-    F.signOut(F.auth);OPERATOR=null;AUTH_USER=null;JUST_LOGGED_IN=false;
+    stopSessLive();F.signOut(F.auth);OPERATOR=null;AUTH_USER=null;JUST_LOGGED_IN=false;
     try{localStorage.removeItem('operator')}catch(e){}
     toast('已登出');
   });
@@ -2553,7 +2561,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.10　2026/09/30';
+var APP_VERSION='v10.13　2026/10/01';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3065,18 +3073,61 @@ var ARTICLES=[
  {id:'a6',cat:'firstaid',t:'有人噎到，哈姆立克怎麼做',c:'創傷與急症',v:0,d:'2026/07/09',
   b:['先看他還能不能咳。咳得出聲音就鼓勵他咳，不要拍背也不要亂掏嘴巴。','完全咳不出、發不出聲音、雙手掐住脖子，才做腹部快速擠壓。','如果對方失去意識，放平開始 CPR，每次吹氣前看一眼嘴巴。']}
 ];
-function artsOf(cat){return ARTICLES.filter(function(a){return a.cat===cat})}
-function buildList(key,el){
-  var box=$(el);if(!box)return;box.innerHTML='';
-  var list=artsOf(key);
-  if(!list.length){box.innerHTML='<div class="empty">這一區還沒有文章。</div>';return;}
-  list.forEach(function(a,i){
+function artTime(a){
+  if(a.ts)return a.ts;
+  var m=String(a.d||'').match(/(\d{4})\D(\d{1,2})\D(\d{1,2})/);
+  return m?new Date(+m[1],+m[2]-1,+m[3]).getTime():0;
+}
+function artSorted(list){   // 置頂的在最上面（最近置頂的最前），其他照日期新到舊
+  return list.slice().sort(function(a,b){
+    if(!!a.pinned!==!!b.pinned)return a.pinned?-1:1;
+    if(a.pinned)return (b.pinAt||0)-(a.pinAt||0);
+    return artTime(b)-artTime(a);
+  });
+}
+function artsOf(cat){return artSorted(ARTICLES.filter(function(a){return a.cat===cat}))}
+function artMatch(a,q){
+  if(!q)return true;q=q.toLowerCase();
+  return [a.t,a.c,(a.b||[]).join(' ')].join(' ').toLowerCase().indexOf(q)>=0;
+}
+var LIST_N={},LIST_Q={};
+document.addEventListener('input',function(e){
+  var k=e.target.dataset&&e.target.dataset.artq;if(!k)return;
+  LIST_Q[k]=e.target.value.trim();LIST_N[k]=20;
+  buildList(k,k==='disaster'?'#listDisaster':'#listFirstaid',true);
+});
+document.addEventListener('click',function(e){
+  var m=e.target.closest('[data-artmore]');if(!m)return;
+  var k=m.dataset.artmore;LIST_N[k]=(LIST_N[k]||20)+20;
+  buildList(k,k==='disaster'?'#listDisaster':'#listFirstaid',true);
+});
+function buildList(key,el,keepSearch){
+  var box=$(el);if(!box)return;
+  var all=artsOf(key),q=LIST_Q[key]||'',n=LIST_N[key]||20;
+  // 文章多的時候才出現搜尋框；打字時不要重畫搜尋框，免得鍵盤收起來
+  var sb=box.previousElementSibling;
+  if(sb&&sb.classList.contains('art-search')){if(all.length<=8)sb.remove();}
+  else if(all.length>8){
+    sb=document.createElement('input');sb.className='f-in art-search';sb.type='search';
+    sb.placeholder='搜尋文章';sb.dataset.artq=key;sb.value=q;box.parentNode.insertBefore(sb,box);
+  }
+  box.innerHTML='';
+  if(!all.length){box.innerHTML='<div class="empty">這一區還沒有文章。</div>';return;}
+  var list=all.filter(function(a){return artMatch(a,q)});
+  if(!list.length){box.innerHTML='<div class="empty">找不到「'+q.replace(/</g,'&lt;')+'」相關的文章。</div>';return;}
+  var no=0;
+  list.slice(0,n).forEach(function(a){
     var d=document.createElement('div');d.className='row';
-    d.innerHTML='<div class="row-n">'+('0'+(i+1)).slice(-2)+'</div><div class="row-b"><div class="row-t">'+a.t+
+    d.innerHTML='<div class="row-n">'+(a.pinned?'📌':('0'+(++no)).slice(-2))+'</div><div class="row-b"><div class="row-t">'+a.t+
+      (a.pinned?'<span class="row-tag">置頂</span>':'')+
       '</div><div class="row-d">'+a.c+'　'+a.d+(showV()?'　👁 '+artViews(a).toLocaleString():'')+'</div></div><div class="row-go">→</div>';
     d.addEventListener('click',function(){openArt(a.id)});
     box.appendChild(d);
   });
+  if(list.length>n){
+    var mb=document.createElement('button');mb.className='course-more';mb.dataset.artmore=key;
+    mb.innerHTML='看更多　還有 <b>'+(list.length-n)+'</b> 篇';box.appendChild(mb);
+  }
 }
 function showV(){return !(SITE&&SITE.showViews===false)}
 function artViews(a){return (HITS||{})['art_'+a.id]||0}
@@ -3087,8 +3138,7 @@ function openArt(id){
   $('#artTitle').textContent=a.t;
   CUR_ART=a;$('#artBody').innerHTML=artBodyHTML(a);
   var more=$('#artMore');more.innerHTML='';
-  artsOf(a.cat).forEach(function(o){
-    if(o.id===a.id)return;
+  artsOf(a.cat).filter(function(o){return o.id!==a.id}).slice(0,5).forEach(function(o){
     var d=document.createElement('div');d.className='row';
     d.innerHTML='<div class="row-b"><div class="row-t" style="font-size:15px">'+o.t+'</div><div class="row-d">'+o.c+'</div></div><div class="row-go">→</div>';
     d.addEventListener('click',function(){openArt(o.id);window.scrollTo({top:0,behavior:'smooth'})});
@@ -3709,6 +3759,7 @@ $('#edSave').addEventListener('click',async function(){
       headline:SITE.headline,intro:SITE.intro,quote:SITE.quote,ending:SITE.ending,
       stats:SITE.stats.map(function(x){return {n:x[0],l:x[1]}}),
       videos:SITE.videos,contact:SITE.contact,galText:SITE.galText||{},brand:SITE.brand,
+      courses:SITE.courses||[],ctNote:SITE.ctNote||{},
       speaking:ET.speak.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
     scope:ET.scope.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
       idea:ET.idea.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
@@ -4496,11 +4547,10 @@ async function saveSite(){
   await F.setDoc(F.doc(F.db,'instructors','main'),{
     headline:SITE.headline,intro:SITE.intro,quote:SITE.quote,ending:SITE.ending,
     stats:SITE.stats.map(function(x){return {n:x[0],l:x[1]}}),
-    speaking:ET.speak.map(function(x){return {k:x[0],v:x[1]}}),
+    speaking:ET.speak.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
     scope:ET.scope.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
-    operatorRows:ET.ops.map(function(x){return {k:x[0],v:x[1]}}),
-    idea:ET.idea.map(function(x){return {k:x[0],v:x[1]}}),
-    career:ET.career.map(function(x){return {k:x[0],v:x[1]}}),
+    idea:ET.idea.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
+    career:ET.career.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
     operators:ET.ops.map(function(x){return x[0]}),
     operatorRows:ET.ops.map(function(x){return {k:x[0],v:x[1]||''}}),
     brand:SITE.brand, galText:SITE.galText||{}, ruby:SITE.ruby||'', files:SITE.files, courses:SITE.courses, ctNote:SITE.ctNote,
@@ -4535,17 +4585,27 @@ async function saveQuestions(){
   jobs.push(F.setDoc(F.doc(F.db,'courses',F.COURSE),{preSet:ACTIVE.pre,postSet:ACTIVE.post},{merge:true}));
   await Promise.all(jobs);
 }
+function artDoc(a){
+  return {cat:a.cat,title:a.t,sub:a.c,body:a.b,date:a.d,order:a.order||a.ts||Date.now(),published:true,
+          media:a.media||[],mediaFolder:a.mediaFolder||'',pinned:!!a.pinned,pinAt:a.pinAt||0,ts:a.ts||artTime(a)};
+}
+var ART_SIG=null;    // 上次存檔／讀取時每篇文章的樣子，只存有改過的，文章再多存檔也很快
+function artSigAll(){var m={};ARTICLES.forEach(function(a){m[a.id]=JSON.stringify(artDoc(a))});return m}
 async function saveArticles(){
   var F=window.fb;if(!F||!F.auth.currentUser)throw new Error('尚未登入');
-  var old=await F.getDocs(F.collection(F.db,'articles'));
-  var keep={};ARTICLES.forEach(function(a){keep[a.id]=1});
-  var jobs=[];
-  old.forEach(function(d){if(!keep[d.id])jobs.push(F.deleteDoc(F.doc(F.db,'articles',d.id)))});
-  ARTICLES.forEach(function(a,ai){
-    jobs.push(F.setDoc(F.doc(F.db,'articles',a.id),
-      {cat:a.cat,title:a.t,sub:a.c,body:a.b,date:a.d,order:ai,published:true,media:a.media||[],mediaFolder:a.mediaFolder||''}));
+  var jobs=[],now=artSigAll();
+  if(!ART_SIG){       // 沒有基準（第一次）：跟雲端比對一次
+    var old=await F.getDocs(F.collection(F.db,'articles'));ART_SIG={};
+    old.forEach(function(d){ART_SIG[d.id]='?'});
+  }
+  Object.keys(ART_SIG).forEach(function(id){if(!now[id])jobs.push(F.deleteDoc(F.doc(F.db,'articles',id)))});
+  ARTICLES.forEach(function(a){
+    if(ART_SIG[a.id]===now[a.id])return;
+    a.order=a.order||a.ts||Date.now();
+    jobs.push(F.setDoc(F.doc(F.db,'articles',a.id),artDoc(a)));
   });
   await Promise.all(jobs);
+  ART_SIG=artSigAll();
 }
 var CACHE_KEY='appcache:v1';
 var FIRST_PAINT=false;          // 第一次畫面出來之後，再更新就不重播進場動畫
@@ -4640,11 +4700,14 @@ function applyPayload(p){
       if($('#stQ'))$('#stQ').textContent=modeItems('pre').length+' / '+modeItems('post').length+' 題';
     }
     if(p.articles){
+      ART_SIG=null;
       ARTICLES.length=0;
       p.articles.forEach(function(v){
         ARTICLES.push({id:v.id,cat:v.cat||'disaster',t:v.title||'',c:v.sub||'',
-                       v:0,d:v.date||'',b:v.body||[],media:v.media||[],mediaFolder:v.mediaFolder||''});
+                       v:0,d:v.date||'',b:v.body||[],media:v.media||[],mediaFolder:v.mediaFolder||'',
+                       pinned:!!v.pinned,pinAt:v.pinAt||0,ts:v.ts||0,order:v.order||0});
       });
+      ART_SIG=artSigAll();   // 存檔時只寫有改過的
     }
   }catch(e){console.warn('套用資料失敗',e)}
 }
@@ -5148,7 +5211,7 @@ function setDirty(v){DIRTY=!!v;document.body.classList.toggle('dirty',DIRTY);var
 (function(){
   var pro=$('#z-pro');if(!pro)return;
   // 這些是按了就立刻生效的，不算「未儲存」
-  var instant='#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew';
+  var instant='#artQ,#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew';
   pro.addEventListener('input',function(e){
     if(e.target.closest(instant)||e.target.closest('#pnl-inbox'))return;
     if(e.target.matches('input,textarea,select'))setDirty(true);
@@ -5211,19 +5274,47 @@ async function sessionData(code){
   var fb=[],at=[];r[1].forEach(function(d){fb.push(d.data())});r[2].forEach(function(d){at.push(d.data())});
   return {stat:r[0].exists()?r[0].data():{},fb:fb,at:at};
 }
-async function loadSessBody(code){
+var SESS_UNSUB=[],SESS_LIVE=null,SESS_T=0;
+function stopSessLive(){SESS_UNSUB.forEach(function(u){try{u()}catch(e){}});SESS_UNSUB=[];SESS_LIVE=null;}
+function loadSessBody(code){
   var box=$('#sessBody');if(!box||!window.fb||!window.fb.auth.currentUser)return;
+  stopSessLive();
   box.innerHTML='<div class="empty">讀取中…</div>';
+  var F=window.fb,D={stat:{},fb:[],at:[]},got={},live={};SESS_LIVE=live;
+  var statId=code==='all'?F.COURSE:SID(code);
+  var fbQ=code==='all'?F.collection(F.db,'courses',F.COURSE,'feedback')
+         :F.query(F.collection(F.db,'courses',F.COURSE,'feedback'),F.where('session','==',code));
+  var atQ=code==='all'?F.collection(F.db,'courses',F.COURSE,'attempts')
+         :F.query(F.collection(F.db,'courses',F.COURSE,'attempts'),F.where('session','==',code));
+  function upd(k){
+    got[k]=1;if(SESS_LIVE!==live||!got.s||!got.f||!got.a)return;
+    clearTimeout(SESS_T);
+    SESS_T=setTimeout(function(){
+      if(SESS_LIVE!==live)return;
+      var y=window.scrollY;paintSessBody(code,D);window.scrollTo(0,y);
+    },250);
+  }
+  function err(e){if(SESS_LIVE===live)box.innerHTML='<div class="empty" style="color:var(--signal)">讀取失敗：'+(e.code||e.message)+'</div>'}
+  SESS_UNSUB.push(F.onSnapshot(F.doc(F.db,'questionStats',statId),function(d){D.stat=d.exists()?d.data():{};upd('s')},err));
+  SESS_UNSUB.push(F.onSnapshot(fbQ,function(q){var a=[];q.forEach(function(d){a.push(d.data())});D.fb=a;upd('f')},err));
+  SESS_UNSUB.push(F.onSnapshot(atQ,function(q){var a=[];q.forEach(function(d){a.push(d.data())});D.at=a;upd('a')},err));
+}
+async function paintSessBody(code,D0){
+  var box=$('#sessBody');if(!box)return;
   try{
-    var D=await sessionData(code), st=D.stat, pre=st.pre||{n:0}, post=st.post||{n:0};
+    var D=D0, st=D.stat, pre=st.pre||{n:0}, post=st.post||{n:0};
     var a=function(o){return o.n?Math.round(o.sum/o.n):'—'}, r=function(o){return o.n?Math.round((o.pass||0)/o.n*100)+'%':'—'};
-    var h='<div class="stats" style="margin-top:10px">'+
+    var h='<div class="hint" style="margin-top:8px;display:flex;align-items:center;gap:8px"><span class="pulse"></span>即時更新中．有人填寫會自動跳</div>'+
+      '<div class="stats" style="margin-top:10px">'+
       '<div class="stat"><div class="stat-n">'+(st.entered||0)+'</div><div class="stat-l">輸入代號人數</div></div>'+
       '<div class="stat"><div class="stat-n">'+pre.n+' → '+post.n+'</div><div class="stat-l">課前 → 課後作答</div></div>'+
       '<div class="stat"><div class="stat-n">'+D.fb.length+'</div><div class="stat-l">回饋份數</div></div></div>';
     h+='<div class="section-head"><h2>測驗</h2><span>課前 → 課後</span></div>'+
        '<div class="ans-line"><b>平均分</b><span>'+a(pre)+' → '+a(post)+'</span></div>'+
-       '<div class="ans-line"><b>及格率</b><span>'+r(pre)+' → '+r(post)+'</span></div>';
+       '<div class="ans-line"><b>及格率</b><span>'+r(pre)+' → '+r(post)+'</span></div>'+
+       (function(){var tp=projTop(D.at,'pre'),tq=projTop(D.at,'post');
+         var f=function(t){return t.names.length?t.score+' 分（'+t.names.length+' 人）':'—'};
+         return '<div class="ans-line"><b>最高分</b><span>'+f(tp)+' → '+f(tq)+'</span></div>';})();
     ['pre','post'].forEach(function(m){
       var g=st[m+'Guess'];if(!g||!g.n)return;
       var ga=Math.round(g.sum/g.n), ra=Math.round((g.real||0)/g.n), d=ra-ga;
@@ -5519,16 +5610,18 @@ if(rg)rg.addEventListener('click',async function(){
 var aa=$('#addArticle');
 if(aa)aa.addEventListener('click',function(){
   var d=new Date();
-  ARTICLES.unshift({id:'a'+Date.now(),cat:'disaster',t:'',c:'',v:0,
+  ARTICLES.unshift({id:'a'+Date.now(),cat:ART_F.cat==='firstaid'?'firstaid':'disaster',t:'',c:'',v:0,
     d:d.getFullYear()+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2),
-    b:['']});
-  renderArtEdit(true);refreshArts();
+    b:[''],ts:Date.now(),order:Date.now(),media:[]});
+  ART_F.q='';var sq=$('#artQ');if(sq)sq.value='';
+  setDirty(true);renderArtEdit(ARTICLES[0].id);refreshArts();
   toast('新增一篇，展開填標題與內文');
 });
 function refreshArts(){
   buildList('disaster','#listDisaster');buildList('firstaid','#listFirstaid');
   renderArtRank();
-  var t=$('#artTag');if(t)t.textContent=ARTICLES.length+' 篇';
+  var pc=ARTICLES.filter(function(a){return a.pinned}).length;
+  var t=$('#artTag');if(t)t.textContent=ARTICLES.length+' 篇'+(pc?'．置頂 '+pc:'');
 }
 /* ---- 文章裡的照片與影片 ---- */
 var ART_FOLDER={};
@@ -5660,20 +5753,45 @@ function artMediaUI(el,a){
   var ta=el.querySelector('[data-ak="b"]');if(ta)ta.addEventListener('blur',paintList);
   paintPick();paintList();
 }
-function renderArtEdit(openFirst){
+var ART_F={q:'',cat:'all',n:20};
+document.addEventListener('input',function(e){
+  if(e.target.id!=='artQ')return;ART_F.q=e.target.value.trim();ART_F.n=20;renderArtEdit();
+});
+document.addEventListener('click',function(e){
+  var c=e.target.closest('#artF [data-af]');
+  if(c){ART_F.cat=c.dataset.af;ART_F.n=20;setTimeout(function(){
+    $$('#artF [data-af]').forEach(function(x){x.classList.toggle('on',x===c)});renderArtEdit();},0);return;}
+  if(e.target.closest('#artEditMore')){ART_F.n+=20;renderArtEdit();}
+});
+function renderArtEdit(openId){
   var box=$('#artEdit');if(!box)return;box.innerHTML='';
+  if(!ART_F)ART_F={q:'',cat:'all',n:20};
+  if(openId===true)openId=ARTICLES[0]&&ARTICLES[0].id;
   if(!ARTICLES.length){box.innerHTML='<div class="empty">還沒有文章，按上面新增一篇。</div>';return;}
-  ARTICLES.forEach(function(a,i){
-    var el=document.createElement('div');el.className='qe'+(openFirst&&i===0?' open':'');
+  var list=artSorted(ARTICLES).filter(function(a){
+    if(ART_F.cat==='pinned'&&!a.pinned)return false;
+    if((ART_F.cat==='disaster'||ART_F.cat==='firstaid')&&a.cat!==ART_F.cat)return false;
+    return artMatch(a,ART_F.q);
+  });
+  var cnt=$('#artCount');if(cnt)cnt.textContent='共 '+list.length+' 篇'+(list.length!==ARTICLES.length?'（全部 '+ARTICLES.length+' 篇）':'');
+  if(!list.length){box.innerHTML='<div class="empty">沒有符合的文章。</div>';return;}
+  list.slice(0,ART_F.n).forEach(function(a){
+    var i=ARTICLES.indexOf(a);
+    var ymd=(function(){var m=String(a.d||'').match(/(\d{4})\D(\d{1,2})\D(\d{1,2})/);return m?m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2):''})();
+    var el=document.createElement('div');el.className='qe'+(openId&&openId===a.id?' open':'');
     el.innerHTML='<div class="qe-h"><div class="qe-n">'+(a.cat==='disaster'?'防':'急')+'</div>'+
-      '<div class="qe-t">'+(a.t||'（新文章）')+'</div>'+
-      '<div class="qe-x">👁 '+artViews(a)+'　編輯</div></div>'+
+      '<div class="qe-t">'+(a.t||'（新文章）')+'<div class="row-d" style="margin-top:2px">'+(a.d||'')+'</div></div>'+
+      '<button class="art-pin'+(a.pinned?' on':'')+'" data-pin title="置頂">📌</button>'+
+      '<div class="qe-x">👁 '+artViews(a)+'</div></div>'+
       '<div class="qe-b">'+
       '<div class="f" style="padding-top:12px"><div class="f-q" style="font-size:13px;color:var(--muted)">標題</div>'+
       '<input class="f-in" data-ak="t" value="'+(a.t||'').replace(/"/g,'&quot;')+'" placeholder="文章標題"></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">放在哪一區</div>'+
       '<div class="chips" data-one data-cat><span class="chip'+(a.cat==='disaster'?' on':'')+'" data-c="disaster">防災知識專區</span>'+
       '<span class="chip'+(a.cat==='firstaid'?' on':'')+'" data-c="firstaid">急救教育專區</span></div></div>'+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">發布日期</div>'+
+      '<div class="f-hint">沒置頂的文章照這個日期由新到舊排</div>'+
+      '<input class="f-in" type="date" data-adate value="'+ymd+'"></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">小分類</div>'+
       '<input class="f-in" data-ak="c" value="'+(a.c||'').replace(/"/g,'&quot;')+'" placeholder="例如：火災逃生"></div>'+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">內文</div>'+
@@ -5686,34 +5804,39 @@ function renderArtEdit(openFirst){
       '<div style="display:flex;gap:8px;margin-top:10px"><input class="f-in" data-amyt placeholder="YouTube 網址" style="flex:1;min-width:0;margin-top:0"><button class="qbtn" data-amytadd>加入</button></div>'+
       '<div data-amlist style="margin-top:6px"></div></div>'+
       '<div style="display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap">'+
-      '<span class="startog" data-m="up">↑ 上移</span><span class="startog" data-m="dn">↓ 下移</span>'+
       '<span class="startog" data-del>刪除這篇</span></div></div>';
-    el.querySelector('.qe-h').addEventListener('click',function(){el.classList.toggle('open')});
+    el.querySelector('.qe-h').addEventListener('click',function(e){if(e.target.closest('[data-pin]'))return;el.classList.toggle('open')});
+    el.querySelector('[data-pin]').addEventListener('click',function(e){
+      e.stopPropagation();a.pinned=!a.pinned;a.pinAt=a.pinned?Date.now():0;setDirty(true);
+      toast(a.pinned?'已置頂，記得按儲存文章':'已取消置頂');renderArtEdit();refreshArts();
+    });
+    el.querySelector('[data-adate]').addEventListener('change',function(e){
+      var v=e.target.value;if(!v)return;var p=v.split('-');
+      a.d=p[0]+'/'+p[1]+'/'+p[2];a.ts=new Date(+p[0],+p[1]-1,+p[2]).getTime();
+      el.querySelector('.qe-t .row-d').textContent=a.d;setDirty(true);refreshArts();
+    });
     el.querySelectorAll('[data-ak]').forEach(function(f){
       f.addEventListener('input',function(){
         if(f.dataset.ak==='b')a.b=f.value.split(/\n\s*\n/).map(function(x){return x.trim()}).filter(Boolean);
         else a[f.dataset.ak]=f.value;
-        if(f.dataset.ak==='t')el.querySelector('.qe-t').textContent=f.value||'（新文章）';
+        if(f.dataset.ak==='t')el.querySelector('.qe-t').firstChild.textContent=f.value||'（新文章）';
         refreshArts();
       });
     });
     el.querySelectorAll('[data-c]').forEach(function(c){
       c.addEventListener('click',function(){a.cat=c.dataset.c;el.querySelector('.qe-n').textContent=(a.cat==='disaster'?'防':'急');refreshArts();});
     });
-    el.querySelectorAll('[data-m]').forEach(function(b){
-      b.addEventListener('click',function(){
-        var k=b.dataset.m==='up'?i-1:i+1;if(k<0||k>=ARTICLES.length)return;
-        var t=ARTICLES[i];ARTICLES[i]=ARTICLES[k];ARTICLES[k]=t;
-        renderArtEdit();refreshArts();
-      });
-    });
     el.querySelector('[data-del]').addEventListener('click',function(){
       if(!confirm('刪除「'+(a.t||'這篇文章')+'」？'))return;
-      ARTICLES.splice(i,1);renderArtEdit();refreshArts();toast('已刪除');
+      ARTICLES.splice(ARTICLES.indexOf(a),1);setDirty(true);renderArtEdit();refreshArts();toast('已刪除，按儲存文章後生效');
     });
     artMediaUI(el,a);
     box.appendChild(el);
   });
+  if(list.length>ART_F.n){
+    var mb=document.createElement('button');mb.className='course-more';mb.id='artEditMore';
+    mb.innerHTML='顯示更多　還有 <b>'+(list.length-ART_F.n)+'</b> 篇';box.appendChild(mb);
+  }
 }
 var rq=$('#resyncQ');
 if(rq)rq.addEventListener('click',function(){toast('題庫已是最新．'+QBANK.length+' 題')});
@@ -5780,9 +5903,13 @@ document.addEventListener('click',function(e){
 });
 
 /* ---- 其他專題課程展開 ---- */
-var co=$('#chipOther');
-if(co)co.addEventListener('click',function(){
-  $('#otherBox').style.display=co.classList.contains('on')?'block':'none';
+// 選了「其他專題課程」才展開細項
+document.addEventListener('click',function(){
+  setTimeout(function(){
+    var ob=$('#otherBox');if(!ob)return;
+    var on=$$('#inviteTypes .chip').some(function(c){return c.classList.contains('on')&&c.textContent.indexOf('其他')>=0});
+    ob.style.display=on?'block':'none';
+  },0);
 });
 var bm=$('#budgetMode');
 if(bm)bm.addEventListener('click',function(e){
@@ -6381,7 +6508,7 @@ function renderArtRank(){
   if(!ARTICLES.length){box.innerHTML='<div class="empty">還沒有文章。</div>';return;}
   var all=ARTICLES.slice().sort(function(a,b){return artViews(b)-artViews(a)});
   var max=artViews(all[0])||1;
-  all.forEach(function(a){
+  all.slice(0,20).forEach(function(a){
     var r=document.createElement('div');r.className='trow';
     r.innerHTML='<span class="trow-n">'+a.t+'</span><span class="bar"><i style="width:'+(artViews(a)/max*100)+'%"></i></span>'+
       '<span class="trow-v">'+artViews(a).toLocaleString()+'</span>';
