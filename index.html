@@ -2574,7 +2574,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.17　2026/10/03';
+var APP_VERSION='v10.18　2026/10/03';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4090,8 +4090,9 @@ var FILE_JOBS={};      // 每個檔案只抓一次，抓過的再開會是瞬間
 var FV_WARM=false;
 function fvEndpoint(){return ((SITE.notify&&SITE.notify.endpoint)||'').trim()}
 function fvWarm(){     // 一進檔案下載頁就先叫醒 Apps Script，省掉 1～3 秒的啟動時間
+  // 用一個不存在的檔案去問，Apps Script 只會回「找不到檔案」，不會寄信也不會做任何事
   if(FV_WARM||!fvTouch())return;var ep=fvEndpoint();if(!ep)return;FV_WARM=true;
-  try{fetch(ep+(ep.indexOf('?')>=0?'&':'?')+'diag=1',{mode:'no-cors'}).catch(function(){})}catch(e){}
+  try{fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getFile',id:'warmup'})}).catch(function(){})}catch(e){}
 }
 function getFileJob(it){
   if(FILE_JOBS[it.id])return FILE_JOBS[it.id];
