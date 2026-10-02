@@ -2574,7 +2574,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.18　2026/10/03';
+var APP_VERSION='v10.16　2026/10/03';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2751,7 +2751,6 @@ function go(id){
   }
   if(id==='p-stats'&&!quizOpts().stats&&!EDITING){toast('講師還沒開放本堂統計');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
   if(HITMAP[id])countHit(HITMAP[id]);
-  if(id==='p-files')try{fvWarm()}catch(e){}
   if(id==='p-stats')loadClassStats();
   if(id==='p-top3')loadTop();
 }
@@ -4086,55 +4085,31 @@ document.addEventListener('click',function(e){
 });
 /* 檔案：在 App 裡預覽，不跳去雲端硬碟 App．下載走 Apps Script，再用手機的分享選單存檔 */
 var FV={it:null,file:null,err:null,job:0};
-var FILE_JOBS={};      // 每個檔案只抓一次，抓過的再開會是瞬間
-var FV_WARM=false;
-function fvEndpoint(){return ((SITE.notify&&SITE.notify.endpoint)||'').trim()}
-function fvWarm(){     // 一進檔案下載頁就先叫醒 Apps Script，省掉 1～3 秒的啟動時間
-  // 用一個不存在的檔案去問，Apps Script 只會回「找不到檔案」，不會寄信也不會做任何事
-  if(FV_WARM||!fvTouch())return;var ep=fvEndpoint();if(!ep)return;FV_WARM=true;
-  try{fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getFile',id:'warmup'})}).catch(function(){})}catch(e){}
-}
-function getFileJob(it){
-  if(FILE_JOBS[it.id])return FILE_JOBS[it.id];
-  var ep=fvEndpoint();
-  var p=!ep?Promise.reject(new Error('no-endpoint')):
-    fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getFile',id:it.id})})
+function fetchFileBlob(it,job){
+  var ep=((SITE.notify&&SITE.notify.endpoint)||'').trim();
+  if(!ep){FV.err='no-endpoint';fvPaint();return;}
+  fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getFile',id:it.id})})
     .then(function(r){return r.text()})
     .then(function(t){
+      if(job!==FV.job)return;
       var j;try{j=JSON.parse(t)}catch(e){throw new Error('old-script')}
       if(!j.ok||!j.data)throw new Error(j.error||'fail');
       var bin=atob(j.data),u8=new Uint8Array(bin.length);
       for(var i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
-      return new File([u8],j.name||it.name||'檔案',{type:j.mime||'application/octet-stream'});
-    });
-  p.catch(function(){delete FILE_JOBS[it.id]});   // 失敗的下次再試
-  FILE_JOBS[it.id]=p;return p;
-}
-function fetchFileBlob(it,job){
-  if(!fvTouch()){fvPaint();return;}              // 電腦直接下載，不用準備
-  getFileJob(it).then(function(f){if(job!==FV.job)return;FV.file=f;fvPaint();})
+      FV.file=new File([u8],j.name||it.name||'檔案',{type:j.mime||'application/octet-stream'});
+      fvPaint();
+    })
     .catch(function(e){if(job!==FV.job)return;FV.err=e.message||'fail';fvPaint();});
 }
-// 手指一碰到檔案就開始抓，打開預覽時通常已經好了一部分
-document.addEventListener('pointerdown',function(e){
-  var r=e.target.closest&&e.target.closest('[data-file]');if(!r||EDITING||!fvTouch())return;
-  var it=(SITE.files.items||[]).filter(function(x){return x.id===r.dataset.file})[0];if(it)getFileJob(it);
-},{passive:true});
 function fvPaint(){
   var v=$('#fileView');if(!v)return;var b=$('.fview-dl',v);
   b.disabled=false;
-  if(FV.file||!fvTouch())b.textContent='下載';
+  if(FV.file)b.textContent='下載';
   else if(FV.err)b.textContent='用雲端硬碟下載';
   else{b.textContent='準備中…';b.disabled=true;}
 }
 function fvDownload(){
   var it=FV.it;if(!it)return;
-  if(!fvTouch()){            // 電腦：瀏覽器直接下載
-    var a=document.createElement('a');
-    a.href='https://drive.google.com/uc?export=download&id='+encodeURIComponent(it.id);
-    a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();
-    setTimeout(function(){a.remove()},1000);return;
-  }
   if(FV.file){
     var f=FV.file;
     if(fvTouch()&&navigator.canShare&&navigator.canShare({files:[f]})){
