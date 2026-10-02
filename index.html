@@ -661,7 +661,10 @@ body.dirty #z-pro{padding-bottom:80px}
 .fview.on{display:flex;animation:fadeIn .25s ease both}
 .fview-h{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;border-bottom:1px solid var(--line)}
 .fview-t{flex:1;min-width:0;font-size:15px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fview-dl{flex:none;background:var(--ink);color:var(--paper);padding:9px 16px;font-size:14px;font-weight:600}
+.fview-dl{flex:none;background:var(--ink);color:var(--paper);border:0;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
+.fview-dl:disabled{opacity:.5;cursor:default}
+.fview-b{position:relative}
+.fview-b .fv-spin{position:absolute;left:50%;top:50%;margin:-17px 0 0 -17px;border-color:var(--line);border-top-color:var(--ink)}
 .fview-b{flex:1;min-height:0;background:var(--surface);display:flex;align-items:center;justify-content:center;overflow:auto}
 .fview-b iframe{width:100%;height:100%;border:0;display:block;background:var(--surface)}
 .fview-b img{max-width:100%;max-height:100%;object-fit:contain;display:block}
@@ -2571,7 +2574,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.14　2026/10/02';
+var APP_VERSION='v10.15　2026/10/02';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4080,29 +4083,79 @@ document.addEventListener('click',function(e){
   var it=(SITE.files.items||[]).filter(function(x){return x.id===f.dataset.file})[0]||{id:f.dataset.file,name:''};
   openFileView(it);countHit('files');
 });
-/* 檔案：在 App 裡預覽，不跳去雲端硬碟 App */
+/* 檔案：在 App 裡預覽，不跳去雲端硬碟 App．下載走 Apps Script，再用手機的分享選單存檔 */
+var FV={it:null,file:null,err:null,job:0};
+function fetchFileBlob(it,job){
+  var ep=((SITE.notify&&SITE.notify.endpoint)||'').trim();
+  if(!ep){FV.err='no-endpoint';fvPaint();return;}
+  fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getFile',id:it.id})})
+    .then(function(r){return r.text()})
+    .then(function(t){
+      if(job!==FV.job)return;
+      var j;try{j=JSON.parse(t)}catch(e){throw new Error('old-script')}
+      if(!j.ok||!j.data)throw new Error(j.error||'fail');
+      var bin=atob(j.data),u8=new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+      FV.file=new File([u8],j.name||it.name||'檔案',{type:j.mime||'application/octet-stream'});
+      fvPaint();
+    })
+    .catch(function(e){if(job!==FV.job)return;FV.err=e.message||'fail';fvPaint();});
+}
+function fvPaint(){
+  var v=$('#fileView');if(!v)return;var b=$('.fview-dl',v);
+  b.disabled=false;
+  if(FV.file)b.textContent='儲存到手機';
+  else if(FV.err)b.textContent='用雲端硬碟下載';
+  else{b.textContent='準備中…';b.disabled=true;}
+}
+function fvDownload(){
+  var it=FV.it;if(!it)return;
+  if(FV.file){
+    var f=FV.file;
+    if(navigator.canShare&&navigator.canShare({files:[f]})){
+      navigator.share({files:[f]}).catch(function(e){if(e&&e.name!=='AbortError')fvSaveLink(f);});
+    }else fvSaveLink(f);
+    return;
+  }
+  // 沒辦法透過 Apps Script 取得：退回用雲端硬碟開啟
+  window.open('https://drive.google.com/file/d/'+encodeURIComponent(it.id)+'/view','_blank','noopener');
+}
+function fvSaveLink(f){
+  var url=URL.createObjectURL(f),a=document.createElement('a');
+  a.href=url;a.download=f.name;document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(url);a.remove()},5000);
+}
 function openFileView(it){
   var v=$('#fileView');
   if(!v){
     v=document.createElement('div');v.id='fileView';v.className='fview';
     v.innerHTML='<div class="fview-h"><button class="back" data-fvclose><b>←</b>返回</button>'+
-      '<div class="fview-t"></div><a class="fview-dl" target="_blank" rel="noopener">下載</a></div>'+
-      '<div class="fview-b"></div><div class="fview-n">預覽是雲端硬碟提供的．要存到手機請按右上角「下載」</div>';
+      '<div class="fview-t"></div><button class="fview-dl" data-fvdl>準備中…</button></div>'+
+      '<div class="fview-b"></div><div class="fview-n">按「儲存到手機」會跳出分享選單，選「儲存到檔案」或「儲存影像」</div>';
     document.body.appendChild(v);
-    v.addEventListener('click',function(e){if(e.target.closest('[data-fvclose]'))closeFileView()});
+    v.addEventListener('click',function(e){
+      if(e.target.closest('[data-fvclose]'))closeFileView();
+      else if(e.target.closest('[data-fvdl]'))fvDownload();
+    });
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&v.classList.contains('on'))closeFileView()});
   }
+  FV={it:it,file:null,err:null,job:FV.job+1};
   var name=String(it.label||it.name||'檔案');
   $('.fview-t',v).textContent=name;
-  $('.fview-dl',v).href='https://drive.google.com/uc?export=download&id='+encodeURIComponent(it.id);
   var isImg=/\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(it.name||'');
-  $('.fview-b',v).innerHTML=isImg
+  var body=$('.fview-b',v);
+  body.innerHTML='<span class="yt-spin fv-spin"></span>'+(isImg
     ?'<img alt="" src="'+driveImg(it.id,2000)+'">'
-    :'<iframe title="'+name.replace(/"/g,'')+'" src="https://drive.google.com/file/d/'+encodeURIComponent(it.id)+'/preview" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+    :'<iframe title="'+name.replace(/"/g,'')+'" src="https://drive.google.com/file/d/'+encodeURIComponent(it.id)+'/preview" allow="autoplay;fullscreen" allowfullscreen></iframe>');
+  var media=body.querySelector('img,iframe'),sp=body.querySelector('.fv-spin');
+  media.addEventListener('load',function(){if(sp)sp.remove()});
+  media.addEventListener('error',function(){if(sp)sp.remove()});
+  fvPaint();fetchFileBlob(it,FV.job);
   v.classList.add('on');document.body.style.overflow='hidden';
 }
 function closeFileView(){
   var v=$('#fileView');if(!v)return;
+  FV.job++;FV.file=null;
   v.classList.remove('on');$('.fview-b',v).innerHTML='';document.body.style.overflow='';
 }
 document.addEventListener('focusout',function(e){
