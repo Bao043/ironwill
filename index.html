@@ -1815,10 +1815,10 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       </div>
 
       <div class="f"><div class="f-q">性別<span class="req">必填</span></div>
-        <div class="chips"><span class="chip">男性</span><span class="chip">女性</span></div></div>
+        <div class="chips" data-one><span class="chip">男性</span><span class="chip">女性</span></div></div>
 
       <div class="f"><div class="f-q">年齡<span class="req">必填</span></div>
-        <div class="chips">
+        <div class="chips" data-one>
           <span class="chip">未滿 20</span><span class="chip">20–29</span><span class="chip">30–39</span>
           <span class="chip">40–49</span><span class="chip">50–59</span><span class="chip">60–69</span>
           <span class="chip">70 以上</span>
@@ -1850,6 +1850,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="done-view" id="fbDone">
       <h2 class="display">謝謝你的回饋。</h2>
       <p class="sub" style="margin-top:10px">你的評分已經併進全班平均，文字回饋講師會逐則看。</p>
+      <div id="fbAgain" style="display:none;margin-top:12px;font-size:13.5px;color:var(--muted)">這堂課的回饋你已經填過了，每堂課每人填一次就好。</div>
       <svg class="trace" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true" style="margin-top:4px">
         <path d="M0 25 L160 25 L173 25 L181 7 L190 41 L199 18 L212 25 L400 25"/>
       </svg>
@@ -2574,7 +2575,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.19　2026/10/03';
+var APP_VERSION='v10.20　2026/10/03';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2725,6 +2726,10 @@ function show(id,isBack){
    ['p-whisper','#wForm','#wDone']].forEach(function(t){
     if(id!==t[0])return;
     var f=$(t[1]),d=$(t[2]);
+    if(id==='p-feedback'&&fbDone()&&!EDITING){         // 這堂已經填過：直接顯示完成畫面
+      if(f&&d){f.style.display='none';d.classList.add('is-on');var ag=$('#fbAgain');if(ag)ag.style.display='block';}
+      return;
+    }
     if(f&&d&&d.classList.contains('is-on')){f.style.display='';d.classList.remove('is-on');}
   });
   $$('.rv',pg).forEach(function(n){n.classList.remove('in')});
@@ -6975,12 +6980,21 @@ function submitPair(formId,doneId){
   $$('.trace',d).forEach(function(t){setTimeout(function(){t.classList.add('in')},60)});
   window.scrollTo({top:0,behavior:'instant'});
 }
+function fbKey(){return 'fbdone:'+SID()}
+function fbDone(){try{return !!localStorage.getItem(fbKey())}catch(e){return false}}
+var FB_SENDING=false;
 $('#fbSend').addEventListener('click',function(){
+  if(FB_SENDING)return;
+  if(fbDone()&&!PREVIEW&&!EDITING){toast('這堂課的回饋你已經填過了');submitPair('#fbForm','#fbDone');
+    var ag=$('#fbAgain');if(ag)ag.style.display='block';return;}
   var fields=collectFields('#fbForm');
   var miss=missingRequired(fields);
   if(miss.length){toast('還沒填：'+miss.slice(0,2).join('、'));return;}
+  FB_SENDING=true;setTimeout(function(){FB_SENDING=false},1500);
+  var ag0=$('#fbAgain');if(ag0)ag0.style.display='none';
   submitPair('#fbForm','#fbDone');
   if(PREVIEW){toast('預覽模式：沒有真的送出');return;}
+  try{localStorage.setItem(fbKey(),String(Date.now()))}catch(e){}
   if(window.fb){var F=window.fb;
     F.addDoc(F.collection(F.db,'courses',F.COURSE,'feedback'),
       {session:CODE,fields:fields,createdAt:F.serverTimestamp()})
