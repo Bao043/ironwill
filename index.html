@@ -1119,7 +1119,12 @@ body.editing .wrap{padding-bottom:140px}
 .wi-h{display:flex;gap:11px;cursor:pointer;align-items:flex-start}
 .wi-dot{width:7px;height:7px;border-radius:50%;background:var(--signal);flex:none;margin-top:9px}
 .wi.read .wi-dot,.wi.done .wi-dot{background:var(--line)}
-.wi-t{flex:1;font-size:14.5px;line-height:1.75}
+.wi-t{flex:1;min-width:0;font-size:14.5px;line-height:1.75;overflow-wrap:anywhere;word-break:break-word;white-space:pre-wrap}
+/* 收合時最多顯示 3 行，點開才看全文 */
+.wi:not(.open) .wi-t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.wi-c span,.wi-b .ans-line span{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.wi-b{min-width:0}
+.wi-more{font-size:12px;color:var(--muted);margin-top:2px}
 .wi.read .wi-t,.wi.done .wi-t{color:var(--ink-soft)}
 .wi-m{font-family:var(--mono);font-size:10.5px;color:var(--muted);flex:none;padding-top:5px}
 .wi-b{display:none;padding:12px 0 2px 18px}
@@ -1989,7 +1994,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
         <p class="sub" style="margin-top:8px" data-txt="wSub">課堂上沒問完的、覺得怪怪的、或只是想講一句話。</p>
       </div>
       <div class="whisper-box">
-        <textarea id="wt" placeholder="在這裡寫下來…"></textarea>
+        <textarea id="wt" maxlength="500" placeholder="在這裡寫下來…"></textarea>
         <div class="whisper-foot"><span id="wc">0 / 500</span><span>不會公開</span></div>
       </div>
       <div class="lock"><span aria-hidden="true">🔒</span><div data-txt="wLock"><b>只有講師看得到。</b>不會顯示在課程裡，也不會有其他學員看到。系統不記錄姓名，除非你自己寫在內容裡。</div></div>
@@ -2575,7 +2580,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.20　2026/10/03';
+var APP_VERSION='v10.21　2026/10/04';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -5092,12 +5097,13 @@ function iRender(){
   updateCounts();
   box.innerHTML='';
   if(!list.length){box.innerHTML='<div class="empty">'+(iFilter==='trash'?'垃圾桶是空的。':'目前沒有邀約。')+'</div>';return;}
-  list.forEach(function(v){
+  list.forEach(function(v0){
+   var v=escObj(v0);
    try{
     var el=document.createElement('div');
     el.className='wi '+((v.status||'new')==='new'?'':'read');
-    var t=Array.isArray(v.types)?v.types.join('、'):String(v.types||'');
-    var S=function(x){return x==null?'':String(x)};
+    var t=escH(Array.isArray(v0.types)?v0.types.join('、'):String(v0.types||''));
+    var S=function(x){return escH(x)};
     el.innerHTML='<div class="wi-h"><span class="wi-dot"></span><div class="wi-t">'+
       (v.org||'（未填單位）')+((v.status||'new')!=='new'?'<span class="wtag done">已回覆</span>':'')+
       '<div class="row-d" style="margin-top:3px">'+(t||'未選類型')+'</div></div>'+
@@ -5117,10 +5123,10 @@ function iRender(){
     var act=el.querySelector('.wact');
     function btn(label,fn){var b=document.createElement('button');b.textContent=label;
       b.addEventListener('click',function(e){e.stopPropagation();fn()});act.appendChild(b);}
-    btn('複製 Email',function(){if(navigator.clipboard)navigator.clipboard.writeText(v.email||'');toast('已複製')});
-    if(v.phone)btn('複製電話',function(){navigator.clipboard&&navigator.clipboard.writeText(v.phone);toast('已複製')});
+    btn('複製 Email',function(){if(navigator.clipboard)navigator.clipboard.writeText(v0.email||'');toast('已複製')});
+    if(v.phone)btn('複製電話',function(){navigator.clipboard&&navigator.clipboard.writeText(v0.phone);toast('已複製')});
     if((v.status||'new')==='new'&&v.status!=='deleted')btn('標為已回覆',async function(){
-      v.status='replied';iRender();
+      v0.status='replied';iRender();
       var F=window.fb;
       try{await F.updateDoc(F.doc(F.db,'invites',v.id),{status:'replied',handledBy:OPERATOR||''})}
       catch(e){toast('更新失敗')}
@@ -6052,6 +6058,8 @@ var WMSG=[];
 var WTRASH=[];
 var LIVE=false;   // 連上 Firestore 之後改 true，示範資料就退場
 var wFilter='all';
+function escH(x){return x==null?'':String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escObj(o){var r={};Object.keys(o||{}).forEach(function(k){var x=o[k];r[k]=typeof x==='string'?escH(x):x});return r}
 function wRender(){
   var box=$('#wInbox');if(!box)return;
   var list = wFilter==='trash' ? WTRASH
@@ -6071,9 +6079,9 @@ function wRender(){
     el.className='wi '+(w.st==='unread'?'':'read')+(w.st==='done'?' done':'');
     var tag = w.st==='todo'?'<span class="wtag todo">需處理</span>'
             : w.st==='done'?'<span class="wtag done">已處理</span>':'';
-    el.innerHTML='<div class="wi-h"><span class="wi-dot"></span><div class="wi-t">'+w.t+tag+
+    el.innerHTML='<div class="wi-h"><span class="wi-dot"></span><div class="wi-t">'+escH(w.t)+tag+
       '</div><div class="wi-m">'+w.m+'</div></div><div class="wi-b">'+
-      (w.c?'<div class="wi-c"><em>聯絡</em><span>'+w.c+'</span></div>':'')+
+      (w.c?'<div class="wi-c"><em>聯絡</em><span>'+escH(w.c)+'</span></div>':'')+
       '<div class="wact"></div></div>';
     var act=el.querySelector('.wact');
     function btn(label,fn){
