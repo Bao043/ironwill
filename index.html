@@ -1123,6 +1123,16 @@ body.editing .wrap{padding-bottom:140px}
 /* 收合時最多顯示 3 行，點開才看全文 */
 .wi:not(.open) .wi-t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .wi-c span,.wi-b .ans-line span{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+/* v10.22 回饋長文字不跑版 */
+#sessBody .ans-line span,#sessBody .section-head h2,#sessBody .dist-k{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+#sessBody .dist{max-width:100%}
+#sessBody .dist-k{line-height:1.4}
+#sessBody .dist-n{white-space:nowrap;display:flex;align-items:center}
+#sessBody .dists{min-width:0}
+.qe-t{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.fb-txt{margin:6px 0;padding:10px 12px;background:var(--surface);border:1px solid var(--line-soft);font-size:14px;line-height:1.75;color:var(--ink);overflow-wrap:anywhere;word-break:break-word;white-space:pre-wrap;min-width:0;max-width:100%;box-sizing:border-box}
+.fb-txt.clip:not(.open){display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.fb-more{display:block;font-family:var(--mono);font-size:11px;color:var(--signal);margin:-2px 0 8px;cursor:pointer;background:none;border:0;padding:0}
 .wi-b{min-width:0}
 .wi-more{font-size:12px;color:var(--muted);margin-top:2px}
 .wi.read .wi-t,.wi.done .wi-t{color:var(--ink-soft)}
@@ -2580,7 +2590,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.21　2026/10/04';
+var APP_VERSION='v10.22　2026/10/06';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -5473,20 +5483,34 @@ async function paintSessBody(code,D0){
         h+='<div class="ans-line"><b>'+lb.slice(0,5)+'</b><span class="dists">'+Object.keys(cnt).sort(function(x,y){return cnt[y]-cnt[x]})
           .map(function(k){return '<span class="dist"><span class="dist-k">'+k.replace(/</g,'&lt;')+'</span><span class="dist-n">'+cnt[k]+' 人</span></span>'}).join('')+'</span></div>';
       }else{
-        h+='<div class="section-head"><h2 style="font-size:12px">'+lb+'</h2><span>'+vals.length+' 則</span></div>'+
-          vals.map(function(v){return '<div class="note" style="margin:6px 0;padding:10px 12px;background:var(--surface)">'+v.replace(/</g,'&lt;')+'</div>'}).join('');
+        h+='<div class="section-head"><h2 style="font-size:12px">'+String(lb).replace(/</g,'&lt;')+'</h2><span>'+vals.length+' 則</span></div>'+
+          vals.map(function(v){return '<div class="fb-txt">'+v.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div>'}).join('');
       }
     });
     h+='<div class="section-head"><h2>下載</h2><span>CSV</span></div>'+
        '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="qbtn" data-dl="at" data-code="'+code+'">測驗紀錄（'+D.at.length+'）</button>'+
        '<button class="qbtn" data-dl="fb" data-code="'+code+'">回饋紀錄（'+D.fb.length+'）</button></div>';
     box.innerHTML=h;
+    $$('#sessBody .fb-txt').forEach(function(el){
+      el.classList.add('clip');
+      var hid=!el.offsetParent, txt=el.textContent||'';
+      if(hid?(txt.length>90||txt.split('\n').length>4):el.scrollHeight>el.clientHeight+2){
+        var b=document.createElement('button');b.type='button';b.className='fb-more';b.textContent='展開全文 ▾';
+        el.parentNode.insertBefore(b,el.nextSibling);
+      }else el.classList.remove('clip');
+    });
     SESS_CACHE={code:code,D:D};
     var tg=$('#fbTag');
     if(tg)tg.textContent=(code==='all'?'全部':code===CODE?'本堂':'第 '+code+' 堂')+'．作答 '+D.at.length+'．回饋 '+D.fb.length;
   }catch(err){box.innerHTML='<div class="empty" style="color:var(--signal)">讀取失敗：'+(err.code||err.message)+'</div>'}
 }
 var SESS_CACHE=null;
+document.addEventListener('click',function(e){
+  var m=e.target.closest('.fb-more'),t=m?m.previousElementSibling:e.target.closest('.fb-txt.clip');
+  if(!t||!t.classList.contains('fb-txt'))return;
+  var o=t.classList.toggle('open');
+  var b=t.nextElementSibling;if(b&&b.classList.contains('fb-more'))b.textContent=o?'收合 ▴':'展開全文 ▾';
+});
 document.addEventListener('click',async function(e){
   var t=e.target.closest('[data-top]');
   if(t){
