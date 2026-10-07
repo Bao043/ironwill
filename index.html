@@ -78,7 +78,13 @@ h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.01em}
 .back:hover{border-color:var(--ink)}
 .back:active{transform:translateX(-3px);background:var(--surface)}
 .back b{font-size:16px;font-weight:400;line-height:1}
-.nav-t{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:0}
+.nav-t{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-brand{display:flex;align-items:center;gap:7px;flex:none}
+.nav-brand img{width:38px;height:auto;display:block}
+.nav-brand img:not([src]){display:none}
+.nav-brand b{font-family:var(--sans);font-weight:600;font-size:12.5px;letter-spacing:.16em;white-space:nowrap}
+.nav-brand.off{display:none}
+@media (max-width:340px){.nav-brand b{display:none}}
 
 .page{display:none}
 .page.is-on{display:block;animation:pin .34s cubic-bezier(.22,.9,.3,1)}
@@ -745,10 +751,92 @@ body.dirty #z-pro{padding-bottom:80px}
 @keyframes popIn{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){.reveal .pop,.reveal .rv-names span,.reveal .rv-k::before{animation:none}}
 
+/* 挑戰題庫 */
+.ch-cards{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.ch-card{display:flex;align-items:center;gap:16px;width:100%;box-sizing:border-box;text-align:left;font:inherit;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);padding:22px 16px;cursor:pointer;-webkit-appearance:none;appearance:none;
+  -webkit-tap-highlight-color:transparent;transition:border-color .18s ease,transform .18s ease}
+.ch-card:hover{border-color:var(--ink)}
+.ch-card:active{transform:scale(.99)}
+.ch-card>*{pointer-events:none}
+.ch-n{font-family:var(--mono);font-size:28px;line-height:1;color:var(--signal);flex:none;width:42px}
+.ch-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ch-k{font-size:17px;font-weight:600;letter-spacing:.04em}
+.ch-k i{font-style:normal;color:var(--muted);font-weight:400}
+.ch-d{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.ch-go{color:var(--signal);font-size:18px;flex:none}
+.ch-q{font-size:18px;line-height:1.7;margin-top:10px;overflow-wrap:anywhere}
+.ch-opts{margin-top:14px}
+.ch-res-l{font-size:14px;color:var(--muted);margin-top:22px}
+.ch-score{font-family:var(--mono);font-size:68px;line-height:1.05;font-weight:500;margin-top:4px}
+.ch-score small{font-size:22px;color:var(--muted)}
+.ch-right{font-size:15.5px;margin-top:8px}
+.ch-right b{font-family:var(--mono);font-weight:500}
+.ch-line{border-top:1px solid var(--line);margin:22px 0 4px}
+.ch-revbtn{display:block;width:100%;text-align:left;background:none;border:0;padding:14px 0;font:inherit;font-size:15.5px;
+  color:var(--signal);cursor:pointer}
+.ch-rev .ans-q,.ch-rev .ans-line span{min-width:0;overflow-wrap:anywhere}
+#chBody .row{cursor:pointer}
+.chq{border-bottom:1px solid var(--line-soft)}
+.chq-h{display:flex;gap:12px;align-items:flex-start;padding:13px 0;cursor:pointer}
+.chq-t{flex:1;min-width:0;font-size:14.5px;line-height:1.6;overflow-wrap:anywhere}
+.chq-s{flex:none;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;line-height:1.5;min-width:58px}
+.chq-s b{display:block;font-size:15px;color:var(--ink);font-weight:500}
+.chq-s b.lo{color:var(--signal)}
+.chq-b{display:none;padding-bottom:12px}
+.chq.open .chq-b{display:block}
+.chq.open .chq-h .chq-t{color:var(--signal)}
+
+/* 挑戰題庫 v10.24 */
+.tile.tile-lock{background:var(--paper);border-style:dashed}
+.tile.tile-lock svg,.tile.tile-lock .tile-t{opacity:.35}
+.tile.tile-lock:hover svg{transform:none}
+.tile.tile-lock::after{display:none}
+.tile-badge{position:absolute;top:12px;right:12px;background:var(--signal);color:#fff;font-size:11px;font-weight:600;
+  letter-spacing:.06em;padding:4px 8px;line-height:1.2;transform:rotate(3deg)}
+.tile-lk{display:block;font-family:var(--mono);font-size:11px;color:var(--signal);margin-top:6px;letter-spacing:.02em;line-height:1.4}
+.ch-c{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.ch-card.loading{opacity:.55}
+.ch-card.loading .ch-go{animation:chBlink .8s ease-in-out infinite alternate}
+@keyframes chBlink{to{opacity:.2}}
+.ch-mode{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.ch-mode button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;border:1px solid var(--line);
+  background:none;color:var(--ink);font:inherit;padding:11px 12px;cursor:pointer}
+.ch-mode button b{font-size:15px;font-weight:600}
+.ch-mode button span{font-size:11.5px;color:var(--muted)}
+.ch-mode button.on{border-color:var(--signal);background:var(--signal-soft)}
+.ch-mode button.on b{color:var(--signal)}
+.ch-prev{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;padding:11px 12px;background:var(--surface);
+  font-size:13px;line-height:1.6;color:var(--ink-soft);overflow-wrap:anywhere}
+.ch-prev-k{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.1em}
+.ch-prev-t{display:inline-flex;gap:6px;align-items:center}
+.ch-prev-t b{background:var(--signal);color:#fff;font-size:11px;padding:2px 7px;font-weight:600}
+.chq-no{font-family:var(--mono);font-size:11px;color:var(--muted);margin-right:8px}
+.chq-tag{font-style:normal;font-size:10.5px;color:var(--signal);border:1px solid var(--signal);padding:0 5px;margin-left:6px;white-space:nowrap}
+.chq.off .chq-tx{opacity:.45;text-decoration:line-through}
+.chq-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line-soft);margin:4px 0 10px}
+.chq-nums span{display:flex;flex-direction:column;align-items:center;padding:8px 0;font-size:11px;color:var(--muted);border-right:1px solid var(--line-soft)}
+.chq-nums span:last-child{border-right:0}
+.chq-nums b{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--ink)}
+.chq-dist{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.chq-bar{position:relative;display:flex;gap:8px;align-items:center;padding:7px 9px;border:1px solid var(--line-soft);font-size:12.5px;overflow:hidden}
+.chq-bar i{position:absolute;left:0;top:0;bottom:0;background:var(--line);opacity:.45;z-index:0}
+.chq-bar.ok i{background:var(--ok);opacity:.22}
+.chq-bar>span{position:relative;z-index:1}
+.chq-bk{font-family:var(--mono);font-size:11px;color:var(--muted);flex:none}
+.chq-bar.ok .chq-bk{color:var(--ok)}
+.chq-bt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chq-bv{flex:none;font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+.ch-imp{border:1px solid var(--line);padding:12px;margin-top:12px}
+.ch-imp-h{font-size:14.5px}
+.ch-imp-h b{font-family:var(--mono);color:var(--signal)}
+.ch-imp-bad{font-size:12.5px;line-height:1.7;color:var(--signal);margin-top:8px;overflow-wrap:anywhere}
+#chAdmin textarea.f-in{resize:vertical}
+
 /* 心電圖：像監視器一樣掃過去 */
 .hero-ekg .ekg{stroke-linecap:round;stroke-linejoin:round;stroke-width:1.9;
-  stroke-dasharray:1400;stroke-dashoffset:1400;animation:ekgSweep 4.6s linear infinite}
-@keyframes ekgSweep{0%{stroke-dashoffset:1400}62%{stroke-dashoffset:0}
+  stroke-dasharray:640;stroke-dashoffset:640;animation:ekgSweep 4.6s linear infinite}
+@keyframes ekgSweep{0%{stroke-dashoffset:640}62%{stroke-dashoffset:0}
   86%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:.18}}
 @media (prefers-reduced-motion:reduce){.hero-ekg .ekg{animation:none;stroke-dashoffset:0}}
 
@@ -1540,7 +1628,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <span>預覽模式 · 送出不會存檔</span><button id="pvExit">離開預覽</button>
   </div>
 
-  <div class="nav hide" id="nav"><button class="back" id="back" aria-label="返回"><b>←</b>返回</button><span class="nav-t" id="navt"></span></div>
+  <div class="nav hide" id="nav"><button class="back" id="back" aria-label="返回"><b>←</b>返回</button><span class="nav-t" id="navt"></span><span class="nav-brand" id="navBrand" aria-hidden="true"><img alt="" decoding="async"><b>IRON WILL</b></span></div>
 
   <!-- 課程首頁 -->
   <section class="page is-on" id="p-home">
@@ -1636,7 +1724,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="section-head rv"><h2>聯絡方式</h2><span>四種都可以</span></div>
     <div class="ig rv" data-ig>
       <div class="ig-mark"></div>
-      <div class="ig-b"><div class="ig-h ig-handle"></div><div class="ig-d" data-ctn="ig">現場紀錄與上課花絮</div></div>
+      <div class="ig-b"><div class="ig-h" data-ctn="igName">IRON WILL｜消防員上工去</div><div class="ig-d" data-ctn="ig">消防員第一線故事紀實</div></div>
       <div class="ig-go">追蹤 →</div>
     </div>
     <div class="cts rv" id="abContacts"></div>
@@ -1990,6 +2078,11 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
   </section>
 
   <!-- 悄悄話 -->
+  <!-- 挑戰題庫 -->
+  <section class="page" id="p-challenge">
+    <div id="chBody" style="padding-top:22px"></div>
+  </section>
+
   <section class="page" id="p-files">
     <div class="pg-k rv">檔案下載</div>
     <h1 class="display rv" id="filesTitle">上課用得到的教材</h1>
@@ -2139,6 +2232,13 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="section-head"><h2>及格線</h2><span>分</span></div>
     <div class="f" style="padding-top:8px"><input class="f-in" id="edPass" value="60" inputmode="numeric"></div>
     <button class="btn btn-quiet" data-save="course">儲存測驗設定</button>
+  </div></div>
+
+  <div class="grp" id="grp-challenge"><div class="grp-h"><span class="grp-t">挑戰題庫</span><span class="grp-m" id="chTag"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">給學員和民眾自己練習的題庫，跟上課的課前、課後測驗分開。分「消防安全」「急救教育」兩個主題，每次隨機抽 10 題。</p>
+    <div id="chAdmin"></div>
+    <button class="btn btn-quiet" data-save="chbank">儲存挑戰題庫</button>
   </div></div>
 
   <div class="grp" id="grp-files">
@@ -2590,7 +2690,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.22　2026/10/06';
+var APP_VERSION='v10.24　2026/10/07';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2724,7 +2824,7 @@ function reveal(root){
 /* ---- router ---- */
 var TITLES={'p-about':'講師介紹','p-quiz':'線上測驗','p-run':'課後測驗','p-explain':'題目詳解','p-stats':'本堂統計','p-code':'上課代號','p-profile':'基本資料','p-name':'課後測驗','p-top3':'前三名',
   'p-feedback':'課程回饋','p-invite':'課程邀約','p-disaster':'防災知識專區','p-firstaid':'急救教育專區',
-  'p-article':'文章','p-whisper':'傳聲悄悄話'};
+  'p-article':'文章','p-whisper':'傳聲悄悄話','p-challenge':'挑戰題庫'};
 var stack=['p-home'];
 function show(id,isBack){
   if(id==='p-about')requestAnimationFrame(function(){try{layoutMosaic()}catch(e){}});
@@ -2735,6 +2835,11 @@ function show(id,isBack){
   var nav=$('#nav');
   if(id==='p-home'){nav.classList.add('hide');}
   else{nav.classList.remove('hide');$('#navt').textContent=TITLES[id]||'';}
+  try{var nb=$('#navBrand'),ni=nb&&nb.querySelector('img');
+    if(ni&&!ni.getAttribute('src')&&typeof EMBLEM_SRC==='string')ni.src=EMBLEM_SRC;
+    // 講師介紹頁本身就有大的品牌頁首，那一頁不重複
+    if(nb)nb.classList.toggle('off',id==='p-about'&&!!(SITE.brand&&SITE.brand.head&&SITE.brand.head.on));
+  }catch(e){}
   var pg=$('#'+id);
   // 重新進入表單頁時，把送出後的完成畫面收起來
   [['p-invite','#ivForm','#ivDone'],['p-feedback','#fbForm','#fbDone'],
@@ -2755,7 +2860,7 @@ function show(id,isBack){
   stopPlay();
 }
 var HITMAP={'p-files':'files','p-about':'about','p-quiz':'quiz','p-feedback':'feedback','p-invite':'invite',
-            'p-disaster':'disaster','p-firstaid':'firstaid','p-whisper':'whisper'};
+            'p-disaster':'disaster','p-firstaid':'firstaid','p-whisper':'whisper','p-challenge':'challenge'};
 function go(id){
   if(id!==stack[stack.length-1]){stack.push(id);}
   show(id,false);
@@ -2768,6 +2873,11 @@ function go(id){
     if(stack[stack.length-2]!=='p-run'&&!REV_KEEP)REV_MODE=null;
     REV_KEEP=false;
     renderExplain();
+  }
+  if(id==='p-challenge'){
+    var cst=chState();
+    if(!cst.open&&!EDITING){toast(cst.note||'挑戰題庫目前沒有開放');stack.pop();show(stack[stack.length-1]||'p-home',true);return;}
+    chEnter();
   }
   if(id==='p-stats'&&!quizOpts().stats&&!EDITING){toast('講師還沒開放本堂統計');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
   if(HITMAP[id])countHit(HITMAP[id]);
@@ -3091,6 +3201,720 @@ function renderExplain(){
 }
 renderQ();
 
+/* ================= 挑戰題庫（給民眾自己練習，跟上課測驗分開） ================= */
+var CH_TOPICS={
+  fire:{n:'01',k:'FIRE',t:'消防安全',d:'火災 × 地震 × 防火 × 避難'},
+  rescue:{n:'02',k:'RESCUE',t:'急救教育',d:'CPR × AED × OHCA × 急救'}
+};
+var CH_N=10;
+var CH_DEF={
+ fire:[
+  {id:'f01',q:'住宅用火災警報器（住警器）最優先、一定要裝的位置是哪裡？',o:['陽台','浴室','臥室','玄關'],a:2,ex:'火災死亡多半發生在睡覺時，人睡著聞不到煙。臥室裝住警器，才能在煙一進來就把人叫醒。另外樓梯、走廊、廚房也建議安裝。'},
+  {id:'f02',q:'廚房比較適合裝哪一種住警器？',o:['偵煙式','定溫式（偵熱）','哪一種都不用裝','一氧化碳警報器就好'],a:1,ex:'廚房平常煮菜就有油煙和水氣，裝偵煙式容易誤報。定溫式是溫度到了才響，比較適合廚房。'},
+  {id:'f03',q:'打開房門發現走廊已經濃煙密布，最好的做法是？',o:['憋氣衝過走廊','用濕毛巾摀住口鼻往外衝','立刻關上房門，留在房內求救','躲進浴室'],a:2,ex:'「小火快跑，濃煙關門」。濃煙裡幾口就可能失去意識。關上門、用毛巾或衣物塞住門縫，到窗邊打 119 告訴對方你在哪一間。'},
+  {id:'f04',q:'火災避難口訣「小火快跑，濃煙＿＿」，空格是？',o:['趴下','關門','往上跑','開窗'],a:1,ex:'火還小、煙還沒擴散時趕快離開；煙已經擋住逃生路線時，就關門避難，一扇關著的門能擋住煙和熱很長一段時間。'},
+  {id:'f05',q:'火災時要開門逃生之前，應該先做什麼？',o:['用手背碰門把或門板，感覺溫度','直接用力打開','先打開窗戶讓空氣流通','先回去拿貴重物品'],a:0,ex:'門很燙代表外面可能已經是火或高溫濃煙，不要開，改成關門避難。用手背是因為就算燙到，也不會傷到抓握用的手掌。'},
+  {id:'f06',q:'大樓發生火災時，可以搭電梯逃生嗎？',o:['可以，比較快','人多時可以','不可以，要走樓梯','只要電梯還有電就可以'],a:2,ex:'火災時電梯可能斷電把人困住，電梯井也會像煙囪一樣把濃煙往上抽。逃生一律走樓梯。'},
+  {id:'f07',q:'使用滅火器的正確順序是？',o:['拉插銷 → 瞄準 → 壓握把 → 掃射','壓握把 → 拉插銷 → 瞄準 → 掃射','瞄準 → 壓握把 → 拉插銷 → 掃射','拉插銷 → 壓握把 → 瞄準火焰上方'],a:0,ex:'口訣「拉、瞄、壓、掃」：拉開插銷、瞄準火源底部、用力壓下握把、左右掃射。'},
+  {id:'f08',q:'用滅火器滅火時，要瞄準哪裡？',o:['火焰最高的地方','煙最多的地方','火源底部','火的正上方天花板'],a:2,ex:'燃燒的是底下的東西，噴在火焰上方藥劑會被熱氣吹散。對準火源底部左右掃，才壓得住。'},
+  {id:'f09',q:'炒菜時油鍋起火，第一步應該怎麼做？',o:['趕快潑水','關掉爐火並蓋上鍋蓋','把鍋子端到水槽','用嘴吹熄'],a:1,ex:'油鍋起火千萬不能潑水，水遇到高溫油會瞬間汽化，把著火的油噴得到處都是。關火、蓋鍋蓋隔絕空氣，火就會熄。'},
+  {id:'f10',q:'延長線插座冒煙起火，在安全的情況下第一步是？',o:['先潑水','切斷電源（拔插頭或關總開關）','用濕毛巾蓋住','拍照存證'],a:1,ex:'電器火災先斷電，不然用水滅火可能觸電。斷電後若還在燒，再用滅火器處理。'},
+  {id:'f11',q:'滅火器的壓力表指針，指在哪一區代表壓力正常？',o:['紅色區','黃色區','綠色區','指針歸零最好'],a:2,ex:'綠色區是正常。指在紅色區代表壓力不足，噴不出來或噴不遠，要送去檢修或換新。'},
+  {id:'f12',q:'地震正在搖晃，你人在室內，最好的做法是？',o:['馬上往外跑','趴下、掩護、穩住','站到窗戶旁邊看外面','衝去搭電梯下樓'],a:1,ex:'搖晃時移動最容易被掉落物砸傷或跌倒。就地趴下，躲在桌子下保護頭頸，抓住桌腳穩住，等搖晃停止再移動。'},
+  {id:'f13',q:'地震搖晃時你正在廚房煮東西，應該怎麼做？',o:['衝過去關火','先保護自己，等搖晃停止後再關火','把鍋子端起來','打開瓦斯總開關'],a:1,ex:'劇烈搖晃時衝向爐火，容易被熱湯、熱油燙傷。先保護自己，搖晃停了再關火、關瓦斯。'},
+  {id:'f14',q:'打 119 報案時，最重要、一定要講清楚的是？',o:['自己的身分證字號','事故地點（地址）和發生什麼事','誰是第一個發現的','自己的職業'],a:1,ex:'地址講清楚，救護車和消防車才找得到人。不知道地址可以講附近的路口、明顯地標或電線桿編號，並且不要先掛電話。'},
+  {id:'f15',q:'燃氣熱水器最不應該裝在哪裡？',o:['通風良好的室外','加裝窗戶、包起來的密閉陽台','有排氣管接到室外的位置','開放式陽台'],a:1,ex:'燃燒不完全會產生一氧化碳，無色無味。陽台被窗戶包起來就不通風，一氧化碳會飄進屋內，洗澡時就可能中毒。'},
+  {id:'f16',q:'樓梯間的防火門，平常應該保持什麼狀態？',o:['用門擋撐開比較方便','關閉','拆掉','鎖起來'],a:1,ex:'防火門關著，才能在火災時擋住濃煙進入樓梯，讓樓梯變成安全的逃生路線。用東西撐開，它就失去作用了。'},
+  {id:'f17',q:'公寓發生火災，樓梯間還沒有濃煙，應該往哪裡逃？',o:['往樓下，逃到戶外','往頂樓等直升機','躲回房間','先去敲每一戶的門'],a:0,ex:'煙和熱會往上走，逃生以往下逃到戶外為原則。往頂樓常遇到門鎖住或濃煙往上衝。'},
+  {id:'f18',q:'手機、行動電源充電時，哪個做法比較安全？',o:['放在枕頭底下充','蓋在棉被裡充一整晚','放在不可燃、通風的桌面上充','充電時邊玩邊放在床上'],a:2,ex:'鋰電池過熱可能起火。放在不可燃、通風的地方充，不要放在床上、沙發上，也避免整晚無人看管。'},
+  {id:'f19',q:'身上衣服著火了，正確做法是？',o:['趕快跑去找水','停、躺、滾，同時用雙手摀住臉','用手拍打','脫衣服'],a:1,ex:'跑步會讓火燒得更旺。立刻停下、躺下、在地上來回滾動壓熄火焰，雙手摀臉保護呼吸道。'},
+  {id:'f20',q:'無法往外逃，只能關門避難時，最適合躲在哪裡？',o:['浴室','衣櫃裡','有窗戶、門是實心門的房間','床底下'],a:2,ex:'很多浴室門是塑膠門，一燒就熔，擋不住煙。選有窗戶、門比較厚實的房間（例如臥室），關門、塞門縫，到窗邊求救。'},
+  {id:'f21',q:'家裡最需要定期確認的防火設備是？',o:['住警器電池和滅火器','電風扇','冷氣濾網','冰箱'],a:0,ex:'住警器沒電就不會響，滅火器過期或壓力不足就噴不出來。建議每個月按一次住警器測試鈕，順便看滅火器壓力表。'},
+  {id:'f22',q:'火場中最常造成死亡的原因是？',o:['被火燒到','吸入濃煙','跳樓','被水淹'],a:1,ex:'火災死亡多數是濃煙造成的。煙裡有一氧化碳和有毒氣體，吸幾口就可能失去意識，所以一定要避開濃煙。'}
+ ],
+ rescue:[
+  {id:'r01',q:'發現有人倒地，確認環境安全後，第一步要做什麼？',o:['馬上壓胸','拍肩膀、大聲呼喚，確認有沒有反應','先拍照','扶他坐起來'],a:1,ex:'「叫叫壓電」的第一個「叫」：拍肩呼喚確認意識。沒有反應，就進行下一步求救。'},
+  {id:'r02',q:'一般民眾版 CPR 的口訣是？',o:['停躺滾','拉瞄壓掃','叫叫壓電','沖脫泡蓋送'],a:2,ex:'叫（確認意識）、叫（打 119、請人拿 AED）、壓（胸部按壓）、電（使用 AED）。'},
+  {id:'r03',q:'成人 CPR 壓胸的深度大約是多少？',o:['1–2 公分','3–4 公分','5–6 公分','10 公分以上'],a:2,ex:'成人壓胸深度 5–6 公分，壓得夠深，血液才擠得到腦部。'},
+  {id:'r04',q:'CPR 壓胸的速率應該是每分鐘幾下？',o:['60–80 下','80–100 下','100–120 下','150 下以上'],a:2,ex:'每分鐘 100–120 下，大約一秒將近兩下。太慢血流不夠，太快胸部來不及回彈。'},
+  {id:'r05',q:'成人 CPR 壓胸的位置在哪裡？',o:['肚臍','左胸心臟的位置','胸部正中央（兩乳頭連線中點）','脖子下方'],a:2,ex:'雙手交疊放在胸部正中央、胸骨下半段，大約是兩乳頭連線的中點。'},
+  {id:'r06',q:'每次壓胸之後，要特別注意什麼？',o:['手要離開胸口休息','讓胸部完全回彈','停下來檢查脈搏','壓著不放'],a:1,ex:'胸部完全回彈，心臟才能重新充滿血液，下一次壓才有血可以送出去。但手掌不要離開胸口。'},
+  {id:'r07',q:'不會做人工呼吸，或不願意對陌生人口對口，怎麼辦？',o:['那就不要做 CPR','只壓胸，持續不中斷','只做人工呼吸','等救護車來就好'],a:1,ex:'民眾版 CPR 可以只壓胸不吹氣。持續、有力地壓胸，就能大幅提高存活機會。'},
+  {id:'r08',q:'AED 拿來之後，第一步是什麼？',o:['先貼貼片','打開電源','先按電擊鈕','先把患者翻成側躺'],a:1,ex:'打開電源後，AED 會用語音一步一步告訴你怎麼做，照著做就好。有些機型打開蓋子就會自動開機。'},
+  {id:'r09',q:'成人 AED 貼片的正確位置是？',o:['兩片都貼在左胸','右上胸（鎖骨下方）和左側胸（腋下）','貼在背後','貼在肚子上'],a:1,ex:'一片貼右鎖骨下方，一片貼左乳頭外側下方的腋下位置，讓電流通過心臟。貼片上也都有圖示。'},
+  {id:'r10',q:'AED 在分析心律或準備電擊時，旁邊的人應該？',o:['繼續壓胸','扶著患者避免移動','所有人都不要碰觸患者','把貼片壓緊'],a:2,ex:'碰到患者會干擾 AED 分析，電擊時也可能一起被電到。大聲喊「大家離開」，確認沒人碰觸再按電擊。'},
+  {id:'r11',q:'AED 電擊完成之後，下一步應該？',o:['立刻繼續壓胸','先檢查有沒有呼吸 1 分鐘','把貼片撕下來','等救護車'],a:0,ex:'電擊後馬上接著壓胸，不要停下來檢查。AED 每兩分鐘會再分析一次，照語音指示做。'},
+  {id:'r12',q:'OHCA 是什麼意思？',o:['到院前心肺功能停止','急性腸胃炎','一種 AED 的品牌','高山症'],a:0,ex:'OHCA（Out-of-Hospital Cardiac Arrest）是在醫院外發生心跳停止。第一時間旁人有沒有做 CPR、用 AED，是能不能救回來的關鍵。'},
+  {id:'r13',q:'心跳停止後，腦部大約缺氧幾分鐘就會開始受損？',o:['30 秒','4–6 分鐘','20 分鐘','1 小時'],a:1,ex:'腦部缺氧約 4–6 分鐘就會開始受損，而救護車到場常需要更久。所以旁人立刻壓胸，就是在幫他爭取時間。'},
+  {id:'r14',q:'倒地的人偶爾抽一口氣、像在嘆氣（喘息式呼吸），應該怎麼判斷？',o:['有在呼吸，不用 CPR','視為沒有正常呼吸，立刻開始 CPR','先觀察 5 分鐘','扶他坐起來'],a:1,ex:'這是心跳停止初期常見的「瀕死呼吸」，不是正常呼吸。沒反應又沒有正常呼吸，就立刻壓胸。'},
+  {id:'r15',q:'成人被食物噎到，但還能用力咳嗽、講話，應該？',o:['馬上做哈姆立克法','用力拍背','鼓勵他繼續用力咳','給他喝水吞下去'],a:2,ex:'還能咳、能說話，代表呼吸道只有部分阻塞，自己咳嗽最有效。在旁邊陪著觀察，咳不出來、說不出話時才介入。'},
+  {id:'r16',q:'成人完全噎住（不能說話、雙手掐著脖子），應該？',o:['哈姆立克法（腹部擠壓）','讓他躺下休息','倒立拍背','給他喝水'],a:0,ex:'站到他身後，一手握拳放在肚臍上方，另一手包住拳頭，快速往內往上擠壓，直到異物排出或失去意識。'},
+  {id:'r17',q:'噎住的人失去意識倒下，下一步應該？',o:['繼續站著做哈姆立克','讓他平躺、打 119，開始 CPR','用手指往喉嚨裡挖','等他自己醒來'],a:1,ex:'失去意識後改做 CPR，壓胸也有機會把異物推出來。每次打開呼吸道時看一下口中，看得到異物才取出，不要盲目亂挖。'},
+  {id:'r18',q:'一歲以下的嬰兒噎到、哭不出聲音，應該怎麼處理？',o:['跟成人一樣做哈姆立克法','5 次拍背和 5 次壓胸交替','倒提起來用力搖','餵水把東西沖下去'],a:1,ex:'嬰兒趴在前臂上、頭低於身體，拍背 5 下；再翻過來用兩指壓胸 5 下，交替進行。嬰兒不做腹部擠壓。'},
+  {id:'r19',q:'被熱水燙傷，第一步應該怎麼做？',o:['塗牙膏','擦醬油','用流動的冷水沖 15–30 分鐘','直接冰敷'],a:2,ex:'口訣「沖、脫、泡、蓋、送」。第一步先用冷水沖，降低皮膚溫度、減少傷害。牙膏、醬油不但沒用，還可能感染。'},
+  {id:'r20',q:'流鼻血時，正確的姿勢是？',o:['頭往後仰','躺平','身體前傾，捏住鼻翼約 10 分鐘','塞衛生紙後繼續活動'],a:2,ex:'頭往後仰會讓血流進喉嚨，可能嗆到或嘔吐。身體稍微往前傾，用手指捏住鼻翼壓迫止血。'},
+  {id:'r21',q:'手被割傷、血一直流，最基本的止血方法是？',o:['直接加壓止血','用嘴吸','撒鹽','用熱水沖'],a:0,ex:'用乾淨的紗布或布料直接壓在傷口上持續加壓，血浸濕了就再疊一層，不要拿掉原本的。大量出血要打 119。'},
+  {id:'r22',q:'在大太陽下有人頭暈、皮膚很燙、意識不清，懷疑中暑，應該先？',o:['給他喝酒提神','移到陰涼處，鬆開衣物，用水和風幫他降溫，並打 119','繼續讓他曬太陽','讓他跑一跑流汗'],a:1,ex:'中暑會危及生命。先移到陰涼處、積極降溫（擦水、搧風、冰敷頸部腋下），意識不清要打 119。意識不清不要硬灌水。'}
+ ]
+};
+/* 題庫存放：一般設定在課程文件 courses/{課程}.challenge（狀態、預約時間、題庫分幾份）
+   題目本身分批存在 instructors/chBank_{主題}_{0,1,2…}（每份最多 CH_CHUNK 題），學員點進挑戰題庫才讀，不拖慢首頁
+   統計：questionStats/{課程}__ch_{主題}，每一題記 s（刷到）n（作答）c（答對）p0–p3（選了哪個選項） */
+var CH_CHUNK=300;
+var CH_CFG={mode:'open',at:0,note:'',chunks:{},ver:0};
+var CH_CFG_SET=false;            // 雲端有沒有存過設定（沒有的話照舊版的開關）
+var CH_BANK=null;                // 讀進來的題庫 {fire:[…],rescue:[…]}
+var CH_BANK_VER=-1, CH_BANK_LOADING=null, CH_BANK_DIRTY=false;
+var CH_STAT=null;                // 後台讀到的作答統計 {fire:{…},rescue:{…}}
+var CH={step:'pick',tp:null,qs:[],i:0,ans:[],rev:false,saved:false};
+var CH_WD='日一二三四五六';
+function chDayKey(ms){var d=new Date(ms);return 'd'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)}   // 用手機的當地日期
+function chEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function chShuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
+function chCopy(q){return {id:q.id,q:q.q||'',o:(q.o||[]).slice(0,4).concat(['','','','']).slice(0,4),a:q.a||0,ex:q.ex||'',off:!!q.off}}
+function chBank(tp){
+  if(CH_BANK&&CH_BANK[tp])return CH_BANK[tp];
+  var lg=SITE.challenge&&SITE.challenge[tp];      // v10.23 存在講師資料裡的
+  return (lg&&lg.length)?lg:CH_DEF[tp];
+}
+function chValid(q){return !!(q&&!q.off&&String(q.q||'').trim()&&q.o&&String(q.o[q.a]||'').trim()&&
+  q.o.filter(function(x){return String(x||'').trim()}).length>=2)}
+function chTile(){return TILES.filter(function(t){return t.id==='challenge'})[0]}
+function chFmt(ms,long){
+  var d=new Date(ms);if(isNaN(d))return '';
+  var hm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+  return (long?d.getFullYear()+'/':'')+(d.getMonth()+1)+'/'+d.getDate()+'（'+CH_WD[d.getDay()]+'）'+hm;
+}
+/* 學員看到的狀態 */
+function chState(){
+  var t=chTile();
+  if(!t||!t.on)return {open:false,visible:false,mode:'hidden'};
+  var m=CH_CFG.mode||'open';
+  if(m==='scheduled'&&CH_CFG.at&&Date.now()>=CH_CFG.at)m='open';
+  if(m==='pause')return {open:false,visible:true,mode:m,badge:'暫停開放',sub:'暫停中',
+    note:CH_CFG.note||'挑戰題庫暫停開放，請稍後再來'};
+  if(m==='scheduled')return {open:false,visible:true,mode:m,badge:'即將開放',sub:chFmt(CH_CFG.at)+' 開放',
+    note:CH_CFG.note||('挑戰題庫將於 '+chFmt(CH_CFG.at,true)+' 開放')};
+  return {open:true,visible:true,mode:'open'};
+}
+function chOpen(){return chState().open}
+/* 首頁磁磚：還沒開放時變淡，壓上提示 */
+function chTileDecor(el,t){
+  if(t.id!=='challenge'||EDITING)return;
+  var st=chState();if(st.open)return;
+  el.classList.add('tile-lock');
+  el.removeAttribute('data-go');el.setAttribute('data-chlock','1');
+  var b=document.createElement('span');b.className='tile-badge';b.textContent=st.badge;el.appendChild(b);
+  var s=document.createElement('span');s.className='tile-lk';s.textContent=st.sub;
+  var tt=el.querySelector('.tile-t');if(tt)tt.parentNode.insertBefore(s,tt.nextSibling);
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-chlock]');if(!t||EDITING)return;
+  e.preventDefault();toast(chState().note||'挑戰題庫目前沒有開放');
+});
+// 預約時間到了自動解鎖（不用重新整理）
+var CH_LAST_OPEN=null;
+setInterval(function(){
+  if(EDITING||CH_CFG.mode!=='scheduled')return;
+  var o=chOpen();if(CH_LAST_OPEN!==null&&o!==CH_LAST_OPEN){try{renderTiles()}catch(e){}}
+  CH_LAST_OPEN=o;
+},20000);
+function chApplyCfg(c){
+  if(c){
+    CH_CFG_SET=true;
+    CH_CFG={mode:c.mode||'open',at:+c.at||0,note:c.note||'',chunks:c.chunks||{},ver:+c.ver||0};
+  }
+  var t=chTile();
+  if(t&&c&&c.mode==='hidden'){t.on=false;CH_CFG.mode='open';}
+}
+
+/* ---- 題庫讀取／儲存 ---- */
+function chLoadBank(force){
+  if(CH_BANK&&!force&&CH_BANK_VER===CH_CFG.ver)return Promise.resolve(CH_BANK);
+  if(CH_BANK_LOADING&&!force)return CH_BANK_LOADING;
+  var F=window.fb,ck=CH_CFG.chunks||{};
+  var tps=Object.keys(CH_TOPICS),need=tps.some(function(tp){return ck[tp]>0});
+  if(!F||!need){
+    CH_BANK={};tps.forEach(function(tp){CH_BANK[tp]=chBank(tp).map(chCopy)});
+    CH_BANK_VER=CH_CFG.ver;return Promise.resolve(CH_BANK);
+  }
+  var jobs=[];
+  tps.forEach(function(tp){for(var k=0;k<(ck[tp]||0);k++)jobs.push({tp:tp,k:k})});
+  CH_BANK_LOADING=Promise.all(jobs.map(function(j){
+    return F.getDoc(F.doc(F.db,'instructors','chBank_'+j.tp+'_'+j.k)).then(function(d){j.items=d.exists()?(d.data().items||[]):[]});
+  })).then(function(){
+    var B={};
+    tps.forEach(function(tp){
+      var arr=[];jobs.filter(function(j){return j.tp===tp}).sort(function(a,b){return a.k-b.k}).forEach(function(j){arr=arr.concat(j.items)});
+      B[tp]=(ck[tp]>0)?arr.map(chCopy):chBank(tp).map(chCopy);
+    });
+    CH_BANK=B;CH_BANK_VER=CH_CFG.ver;CH_BANK_LOADING=null;return B;
+  }).catch(function(e){CH_BANK_LOADING=null;throw e});
+  return CH_BANK_LOADING;
+}
+async function saveChBank(){
+  var F=window.fb;if(!F||!F.auth.currentUser)throw new Error('尚未登入');
+  if(!CH_BANK)await chLoadBank();
+  var old=CH_CFG.chunks||{},chunks={};
+  for(var ti=0,tps=Object.keys(CH_TOPICS);ti<tps.length;ti++){
+    var tp=tps[ti],L=CH_BANK[tp]||[],n=Math.max(1,Math.ceil(L.length/CH_CHUNK));
+    for(var k=0;k<n;k++){
+      await F.setDoc(F.doc(F.db,'instructors','chBank_'+tp+'_'+k),
+        {items:L.slice(k*CH_CHUNK,(k+1)*CH_CHUNK).map(chCopy),at:F.serverTimestamp()});
+    }
+    for(var k2=n;k2<(old[tp]||0);k2++){try{await F.deleteDoc(F.doc(F.db,'instructors','chBank_'+tp+'_'+k2))}catch(e){}}
+    chunks[tp]=n;
+  }
+  CH_CFG.chunks=chunks;CH_CFG.ver=Date.now();
+  await F.setDoc(F.doc(F.db,'courses',F.COURSE),{challenge:chCfgOut(),tiles:TILES},{merge:true});
+  if(SITE.challenge){SITE.challenge=null;try{await F.setDoc(F.doc(F.db,'instructors','main'),{challenge:null},{merge:true})}catch(e){}}
+  CH_CFG_SET=true;CH_BANK_VER=CH_CFG.ver;CH_BANK_DIRTY=false;
+  renderChAdmin();
+}
+function chCfgOut(){return {mode:CH_CFG.mode||'open',at:CH_CFG.at||0,note:CH_CFG.note||'',chunks:CH_CFG.chunks||{},ver:CH_CFG.ver||0}}
+
+/* ---- 學員端 ---- */
+function chStart(tp){
+  var go1=function(){
+    var pool=chBank(tp).filter(chValid);
+    if(!pool.length){toast('這個主題還沒有題目');return;}
+    // 選項順序每次也打亂；map 記住原本是第幾個選項，統計才對得起來
+    var qs=chShuffle(pool).slice(0,CH_N).map(function(q){
+      var idx=chShuffle([0,1,2,3].filter(function(i){return String(q.o[i]||'').trim()}));
+      return {id:q.id,q:q.q,ex:q.ex,o:idx.map(function(i){return q.o[i]}),a:idx.indexOf(q.a),map:idx};
+    });
+    CH={step:'run',tp:tp,qs:qs,i:0,ans:[],rev:false,saved:false};
+    renderChallenge();window.scrollTo({top:0,behavior:'instant'});
+  };
+  if(CH_BANK&&CH_BANK_VER===CH_CFG.ver){go1();return;}
+  var b=$('#chBody [data-chgo="'+tp+'"]');if(b)b.classList.add('loading');
+  chLoadBank().then(go1).catch(function(e){
+    if(b)b.classList.remove('loading');
+    toast('題庫讀取失敗：'+(e.code==='permission-denied'?'資料庫規則沒有開放':(e.code||e.message)));
+  });
+}
+function renderChallenge(){
+  var box=$('#chBody');if(!box)return;
+  var h='',T=CH_TOPICS[CH.tp]||{};
+  if(CH.step==='run'&&!CH.qs[CH.i])CH.step='pick';
+  if(CH.step==='pick'){
+    h='<div class="meta">IRON WILL｜挑戰題庫</div>'+
+      '<h1 class="display" style="font-size:26px;margin-top:8px">選擇你的挑戰</h1>'+
+      '<p class="sub" style="margin-top:8px">每次從題庫隨機抽 '+CH_N+' 題，做完馬上看分數、正確答案和詳解。</p>'+
+      '<div class="ch-cards">'+Object.keys(CH_TOPICS).map(function(k){var C=CH_TOPICS[k];
+        var n=(CH_BANK&&CH_BANK[k])?CH_BANK[k].filter(chValid).length:0;
+        return '<button type="button" class="ch-card" data-chgo="'+k+'"><span class="ch-n">'+C.n+'</span>'+
+          '<span class="ch-b"><span class="ch-k">'+C.k+'<i>｜</i>'+C.t+'</span><span class="ch-d">'+C.d+'</span>'+
+          (n?'<span class="ch-c">題庫 '+n+' 題</span>':'')+'</span>'+
+          '<span class="ch-go">→</span></button>';
+      }).join('')+'</div>'+
+      '<p class="note">題目由 IRON WILL 講師整理，內容以一般民眾版為主。想讓單位完整學一次，可以從完成畫面直接邀請講師。</p>';
+  }else if(CH.step==='run'){
+    var q=CH.qs[CH.i],sel=CH.ans[CH.i],last=CH.i===CH.qs.length-1;
+    h='<div class="prog"><i style="width:'+((CH.i+1)/CH.qs.length*100)+'%"></i></div>'+
+      '<div class="meta" style="margin-top:12px">'+T.k+'｜'+T.t+' · 第 '+(CH.i+1)+' 題 / '+CH.qs.length+'</div>'+
+      '<h2 class="ch-q">'+chEsc(q.q)+'</h2><div class="ch-opts">'+
+      q.o.map(function(t,i){
+        return '<button type="button" class="opt'+(sel===i?' on':'')+'" data-chopt="'+i+'"><span class="opt-k">'+'ABCD'[i]+'</span><span class="opt-t">'+chEsc(t)+'</span></button>';
+      }).join('')+'</div>'+
+      '<button class="btn" data-chnext'+(sel==null?' disabled':'')+'>'+(sel==null?'選一個答案':(last?'看結果':'下一題'))+'</button>'+
+      '<button class="btn btn-quiet" data-chquit>不做了，回到主題選擇</button>';
+  }else{
+    var n2=CH.qs.length,right=CH.qs.filter(function(q,i){return CH.ans[i]===q.a}).length,sc=n2?Math.round(right/n2*100):0;
+    h='<div class="meta">完成．'+T.k+'｜'+T.t+'</div>'+
+      '<div class="ch-res-l">你的結果</div>'+
+      '<div class="ch-score">'+sc+'<small> / 100</small></div>'+
+      '<div class="ch-right">答對 <b>'+right+' / '+n2+'</b> 題</div>'+
+      '<div class="ch-line"></div>'+
+      '<button type="button" class="ch-revbtn" data-chrev>'+(CH.rev?'收合詳解 ↑':(right===n2?'全對！看看每一題的詳解 →':'看看你答錯了什麼 →'))+'</button>';
+    if(CH.rev){
+      h+='<div class="ch-rev">'+CH.qs.map(function(q,i){
+        var m=CH.ans[i],ok=m===q.a;
+        return '<div class="ans'+(ok?'':' open')+'"><div class="ans-h" data-chans><div class="ans-q">Q'+(i+1)+'　'+chEsc(q.q)+'</div>'+
+          '<div class="ans-s '+(ok?'yes':'no')+'">'+(ok?'答對':'答錯')+'</div></div>'+
+          '<div class="ans-b"><div class="ans-line"><b>你的答案</b><span>'+(m==null?'未作答':'ABCD'[m]+'　'+chEsc(q.o[m]))+'</span></div>'+
+          '<div class="ans-line"><b>正確答案</b><span>'+'ABCD'[q.a]+'　'+chEsc(q.o[q.a])+'</span></div>'+
+          (q.ex?'<div class="ans-line"><b>詳解</b><span>'+chEsc(q.ex)+'</span></div>':'')+'</div></div>';
+      }).join('')+'</div>';
+    }
+    h+='<div class="section-head"><h2>接下來</h2><span>四個方向</span></div><div class="rows">'+
+      [['home','首','回到首頁','看看其他功能'],
+       ['again','再','再次挑戰','回到消防安全、急救教育的主題選擇'],
+       ['whisper','問','對題目有疑惑和建議','用傳聲悄悄話告訴講師，不會公開'],
+       ['invite','約','邀請講師到你的單位','企業、學校、社區都可以']].map(function(r){
+        return '<div class="row" data-chroute="'+r[0]+'"><div class="row-n">'+r[1]+'</div><div class="row-b"><div class="row-t">'+r[2]+'</div><div class="row-d">'+r[3]+'</div></div><div class="row-go">→</div></div>';
+      }).join('')+'</div>';
+  }
+  box.innerHTML=h;
+}
+/* 作答統計：做完一輪寫一次；中途放棄的，已經答的題目也算進去（一輪最多寫一次） */
+function chSave(done){
+  if(CH.saved||PREVIEW||EDITING||!window.fb||!CH.qs.length)return;
+  var F=window.fb,answered=0,right=0,qs={};
+  CH.qs.forEach(function(q,i){
+    var m=CH.ans[i];
+    var shown=i<=CH.i||done;if(!shown||!q.id)return;
+    var o={s:F.increment(1)};
+    if(m!=null){
+      answered++;o.n=F.increment(1);
+      if(m===q.a){right++;o.c=F.increment(1);}
+      var orig=q.map?q.map[m]:m;if(orig!=null)o['p'+orig]=F.increment(1);
+    }
+    qs[q.id]=o;
+  });
+  if(!done&&!answered)return;
+  CH.saved=true;
+  var dk=chDayKey(Date.now()),days={};days[dk]=F.increment(1);
+  var rec={q:qs};
+  if(done){rec.plays=F.increment(1);rec.sum=F.increment(CH.qs.length?Math.round(right/CH.qs.length*100):0);rec.days=days;}
+  else rec.quit=F.increment(1);
+  F.setDoc(F.doc(F.db,'questionStats',F.COURSE+'__ch_'+CH.tp),rec,{merge:true})
+   .catch(function(e){console.warn('挑戰題庫統計失敗',e)});
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-chgo],[data-chopt],[data-chnext],[data-chquit],[data-chrev],[data-chroute],[data-chans]');
+  if(!t||!t.closest('#chBody'))return;
+  if(t.dataset.chgo){chStart(t.dataset.chgo);return;}
+  if(t.dataset.chopt!=null){
+    CH.ans[CH.i]=+t.dataset.chopt;
+    $$('#chBody [data-chopt]').forEach(function(b){b.classList.toggle('on',b===t)});
+    var nb=$('#chBody [data-chnext]');
+    if(nb){nb.disabled=false;nb.textContent=CH.i===CH.qs.length-1?'看結果':'下一題';}
+    return;
+  }
+  if(t.hasAttribute('data-chnext')){
+    if(CH.ans[CH.i]==null)return;
+    if(CH.i<CH.qs.length-1)CH.i++;
+    else{CH.step='done';CH.rev=false;chSave(true);}
+    renderChallenge();window.scrollTo({top:0,behavior:'instant'});return;
+  }
+  if(t.hasAttribute('data-chquit')){
+    if(CH.ans.length&&!confirm('這一輪還沒做完，確定要離開嗎？'))return;
+    chSave(false);CH.step='pick';renderChallenge();window.scrollTo({top:0,behavior:'instant'});return;
+  }
+  if(t.hasAttribute('data-chrev')){CH.rev=!CH.rev;renderChallenge();return;}
+  if(t.hasAttribute('data-chans')){t.parentElement.classList.toggle('open');return;}
+  var r=t.dataset.chroute;
+  if(r==='home'){stack=['p-home'];show('p-home',true);}
+  else if(r==='again'){CH.step='pick';renderChallenge();window.scrollTo({top:0,behavior:'instant'});}
+  else if(r==='whisper'){
+    go('p-whisper');
+    var w=$('#wt');
+    if(w&&!w.value.trim()){w.value='【挑戰題庫．'+(CH_TOPICS[CH.tp]||{t:''}).t+'】';try{w.dispatchEvent(new Event('input',{bubbles:true}))}catch(err){}}
+  }
+  else if(r==='invite')go('p-invite');
+});
+function chEnter(){
+  if(CH.step!=='run')CH.step='pick';
+  renderChallenge();
+  if(!CH_BANK||CH_BANK_VER!==CH_CFG.ver)chLoadBank().then(function(){if(CH.step==='pick')renderChallenge()}).catch(function(){});
+}
+
+/* ================= 後台：挑戰題庫 ================= */
+var CH_ED={tp:'fire',sort:'order',open:null,q:'',page:60,imp:null,impMode:'merge'};
+function chStatOf(tp,id){
+  var S=CH_STAT&&CH_STAT[tp],x=S&&S.q&&S.q[id];if(!x)return null;
+  var n=x.n||0,c=x.c||0;
+  return {s:x.s||n,n:n,c:c,w:n-c,p:n?Math.round(c/n*100):null,o:[x.p0||0,x.p1||0,x.p2||0,x.p3||0]};
+}
+async function chLoadStats(){
+  var F=window.fb;if(!F)return;
+  var out={};
+  try{
+    var tps=Object.keys(CH_TOPICS);
+    var ds=await Promise.all(tps.map(function(tp){return F.getDoc(F.doc(F.db,'questionStats',F.COURSE+'__ch_'+tp))}).concat(
+      [F.getDoc(F.doc(F.db,'questionStats',F.COURSE+'__challenge'))]));
+    var legacy=ds[tps.length].exists()?ds[tps.length].data():{};
+    tps.forEach(function(tp,i){
+      var d=ds[i].exists()?ds[i].data():{};
+      var o={plays:(d.plays||0)+((legacy.plays||{})[tp]||0),sum:(d.sum||0)+((legacy.sum||{})[tp]||0),quit:d.quit||0,days:d.days||{},q:{}};
+      Object.keys(d.q||{}).forEach(function(id){o.q[id]=Object.assign({},d.q[id])});
+      // v10.23 的舊統計（只有 n、c）併進來
+      chBank(tp).forEach(function(q){var L=(legacy.q||{})[q.id];if(!L)return;
+        var x=o.q[q.id]=o.q[q.id]||{};x.n=(x.n||0)+(L.n||0);x.c=(x.c||0)+(L.c||0);x.s=(x.s||0)+(L.n||0);});
+      out[tp]=o;
+    });
+    CH_STAT=out;
+  }catch(e){CH_STAT={};toast('讀不到挑戰題庫統計：'+(e.code||e.message));}
+  renderChAdmin();
+}
+function chRecent(S,days){
+  if(!S||!S.days)return 0;var t=0,now=Date.now();
+  for(var i=0;i<days;i++){t+=S.days[chDayKey(now-i*864e5)]||0;}
+  return t;
+}
+function chLocalInput(ms){
+  var d=ms?new Date(ms):new Date(Date.now()+864e5);if(!ms)d.setHours(20,0,0,0);
+  var p=function(n){return ('0'+n).slice(-2)};
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
+}
+function chList(){
+  var tp=CH_ED.tp,kw=CH_ED.q.trim().toLowerCase();
+  var L=chBank(tp).map(function(q,i){return {q:q,i:i,s:chStatOf(tp,q.id)}});
+  if(kw)L=L.filter(function(x){return (x.q.q+' '+x.q.o.join(' ')+' '+(x.q.ex||'')+' '+x.q.id).toLowerCase().indexOf(kw)>=0});
+  var srt=CH_ED.sort;
+  if(srt==='low')L.sort(function(a,b){var x=a.s&&a.s.p!=null?a.s.p:101,y=b.s&&b.s.p!=null?b.s.p:101;return x-y||((b.s?b.s.n:0)-(a.s?a.s.n:0))});
+  else if(srt==='most')L.sort(function(a,b){return (b.s?b.s.s:0)-(a.s?a.s.s:0)});
+  else if(srt==='none')L=L.filter(function(x){return !x.s||!x.s.n});
+  else if(srt==='off')L=L.filter(function(x){return x.q.off||!chValid(Object.assign({},x.q,{off:false}))});
+  return L;
+}
+function renderChAdmin(){
+  var box=$('#chAdmin');if(!box)return;
+  var t=chTile(),vis=!!(t&&t.on),m=vis?(CH_CFG.mode||'open'):'hidden',st=chState();
+  var cnt=function(tp){return chBank(tp).filter(chValid).length};
+  var tag=$('#chTag');
+  if(tag)tag.textContent=({open:'開放中',pause:'暫停中',scheduled:'預約開放',hidden:'隱藏'})[m]+'．消防 '+cnt('fire')+'．急救 '+cnt('rescue')+' 題';
+  var h='';
+  /* 1. 開放狀態 */
+  h+='<div class="section-head" style="padding-top:18px"><h2>學員端狀態</h2><span>按了立刻生效</span></div>'+
+    '<div class="ch-mode">'+[['open','開放','直接可以玩'],['pause','暫停','磁磚變淡＋提示'],['scheduled','預約開放','時間到自動開'],['hidden','隱藏','首頁看不到']].map(function(x){
+      return '<button type="button" data-chmode="'+x[0]+'"'+(m===x[0]?' class="on"':'')+'><b>'+x[1]+'</b><span>'+x[2]+'</span></button>'}).join('')+'</div>';
+  if(m==='pause'||m==='scheduled'){
+    h+=(m==='scheduled'?'<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">幾月幾號幾點開放</div>'+
+        '<input class="f-in" type="datetime-local" id="chAt" value="'+chLocalInput(CH_CFG.at)+'"></div>':'')+
+      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">學員點下去看到的提示（可留空，用預設的）</div>'+
+      '<input class="f-in" id="chNote" maxlength="60" value="'+chEsc(CH_CFG.note)+'" placeholder="'+(m==='pause'?'例如：上課中暫停，下課後再來挑戰':'例如：課程結束後開放，歡迎回來挑戰')+'"></div>'+
+      '<button class="qbtn" data-chapply style="margin-top:4px">套用</button>';
+  }
+  h+='<div class="ch-prev"><span class="ch-prev-k">學員看到</span>'+(m==='hidden'?'首頁沒有「挑戰題庫」':
+     st.open?'可以直接進去挑戰':'<span class="ch-prev-t"><b>'+chEsc(st.badge)+'</b>'+chEsc(st.sub)+'</span>點了會跳出「'+chEsc(st.note)+'」')+'</div>';
+  /* 2. 統計總覽 */
+  var S=CH_STAT||{};
+  h+='<div class="section-head"><h2>作答統計</h2><span>'+(CH_STAT?'<button class="qbtn" data-chreload style="margin:0">重新讀取</button>':'讀取中…')+'</span></div>'+
+    '<div class="stats" style="margin-top:4px">'+Object.keys(CH_TOPICS).map(function(tp){
+      var x=S[tp]||{},avg=x.plays?Math.round((x.sum||0)/x.plays):'—';
+      return '<div class="stat"><div class="stat-n">'+(x.plays||0)+'<small>次</small></div><div class="stat-l">'+CH_TOPICS[tp].t+'．平均 '+avg+'<br>近 7 天 '+chRecent(x,7)+' 次'+(x.quit?'．中途離開 '+x.quit:'')+'</div></div>';
+    }).join('')+'</div>';
+  /* 3. 題目 */
+  var L=chList(),shown=L.slice(0,CH_ED.page);
+  h+='<div class="section-head"><h2>題目</h2><span>'+(CH_BANK?'':'雲端題庫讀取中…')+'</span></div>'+
+    '<div class="seg" style="margin-top:4px">'+Object.keys(CH_TOPICS).map(function(k){
+      return '<button data-chtp="'+k+'"'+(CH_ED.tp===k?' class="on"':'')+'>'+CH_TOPICS[k].t+'（'+chBank(k).length+'）</button>'}).join('')+'</div>'+
+    '<input class="f-in" id="chSearch" placeholder="搜尋題目、選項、詳解或編號" value="'+chEsc(CH_ED.q)+'" style="margin-top:12px">'+
+    '<div class="chips" style="margin-top:10px">'+[['order','題目順序'],['low','正確率低的先'],['most','最多人刷到'],['none','還沒人做過'],['off','停用／有問題']].map(function(x){
+      return '<span class="chip'+(CH_ED.sort===x[0]?' on':'')+'" data-chsort="'+x[0]+'">'+x[1]+'</span>'}).join('')+'</div>'+
+    '<div class="hint" id="chListMeta">'+L.length+' 題'+(L.length>shown.length?'．先顯示 '+shown.length+' 題':'')+'</div>'+
+    '<div id="chList">'+chRows(shown)+'</div>'+
+    (L.length>shown.length?'<button class="course-more" data-chmore>顯示更多　還有 <b>'+(L.length-shown.length)+'</b> 題</button>':'')+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+
+      '<button class="qbtn" data-chadd>＋ 新增題目</button>'+
+      '<button class="qbtn" data-chexp="bank">匯出題庫（CSV）</button>'+
+      '<button class="qbtn" data-chexp="stat">匯出統計（CSV）</button>'+
+      '<button class="qbtn" data-chreset>清空作答統計</button></div>';
+  /* 4. 匯入 */
+  h+='<div class="section-head"><h2>從 Google 試算表匯入</h2><span>大量新增用</span></div>'+
+    '<p class="sub">欄位：主題｜編號｜題目｜A｜B｜C｜D｜答案｜詳解｜停用。主題填「消防」或「急救」，答案填 A–D。編號可以留空，系統會自動配。</p>'+
+    '<div style="display:flex;gap:8px;margin-top:12px"><input class="f-in" id="chSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="flex:1;min-width:0">'+
+    '<button class="qbtn" data-chsheet>讀取</button></div>'+
+    '<p class="hint">試算表要放在你自己的雲端硬碟（Apps Script 用你的帳號去讀，不用公開分享）。也可以直接在試算表選取整片儲存格複製，貼到下面。</p>'+
+    '<textarea class="f-in" id="chPaste" rows="3" placeholder="從 Google 試算表或 Excel 複製後貼在這裡（第一列是標題）"></textarea>'+
+    '<button class="qbtn" data-chparse style="margin-top:8px">解析貼上的內容</button>'+
+    '<div id="chImp">'+chImpHTML()+'</div>';
+  h+='<p class="hint" style="margin-top:16px">題目、選項、匯入改完都要按下面的「儲存挑戰題庫」才會給學員。'+(CH_BANK_DIRTY?'<b style="color:var(--signal)">　目前有還沒儲存的修改。</b>':'')+'</p>';
+  var sx=window.scrollY,fo=document.activeElement&&document.activeElement.id;
+  box.innerHTML=h;
+  if(fo==='chSearch'){var si=$('#chSearch');if(si){si.focus();si.setSelectionRange(si.value.length,si.value.length);}}
+  window.scrollTo(0,sx);
+}
+function chRows(list){
+  if(!list.length)return '<div class="empty">沒有符合的題目</div>';
+  return list.map(function(x){
+    var q=x.q,i=x.i,s=x.s,op=CH_ED.open===q.id,bad=!chValid(Object.assign({},q,{off:false}));
+    return '<div class="chq'+(op?' open':'')+(q.off?' off':'')+'" data-chi="'+i+'"><div class="chq-h" data-chtog>'+
+      '<div class="chq-t"><span class="chq-no">'+(i+1)+'</span><span class="chq-tx">'+chEsc(q.q||'（新題目）')+'</span>'+
+        (q.off?'<em class="chq-tag">停用</em>':bad?'<em class="chq-tag">格式不完整</em>':'')+'</div>'+
+      '<div class="chq-s">'+(s&&s.n?'<b class="'+(s.p<50?'lo':'')+'">'+s.p+'%</b>'+s.n+' 人答':'<b>—</b>還沒人答')+'</div></div>'+
+      '<div class="chq-b">'+(op?chEditHTML(q,s):'')+'</div></div>';
+  }).join('');
+}
+function chEditHTML(q,s){
+  var h='';
+  if(s&&s.s){
+    var tot=s.o.reduce(function(a,b){return a+b},0)||1;
+    h+='<div class="chq-nums"><span><b>'+s.s+'</b>刷到</span><span><b>'+s.n+'</b>作答</span><span><b style="color:var(--ok)">'+s.c+'</b>答對</span><span><b style="color:var(--signal)">'+s.w+'</b>答錯</span></div>'+
+      '<div class="chq-dist">'+[0,1,2,3].map(function(k){
+        if(!String(q.o[k]||'').trim())return '';
+        var pc=Math.round(s.o[k]/tot*100);
+        return '<div class="chq-bar'+(k===q.a?' ok':'')+'"><span class="chq-bk">'+'ABCD'[k]+'</span><span class="chq-bt">'+chEsc(q.o[k])+'</span>'+
+          '<span class="chq-bv">'+s.o[k]+' 人．'+pc+'%</span><i style="width:'+pc+'%"></i></div>';
+      }).join('')+'</div>';
+  }
+  h+='<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">題目</div>'+
+    '<textarea class="f-in" data-chk="q" rows="2">'+chEsc(q.q)+'</textarea></div>'+
+    [0,1,2,3].map(function(k){return '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">選項 '+'ABCD'[k]+'</div>'+
+      '<input class="f-in" data-chk="o'+k+'" value="'+chEsc(q.o[k])+'"'+(k>1?' placeholder="可留空"':'')+'></div>'}).join('')+
+    '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">正確答案</div><div class="chips" style="margin-top:8px">'+
+      [0,1,2,3].map(function(k){return '<span class="chip'+(q.a===k?' on':'')+'" data-cha="'+k+'">'+'ABCD'[k]+'</span>'}).join('')+'</div></div>'+
+    '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">詳解</div>'+
+    '<textarea class="f-in" data-chk="ex" rows="3">'+chEsc(q.ex)+'</textarea></div>'+
+    '<div class="hint" style="margin-top:6px">編號 '+chEsc(q.id)+'（統計靠這個對應，匯入時保留它，答對率就會接續）</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;padding:10px 0 4px">'+
+      '<button class="qbtn" data-choff>'+(q.off?'重新啟用':'停用（學員抽不到，統計保留）')+'</button>'+
+      '<button class="qbtn" data-chdel>刪除這題</button></div>';
+  return h;
+}
+function chQ(el){var i=+el.closest('[data-chi]').dataset.chi;return (CH_BANK&&CH_BANK[CH_ED.tp]||[])[i]}
+function chTouch(){CH_BANK_DIRTY=true;setDirty(true);}
+async function chSaveCfg(msg){
+  var F=window.fb;
+  if(!F||!F.auth.currentUser){toast('請先登入');return false;}
+  try{
+    await F.setDoc(F.doc(F.db,'courses',F.COURSE),{challenge:chCfgOut(),tiles:TILES},{merge:true});
+    CH_CFG_SET=true;if(msg){toast(msg);logChange(msg);}
+    return true;
+  }catch(err){toast('沒有存到：'+(err.code||err.message));return false;}
+}
+function chNeedBank(){
+  if(CH_BANK)return true;
+  toast('題庫還在讀取，稍等一下再按');
+  chLoadBank().then(renderChAdmin).catch(function(e){toast('題庫讀取失敗：'+(e.code||e.message))});
+  return false;
+}
+document.addEventListener('click',async function(e){
+  var box=e.target.closest('#chAdmin');if(!box)return;
+  var t=e.target;
+  var md=t.closest('[data-chmode]');
+  if(md){
+    var tile=chTile();
+    if(!tile){tile=Object.assign({},TILE_DEF.filter(function(x){return x.id==='challenge'})[0]);TILES.push(tile);}
+    var bak={on:tile.on,cfg:chCfgOut()},v=md.dataset.chmode;
+    if(v==='hidden')tile.on=false;
+    else{
+      tile.on=true;CH_CFG.mode=v;
+      if(v==='scheduled'&&(!CH_CFG.at||CH_CFG.at<Date.now()))CH_CFG.at=new Date(chLocalInput(0)).getTime();
+    }
+    renderChAdmin();try{renderTiles()}catch(err){}
+    var ok=await chSaveCfg({open:'挑戰題庫：開放',pause:'挑戰題庫：暫停',scheduled:'挑戰題庫：預約 '+chFmt(CH_CFG.at)+' 開放',hidden:'挑戰題庫：隱藏'}[v]);
+    if(!ok){tile.on=bak.on;CH_CFG=Object.assign(CH_CFG,bak.cfg);renderChAdmin();try{renderTiles()}catch(err){}}
+    return;
+  }
+  if(t.closest('[data-chapply]')){
+    var at=$('#chAt'),nt=$('#chNote');
+    if(at){var ms=new Date(at.value).getTime();if(!ms){toast('時間格式不對');return;}
+      if(ms<=Date.now()&&!confirm('這個時間已經過了，存了就會直接開放。確定嗎？'))return;CH_CFG.at=ms;}
+    if(nt)CH_CFG.note=nt.value.trim();
+    renderChAdmin();try{renderTiles()}catch(err){}
+    chSaveCfg('挑戰題庫：更新提示'+(at?'與開放時間 '+chFmt(CH_CFG.at):''));return;
+  }
+  if(t.closest('[data-chreload]')){CH_STAT=null;renderChAdmin();chLoadStats();return;}
+  var tp=t.closest('[data-chtp]');if(tp){CH_ED.tp=tp.dataset.chtp;CH_ED.open=null;CH_ED.page=60;renderChAdmin();return;}
+  var so=t.closest('[data-chsort]');if(so){CH_ED.sort=so.dataset.chsort;CH_ED.page=60;renderChAdmin();return;}
+  if(t.closest('[data-chmore]')){CH_ED.page+=100;renderChAdmin();return;}
+  if(t.closest('[data-chtog]')){
+    var q0=chBank(CH_ED.tp)[+t.closest('[data-chi]').dataset.chi];if(!q0)return;
+    CH_ED.open=CH_ED.open===q0.id?null:q0.id;renderChAdmin();return;
+  }
+  var ca=t.closest('[data-cha]');
+  if(ca){
+    if(!chNeedBank())return;
+    var q=chQ(ca);if(!q)return;var k=+ca.dataset.cha;
+    if(!String(q.o[k]||'').trim()){toast('這個選項是空的，先填內容');return;}
+    q.a=k;chTouch();
+    $$('[data-cha]',ca.parentElement).forEach(function(c){c.classList.toggle('on',c===ca)});return;
+  }
+  if(t.closest('[data-choff]')){if(!chNeedBank())return;var q2=chQ(t);if(!q2)return;q2.off=!q2.off;chTouch();renderChAdmin();return;}
+  if(t.closest('[data-chdel]')){
+    if(!chNeedBank())return;
+    var L2=CH_BANK[CH_ED.tp],i2=+t.closest('[data-chi]').dataset.chi;
+    if(!confirm('刪除這一題？（只想暫時不出這題，可以用「停用」）'))return;
+    L2.splice(i2,1);CH_ED.open=null;chTouch();renderChAdmin();return;
+  }
+  if(t.closest('[data-chadd]')){
+    if(!chNeedBank())return;
+    var L3=CH_BANK[CH_ED.tp],nq={id:'c'+Date.now().toString(36),q:'',o:['','','',''],a:0,ex:'',off:false};
+    L3.push(nq);CH_ED.sort='order';CH_ED.q='';CH_ED.open=nq.id;CH_ED.page=Math.max(CH_ED.page,L3.length);chTouch();renderChAdmin();
+    var nb=$('#chAdmin .chq.open textarea');if(nb){nb.scrollIntoView({block:'center'});nb.focus();}
+    return;
+  }
+  var ex=t.closest('[data-chexp]');
+  if(ex){
+    var stamp=new Date().toISOString().slice(0,10),rows=[];
+    if(ex.dataset.chexp==='bank'){
+      rows.push(['主題','編號','題目','A','B','C','D','答案','詳解','停用']);
+      Object.keys(CH_TOPICS).forEach(function(tp2){chBank(tp2).forEach(function(q3){
+        rows.push([CH_TOPICS[tp2].t.slice(0,2),q3.id,q3.q,q3.o[0],q3.o[1],q3.o[2],q3.o[3],'ABCD'[q3.a],q3.ex||'',q3.off?'是':'']);
+      })});
+      downloadCsv('挑戰題庫_'+stamp+'.csv',rows);
+    }else{
+      if(!CH_STAT){toast('統計還在讀取');return;}
+      rows.push(['主題','編號','題目','刷到','作答','答對','答錯','正確率(%)','選A','選B','選C','選D','正解','停用']);
+      Object.keys(CH_TOPICS).forEach(function(tp2){chBank(tp2).forEach(function(q3){
+        var s=chStatOf(tp2,q3.id)||{s:0,n:0,c:0,w:0,p:'',o:[0,0,0,0]};
+        rows.push([CH_TOPICS[tp2].t.slice(0,2),q3.id,q3.q,s.s,s.n,s.c,s.w,s.p==null?'':s.p,s.o[0],s.o[1],s.o[2],s.o[3],'ABCD'[q3.a],q3.off?'是':'']);
+      })});
+      downloadCsv('挑戰題庫統計_'+stamp+'.csv',rows);
+    }
+    return;
+  }
+  if(t.closest('[data-chreset]')){
+    if(!confirm('清空挑戰題庫所有作答次數和正確率？這個沒辦法復原。建議先按「匯出統計」留一份。'))return;
+    var F2=window.fb;if(!F2||!F2.auth.currentUser){toast('請先登入');return;}
+    try{
+      var ids=Object.keys(CH_TOPICS).map(function(x){return F2.COURSE+'__ch_'+x}).concat([F2.COURSE+'__challenge']);
+      for(var j=0;j<ids.length;j++)await F2.setDoc(F2.doc(F2.db,'questionStats',ids[j]),{});
+      CH_STAT={};renderChAdmin();toast('已清空');logChange('清空挑戰題庫統計');
+    }catch(err){toast('清空失敗：'+(err.code||err.message))}
+    return;
+  }
+  if(t.closest('[data-chsheet]')){
+    var url=(($('#chSheetUrl')||{}).value||'').trim();if(!url){toast('先貼試算表連結');return;}
+    var bt=t.closest('[data-chsheet]'),old=bt.textContent;bt.textContent='讀取中…';
+    try{
+      var j2=await mailAdmin({action:'readSheet',url:url});
+      if(!j2.ok)throw new Error(j2.error||'讀取失敗');
+      CH_ED.imp=chParseSheets(j2.sheets||[]);CH_ED.imp.src='試算表「'+(j2.name||'')+'」';
+      $('#chImp').innerHTML=chImpHTML();
+    }catch(err){
+      var m2=String(err.message||err);
+      toast(/不認得的動作/.test(m2)?'Apps Script 還是舊版，請換成新版並重新部署':m2.slice(0,40));
+    }
+    bt.textContent=old;return;
+  }
+  if(t.closest('[data-chparse]')){
+    var raw=(($('#chPaste')||{}).value||'');if(!raw.trim()){toast('先貼上內容');return;}
+    CH_ED.imp=chParseSheets([{name:'',rows:chParseDelim(raw)}]);CH_ED.imp.src='貼上的內容';
+    $('#chImp').innerHTML=chImpHTML();return;
+  }
+  var im=t.closest('[data-chimpmode]');if(im){CH_ED.impMode=im.dataset.chimpmode;$('#chImp').innerHTML=chImpHTML();return;}
+  if(t.closest('[data-chimpgo]')){
+    if(!chNeedBank())return;
+    var r=chImport(CH_ED.imp,CH_ED.impMode);
+    CH_ED.imp=null;var pz=$('#chPaste');if(pz)pz.value='';
+    chTouch();renderChAdmin();
+    toast('已匯入：新增 '+r.add+'、更新 '+r.upd+(r.del?'、移除 '+r.del:'')+'．記得按儲存');return;
+  }
+  if(t.closest('[data-chimpx]')){CH_ED.imp=null;$('#chImp').innerHTML='';return;}
+});
+document.addEventListener('input',function(e){
+  var el=e.target;if(!el.closest||!el.closest('#chAdmin'))return;
+  if(el.id==='chSearch'){
+    CH_ED.q=el.value;CH_ED.page=60;
+    var L=chList(),sh=L.slice(0,CH_ED.page);
+    $('#chList').innerHTML=chRows(sh);
+    var mt=$('#chListMeta');if(mt)mt.textContent=L.length+' 題'+(L.length>sh.length?'．先顯示 '+sh.length+' 題':'');
+    var mb=$('#chAdmin [data-chmore]');if(mb)mb.style.display=L.length>sh.length?'':'none';
+    return;
+  }
+  var k=el.dataset&&el.dataset.chk;if(!k)return;
+  if(!CH_BANK){chNeedBank();return;}
+  var q=chQ(el);if(!q)return;
+  if(k==='q'||k==='ex')q[k]=el.value;else q.o[+k.slice(1)]=el.value;
+  CH_BANK_DIRTY=true;
+  if(k==='q'){var tt=el.closest('.chq').querySelector('.chq-tx');if(tt)tt.textContent=el.value||'（新題目）';}
+});
+
+/* ---- 匯入：解析試算表 ---- */
+function chParseDelim(text){
+  text=String(text).replace(/\r\n?/g,'\n');
+  var d=text.indexOf('\t')>=0?'\t':',',rows=[],row=[],cell='',q=false;
+  for(var i=0;i<text.length;i++){
+    var ch=text[i];
+    if(q){
+      if(ch==='"'){if(text[i+1]==='"'){cell+='"';i++;}else q=false;}
+      else cell+=ch;
+    }else if(ch==='"'&&cell===''){q=true;}
+    else if(ch===d){row.push(cell);cell='';}
+    else if(ch==='\n'){row.push(cell);rows.push(row);row=[];cell='';}
+    else cell+=ch;
+  }
+  if(cell!==''||row.length){row.push(cell);rows.push(row);}
+  return rows;
+}
+function chTopicOf(s){
+  s=String(s||'').trim().toLowerCase();
+  if(!s)return '';
+  if(/消防|防火|火災|防災|地震|避難|fire/.test(s))return 'fire';
+  if(/急救|救護|cpr|aed|rescue|ohca/.test(s))return 'rescue';
+  return '?';
+}
+function chHash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h.toString(36)}
+function chParseSheets(sheets){
+  var res={items:[],bad:[],topics:{}};
+  sheets.forEach(function(sh){
+    var rows=(sh.rows||[]).filter(function(r){return r&&r.some(function(c){return String(c||'').trim()})});
+    if(!rows.length)return;
+    var hi=-1;
+    for(var i=0;i<Math.min(rows.length,5);i++){if(rows[i].some(function(c){return /^(題目|問題)$/.test(String(c).trim())})){hi=i;break}}
+    if(hi<0&&sheets.length>1)return;   // 多個分頁時，沒有「題目」欄的分頁（例如說明）跳過
+    var H=hi>=0?rows[hi].map(function(c){return String(c).trim().replace(/\s/g,'')}):['主題','題目','A','B','C','D','答案','詳解'];
+    var col=function(re){for(var j=0;j<H.length;j++)if(re.test(H[j]))return j;return -1};
+    var C={tp:col(/^(主題|分類|類別|類型)$/),id:col(/^(編號|id|ID|代號)$/i),q:col(/^(題目|問題)$/),
+      a:col(/^(答案|正解|正確答案)$/),ex:col(/^(詳解|解析|說明)$/),off:col(/^(停用|狀態)$/),
+      o:[col(/^(選項)?[AＡ1１]$/i),col(/^(選項)?[BＢ2２]$/i),col(/^(選項)?[CＣ3３]$/i),col(/^(選項)?[DＤ4４]$/i)]};
+    var tabTp=chTopicOf(sh.name);
+    rows.slice(hi+1).forEach(function(r,ri){
+      var g=function(j){return j>=0?String(r[j]==null?'':r[j]).trim():''};
+      var line=(sh.name?sh.name+' ':'')+'第 '+(hi+ri+2)+' 列';
+      var q=g(C.q);if(!q){if(r.some(function(c){return String(c||'').trim()}))res.bad.push(line+'：沒有題目');return;}
+      var tp=C.tp>=0?chTopicOf(g(C.tp)):'';if(!tp||tp==='?')tp=(tabTp&&tabTp!=='?')?tabTp:(C.tp>=0&&g(C.tp)?'?':CH_ED.tp);
+      if(tp==='?'){res.bad.push(line+'：主題看不懂（'+g(C.tp)+'），請填「消防」或「急救」');return;}
+      var o=C.o.map(g);
+      var av=g(C.a).replace(/[ＡＢＣＤ]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)}).toUpperCase();
+      var a='ABCD'.indexOf(av);if(a<0&&/^[1-4]$/.test(av))a=+av-1;
+      if(a<0&&av)a=o.indexOf(g(C.a));
+      if(a<0){res.bad.push(line+'：答案要填 A–D');return;}
+      if(!o[a]){res.bad.push(line+'：答案 '+'ABCD'[a]+' 的選項是空的');return;}
+      if(o.filter(Boolean).length<2){res.bad.push(line+'：至少要兩個選項');return;}
+      var id=g(C.id).replace(/[^A-Za-z0-9_-]/g,'');
+      if(!id)id='h'+chHash(tp+'|'+q.replace(/\s/g,''));
+      var off=/^(是|停用|1|y|yes|true|v|✓|x)$/i.test(g(C.off));
+      res.items.push({tp:tp,id:id,q:q,o:o,a:a,ex:g(C.ex),off:off});
+      res.topics[tp]=(res.topics[tp]||0)+1;
+    });
+  });
+  // 同一個編號出現兩次，留最後一個
+  var seen={};res.items=res.items.reverse().filter(function(x){var k=x.tp+':'+x.id;if(seen[k])return false;seen[k]=1;return true}).reverse();
+  return res;
+}
+function chImpHTML(){
+  var I=CH_ED.imp;if(!I)return '';
+  var add=0,upd=0;
+  I.items.forEach(function(x){var ex=chBank(x.tp).some(function(q){return q.id===x.id});if(ex)upd++;else add++;});
+  var tps=Object.keys(I.topics);
+  var h='<div class="ch-imp"><div class="ch-imp-h">從'+chEsc(I.src)+'讀到 <b>'+I.items.length+'</b> 題</div>'+
+    '<div class="hint">'+tps.map(function(tp){return CH_TOPICS[tp].t+' '+I.topics[tp]+' 題'}).join('．')+(tps.length?'．':'')+
+    '新題 '+add+'．已存在（會更新內容）'+upd+'</div>';
+  if(I.bad.length)h+='<div class="ch-imp-bad"><b>有 '+I.bad.length+' 列沒辦法匯入：</b>'+I.bad.slice(0,8).map(chEsc).join('<br>')+(I.bad.length>8?'<br>…還有 '+(I.bad.length-8)+' 列':'')+'</div>';
+  if(I.items.length){
+    h+='<div class="chips" style="margin-top:10px"><span class="chip'+(CH_ED.impMode==='merge'?' on':'')+'" data-chimpmode="merge">合併：新的加進去、相同編號更新</span>'+
+      '<span class="chip'+(CH_ED.impMode==='replace'?' on':'')+'" data-chimpmode="replace">取代：以試算表為準</span></div>'+
+      '<p class="hint">'+(CH_ED.impMode==='replace'?'「取代」會把'+tps.map(function(tp){return CH_TOPICS[tp].t}).join('、')+'整個換成試算表的內容，試算表裡沒有的題目會被拿掉（統計還在，題目加回來就接得上）。':'「合併」不會刪掉任何現有題目。')+'</p>'+
+      '<div style="display:flex;gap:8px;margin-top:8px"><button class="qbtn" data-chimpgo style="border-color:var(--signal);color:var(--signal)">匯入 '+I.items.length+' 題</button><button class="qbtn" data-chimpx>取消</button></div>';
+  }
+  return h+'</div>';
+}
+function chImport(I,mode){
+  var r={add:0,upd:0,del:0};
+  var by={};I.items.forEach(function(x){(by[x.tp]=by[x.tp]||[]).push(x)});
+  Object.keys(by).forEach(function(tp){
+    var L=CH_BANK[tp]=CH_BANK[tp]||[];
+    if(mode==='replace'){
+      var keep={};by[tp].forEach(function(x){keep[x.id]=1});
+      r.del+=L.filter(function(q){return !keep[q.id]}).length;
+      by[tp].forEach(function(x){if(L.some(function(q){return q.id===x.id}))r.upd++;else r.add++;});
+      CH_BANK[tp]=by[tp].map(chCopy);
+    }else{
+      by[tp].forEach(function(x){
+        var at=-1;for(var i=0;i<L.length;i++)if(L[i].id===x.id){at=i;break}
+        if(at>=0){L[at]=chCopy(x);r.upd++;}else{L.push(chCopy(x));r.add++;}
+      });
+    }
+  });
+  return r;
+}
+(function(){
+  var g=$('#grp-challenge');if(!g)return;
+  g.querySelector('.grp-h').addEventListener('click',function(){
+    setTimeout(function(){
+      if(!g.classList.contains('open'))return;
+      renderChAdmin();
+      if(!CH_STAT)chLoadStats();
+      if(!CH_BANK)chLoadBank().then(renderChAdmin).catch(function(e){toast('題庫讀取失敗：'+(e.code||e.message))});
+    },0);
+  });
+})();
+
 /* ---- articles ---- */
 var ARTICLES=[
  {id:'a1',cat:'disaster',t:'住警器裝在哪裡才有用',c:'居家安全',v:0,d:'2026/08/02',
@@ -3203,7 +4027,7 @@ function toast(msg){
 
 /* ================= 課程主視覺 ================= */
 var HERO={
- ecg:'<path class="ekg" d="M0 34 H26 C32 34 34 26 40 26 C46 26 48 34 54 34 H70 L76 36 L82 6 L90 58 L97 30 L103 34 H120 C132 34 132 20 144 20 C156 20 156 34 168 34 H196 C202 34 204 26 210 26 C216 26 218 34 224 34 H240 L246 36 L252 6 L260 58 L267 30 L273 34 H290 C302 34 302 20 314 20 C326 20 326 34 338 34 H400"/>',
+ ecg:'<path class="ekg" d="M0 40 H72 Q83 29 94 40 H111 L115 44 L120 5 L125 53 L129 40 H143 Q159 20 175 40 H241 Q252 29 263 40 H280 L284 44 L289 5 L294 53 L298 40 H312 Q328 20 344 40 H400"/>',
  heart:'<path class="soft" d="M0 30 H132"/><path d="M132 30 L146 30 L154 14 L164 46 L173 22 L182 30 L196 30"/><path class="soft" d="M196 30 H244"/><path d="M290 44s-22-13-22-24a10 10 0 0 1 19-5 10 10 0 0 1 19 5c0 11-22 24-22 24z"/><path class="soft" d="M330 30 H400"/>',
  flame:'<path class="soft" d="M0 30 H150"/><path d="M200 8c10 12 16 19 16 30a16 16 0 1 1-32 0c0-11 6-18 16-30z"/><path class="soft" d="M200 44a7 7 0 0 1-7-7c0-4 3-7 7-12 4 5 7 8 7 12a7 7 0 0 1-7 7z"/><path class="soft" d="M250 30 H400"/>',
  aed:'<path class="soft" d="M0 30 H132"/><path d="M148 12h104a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H148a6 6 0 0 1-6-6V18a6 6 0 0 1 6-6z"/><path d="m205 20-9 14h11l-8 12"/><path class="soft" d="M274 30 H400"/>',
@@ -3277,6 +4101,7 @@ var ICONS={
  mail:'<path d="M3.6 6.2h16.8v11.6H3.6z"/><path class="hot" d="m3.6 6.9 8.4 6.5 8.4-6.5"/>',
  flame:'<path d="M12 3c3.5 4.1 5.8 6.7 5.8 10.3a5.8 5.8 0 1 1-11.6 0C6.2 9.7 8.5 7.1 12 3z"/><path class="hot" d="M12 19.1a2.7 2.7 0 0 1-2.7-2.7c0-1.6 1.2-2.5 2.7-4.5 1.5 2 2.7 2.9 2.7 4.5a2.7 2.7 0 0 1-2.7 2.7z"/>',
  heart:'<path d="M20.5 8.5c0-2.6-2.1-4.6-4.5-4.6-1.8 0-3.3 1-4 2.5-.7-1.5-2.2-2.5-4-2.5C5.6 3.9 3.5 5.9 3.5 8.5c0 5.1 8.5 10.8 8.5 10.8s8.5-5.7 8.5-10.8z"/><path class="hot" d="M6.7 11.5h2.4l1.3-2.4 1.8 4.5 1.4-2.1h3.7"/>',
+ target:'<circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="4.6"/><path class="hot" d="M12 12 19.2 4.8M16.4 4.6h2.8v2.8"/>',
  lock:'<path d="M20 12.4c0 3.2-3.6 5.8-8 5.8-.95 0-1.86-.12-2.7-.35L4.6 19.8l1.2-3.1A5.6 5.6 0 0 1 4 12.4C4 9.2 7.6 6.6 12 6.6s8 2.6 8 5.8z"/><path class="hot" d="M10.9 12.1v-1a1.1 1.1 0 0 1 2.2 0v1"/><path class="hot" d="M10.3 12.1h3.4v2.9h-3.4z"/>',
  link:'<path d="M13.8 5.2h5v5"/><path class="hot" d="M18.8 5.2 11.4 12.6"/><path d="M17.4 14v5.4H4.8V6.6H10"/>'
 };
@@ -3287,6 +4112,7 @@ var TILES=[
  {id:'invite',   t:'課程邀約',     icon:'mail',  go:'p-invite',    on:true},
  {id:'disaster', t:'防災知識專區', icon:'flame', go:'p-disaster',  on:true},
  {id:'firstaid', t:'急救教育專區', icon:'heart', go:'p-firstaid',  on:true},
+ {id:'challenge',t:'挑戰題庫',     icon:'target',go:'p-challenge', on:false},
  {id:'files',    t:'檔案下載',     icon:'file',  go:'p-files',     on:true},
  {id:'whisper',  t:'傳聲悄悄話',   icon:'lock',  go:'p-whisper',   on:true}
 ];
@@ -3338,6 +4164,7 @@ function renderTiles(){
         });
       });
     }
+    try{chTileDecor(el,t)}catch(e){}
     grid.appendChild(el);
   });
   if(EDITING){
@@ -3383,9 +4210,9 @@ var KEY_SEL=TEXT_SEL+','+BLOCK_SEL+',.chip,.chip-s,input,textarea';
 /* 內容是程式產生的容器：容器本身可以移動隱藏，但裡面的東西由資料控制 */
 var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,'+
         '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav,#stage,'+
-        '#abLead,#gal,#abContacts,#clsStats,#topList';
+        '#abLead,#gal,#abContacts,#clsStats,#topList,#chBody';
 /* 文字綁在資料上的元素：可以移動，但文字另外處理 */
-var SKIPTXT='#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM,.ig-handle,#galN,#runKicker,#scoreT,#scoreS';
+var SKIPTXT='#abHeadline,#abIntro,#abQuote,#abEnd,#plT,#plM,.ig-handle,.ig-h[data-ctn],#galN,#runKicker,#scoreT,#scoreS';
 var NOBLOCK='#tileGrid,.gate-mark,#pvBar,#nav,script';
 var DATA_BLOCKS=DYN+',.player,#brandPlate,#brandHead,.galx';
 function isDataBlock(el){return !!(el&&el.matches&&el.matches(DATA_BLOCKS))}
@@ -3834,8 +4661,9 @@ var SITE={
   photos:'',
   brand:{head:{on:true,name:'IRON WILL',sub:'FIRE SAFETY × FIRST AID EDUCATION'},banner:{on:true},foot:'IRON WILL｜教育平台',homePos:'top'},
   ruby:'檁=ㄌㄧㄣˇ',
-  ctNote:{ig:'現場紀錄與上課花絮',line:'回覆最快',tel:'可傳簡訊',mail:'講師個人信箱'},
+  ctNote:{igName:'IRON WILL｜消防員上工去',ig:'消防員第一線故事紀實',line:'回覆最快',tel:'可傳簡訊',mail:'講師個人信箱'},
   files:{folder:'',items:[]},
+  challenge:null,
   courses:[
     {k:'FIRE',t:'消防安全 × 防災教育',d:'從火災怎麼發生講到怎麼逃：住警器、滅火器、避難動線與濃煙中的判斷。用真實案例說明為什麼「先關門」和「不搭電梯」會救命。',h:'90 分鐘 ～ 3 小時',w:'企業、學校、社區、公部門',hidden:false},
     {k:'RESCUE',t:'緊急救護 × CPR × AED',d:'成人與兒童 CPR、AED 操作、異物哽塞處理。一人一台安妮實作到手熟，並練習在慌亂中如何分工與求救。',h:'3 小時（含實作）',w:'企業、學校、社區，建議 10～40 人',hidden:false},
@@ -4119,6 +4947,7 @@ function fetchFileBlob(it,job){
       if(job!==FV.job)return;
       var j;try{j=JSON.parse(t)}catch(e){gfMarkBad(ep);throw new Error('old-script')}
       if(j.ok&&!j.data){gfMarkBad(ep);throw new Error('no-support')}   // 回了東西但不是檔案：Apps Script 沒有下載功能
+      if(!j.ok&&j.error==='檔案已刪除'){FV.err='deleted';fvPaint();return;}
       if(!j.ok||!j.data)throw new Error(j.error||'fail');
       var bin=atob(j.data),u8=new Uint8Array(bin.length);
       for(var i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
@@ -4131,6 +4960,7 @@ function fvPaint(){
   var v=$('#fileView');if(!v)return;var b=$('.fview-dl',v);
   b.disabled=false;
   if(FV.file)b.textContent='下載';
+  else if(FV.err==='deleted'){b.textContent='檔案已移除';b.disabled=true;toast('這個檔案講師已經從雲端刪除了');}
   else if(FV.err)b.textContent='用雲端硬碟下載';
   else{b.textContent='準備中…';b.disabled=true;}
 }
@@ -4578,7 +5408,7 @@ function applyForms(){
   var hp=(SITE.brand&&SITE.brand.homePos)||'top';
   $$('#homePos .chip').forEach(function(c){c.classList.toggle('on',c.dataset.hp===hp)});
   v('#edDrive',SITE.drive);v('#edRuby',SITE.ruby||'');v('#edFilesFolder',SITE.files.folder||'');
-  try{renderFileEdit()}catch(e){}try{renderCourseEdit()}catch(e){}try{galPaintAll()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
+  try{renderFileEdit()}catch(e){}try{renderCourseEdit()}catch(e){}try{galPaintAll()}catch(e){}try{renderChAdmin()}catch(e){}try{filesAudit()}catch(e){}v('#edNotice',SITE.notice);v('#edTopic',SITE.topic);
   var qq=quizOpts();
   try{paintLevel()}catch(e){}
   [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry],
@@ -4758,10 +5588,13 @@ function applyPayload(p){
         // 之後新增的功能（例如檔案下載）要補進舊的磁磚設定，不然會消失
         TILE_DEF.forEach(function(def,i){
           if(!TILES.some(function(t){return t.id===def.id})){
-            var at=Math.min(i,TILES.length);TILES.splice(at,0,Object.assign({},def));
+            var at=Math.min(i,TILES.length);
+            if(def.id==='challenge'){var fi=TILES.findIndex(function(t){return t.id==='files'});if(fi>=0)at=fi;}   // 放在「檔案下載」前面
+            TILES.splice(at,0,Object.assign({},def));
           }
         });
       }
+      try{chApplyCfg(d.challenge)}catch(e){}
       if($('#stCourse'))$('#stCourse').textContent='已同步';
     }
     var v=p.inst;
@@ -4792,7 +5625,10 @@ function applyPayload(p){
       }
       if(v.ruby!=null)SITE.ruby=v.ruby;
       if(v.ctNote)SITE.ctNote=Object.assign({},SITE.ctNote,v.ctNote);
+      if(SITE.ctNote.ig==='現場紀錄與上課花絮')SITE.ctNote.ig='消防員第一線故事紀實';   // v10.23 舊預設字換成新的
+      if(!SITE.ctNote.igName)SITE.ctNote.igName='IRON WILL｜消防員上工去';
       if(v.files)SITE.files=Object.assign({folder:'',items:[]},v.files);
+      SITE.challenge=(v.challenge&&(v.challenge.fire||v.challenge.rescue))?v.challenge:null;
       if(v.courses&&v.courses.length)SITE.courses=v.courses;
       if(v.texts)Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});
       if(v.patch){try{PATCH=Object.assign({text:{},ph:{},hide:{},del:{},order:{},add:[]},JSON.parse(v.patch));}
@@ -4889,7 +5725,7 @@ function countHit(key){
 }
 var TKEYS=[['about','講師介紹'],['quiz','線上測驗'],['feedback','課程回饋'],
            ['invite','課程邀約'],['disaster','防災知識專區'],['firstaid','急救教育專區'],
-           ['whisper','傳聲悄悄話'],['video','影片播放'],['ig','IG 點擊']];
+           ['whisper','傳聲悄悄話'],['challenge','挑戰題庫'],['video','影片播放'],['ig','IG 點擊']];
 function renderTraffic(){
   var box=$('#traffic');if(!box)return;
   var max=Math.max.apply(null,TKEYS.map(function(k){return HITS[k[0]]||0}))||1;
@@ -5329,14 +6165,14 @@ function setDirty(v){DIRTY=!!v;document.body.classList.toggle('dirty',DIRTY);var
 (function(){
   var pro=$('#z-pro');if(!pro)return;
   // 這些是按了就立刻生效的，不算「未儲存」
-  var instant='#artQ,#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew';
+  var instant='#artQ,#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew,#chSearch,#chSheetUrl,#chPaste,#chNote,#chAt';
   pro.addEventListener('input',function(e){
     if(e.target.closest(instant)||e.target.closest('#pnl-inbox'))return;
     if(e.target.matches('input,textarea,select'))setDirty(true);
   });
   pro.addEventListener('click',function(e){
     if(e.target.closest('#pnl-inbox,#pnl-share,.panel'))return;
-    if(e.target.closest('.sw:not(#nfAck)')||e.target.closest('#qeList .startog,#qeList .qe-b button,#artEdit .startog,#artEdit .chip,#addQ,#addArticle,.chips[data-one] .chip'))
+    if(e.target.closest('.sw:not(#nfAck):not(#chOn)')||e.target.closest('#qeList .startog,#qeList .qe-b button,#artEdit .startog,#artEdit .chip,#addQ,#addArticle,.chips[data-one] .chip'))
       setDirty(true);
   });
 })();
@@ -5345,7 +6181,7 @@ $('#dirtySave').addEventListener('click',async function(){
   b.textContent='儲存中…';
   try{
     pullForms();
-    await Promise.all([saveSite(),saveCourse(),saveQuestions(),saveArticles()]);
+    await Promise.all([saveSite(),saveCourse(),saveQuestions(),saveArticles(),CH_BANK_DIRTY?saveChBank():null]);
     setDirty(false);toast('全部已儲存，學員端立即生效');logChange('儲存後台設定');refreshCache();
     try{applySite();renderHero();renderTiles();}catch(e){}
   }catch(e){toast('儲存失敗：'+(e.code||e.message))}
@@ -5355,6 +6191,7 @@ $('#dirtyCancel').addEventListener('click',async function(){
   if(!confirm('放棄這次所有還沒儲存的修改？'))return;
   this.textContent='還原中…';
   await loadAll(true);setDirty(false);
+  CH_BANK=null;CH_BANK_DIRTY=false;CH_BANK_VER=-1;try{renderChAdmin();var cg=$('#grp-challenge');if(cg&&cg.classList.contains('open'))chLoadBank().then(renderChAdmin)}catch(e){}
   this.textContent='放棄';toast('已還原成上次儲存的內容');
 });
 window.addEventListener('beforeunload',function(e){if(DIRTY){e.preventDefault();e.returnValue='';}});
@@ -5991,10 +6828,11 @@ document.addEventListener('click',async function(e){
     else if(k==='articles')await saveArticles();
     else if(k==='course')await saveCourse();
     else if(k==='questions')await saveQuestions();
+    else if(k==='chbank')await saveChBank();
     else await saveSite();
     flash(b,'已儲存');toast('已儲存到雲端');setDirty(false);refreshCache();
     logChange({tiles:'修改首頁功能',course:'修改課程設定',questions:'修改題庫',
-               articles:'修改文章',texts:'修改頁面文字',notify:'修改通知設定'}[k]||'修改講師介紹');
+               articles:'修改文章',texts:'修改頁面文字',notify:'修改通知設定',chbank:'修改挑戰題庫'}[k]||'修改講師介紹');
   }catch(err){console.warn(err);flash(b,'儲存失敗：'+(err.code||err.message));}
 });
 var sb=$('#seedBtn');
@@ -6529,8 +7367,13 @@ document.addEventListener('click',async function(e){
     var t=e.target.textContent;e.target.textContent='讀取中…';
     try{
       var j=await mailAdmin({action:'listFolder',folder:url,kind:'all'});
-      FOLDER_FILES_DOC=(j.files||[]);SITE.files.folder=url;setDirty(true);renderFilePick();
-      toast('讀到 '+FOLDER_FILES_DOC.length+' 個檔案');
+      FOLDER_FILES_DOC=(j.files||[]);SITE.files.folder=url;setDirty(true);
+      // 已選的檔案如果不在資料夾裡了（雲端刪掉或移走），從清單拿掉
+      var alive={};FOLDER_FILES_DOC.forEach(function(f){alive[f.id]=1});
+      var gone=(SITE.files.items||[]).filter(function(f){return !alive[f.id]});
+      if(gone.length)SITE.files.items=SITE.files.items.filter(function(f){return alive[f.id]});
+      renderFilePick();renderFileEdit();try{renderFiles()}catch(err){}
+      toast('讀到 '+FOLDER_FILES_DOC.length+' 個檔案'+(gone.length?'．移除 '+gone.length+' 個雲端已刪除的':''));
     }catch(err){toast(err.message.slice(0,40))}
     e.target.textContent=t;return;
   }
@@ -6553,6 +7396,38 @@ document.addEventListener('click',async function(e){
     setDirty(true);renderFileEdit();renderFilePick();try{renderFiles()}catch(err){}
   }
 });
+
+/* 後台：雲端硬碟刪掉的檔案，自動從下載清單拿掉（需要新版 Apps Script 的 checkFiles）．每 10 分鐘最多查一次 */
+var FILES_AUDIT_T=0;
+function filesAudit(force){
+  var F=window.fb;if(!F||!F.auth.currentUser)return;
+  var ep=((SITE.notify&&SITE.notify.endpoint)||'').trim(),items=SITE.files.items||[];
+  if(!ep||!items.length||gfIsBad(ep))return;
+  if(!force&&Date.now()-FILES_AUDIT_T<10*60*1000)return;
+  FILES_AUDIT_T=Date.now();
+  fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({action:'checkFiles',ids:items.map(function(f){return f.id}),folder:SITE.files.folder||''})})
+   .then(function(r){return r.text()})
+   .then(async function(t){
+     var j;try{j=JSON.parse(t)}catch(e){gfMarkBad(ep);return}
+     if(!j||!j.ok||!Array.isArray(j.dead)||!j.dead.length)return;   // 舊版 Apps Script 會回「密碼不對」，不做事
+     var dead={};j.dead.forEach(function(id){dead[id]=1});
+     var gone=(SITE.files.items||[]).filter(function(f){return dead[f.id]});if(!gone.length)return;
+     SITE.files.items=SITE.files.items.filter(function(f){return !dead[f.id]});
+     try{renderFileEdit();renderFilePick();renderFiles()}catch(e){}
+     try{
+       await F.setDoc(F.doc(F.db,'instructors','main'),{files:SITE.files},{merge:true});
+       toast('雲端已刪除 '+gone.length+' 個檔案，已從下載清單拿掉');
+       logChange('自動移除雲端已刪除的檔案：'+gone.map(function(f){return f.label||f.name}).join('、'));
+     }catch(e){setDirty(true);toast('雲端刪掉的檔案已拿掉，記得按儲存');}
+   }).catch(function(){});
+}
+(function(){
+  var g=$('#grp-files');if(!g)return;
+  g.querySelector('.grp-h').addEventListener('click',function(){
+    setTimeout(function(){if(g.classList.contains('open')&&Date.now()-FILES_AUDIT_T>60*1000)filesAudit(true)},0);
+  });
+})();
 
 /* ---- 後台：從資料夾挑照片 ---- */
 var FOLDER_FILES={};   // 讀到的資料夾內容，只在這次開著的時候用
@@ -6658,6 +7533,7 @@ function chipPick(e){
   // 觸控時 pointerup 與 click 會連發，同一顆在 500 毫秒內只算一次；點別顆不受影響
   if(c){var now=Date.now();if(c===CHIP_LAST&&now-CHIP_T<500)return;CHIP_LAST=c;CHIP_T=now;}
   if(!c||c.classList.contains('chip-s'))return;
+  if(c.closest('#chAdmin'))return;   // 挑戰題庫後台的選項自己處理
   if(EDITING)return;
   var grp=c.parentElement;
   if(grp.hasAttribute('data-one')){
