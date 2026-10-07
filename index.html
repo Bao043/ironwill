@@ -796,6 +796,16 @@ body.dirty #z-pro{padding-bottom:80px}
   letter-spacing:.06em;padding:4px 8px;line-height:1.2;transform:rotate(3deg)}
 .tile-lk{display:block;font-family:var(--mono);font-size:11px;color:var(--signal);margin-top:6px;letter-spacing:.02em;line-height:1.4}
 .ch-c{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.tile-lk.soft{color:var(--muted)}
+.tile-lk.soft.hot{color:var(--signal);font-weight:600}
+.ch-timer{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-bottom:14px;padding:9px 12px;border:1px solid var(--line);
+  font-size:13px;color:var(--muted);background:var(--surface)}
+.ch-timer[hidden]{display:none}
+.ch-timer.hot{border-color:var(--signal);background:var(--signal-soft);color:var(--ink);position:sticky;top:calc(64px + env(safe-area-inset-top,0px));z-index:5}
+.ch-timer.hot b{color:var(--signal)}
+.ch-timeup{padding:10px 0 4px}
+.ch-tu-k{display:inline-block;background:var(--signal);color:#fff;font-weight:600;font-size:13px;padding:4px 10px;letter-spacing:.06em}
+.ch-rel{font-family:var(--mono);font-size:11.5px;color:var(--signal);margin-left:8px}
 .ch-card.loading{opacity:.55}
 .ch-card.loading .ch-go{animation:chBlink .8s ease-in-out infinite alternate}
 @keyframes chBlink{to{opacity:.2}}
@@ -2705,7 +2715,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.30　2026/10/07';
+var APP_VERSION='v10.31　2026/10/07';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3277,7 +3287,8 @@ var CH_DEF={
    題目本身分批存在 instructors/chBank_{主題}_{0,1,2…}（每份最多 CH_CHUNK 題），學員點進挑戰題庫才讀，不拖慢首頁
    統計：questionStats/{課程}__ch_{主題}，每一題記 s（刷到）n（作答）c（答對）p0–p3（選了哪個選項） */
 var CH_CHUNK=300;
-var CH_CFG={mode:'open',at:0,note:'',chunks:{},ver:0,n:10};
+var CH_CFG={mode:'open',at:0,note:'',chunks:{},ver:0,n:10,end:0,endNote:''};
+var CH_WARN=10*60*1000;   // 關閉前幾分鐘開始倒數提醒
 function chN(){var n=Math.round(+CH_CFG.n||CH_N);return Math.min(100,Math.max(1,n))}
 var CH_CFG_SET=false;            // 雲端有沒有存過設定（沒有的話照舊版的開關）
 var CH_BANK=null;                // 讀進來的題庫 {fire:[…],rescue:[…]}
@@ -3306,19 +3317,41 @@ function chFmt(ms,long){
 function chState(){
   var t=chTile();
   if(!t||!t.on)return {open:false,visible:false,mode:'hidden'};
-  var m=CH_CFG.mode||'open';
-  if(m==='scheduled'&&CH_CFG.at&&Date.now()>=CH_CFG.at)m='open';
+  var m=CH_CFG.mode||'open',now=Date.now();
+  if(m==='scheduled'&&CH_CFG.at&&now>=CH_CFG.at)m='open';
   if(m==='pause')return {open:false,visible:true,mode:m,badge:'題庫維護中',sub:'維護中',
     note:CH_CFG.note||'題庫維護中，請稍後再來挑戰'};
   if(m==='scheduled')return {open:false,visible:true,mode:m,badge:'即將開放',sub:chFmt(CH_CFG.at)+' 開放',
     note:CH_CFG.note||('挑戰題庫將於 '+chFmt(CH_CFG.at,true)+' 開放')};
-  return {open:true,visible:true,mode:'open'};
+  if(CH_CFG.end&&now>=CH_CFG.end)return {open:false,visible:true,mode:'ended',badge:'已結束',sub:chFmt(CH_CFG.end)+' 已關閉',
+    note:CH_CFG.endNote||'這一次的挑戰時間已經結束，謝謝參與！'};
+  var left=CH_CFG.end?CH_CFG.end-now:0;
+  return {open:true,visible:true,mode:'open',end:CH_CFG.end||0,left:left,warn:!!(CH_CFG.end&&left<=CH_WARN)};
 }
 function chOpen(){return chState().open}
+/* 「還有多久」的字 */
+function chRel(ms){
+  var d=ms-Date.now();if(d<=0)return '已經過了';
+  var m=Math.ceil(d/60000),hh=Math.floor(m/60),dd=Math.floor(hh/24);
+  if(dd>=1)return '還有 '+dd+' 天 '+(hh%24)+' 小時';
+  if(hh>=1)return '還有 '+hh+' 小時 '+(m%60)+' 分';
+  return '還有 '+m+' 分鐘';
+}
+function chDayWord(ms){
+  var a=new Date(ms),b=new Date(),k=function(d){return d.getFullYear()*1e4+d.getMonth()*100+d.getDate()};
+  var diff=Math.round((new Date(a.getFullYear(),a.getMonth(),a.getDate())-new Date(b.getFullYear(),b.getMonth(),b.getDate()))/864e5);
+  return diff===0?'今天':diff===1?'明天':diff===-1?'昨天':'';
+}
 /* 首頁磁磚：還沒開放時變淡，壓上提示 */
 function chTileDecor(el,t){
   if(t.id!=='challenge'||EDITING)return;
-  var st=chState();if(st.open)return;
+  var st=chState();
+  if(st.open){
+    if(st.end){var s0=document.createElement('span');s0.className='tile-lk soft'+(st.warn?' hot':'');
+      s0.textContent=(chDayWord(st.end)||chFmt(st.end).split('（')[0])+' '+chFmt(st.end).split('）')[1]+' 關閉';
+      var t0=el.querySelector('.tile-t');if(t0)t0.parentNode.insertBefore(s0,t0.nextSibling);}
+    return;
+  }
   el.classList.add('tile-lock');
   el.removeAttribute('data-go');el.setAttribute('data-chlock','1');
   var b=document.createElement('span');b.className='tile-badge';b.textContent=st.badge;el.appendChild(b);
@@ -3331,15 +3364,42 @@ document.addEventListener('click',function(e){
 });
 // 預約時間到了自動解鎖（不用重新整理）
 var CH_LAST_OPEN=null;
+var CH_LAST_WARN=null;
 setInterval(function(){
-  if(EDITING||CH_CFG.mode!=='scheduled')return;
-  var o=chOpen();if(CH_LAST_OPEN!==null&&o!==CH_LAST_OPEN){try{renderTiles()}catch(e){}}
-  CH_LAST_OPEN=o;
-},20000);
+  if(EDITING)return;
+  var st=chState(),o=st.open;
+  if(CH_LAST_OPEN!==null&&(o!==CH_LAST_OPEN||st.warn!==CH_LAST_WARN)){
+    try{renderTiles()}catch(e){}
+    if(!o&&CH_LAST_OPEN)chOnClose(st);
+  }
+  CH_LAST_OPEN=o;CH_LAST_WARN=st.warn;
+  var pg=document.querySelector('.page.is-on');
+  if(pg&&pg.id==='p-challenge')chPaintTimer(st);
+},1000);
+/* 關閉的那一刻：在選主題的回首頁；正在作答的跳出「時間到」讓他交卷 */
+function chOnClose(st){
+  var pg=document.querySelector('.page.is-on');if(!pg||pg.id!=='p-challenge')return;
+  if(CH.step==='run'&&st.mode==='ended'){CH.timeup=true;renderChallenge();window.scrollTo({top:0,behavior:'instant'});return;}
+  if(CH.step==='pick'){toast(st.note||'挑戰題庫目前沒有開放');stack=['p-home'];show('p-home',true);}
+}
+/* 最上面的倒數條 */
+function chPaintTimer(st){
+  var el=$('#chTimer');if(!el)return;
+  st=st||chState();
+  if(!st.open||!st.end||CH.step==='done'||CH.timeup){el.hidden=true;return;}
+  if(st.warn){
+    var sec=Math.max(0,Math.ceil(st.left/1000)),mm=Math.floor(sec/60),ss=('0'+sec%60).slice(-2);
+    el.className='ch-timer hot';
+    el.innerHTML='<b>⏰ '+chEsc(chFmt(st.end).split('）')[1])+' 關閉</b><span>還剩 '+mm+' 分 '+ss+' 秒'+(CH.step==='run'?'，時間到就會直接交卷':'，要挑戰請把握時間')+'</span>';
+    el.hidden=false;
+  }else if(CH.step==='pick'){
+    el.className='ch-timer';el.innerHTML='<span>開放到 '+chEsc(chFmt(st.end))+'</span>';el.hidden=false;
+  }else el.hidden=true;
+}
 function chApplyCfg(c){
   if(c){
     CH_CFG_SET=true;
-    CH_CFG={mode:c.mode||'open',at:+c.at||0,note:c.note||'',chunks:c.chunks||{},ver:+c.ver||0,n:+c.n||CH_N};
+    CH_CFG={mode:c.mode||'open',at:+c.at||0,note:c.note||'',chunks:c.chunks||{},ver:+c.ver||0,n:+c.n||CH_N,end:+c.end||0,endNote:c.endNote||''};
   }
   var t=chTile();
   if(t&&c&&c.mode==='hidden'){t.on=false;CH_CFG.mode='open';}
@@ -3388,10 +3448,12 @@ async function saveChBank(){
   CH_CFG_SET=true;CH_BANK_VER=CH_CFG.ver;CH_BANK_DIRTY=false;
   renderChAdmin();
 }
-function chCfgOut(){return {mode:CH_CFG.mode||'open',at:CH_CFG.at||0,note:CH_CFG.note||'',chunks:CH_CFG.chunks||{},ver:CH_CFG.ver||0,n:chN()}}
+function chCfgOut(){return {mode:CH_CFG.mode||'open',at:CH_CFG.at||0,note:CH_CFG.note||'',chunks:CH_CFG.chunks||{},ver:CH_CFG.ver||0,n:chN(),end:CH_CFG.end||0,endNote:CH_CFG.endNote||''}}
 
 /* ---- 學員端 ---- */
 function chStart(tp){
+  var st0=chState();
+  if(!st0.open&&!EDITING){toast(st0.note||'挑戰題庫目前沒有開放');stack=['p-home'];show('p-home',true);return;}
   var go1=function(){
     var pool=chBank(tp).filter(chValid);
     if(!pool.length){toast('這個主題還沒有題目');return;}
@@ -3400,7 +3462,7 @@ function chStart(tp){
       var idx=chShuffle([0,1,2,3].filter(function(i){return String(q.o[i]||'').trim()}));
       return {id:q.id,q:q.q,ex:q.ex,o:idx.map(function(i){return q.o[i]}),a:idx.indexOf(q.a),map:idx};
     });
-    CH={step:'run',tp:tp,qs:qs,i:0,ans:[],rev:false,saved:false};
+    CH={step:'run',tp:tp,qs:qs,i:0,ans:[],rev:false,saved:false,timeup:false};
     renderChallenge();window.scrollTo({top:0,behavior:'instant'});
   };
   if(CH_BANK&&CH_BANK_VER===CH_CFG.ver){go1();return;}
@@ -3414,8 +3476,17 @@ function renderChallenge(){
   var box=$('#chBody');if(!box)return;
   var h='',T=CH_TOPICS[CH.tp]||{};
   if(CH.step==='run'&&!CH.qs[CH.i])CH.step='pick';
+  h='<div class="ch-timer" id="chTimer" hidden></div>';
+  if(CH.step==='run'&&CH.timeup){
+    var na=CH.ans.filter(function(x){return x!=null}).length;
+    h+='<div class="ch-timeup"><div class="ch-tu-k">⏰ 時間到</div>'+
+      '<h1 class="display" style="font-size:24px;margin-top:6px">挑戰時間結束了</h1>'+
+      '<p class="sub" style="margin-top:8px">你這一輪答了 <b>'+na+' / '+CH.qs.length+'</b> 題。還沒作答的題目算答錯，按下面就能看到你的分數、正確答案和詳解。</p>'+
+      '<button class="btn" data-chfinish>交卷看結果</button></div>';
+    box.innerHTML=h;return;
+  }
   if(CH.step==='pick'){
-    h='<div class="meta">IRON WILL｜挑戰題庫</div>'+
+    h+='<div class="meta">IRON WILL｜挑戰題庫</div>'+
       '<h1 class="display" style="font-size:26px;margin-top:8px">選擇你的挑戰</h1>'+
       '<p class="sub" style="margin-top:8px">每次從題庫隨機抽 '+chN()+' 題，做完馬上看分數、正確答案和詳解。</p>'+
       '<div class="ch-cards">'+Object.keys(CH_TOPICS).map(function(k){var C=CH_TOPICS[k];
@@ -3428,7 +3499,7 @@ function renderChallenge(){
       '<p class="note">題目由 IRON WILL 講師整理，內容以一般民眾版為主。想讓單位完整學一次，可以從完成畫面直接邀請講師。</p>';
   }else if(CH.step==='run'){
     var q=CH.qs[CH.i],sel=CH.ans[CH.i],last=CH.i===CH.qs.length-1;
-    h='<div class="prog"><i style="width:'+((CH.i+1)/CH.qs.length*100)+'%"></i></div>'+
+    h+='<div class="prog"><i style="width:'+((CH.i+1)/CH.qs.length*100)+'%"></i></div>'+
       '<div class="meta" style="margin-top:12px">'+T.k+'｜'+T.t+' · 第 '+(CH.i+1)+' 題 / '+CH.qs.length+'</div>'+
       '<h2 class="ch-q">'+chEsc(q.q)+'</h2><div class="ch-opts">'+
       q.o.map(function(t,i){
@@ -3438,7 +3509,7 @@ function renderChallenge(){
       '<button class="btn btn-quiet" data-chquit>不做了，回到主題選擇</button>';
   }else{
     var n2=CH.qs.length,right=CH.qs.filter(function(q,i){return CH.ans[i]===q.a}).length,sc=n2?Math.round(right/n2*100):0;
-    h='<div class="meta">完成．'+T.k+'｜'+T.t+'</div>'+
+    h+='<div class="meta">完成．'+T.k+'｜'+T.t+(CH.tu?'．時間到交卷':'')+'</div>'+
       '<div class="ch-res-l">你的結果</div>'+
       '<div class="ch-score">'+sc+'<small> / 100</small></div>'+
       '<div class="ch-right">答對 <b>'+right+' / '+n2+'</b> 題</div>'+
@@ -3463,6 +3534,7 @@ function renderChallenge(){
       }).join('')+'</div>';
   }
   box.innerHTML=h;
+  try{chPaintTimer()}catch(e){}
 }
 /* 作答統計：做完一輪寫一次；中途放棄的，已經答的題目也算進去（一輪最多寫一次） */
 function chSave(done){
@@ -3489,8 +3561,10 @@ function chSave(done){
    .catch(function(e){console.warn('挑戰題庫統計失敗',e)});
 }
 document.addEventListener('click',function(e){
-  var t=e.target.closest('[data-chgo],[data-chopt],[data-chnext],[data-chquit],[data-chrev],[data-chroute],[data-chans]');
+  var t=e.target.closest('[data-chgo],[data-chopt],[data-chnext],[data-chquit],[data-chrev],[data-chroute],[data-chans],[data-chfinish]');
   if(!t||!t.closest('#chBody'))return;
+  if(t.hasAttribute('data-chfinish')){CH.step='done';CH.rev=true;CH.tu=true;CH.timeup=false;chSave(true);renderChallenge();window.scrollTo({top:0,behavior:'instant'});return;}
+  if(CH.timeup)return;
   if(t.dataset.chgo){chStart(t.dataset.chgo);return;}
   if(t.dataset.chopt!=null){
     CH.ans[CH.i]=+t.dataset.chopt;
@@ -3501,6 +3575,7 @@ document.addEventListener('click',function(e){
   }
   if(t.hasAttribute('data-chnext')){
     if(CH.ans[CH.i]==null)return;
+    if(CH.i===CH.qs.length-1)CH.tu=false;
     if(CH.i<CH.qs.length-1)CH.i++;
     else{CH.step='done';CH.rev=false;chSave(true);}
     renderChallenge();window.scrollTo({top:0,behavior:'instant'});return;
@@ -3587,15 +3662,27 @@ function renderChAdmin(){
   h+='<div class="section-head" style="padding-top:18px"><h2>學員端狀態</h2><span>按了立刻生效</span></div>'+
     '<div class="ch-mode">'+[['open','開放','直接可以玩'],['pause','題庫維護中','磁磚變淡＋提示'],['scheduled','預約開放','時間到自動開'],['hidden','隱藏','首頁看不到']].map(function(x){
       return '<button type="button" data-chmode="'+x[0]+'"'+(m===x[0]?' class="on"':'')+'><b>'+x[1]+'</b><span>'+x[2]+'</span></button>'}).join('')+'</div>';
-  if(m==='pause'||m==='scheduled'){
-    h+=(m==='scheduled'?'<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">幾月幾號幾點開放</div>'+
-        '<input class="f-in" type="datetime-local" id="chAt" value="'+chLocalInput(CH_CFG.at)+'"></div>':'')+
-      '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">學員點下去看到的提示（可留空，用預設的）</div>'+
-      '<input class="f-in" id="chNote" maxlength="60" value="'+chEsc(CH_CFG.note)+'" placeholder="'+(m==='pause'?'例如：題庫維護中，下課後再來挑戰':'例如：課程結束後開放，歡迎回來挑戰')+'"></div>'+
-      '<button class="qbtn" data-chapply style="margin-top:4px">套用</button>';
+  if(m==='scheduled'){
+    h+='<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">幾月幾號幾點開放<span class="ch-rel">'+
+        chEsc((chDayWord(CH_CFG.at)?chDayWord(CH_CFG.at)+'．':'')+chRel(CH_CFG.at))+'</span></div>'+
+        '<input class="f-in" type="datetime-local" id="chAt" value="'+chLocalInput(CH_CFG.at)+'"></div>';
   }
-  h+='<div class="ch-prev"><span class="ch-prev-k">學員看到</span>'+(m==='hidden'?'首頁沒有「挑戰題庫」':
-     st.open?'可以直接進去挑戰':'<span class="ch-prev-t"><b>'+chEsc(st.badge)+'</b>'+chEsc(st.sub)+'</span>點了會跳出「'+chEsc(st.note)+'」')+'</div>';
+  if(m==='pause'||m==='scheduled'){
+    h+='<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">還沒開放時，學員點下去看到的提示（可留空）</div>'+
+      '<input class="f-in" id="chNote" maxlength="60" value="'+chEsc(CH_CFG.note)+'" placeholder="'+(m==='pause'?'例如：題庫維護中，下課後再來挑戰':'例如：課程結束後開放，歡迎回來挑戰')+'"></div>';
+  }
+  if(m==='open'||m==='scheduled'){
+    h+='<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">自動關閉時間（可不設）'+
+        (CH_CFG.end?'<span class="ch-rel">'+chEsc((chDayWord(CH_CFG.end)?chDayWord(CH_CFG.end)+'．':'')+chRel(CH_CFG.end))+'</span>':'')+'</div>'+
+        '<div style="display:flex;gap:8px;align-items:center"><input class="f-in" type="datetime-local" id="chEnd" value="'+(CH_CFG.end?chLocalInput(CH_CFG.end):'')+'" style="flex:1;min-width:0">'+
+        (CH_CFG.end?'<button class="qbtn" data-chendclear style="margin:0;flex:none">不關閉</button>':'')+'</div>'+
+        '<div class="f-hint" style="margin-top:6px">關閉前 10 分鐘，學員畫面最上面會出現倒數；時間到還在作答的人會直接交卷看結果。</div></div>'+
+      (CH_CFG.end?'<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">關閉後的提示（可留空）</div>'+
+        '<input class="f-in" id="chEndNote" maxlength="60" value="'+chEsc(CH_CFG.endNote)+'" placeholder="這一次的挑戰時間已經結束，謝謝參與！"></div>':'');
+  }
+  if(m!=='open'&&m!=='hidden'||CH_CFG.end&&m!=='hidden')h+='<p class="hint" style="margin-top:2px">時間選好就會自動存；提示文字打完按 Enter 或點別的地方就存。</p>';
+  h+='<div class="ch-prev"><span class="ch-prev-k">學員現在看到</span>'+(m==='hidden'?'首頁沒有「挑戰題庫」':
+     st.open?'可以直接進去挑戰'+(st.end?'，'+chEsc(chFmt(st.end))+' 自動關閉':''):'<span class="ch-prev-t"><b>'+chEsc(st.badge)+'</b>'+chEsc(st.sub)+'</span>點了會跳出「'+chEsc(st.note)+'」')+'</div>';
   /* 1-2. 每次出幾題 */
   var nn=chN(),few=Object.keys(CH_TOPICS).filter(function(tp){return cnt(tp)<nn});
   h+='<div class="section-head"><h2>每次出幾題</h2><span>按了立刻生效</span></div>'+
@@ -3709,20 +3796,20 @@ document.addEventListener('click',async function(e){
     if(v==='hidden')tile.on=false;
     else{
       tile.on=true;CH_CFG.mode=v;
-      if(v==='scheduled'&&(!CH_CFG.at||CH_CFG.at<Date.now()))CH_CFG.at=new Date(chLocalInput(0)).getTime();
+      if(v==='scheduled'&&(!CH_CFG.at||CH_CFG.at<Date.now())){
+        var nx=new Date();nx.setMinutes(0,0,0);nx.setHours(nx.getHours()+1);CH_CFG.at=nx.getTime();   // 預設下一個整點，下面可以改
+      }
+      if((v==='open'||v==='scheduled')&&CH_CFG.end&&CH_CFG.end<=Date.now())CH_CFG.end=0;   // 上次的關閉時間已經過了，重新開放就清掉
     }
     renderChAdmin();try{renderTiles()}catch(err){}
     var ok=await chSaveCfg({open:'挑戰題庫：開放',pause:'挑戰題庫：題庫維護中',scheduled:'挑戰題庫：預約 '+chFmt(CH_CFG.at)+' 開放',hidden:'挑戰題庫：隱藏'}[v]);
     if(!ok){tile.on=bak.on;CH_CFG=Object.assign(CH_CFG,bak.cfg);renderChAdmin();try{renderTiles()}catch(err){}}
     return;
   }
-  if(t.closest('[data-chapply]')){
-    var at=$('#chAt'),nt=$('#chNote');
-    if(at){var ms=new Date(at.value).getTime();if(!ms){toast('時間格式不對');return;}
-      if(ms<=Date.now()&&!confirm('這個時間已經過了，存了就會直接開放。確定嗎？'))return;CH_CFG.at=ms;}
-    if(nt)CH_CFG.note=nt.value.trim();
-    renderChAdmin();try{renderTiles()}catch(err){}
-    chSaveCfg('挑戰題庫：更新提示'+(at?'與開放時間 '+chFmt(CH_CFG.at):''));return;
+  if(t.closest('[data-chendclear]')){
+    var oe=CH_CFG.end;CH_CFG.end=0;renderChAdmin();try{renderTiles()}catch(err){}
+    if(!(await chSaveCfg('挑戰題庫：取消自動關閉'))){CH_CFG.end=oe;renderChAdmin();}
+    return;
   }
   var nb2=t.closest('[data-chnum],[data-chnumset]');
   if(nb2){
@@ -3839,6 +3926,36 @@ document.addEventListener('input',function(e){
   if(k==='q'||k==='ex')q[k]=el.value;else q.o[+k.slice(1)]=el.value;
   CH_BANK_DIRTY=true;
   if(k==='q'){var tt=el.closest('.chq').querySelector('.chq-tx');if(tt)tt.textContent=el.value||'（新題目）';}
+});
+
+/* 後台：時間和提示改了就存（不用另外按套用） */
+document.addEventListener('change',async function(e){
+  var el=e.target;if(!el.closest||!el.closest('#chAdmin'))return;
+  var id=el.id;if(['chAt','chEnd','chNote','chEndNote'].indexOf(id)<0)return;
+  var bak=chCfgOut(),msg='';
+  if(id==='chAt'||id==='chEnd'){
+    var ms=el.value?new Date(el.value).getTime():0;
+    if(el.value&&!ms){toast('時間格式不對');renderChAdmin();return;}
+    if(id==='chAt'){
+      if(!ms){toast('要選開放時間');renderChAdmin();return;}
+      if(ms<=Date.now()&&!confirm('這個時間已經過了，存了就會直接開放。確定嗎？')){renderChAdmin();return;}
+      if(CH_CFG.end&&ms>=CH_CFG.end){toast('開放時間要早於關閉時間');renderChAdmin();return;}
+      CH_CFG.at=ms;msg='挑戰題庫：預約 '+chFmt(ms)+' 開放';
+    }else{
+      if(ms&&ms<=Date.now()){toast('關閉時間要選未來的時間');renderChAdmin();return;}
+      if(ms&&CH_CFG.mode==='scheduled'&&CH_CFG.at&&ms<=CH_CFG.at){toast('關閉時間要晚於開放時間');renderChAdmin();return;}
+      CH_CFG.end=ms;msg=ms?'挑戰題庫：'+chFmt(ms)+' 自動關閉':'挑戰題庫：取消自動關閉';
+    }
+  }else{
+    var v=el.value.trim();
+    if(id==='chNote'){if(v===CH_CFG.note)return;CH_CFG.note=v;}else{if(v===CH_CFG.endNote)return;CH_CFG.endNote=v;}
+    msg='挑戰題庫：更新提示文字';
+  }
+  renderChAdmin();try{renderTiles()}catch(err){}
+  if(!(await chSaveCfg(msg))){CH_CFG=Object.assign(CH_CFG,bak);renderChAdmin();try{renderTiles()}catch(err){}}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target&&(e.target.id==='chNote'||e.target.id==='chEndNote')){e.preventDefault();e.target.blur();}
 });
 
 /* ---- 匯入：解析試算表 ---- */
@@ -6221,7 +6338,7 @@ function setDirty(v){DIRTY=!!v;document.body.classList.toggle('dirty',DIRTY);var
 (function(){
   var pro=$('#z-pro');if(!pro)return;
   // 這些是按了就立刻生效的，不算「未儲存」
-  var instant='#artQ,#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew,#chSearch,#chSheetUrl,#chPaste,#chNote,#chAt,#chNum';
+  var instant='#artQ,#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew,#chSearch,#chSheetUrl,#chPaste,#chNote,#chAt,#chNum,#chEnd,#chEndNote';
   pro.addEventListener('input',function(e){
     if(e.target.closest(instant)||e.target.closest('#pnl-inbox'))return;
     if(e.target.matches('input,textarea,select'))setDirty(true);
