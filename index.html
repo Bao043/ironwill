@@ -806,6 +806,12 @@ body.dirty #z-pro{padding-bottom:80px}
 .ch-timeup{padding:10px 0 4px}
 .ch-tu-k{display:inline-block;background:var(--signal);color:#fff;font-weight:600;font-size:13px;padding:4px 10px;letter-spacing:.06em}
 .ch-rel{font-family:var(--mono);font-size:11.5px;color:var(--signal);margin-left:8px}
+.ch-trow{display:flex;gap:8px;align-items:center}
+.ch-trow input{flex:1;min-width:0;min-height:44px;font-size:16px}
+.ch-trow .qbtn{margin:0;flex:none}
+.ch-tsave.pending{border-color:var(--signal);color:var(--signal);font-weight:600}
+.ch-quick{margin-top:8px}
+.ch-quick .chip{font-size:12.5px}
 .ch-card.loading{opacity:.55}
 .ch-card.loading .ch-go{animation:chBlink .8s ease-in-out infinite alternate}
 @keyframes chBlink{to{opacity:.2}}
@@ -2715,7 +2721,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.31　2026/10/07';
+var APP_VERSION='v10.32　2026/10/08';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3665,7 +3671,10 @@ function renderChAdmin(){
   if(m==='scheduled'){
     h+='<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">幾月幾號幾點開放<span class="ch-rel">'+
         chEsc((chDayWord(CH_CFG.at)?chDayWord(CH_CFG.at)+'．':'')+chRel(CH_CFG.at))+'</span></div>'+
-        '<input class="f-in" type="datetime-local" id="chAt" value="'+chLocalInput(CH_CFG.at)+'"></div>';
+        '<div class="ch-trow"><input class="f-in" type="datetime-local" id="chAt" value="'+chLocalInput(CH_CFG.at)+'">'+
+        '<button type="button" class="qbtn ch-tsave" data-chtsave="at">儲存</button></div>'+
+        '<div class="chips ch-quick">'+[['10m','10 分鐘後'],['30m','30 分鐘後'],['60m','1 小時後'],['tm9','明天 09:00']].map(function(x){
+          return '<span class="chip" data-chquick="at:'+x[0]+'">'+x[1]+'</span>'}).join('')+'</div></div>';
   }
   if(m==='pause'||m==='scheduled'){
     h+='<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">還沒開放時，學員點下去看到的提示（可留空）</div>'+
@@ -3674,13 +3683,17 @@ function renderChAdmin(){
   if(m==='open'||m==='scheduled'){
     h+='<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">自動關閉時間（可不設）'+
         (CH_CFG.end?'<span class="ch-rel">'+chEsc((chDayWord(CH_CFG.end)?chDayWord(CH_CFG.end)+'．':'')+chRel(CH_CFG.end))+'</span>':'')+'</div>'+
-        '<div style="display:flex;gap:8px;align-items:center"><input class="f-in" type="datetime-local" id="chEnd" value="'+(CH_CFG.end?chLocalInput(CH_CFG.end):'')+'" style="flex:1;min-width:0">'+
-        (CH_CFG.end?'<button class="qbtn" data-chendclear style="margin:0;flex:none">不關閉</button>':'')+'</div>'+
+        '<div class="ch-trow"><input class="f-in" type="datetime-local" id="chEnd" value="'+(CH_CFG.end?chLocalInput(CH_CFG.end):'')+'">'+
+        '<button type="button" class="qbtn ch-tsave" data-chtsave="end">儲存</button>'+
+        (CH_CFG.end?'<button type="button" class="qbtn" data-chendclear style="margin:0;flex:none">不關閉</button>':'')+'</div>'+
+        '<div class="chips ch-quick">'+(function(){var aft=m==='scheduled'&&CH_CFG.at>Date.now();
+          return [['30m',(aft?'開放後 ':'')+'30 分鐘'],['60m',(aft?'開放後 ':'')+'1 小時'],['120m',(aft?'開放後 ':'')+'2 小時'],['td',(aft&&chDayWord(CH_CFG.at)!=='今天'?'那天':'今天')+' 23:59']].map(function(x){
+          return '<span class="chip" data-chquick="end:'+x[0]+'">'+x[1]+'</span>'}).join('')})()+'</div>'+
         '<div class="f-hint" style="margin-top:6px">關閉前 10 分鐘，學員畫面最上面會出現倒數；時間到還在作答的人會直接交卷看結果。</div></div>'+
       (CH_CFG.end?'<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">關閉後的提示（可留空）</div>'+
         '<input class="f-in" id="chEndNote" maxlength="60" value="'+chEsc(CH_CFG.endNote)+'" placeholder="這一次的挑戰時間已經結束，謝謝參與！"></div>':'');
   }
-  if(m!=='open'&&m!=='hidden'||CH_CFG.end&&m!=='hidden')h+='<p class="hint" style="margin-top:2px">時間選好就會自動存；提示文字打完按 Enter 或點別的地方就存。</p>';
+  if(m!=='hidden')h+='<p class="hint" style="margin-top:2px">時間選好後按「儲存」，或直接點下面的快速按鈕；提示文字打完按 Enter 或點別的地方就會存。</p>';
   h+='<div class="ch-prev"><span class="ch-prev-k">學員現在看到</span>'+(m==='hidden'?'首頁沒有「挑戰題庫」':
      st.open?'可以直接進去挑戰'+(st.end?'，'+chEsc(chFmt(st.end))+' 自動關閉':''):'<span class="ch-prev-t"><b>'+chEsc(st.badge)+'</b>'+chEsc(st.sub)+'</span>點了會跳出「'+chEsc(st.note)+'」')+'</div>';
   /* 1-2. 每次出幾題 */
@@ -3929,30 +3942,54 @@ document.addEventListener('input',function(e){
 });
 
 /* 後台：時間和提示改了就存（不用另外按套用） */
-document.addEventListener('change',async function(e){
-  var el=e.target;if(!el.closest||!el.closest('#chAdmin'))return;
-  var id=el.id;if(['chAt','chEnd','chNote','chEndNote'].indexOf(id)<0)return;
-  var bak=chCfgOut(),msg='';
-  if(id==='chAt'||id==='chEnd'){
-    var ms=el.value?new Date(el.value).getTime():0;
-    if(el.value&&!ms){toast('時間格式不對');renderChAdmin();return;}
-    if(id==='chAt'){
-      if(!ms){toast('要選開放時間');renderChAdmin();return;}
-      if(ms<=Date.now()&&!confirm('這個時間已經過了，存了就會直接開放。確定嗎？')){renderChAdmin();return;}
-      if(CH_CFG.end&&ms>=CH_CFG.end){toast('開放時間要早於關閉時間');renderChAdmin();return;}
-      CH_CFG.at=ms;msg='挑戰題庫：預約 '+chFmt(ms)+' 開放';
-    }else{
-      if(ms&&ms<=Date.now()){toast('關閉時間要選未來的時間');renderChAdmin();return;}
-      if(ms&&CH_CFG.mode==='scheduled'&&CH_CFG.at&&ms<=CH_CFG.at){toast('關閉時間要晚於開放時間');renderChAdmin();return;}
-      CH_CFG.end=ms;msg=ms?'挑戰題庫：'+chFmt(ms)+' 自動關閉':'挑戰題庫：取消自動關閉';
-    }
+/* 後台：時間按「儲存」或快速按鈕才存（手機和電腦的時間選擇器邊選邊觸發 change，不能一變就存） */
+async function chCommitTime(kind,ms){
+  var bak=chCfgOut(),now=Date.now();
+  if(!ms||isNaN(ms)){toast(kind==='at'?'先選開放時間':'先選關閉時間');return;}
+  if(kind==='at'){
+    if(ms<=now&&!confirm('這個時間已經過了，存了就會直接開放。確定嗎？'))return;
+    if(CH_CFG.end&&ms>=CH_CFG.end){toast('開放時間要早於關閉時間（'+chFmt(CH_CFG.end)+'）');return;}
+    CH_CFG.at=ms;
   }else{
-    var v=el.value.trim();
-    if(id==='chNote'){if(v===CH_CFG.note)return;CH_CFG.note=v;}else{if(v===CH_CFG.endNote)return;CH_CFG.endNote=v;}
-    msg='挑戰題庫：更新提示文字';
+    if(ms<=now){toast('關閉時間要選未來的時間');return;}
+    if(CH_CFG.mode==='scheduled'&&CH_CFG.at&&ms<=CH_CFG.at){toast('關閉時間要晚於開放時間（'+chFmt(CH_CFG.at)+'）');return;}
+    CH_CFG.end=ms;
   }
   renderChAdmin();try{renderTiles()}catch(err){}
-  if(!(await chSaveCfg(msg))){CH_CFG=Object.assign(CH_CFG,bak);renderChAdmin();try{renderTiles()}catch(err){}}
+  var ok=await chSaveCfg(kind==='at'?'挑戰題庫：預約 '+chFmt(ms)+' 開放':'挑戰題庫：'+chFmt(ms)+' 自動關閉');
+  if(!ok){CH_CFG=Object.assign(CH_CFG,bak);renderChAdmin();try{renderTiles()}catch(err){}}
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('#chAdmin [data-chtsave]');
+  if(b){
+    var k=b.dataset.chtsave,inp=$(k==='at'?'#chAt':'#chEnd');
+    chCommitTime(k,inp&&inp.value?new Date(inp.value).getTime():0);return;
+  }
+  var q=e.target.closest('#chAdmin [data-chquick]');
+  if(q){
+    var pr=q.dataset.chquick.split(':'),kind=pr[0],v=pr[1],now=Date.now(),ms=0;
+    var base=(kind==='end'&&CH_CFG.mode==='scheduled'&&CH_CFG.at>now)?CH_CFG.at:now;
+    if(/^\d+m$/.test(v))ms=Math.ceil((base+parseInt(v,10)*60000)/60000)*60000;
+    else if(v==='tm9'){var d=new Date();d.setDate(d.getDate()+1);d.setHours(9,0,0,0);ms=d.getTime();}
+    else if(v==='td'){var d2=new Date(base);d2.setHours(23,59,0,0);ms=d2.getTime();}
+    chCommitTime(kind,ms);
+  }
+});
+// 時間改了還沒按儲存：把儲存鈕標紅提醒
+document.addEventListener('input',function(e){
+  var el=e.target;if(!el||(el.id!=='chAt'&&el.id!=='chEnd'))return;
+  var b=$('#chAdmin [data-chtsave="'+(el.id==='chAt'?'at':'end')+'"]');if(b){b.classList.add('pending');b.textContent='儲存 ●';}
+});
+/* 提示文字：打完（離開欄位或按 Enter）就存 */
+document.addEventListener('change',async function(e){
+  var el=e.target;if(!el.closest||!el.closest('#chAdmin'))return;
+  var id=el.id;
+  if(id==='chAt'||id==='chEnd'){var b=$('#chAdmin [data-chtsave="'+(id==='chAt'?'at':'end')+'"]');if(b){b.classList.add('pending');b.textContent='儲存 ●';}return;}
+  if(id!=='chNote'&&id!=='chEndNote')return;
+  var bak=chCfgOut(),v=el.value.trim();
+  if(id==='chNote'){if(v===CH_CFG.note)return;CH_CFG.note=v;}else{if(v===CH_CFG.endNote)return;CH_CFG.endNote=v;}
+  renderChAdmin();try{renderTiles()}catch(err){}
+  if(!(await chSaveCfg('挑戰題庫：更新提示文字'))){CH_CFG=Object.assign(CH_CFG,bak);renderChAdmin();try{renderTiles()}catch(err){}}
 });
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target&&(e.target.id==='chNote'||e.target.id==='chEndNote')){e.preventDefault();e.target.blur();}
