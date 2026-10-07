@@ -2690,7 +2690,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.24　2026/10/07';
+var APP_VERSION='v10.27　2026/10/07';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2880,6 +2880,7 @@ function go(id){
     chEnter();
   }
   if(id==='p-stats'&&!quizOpts().stats&&!EDITING){toast('講師還沒開放本堂統計');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
+  if(id==='p-files'){try{renderFiles()}catch(e){}}
   if(HITMAP[id])countHit(HITMAP[id]);
   if(id==='p-stats')loadClassStats();
   if(id==='p-top3')loadTop();
@@ -3206,7 +3207,7 @@ var CH_TOPICS={
   fire:{n:'01',k:'FIRE',t:'消防安全',d:'火災 × 地震 × 防火 × 避難'},
   rescue:{n:'02',k:'RESCUE',t:'急救教育',d:'CPR × AED × OHCA × 急救'}
 };
-var CH_N=10;
+var CH_N=10;   // 預設每次幾題；後台可以改（存在 CH_CFG.n）
 var CH_DEF={
  fire:[
   {id:'f01',q:'住宅用火災警報器（住警器）最優先、一定要裝的位置是哪裡？',o:['陽台','浴室','臥室','玄關'],a:2,ex:'火災死亡多半發生在睡覺時，人睡著聞不到煙。臥室裝住警器，才能在煙一進來就把人叫醒。另外樓梯、走廊、廚房也建議安裝。'},
@@ -3261,7 +3262,8 @@ var CH_DEF={
    題目本身分批存在 instructors/chBank_{主題}_{0,1,2…}（每份最多 CH_CHUNK 題），學員點進挑戰題庫才讀，不拖慢首頁
    統計：questionStats/{課程}__ch_{主題}，每一題記 s（刷到）n（作答）c（答對）p0–p3（選了哪個選項） */
 var CH_CHUNK=300;
-var CH_CFG={mode:'open',at:0,note:'',chunks:{},ver:0};
+var CH_CFG={mode:'open',at:0,note:'',chunks:{},ver:0,n:10};
+function chN(){var n=Math.round(+CH_CFG.n||CH_N);return Math.min(100,Math.max(1,n))}
 var CH_CFG_SET=false;            // 雲端有沒有存過設定（沒有的話照舊版的開關）
 var CH_BANK=null;                // 讀進來的題庫 {fire:[…],rescue:[…]}
 var CH_BANK_VER=-1, CH_BANK_LOADING=null, CH_BANK_DIRTY=false;
@@ -3291,8 +3293,8 @@ function chState(){
   if(!t||!t.on)return {open:false,visible:false,mode:'hidden'};
   var m=CH_CFG.mode||'open';
   if(m==='scheduled'&&CH_CFG.at&&Date.now()>=CH_CFG.at)m='open';
-  if(m==='pause')return {open:false,visible:true,mode:m,badge:'暫停開放',sub:'暫停中',
-    note:CH_CFG.note||'挑戰題庫暫停開放，請稍後再來'};
+  if(m==='pause')return {open:false,visible:true,mode:m,badge:'題庫維護中',sub:'維護中',
+    note:CH_CFG.note||'題庫維護中，請稍後再來挑戰'};
   if(m==='scheduled')return {open:false,visible:true,mode:m,badge:'即將開放',sub:chFmt(CH_CFG.at)+' 開放',
     note:CH_CFG.note||('挑戰題庫將於 '+chFmt(CH_CFG.at,true)+' 開放')};
   return {open:true,visible:true,mode:'open'};
@@ -3322,7 +3324,7 @@ setInterval(function(){
 function chApplyCfg(c){
   if(c){
     CH_CFG_SET=true;
-    CH_CFG={mode:c.mode||'open',at:+c.at||0,note:c.note||'',chunks:c.chunks||{},ver:+c.ver||0};
+    CH_CFG={mode:c.mode||'open',at:+c.at||0,note:c.note||'',chunks:c.chunks||{},ver:+c.ver||0,n:+c.n||CH_N};
   }
   var t=chTile();
   if(t&&c&&c.mode==='hidden'){t.on=false;CH_CFG.mode='open';}
@@ -3371,7 +3373,7 @@ async function saveChBank(){
   CH_CFG_SET=true;CH_BANK_VER=CH_CFG.ver;CH_BANK_DIRTY=false;
   renderChAdmin();
 }
-function chCfgOut(){return {mode:CH_CFG.mode||'open',at:CH_CFG.at||0,note:CH_CFG.note||'',chunks:CH_CFG.chunks||{},ver:CH_CFG.ver||0}}
+function chCfgOut(){return {mode:CH_CFG.mode||'open',at:CH_CFG.at||0,note:CH_CFG.note||'',chunks:CH_CFG.chunks||{},ver:CH_CFG.ver||0,n:chN()}}
 
 /* ---- 學員端 ---- */
 function chStart(tp){
@@ -3379,7 +3381,7 @@ function chStart(tp){
     var pool=chBank(tp).filter(chValid);
     if(!pool.length){toast('這個主題還沒有題目');return;}
     // 選項順序每次也打亂；map 記住原本是第幾個選項，統計才對得起來
-    var qs=chShuffle(pool).slice(0,CH_N).map(function(q){
+    var qs=chShuffle(pool).slice(0,chN()).map(function(q){
       var idx=chShuffle([0,1,2,3].filter(function(i){return String(q.o[i]||'').trim()}));
       return {id:q.id,q:q.q,ex:q.ex,o:idx.map(function(i){return q.o[i]}),a:idx.indexOf(q.a),map:idx};
     });
@@ -3400,7 +3402,7 @@ function renderChallenge(){
   if(CH.step==='pick'){
     h='<div class="meta">IRON WILL｜挑戰題庫</div>'+
       '<h1 class="display" style="font-size:26px;margin-top:8px">選擇你的挑戰</h1>'+
-      '<p class="sub" style="margin-top:8px">每次從題庫隨機抽 '+CH_N+' 題，做完馬上看分數、正確答案和詳解。</p>'+
+      '<p class="sub" style="margin-top:8px">每次從題庫隨機抽 '+chN()+' 題，做完馬上看分數、正確答案和詳解。</p>'+
       '<div class="ch-cards">'+Object.keys(CH_TOPICS).map(function(k){var C=CH_TOPICS[k];
         var n=(CH_BANK&&CH_BANK[k])?CH_BANK[k].filter(chValid).length:0;
         return '<button type="button" class="ch-card" data-chgo="'+k+'"><span class="ch-n">'+C.n+'</span>'+
@@ -3564,21 +3566,31 @@ function renderChAdmin(){
   var t=chTile(),vis=!!(t&&t.on),m=vis?(CH_CFG.mode||'open'):'hidden',st=chState();
   var cnt=function(tp){return chBank(tp).filter(chValid).length};
   var tag=$('#chTag');
-  if(tag)tag.textContent=({open:'開放中',pause:'暫停中',scheduled:'預約開放',hidden:'隱藏'})[m]+'．消防 '+cnt('fire')+'．急救 '+cnt('rescue')+' 題';
+  if(tag)tag.textContent=({open:'開放中',pause:'題庫維護中',scheduled:'預約開放',hidden:'隱藏'})[m]+'．消防 '+cnt('fire')+'．急救 '+cnt('rescue')+' 題';
   var h='';
   /* 1. 開放狀態 */
   h+='<div class="section-head" style="padding-top:18px"><h2>學員端狀態</h2><span>按了立刻生效</span></div>'+
-    '<div class="ch-mode">'+[['open','開放','直接可以玩'],['pause','暫停','磁磚變淡＋提示'],['scheduled','預約開放','時間到自動開'],['hidden','隱藏','首頁看不到']].map(function(x){
+    '<div class="ch-mode">'+[['open','開放','直接可以玩'],['pause','題庫維護中','磁磚變淡＋提示'],['scheduled','預約開放','時間到自動開'],['hidden','隱藏','首頁看不到']].map(function(x){
       return '<button type="button" data-chmode="'+x[0]+'"'+(m===x[0]?' class="on"':'')+'><b>'+x[1]+'</b><span>'+x[2]+'</span></button>'}).join('')+'</div>';
   if(m==='pause'||m==='scheduled'){
     h+=(m==='scheduled'?'<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">幾月幾號幾點開放</div>'+
         '<input class="f-in" type="datetime-local" id="chAt" value="'+chLocalInput(CH_CFG.at)+'"></div>':'')+
       '<div class="f"><div class="f-q" style="font-size:13px;color:var(--muted)">學員點下去看到的提示（可留空，用預設的）</div>'+
-      '<input class="f-in" id="chNote" maxlength="60" value="'+chEsc(CH_CFG.note)+'" placeholder="'+(m==='pause'?'例如：上課中暫停，下課後再來挑戰':'例如：課程結束後開放，歡迎回來挑戰')+'"></div>'+
+      '<input class="f-in" id="chNote" maxlength="60" value="'+chEsc(CH_CFG.note)+'" placeholder="'+(m==='pause'?'例如：題庫維護中，下課後再來挑戰':'例如：課程結束後開放，歡迎回來挑戰')+'"></div>'+
       '<button class="qbtn" data-chapply style="margin-top:4px">套用</button>';
   }
   h+='<div class="ch-prev"><span class="ch-prev-k">學員看到</span>'+(m==='hidden'?'首頁沒有「挑戰題庫」':
      st.open?'可以直接進去挑戰':'<span class="ch-prev-t"><b>'+chEsc(st.badge)+'</b>'+chEsc(st.sub)+'</span>點了會跳出「'+chEsc(st.note)+'」')+'</div>';
+  /* 1-2. 每次出幾題 */
+  var nn=chN(),few=Object.keys(CH_TOPICS).filter(function(tp){return cnt(tp)<nn});
+  h+='<div class="section-head"><h2>每次出幾題</h2><span>按了立刻生效</span></div>'+
+    '<div class="chips" style="margin-top:4px">'+[5,10,15,20,30].map(function(k){
+      return '<span class="chip'+(nn===k?' on':'')+'" data-chnum="'+k+'">'+k+' 題</span>'}).join('')+'</div>'+
+    '<div style="display:flex;gap:8px;align-items:center;margin-top:10px"><span style="font-size:13px;color:var(--muted);flex:none">自訂</span>'+
+    '<input class="f-in" id="chNum" type="number" inputmode="numeric" min="1" max="100" value="'+nn+'" style="width:90px;flex:none">'+
+    '<span style="font-size:13px;color:var(--muted);flex:none">題</span><button class="qbtn" data-chnumset style="margin:0">套用</button></div>'+
+    '<p class="hint">學員每一輪從題庫隨機抽 <b>'+nn+'</b> 題，分數一樣換算成 100 分。'+
+    (few.length?'<span style="color:var(--signal)">'+few.map(function(tp){return CH_TOPICS[tp].t+'只有 '+cnt(tp)+' 題'}).join('、')+'，那個主題會全部出。</span>':'')+'</p>';
   /* 2. 統計總覽 */
   var S=CH_STAT||{};
   h+='<div class="section-head"><h2>作答統計</h2><span>'+(CH_STAT?'<button class="qbtn" data-chreload style="margin:0">重新讀取</button>':'讀取中…')+'</span></div>'+
@@ -3685,7 +3697,7 @@ document.addEventListener('click',async function(e){
       if(v==='scheduled'&&(!CH_CFG.at||CH_CFG.at<Date.now()))CH_CFG.at=new Date(chLocalInput(0)).getTime();
     }
     renderChAdmin();try{renderTiles()}catch(err){}
-    var ok=await chSaveCfg({open:'挑戰題庫：開放',pause:'挑戰題庫：暫停',scheduled:'挑戰題庫：預約 '+chFmt(CH_CFG.at)+' 開放',hidden:'挑戰題庫：隱藏'}[v]);
+    var ok=await chSaveCfg({open:'挑戰題庫：開放',pause:'挑戰題庫：題庫維護中',scheduled:'挑戰題庫：預約 '+chFmt(CH_CFG.at)+' 開放',hidden:'挑戰題庫：隱藏'}[v]);
     if(!ok){tile.on=bak.on;CH_CFG=Object.assign(CH_CFG,bak.cfg);renderChAdmin();try{renderTiles()}catch(err){}}
     return;
   }
@@ -3696,6 +3708,16 @@ document.addEventListener('click',async function(e){
     if(nt)CH_CFG.note=nt.value.trim();
     renderChAdmin();try{renderTiles()}catch(err){}
     chSaveCfg('挑戰題庫：更新提示'+(at?'與開放時間 '+chFmt(CH_CFG.at):''));return;
+  }
+  var nb2=t.closest('[data-chnum],[data-chnumset]');
+  if(nb2){
+    var nv=nb2.dataset.chnum?+nb2.dataset.chnum:Math.round(+(($('#chNum')||{}).value||0));
+    if(!(nv>=1&&nv<=100)){toast('請填 1 到 100 之間的數字');return;}
+    if(nv===chN()){toast('已經是每次 '+nv+' 題');return;}
+    var oldN=CH_CFG.n;CH_CFG.n=nv;renderChAdmin();
+    var okN=await chSaveCfg('挑戰題庫：每次出 '+nv+' 題');
+    if(!okN){CH_CFG.n=oldN;renderChAdmin();}
+    return;
   }
   if(t.closest('[data-chreload]')){CH_STAT=null;renderChAdmin();chLoadStats();return;}
   var tp=t.closest('[data-chtp]');if(tp){CH_ED.tp=tp.dataset.chtp;CH_ED.open=null;CH_ED.page=60;renderChAdmin();return;}
@@ -4200,7 +4222,7 @@ var PATCH={text:{},ph:{},hide:{},del:{},order:{},add:[]};
 var TEXT_SEL='h1,h2,.sub,.meta,.f-q,.f-hint,.row-t,.row-d,.row-n,.tl-y,.tl-b,'+
              '.story p,.quote,.note,.hint,.scale-l span,.btn,.lock>div,.who-n,.who-r,'+
              '.section-head>span,.fig-cap>span,.ig-h,.ig-d,.ig-go,.ct-v,.ct-l,.ct-go,.ct-m,'+
-             '.strip-m,.whisper-foot>span,.pair-l,.stat-l,.pod-n,.pod-m,.ig-inline';
+             '.strip-m,.whisper-foot>span,.pair-l,.stat-l,.pod-n,.pod-m,.ig-inline,#filesSub,#p-files>.pg-k';
 /* 區塊：頁面的每一個直接子元素，加上常見的列表單位。選項（chip）不算，改用清單編輯 */
 var BLOCK_SEL='.page>*,.f,.section-head,.row,.tl,.story>p,.lock,.quote,.hint,.note,'+
               '.player-b,.ig,.ct,.fig-cap,.figwrap,.strip,.strip-m,.who,.ig-foot,'+
@@ -4430,7 +4452,8 @@ function setEditing(on){
   statsEditor();listEditor('#abSpeak','speak');listEditor('#abIdea','idea');
   listEditor('#abCareer','career');bindSiteText();bindPlayerText();
   try{renderPhotos2();renderContacts();}catch(e){}
-  try{renderScope();renderFiles();}catch(e){}
+  try{renderScope()}catch(e){}
+  try{renderFiles()}catch(e){}
   try{applyRuby()}catch(e){}
   try{applyBrandFoot()}catch(e){}
   try{bindGalText()}catch(e){}
@@ -6165,7 +6188,7 @@ function setDirty(v){DIRTY=!!v;document.body.classList.toggle('dirty',DIRTY);var
 (function(){
   var pro=$('#z-pro');if(!pro)return;
   // 這些是按了就立刻生效的，不算「未儲存」
-  var instant='#artQ,#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew,#chSearch,#chSheetUrl,#chPaste,#chNote,#chAt';
+  var instant='#artQ,#edPin,#edEmails,#edAckSub,#edAckBody,#pwOld,#pwNew,#pwNew2,#emOld,#emNew,#chSearch,#chSheetUrl,#chPaste,#chNote,#chAt,#chNum';
   pro.addEventListener('input',function(e){
     if(e.target.closest(instant)||e.target.closest('#pnl-inbox'))return;
     if(e.target.matches('input,textarea,select'))setDirty(true);
