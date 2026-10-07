@@ -2688,10 +2688,24 @@ function watchCourse(){
     if(v.sessions&&v.sessions.length)SESSIONS=v.sessions;
     if(v.code&&String(v.code)!==CODE){CODE=String(v.code);try{showCode()}catch(e){}}
     try{applyQuizVis();checkTopPublished();}catch(e){}
+    // 挑戰題庫：講師按「題庫維護中／預約／隱藏」，學員畫面不用重新整理就跟著變
+    try{
+      if(!EDITING&&(v.challenge||v.tiles)){
+        var was=JSON.stringify([chCfgOut(),!!(chTile()&&chTile().on)]);
+        if(v.challenge)chApplyCfg(v.challenge);
+        var ct=(v.tiles||[]).filter(function(t){return t.id==='challenge'})[0],mine=chTile();
+        if(ct&&mine)mine.on=!!ct.on;
+        if(JSON.stringify([chCfgOut(),!!(chTile()&&chTile().on)])!==was){
+          renderTiles();
+          var pg=document.querySelector('.page.is-on');
+          if(pg&&pg.id==='p-challenge'&&!chOpen()&&CH.step==='pick'){toast(chState().note||'挑戰題庫目前沒有開放');stack=['p-home'];show('p-home',true);}
+        }
+      }
+    }catch(e){}
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.28　2026/10/07';
+var APP_VERSION='v10.30　2026/10/07';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4301,6 +4315,7 @@ function applyPatch(){
   });
   Object.keys(PATCH.text||{}).forEach(function(k){
     var e=byK(k);if(!e)return;
+    if(e.classList.contains('ig-foot')){delete PATCH.text[k];return;}   // 首頁 IG 那行由程式產生，不套舊文字
     var t=PATCH.text[k];
     if(!String(t||'').replace(/<[^>]*>/g,'').trim()){delete PATCH.text[k];return;}   // 空白＝沒改過，保留原本的字
     e.innerHTML=t;
@@ -5375,6 +5390,11 @@ function applyRuby(){
   });
 }
 function renderContacts(){
+  // 首頁 IG 那行：一律顯示頻道名稱（舊的編輯紀錄會把它蓋回帳號，這裡每次重畫）
+  $$('#p-home .ig-foot').forEach(function(f){
+    if(f.querySelector('.ig-handle')||!f.querySelector('.ig-name'))
+      f.innerHTML='<span class="dotmark"></span><span class="ig-name"></span>';
+  });
   var h=igHandle();
   $$('.ig-handle').forEach(function(e){e.textContent=h});
   $$('[data-ig]').forEach(function(e){
