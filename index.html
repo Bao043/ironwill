@@ -1150,8 +1150,9 @@ body.editing .wrap{padding-bottom:140px}
   border:1px solid var(--signal);opacity:.35}
 .tile-q{position:absolute;top:14px;right:15px;font-family:var(--mono);font-size:9.5px;
   color:var(--muted);letter-spacing:.04em}
-.tile.wide{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center;gap:14px;
-  justify-content:flex-start;padding:18px 18px}
+.tile.wide{grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:16px;
+  justify-content:flex-start;padding:24px 20px}
+.tile.wide .tile-t{font-size:17px}
 .tile.wide .tile-t{margin-top:0;flex:1}
 .tile.wide svg{width:28px;height:28px;flex:none}
 .tile-go{font-size:16px;color:var(--muted);flex:none;transition:transform .25s ease,color .25s ease}
@@ -1308,7 +1309,7 @@ body.editing .wrap{padding-bottom:140px}
 .ig-d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.6}
 .ig-go{font-size:13px;color:var(--muted);flex:none}
 .ig-inline{font-family:var(--mono);font-size:12.5px;color:var(--signal);cursor:pointer;flex-basis:100%;overflow-wrap:anywhere}
-.ig-foot{display:flex;align-items:center;gap:8px;padding:14px 0 0;font-size:13px;cursor:pointer}
+.ig-foot{display:flex;align-items:center;gap:9px;padding:34px 0 0;font-size:14px;cursor:pointer}
 .ig-foot .dotmark{width:18px;height:18px;border:1.3px solid var(--ink);border-radius:5px;flex:none;
   display:grid;place-items:center}
 .ig-foot .dotmark::before{content:"";width:7px;height:7px;border:1.3px solid var(--ink);border-radius:50%}
@@ -1636,7 +1637,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 
     <div class="cols" id="tileGrid"></div>
 
-    <div class="ig-foot" data-ig><span class="dotmark"></span><span class="ig-handle"></span></div>
+    <div class="ig-foot" data-ig><span class="dotmark"></span><span class="ig-name">IRON WILL｜消防員上工去</span></div>
     <div class="brand brand-foot"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><span class="brand-n">IRON WILL｜教育平台</span></div>
     <div class="gate-mark">
       <span class="foot-mark" id="gate"><i></i></span>
@@ -2690,7 +2691,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.27　2026/10/07';
+var APP_VERSION='v10.28　2026/10/07';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4139,15 +4140,21 @@ var TILES=[
  {id:'whisper',  t:'傳聲悄悄話',   icon:'lock',  go:'p-whisper',   on:true}
 ];
 var TILE_DEF=TILES.slice();
+// 手機↔電腦（兩欄↔三欄）切換時重排磁磚
+try{(function(){var mq=matchMedia('(min-width:700px)'),f=function(){try{renderTiles()}catch(e){}};if(mq.addEventListener)mq.addEventListener('change',f);else mq.addListener(f);})()}catch(e){}
 function renderTiles(){
   var grid=$('#tileGrid');if(!grid)return;
   var vis=EDITING?TILES.slice():TILES.filter(function(t){return t.on});
   grid.innerHTML='';
   vis.forEach(function(t,i){
-    var wide=(vis.length%2===1&&i===vis.length-1);
+    // 手機兩欄、電腦三欄：最後一排沒排滿時，最後一格補滿；整排只剩它一格時才變成橫的長條
+    var cols=(window.matchMedia&&matchMedia('(min-width:700px)').matches)?3:2;
+    var span=i===vis.length-1?cols-((vis.length-1)%cols):1;
+    var wide=span===cols&&span>1;
     var el=document.createElement('div');
     el.className='tile'+(wide?' wide':'')+((EDITING&&!t.on)?' hidden-t':'')+(EDITING?' blk':'');
     el.dataset.tid=t.id;
+    if(span>1&&!wide)el.style.gridColumn='span '+span;
     el.style.animationDelay=EDITING?'0s':(0.26+i*0.055).toFixed(2)+'s';
     if(t.url)el.setAttribute('data-url',t.url);
     else if(t.gate)el.setAttribute('data-gate',t.gate);
@@ -5375,6 +5382,7 @@ function renderContacts(){
     e.style.display=(h||EDITING)?'':'none';
   });
   if(EDITING)$$('.ig-handle').forEach(function(e){if(!h)e.textContent='（還沒填 IG 帳號）'});
+  $$('.ig-name').forEach(function(e){e.textContent=(SITE.ctNote&&SITE.ctNote.igName)||'IRON WILL｜消防員上工去'});
   $$('[data-ctn]').forEach(function(e){
     var k=e.dataset.ctn;if(!k)return;
     if(document.activeElement!==e&&SITE.ctNote&&SITE.ctNote[k]!=null)e.textContent=SITE.ctNote[k];
@@ -5859,7 +5867,12 @@ async function mailAdmin(payload){
   }
   var t=await r.text();
   var j;try{j=JSON.parse(t)}catch(e){throw new Error('Apps Script 回傳的不是資料：連結可能不是資料夾、資料夾沒開分享，或 Apps Script 需要重新部署')}
-  if(!j.ok)throw new Error(j.error||'失敗');
+  if(!j.ok){
+    var er=j.error||'失敗';
+    if(/ADMIN_PIN 還沒改/.test(er))er='Apps Script 裡的密碼還是預設文字。打開 Apps Script，把第 16 行 const ADMIN_PIN = \'請改成你自己的密碼\' 引號裡的字，換成你在上面「管理密碼」填的密碼 → 存檔 →「部署 → 管理部署作業 → 編輯（鉛筆）→ 版本選『新版本』→ 部署」';
+    else if(/管理密碼不對/.test(er))er='管理密碼跟 Apps Script 第 16 行 ADMIN_PIN 的不一樣（大小寫、空白都要一樣）。改其中一邊；改 Apps Script 的話要重新部署「新版本」';
+    throw new Error(er);
+  }
   return j;
 }
 function mailMsg(t,bad){var m=$('#mailMsg');if(m){m.textContent=t;m.style.color=bad?'var(--signal)':''}}
@@ -6452,7 +6465,7 @@ async function refreshAttempts(){
 try{var savedPin=localStorage.getItem('mailPin');if(savedPin&&$('#edPin'))$('#edPin').value=savedPin;}catch(e){}
 function bindMail(id,fn){var b=$(id);if(!b)return;b.addEventListener('click',async function(){
   var old=b.textContent;b.textContent='處理中…';
-  try{await fn();}catch(e){mailMsg(e.message,true);toast(e.message.slice(0,24));}
+  try{await fn();}catch(e){mailMsg(e.message,true);toast(e.message.length>26?'沒有成功，看下方紅字說明':e.message);}
   b.textContent=old;
 });}
 (function(){
