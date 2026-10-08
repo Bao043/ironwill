@@ -773,8 +773,24 @@ body.dirty #z-pro{padding-bottom:80px}
 .ch-right{font-size:15.5px;margin-top:8px}
 .ch-right b{font-family:var(--mono);font-weight:500}
 .ch-line{border-top:1px solid var(--line);margin:22px 0 4px}
-.ch-revbtn{display:block;width:100%;text-align:left;background:none;border:0;padding:14px 0;font:inherit;font-size:15.5px;
-  color:var(--signal);cursor:pointer}
+.ch-revbtn{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;text-align:left;margin:6px 0 4px;
+  background:var(--signal-soft);border:1.5px solid var(--signal);padding:16px 16px;font:inherit;color:var(--ink);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:transform .15s ease,background .2s ease;animation:chNudge 2.4s ease-in-out 1s 3}
+.ch-revbtn:active{transform:scale(.98)}
+.ch-revbtn>*{pointer-events:none}
+.ch-revbtn.open{background:none;border-color:var(--line);animation:none}
+.ch-rv-i{width:34px;height:34px;border-radius:50%;background:var(--signal);color:#fff;display:grid;place-items:center;
+  font-weight:700;font-size:17px;flex:none}
+.ch-revbtn.open .ch-rv-i{background:var(--line);color:var(--ink)}
+.ch-rv-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ch-rv-b b{font-size:17px;font-weight:700;color:var(--signal)}
+.ch-revbtn.open .ch-rv-b b{color:var(--ink)}
+.ch-rv-b em{font-style:normal;font-size:13px;color:var(--ink-soft);line-height:1.5}
+.ch-rv-go{flex:none;font-size:20px;color:var(--signal);animation:chBob 1.4s ease-in-out infinite}
+.ch-revbtn.open .ch-rv-go{animation:none;color:var(--muted)}
+@keyframes chBob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@keyframes chNudge{0%,100%{box-shadow:0 0 0 0 rgba(226,86,74,0)}50%{box-shadow:0 0 0 6px rgba(226,86,74,.18)}}
+@media (prefers-reduced-motion:reduce){.ch-revbtn,.ch-rv-go{animation:none}}
 .ch-rev .ans-q,.ch-rev .ans-line span{min-width:0;overflow-wrap:anywhere}
 #chBody .row{cursor:pointer}
 .chq{border-bottom:1px solid var(--line-soft)}
@@ -1547,6 +1563,302 @@ body{font-size:clamp(14.5px,1.2vw + 10px,16px)}
   .ct{padding:17px 18px}
   .ig{padding:17px 18px}
 }
+/* ===================== v11：後台四分頁 ===================== */
+.adm{position:relative}
+.adm-side{display:none}
+.atab{display:none}
+.atab.is-on{display:block;animation:gin .25s cubic-bezier(.22,.61,.36,1)}
+@media (prefers-reduced-motion:reduce){.atab.is-on{animation:none}}
+.at-head{padding:22px 0 2px}
+.at-head .display{font-size:24px;margin-top:4px;line-height:1.4}
+.at-head .meta{color:var(--signal);letter-spacing:.18em}
+.at-head .sub{margin-top:6px;font-size:13px}
+.adm-tabs{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  background:var(--paper);border-top:1px solid var(--line);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px))}
+body.editing .adm-tabs{display:none}
+.atb{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;
+  color:var(--muted);font-size:11.5px;line-height:1.3;padding:5px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.atb svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.atb.on{color:var(--ink);font-weight:600}
+.atb.on svg{stroke:var(--signal)}
+.atb-n{position:absolute;top:2px;left:calc(50% + 6px);min-width:17px;height:17px;border-radius:9px;background:var(--signal);
+  color:#fff;font:600 10.5px/17px var(--mono);font-style:normal;text-align:center;padding:0 4px}
+body.adm-on .wrap{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+body.adm-on .pro-switch{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body.adm-on .dirty-bar{bottom:calc(62px + env(safe-area-inset-bottom,0px));padding-bottom:12px}
+body.adm-on.dirty .pro-switch{bottom:calc(132px + env(safe-area-inset-bottom,0px))}
+body.adm-on .toast{bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+.pb-inbox{position:relative;margin-left:auto;width:38px;height:34px;display:grid;place-items:center;flex:none;
+  border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+.pb-inbox svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+.pb-inbox i{position:absolute;top:-7px;right:-7px;min-width:17px;height:17px;border-radius:9px;background:var(--signal);
+  color:#fff;font:600 10.5px/17px var(--mono);font-style:normal;text-align:center;padding:0 4px;letter-spacing:0}
+.pb-inbox+.pb-home{margin-left:8px}
+.pro-bar b{font-size:13.5px}
+@media (max-width:560px){#z-pro .pro-bar .ver{display:none}}
+/* 今天 */
+.td-code{display:flex;align-items:flex-end;gap:12px;margin-top:14px}
+.td-code-b{flex:1;min-width:0}
+.td-l{font-size:12px;color:var(--muted)}
+.td-c{font-family:var(--mono);font-size:46px;line-height:1.08;letter-spacing:.16em;color:var(--signal);font-weight:500}
+.td-code .qbtn{padding:10px 14px;font-size:13px;color:var(--ink)}
+.td-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.td-acts .qbtn{width:100%;padding:11px 6px;font-size:13.5px;color:var(--ink)}
+.td-share{border:1px solid var(--line);border-top:0;padding:4px 14px 16px;margin-top:-1px}
+.td-share[hidden]{display:none}
+.td-kpi{margin-top:14px;border:1px solid var(--line)}
+.td-kpi .stat{padding:12px 0 10px 12px}
+.td-kpi .stat-n{font-size:24px}
+.td-kpi .stat-l{font-size:11.5px;color:var(--muted)}
+.td-next{display:flex;align-items:center;gap:12px;margin-top:14px;padding:14px;border:1.5px solid var(--signal);background:var(--signal-soft)}
+.td-next[hidden]{display:none}
+.td-next-b{flex:1;min-width:0}
+.td-next-b b{display:block;font-size:15px;font-weight:600}
+.td-next-b em{display:block;font-style:normal;font-size:12.5px;color:var(--ink-soft);margin-top:2px;line-height:1.6}
+.td-next button{flex:none;background:var(--signal);color:#fff;border:0;font-weight:700;font-size:13.5px;padding:10px 14px;cursor:pointer}
+.td-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:24px 0 8px}
+.td-h h2{font-size:14px;font-weight:600;color:var(--ink)}
+.td-h span{font-size:12px;color:var(--muted)}
+.td-box{border:1px solid var(--line);background:var(--surface);padding:0 14px}
+.td-box .toggle-row{gap:10px;padding:13px 0}
+.td-box .toggle-row>span:first-child{flex:1;min-width:0}
+.td-box .toggle-row:last-child{border-bottom:0}
+.tr-d{font-style:normal;display:block;font-size:12px;color:var(--muted);line-height:1.55;margin-top:1px}
+.td-box .sw{width:46px;height:28px;border-radius:14px}
+.td-box .sw::after{width:22px;height:22px;top:3px;left:3px}
+.td-box .sw.on::after{transform:translateX(18px)}
+.td-st{flex:none;font:500 11px/1 var(--mono);padding:5px 8px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.td-st:empty{display:none}
+.td-st.ok{border-color:var(--ok);color:var(--ok)}
+.td-lv{padding:12px 0 14px}
+.td-lv-t{font-size:14px}
+.td-lv-t span{font-size:12px;color:var(--muted);margin-left:8px}
+.td-lv .chips{margin-top:10px;gap:6px}
+.td-lv .chip{font-size:12.5px;padding:8px 10px}
+.td-lv .hint{margin-top:8px}
+.td-row{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.td-row:last-child{border-bottom:0}
+.td-rt{flex:1;min-width:0;font-size:15px}
+.td-rt em{display:block;font-style:normal;font-size:12px;color:var(--muted);line-height:1.6;overflow-wrap:anywhere}
+.td-rt em b{font-weight:600;color:var(--ink-soft)}
+.td-pill{flex:none;font:500 11px/1 var(--mono);padding:5px 8px;border:1px solid var(--signal);color:var(--signal);white-space:nowrap}
+.td-pill[hidden]{display:none}
+.td-go{flex:none;color:var(--muted);font-size:17px}
+.td-sub{font-size:12.5px;margin:0 0 4px}
+#at-today #sessPick{margin-top:8px}
+.undo-bar{position:fixed;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:85;display:flex;align-items:center;gap:12px;
+  background:var(--ink);color:var(--paper);padding:12px 14px;font-size:13.5px;box-shadow:0 8px 22px rgba(0,0,0,.35);max-width:520px;margin:0 auto}
+.undo-bar[hidden]{display:none}
+.undo-bar span{flex:1;min-width:0}
+.undo-bar button{flex:none;background:none;border:0;color:var(--signal);font-weight:700;font-size:14px;cursor:pointer;padding:4px 6px}
+body.dirty .undo-bar{bottom:calc(132px + env(safe-area-inset-bottom,0px))}
+/* 題庫 */
+.bk-seg{margin-top:16px}
+.bk-wrap .grp{border:0}
+.bk-wrap .grp>.grp-h{display:none}
+.bk-wrap .grp-b{border-left:0;padding:6px 0 30px;margin-left:0}
+.bk-wrap .grp:not(.bk-on){display:none}
+/* 內容／設定 */
+#at-content .grp,#at-settings .grp{border:1px solid var(--line);background:var(--surface);margin-top:10px;padding:0 14px}
+#at-content .grp:first-of-type,#at-settings .grp:first-of-type{border-top:1px solid var(--line)}
+#at-content .grp-b,#at-settings .grp-b{border-left:0;margin-left:0;padding:6px 0 22px}
+#at-content .grp-h,#at-settings .grp-h{padding:16px 0}
+#at-content .grp-h:hover,#at-settings .grp-h:hover{padding-left:0}
+#at-content .grp-t,#at-settings .grp-t{font-size:16px}
+.st-h{font-size:13px;color:var(--muted);letter-spacing:.06em;padding:24px 0 0}
+#at-settings .pro-foot{margin-top:28px}
+.ht-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.ht-row:last-child{border-bottom:0}
+.ht-row svg{width:24px;height:24px;flex:none;fill:none;stroke:var(--ink-soft);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.ht-row svg .hot{stroke:var(--signal)}
+.ht-t{flex:1;min-width:0;font-size:15px}
+.ht-t em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
+.ht-row.off .ht-t{color:var(--muted)}
+/* 收件匣 */
+#pnl-inbox{padding-top:4px}
+/* 電腦：左邊固定選單 */
+@media (min-width:1100px){
+  .wrap:has(#z-pro.is-on){max-width:1240px}
+  .adm{display:grid;grid-template-columns:210px minmax(0,1fr);gap:40px;align-items:start}
+  .adm-side{display:flex;flex-direction:column;gap:4px;position:sticky;top:76px;padding-top:18px}
+  .as-brand{display:none}
+  .as-brand .brand-mark{width:26px;height:26px}
+  .as-brand span{color:var(--muted);font-size:12px}
+  .adm-side .atb{flex-direction:row;justify-content:flex-start;gap:12px;padding:11px 12px;font-size:14.5px;border-left:2px solid transparent;text-align:left}
+  .adm-side .atb.on{background:var(--surface);border-left-color:var(--signal)}
+  .adm-side .atb-n{position:static;margin-left:auto}
+  .adm-tabs{display:none}
+  body.adm-on .wrap{padding-bottom:120px}
+  body.adm-on .pro-switch{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  body.adm-on .dirty-bar{bottom:0;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+  body.adm-on.dirty .pro-switch{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  body.adm-on .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .undo-bar{bottom:24px}
+  body.dirty .undo-bar{bottom:84px}
+  .td-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start}
+  #at-today .td-col:last-child{padding-top:84px}
+  .td-c{font-size:52px}
+}
+
+/* ===================== v11：學員首頁 ===================== */
+.hm-ban{display:none;position:relative;margin:0 calc(50% - 50vw);margin-top:calc(-1 * env(safe-area-inset-top,0px));
+  height:clamp(132px,35.2vw,400px);overflow:hidden;background-image:var(--home-banner);background-size:cover;background-position:50% 42%}
+.hm-ban::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(11,13,15,.22) 0%,rgba(11,13,15,0) 30%,rgba(11,13,15,0) 52%,var(--paper) 100%)}
+.hero-card.hm-top .hm-ban{display:block}
+.hero-card.hm-top{padding-top:0;margin-top:0}
+.hm-ttl{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;font-family:var(--sans);font-weight:600;
+  font-size:clamp(28px,6.4vw + 4px,52px);line-height:1.22;letter-spacing:.01em;margin-top:10px}
+.hero-card.hm-top .hm-ttl{margin-top:2px}
+.hm-div{display:block;width:1.5px;height:.86em;background:var(--muted);flex:none}
+.hm-ekg{display:block;width:100%;height:28px;margin:12px 0 0;overflow:visible}
+.hm-ekg path{fill:none;stroke-linejoin:round;stroke-linecap:round}
+.hm-ekg .b0{stroke:var(--line);stroke-width:1.2}
+.hm-ekg .b1{stroke:var(--signal);stroke-opacity:.35;stroke-width:1.2;stroke-dasharray:44 100;stroke-dashoffset:144;animation:hmSweep2 3.4s cubic-bezier(.45,.05,.55,.95) infinite}
+.hm-ekg .b2{stroke:var(--signal);stroke-width:1.8;stroke-dasharray:22 100;stroke-dashoffset:122;animation:hmSweep 3.4s cubic-bezier(.45,.05,.55,.95) infinite;
+  filter:drop-shadow(0 0 3px rgba(226,86,74,.7))}
+@keyframes hmSweep{to{stroke-dashoffset:0}}
+@keyframes hmSweep2{from{stroke-dashoffset:144}to{stroke-dashoffset:22}}
+@media (prefers-reduced-motion:reduce){.hm-ekg .b1,.hm-ekg .b2{animation:none;stroke-dasharray:none}.hm-ekg .b1{display:none}}
+.hero-card.hm .hero-mark{margin:12px 0 0;height:44px}
+.hm-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.hm-tags span{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:3px 9px}
+/* 講師名牌 */
+.hm-badge{position:relative;display:block;margin-top:20px;border-radius:10px;overflow:hidden;cursor:pointer;
+  background:linear-gradient(160deg,var(--surface) 0%,var(--paper) 100%);border:1px solid var(--line);
+  box-shadow:0 10px 26px rgba(0,0,0,.18);color:var(--ink);-webkit-tap-highlight-color:transparent;
+  opacity:0;transform:translateY(12px);animation:tileIn .55s cubic-bezier(.22,.61,.36,1) .12s forwards;transition:border-color .25s}
+.hm-badge:hover{border-color:var(--ink-soft)}
+.hm-badge:active{transform:scale(.99)}
+.hm-badge::before{content:"";position:absolute;top:9px;left:50%;width:34px;height:6px;margin-left:-17px;border-radius:3px;
+  background:var(--paper);box-shadow:inset 0 1px 2px rgba(0,0,0,.45)}
+.hm-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--signal)}
+.bd-top{display:flex;justify-content:space-between;align-items:center;padding:20px 18px 6px 20px;font-size:9.5px;font-weight:600;letter-spacing:.24em;color:var(--muted)}
+.bd-top b{color:var(--signal);font-weight:600}
+.bd-mid{display:flex;align-items:center;gap:16px;padding:4px 18px 14px 20px}
+.bd-em{width:74px;height:74px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--deep);border:1px solid var(--line)}
+.bd-em img{width:60px;height:auto}
+.bd-tx{flex:1;min-width:0}
+.bd-name{display:block;font-size:24px;font-weight:700;letter-spacing:.08em;line-height:1.25}
+.bd-role{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:4px;line-height:1.5}
+.bd-org{display:block;font-size:11.5px;color:var(--muted);line-height:1.5}
+.bd-bot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 18px 14px 20px;border-top:1px dashed var(--line)}
+.bd-bot span{font-size:11px;color:var(--muted)}
+.bd-bot b{font-size:15px;font-weight:600;color:var(--ink);margin-right:4px}
+.bd-go{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink)!important}
+.bd-go i{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-style:normal;transition:transform .25s}
+.hm-badge:hover .bd-go i{transform:translateX(3px);border-color:var(--signal)}
+@media (prefers-reduced-motion:reduce){.hm-badge{opacity:1;transform:none;animation:none}}
+/* 磁磚（一般模式） */
+#tileGrid.hm{display:block;margin-top:0}
+.hm-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.hm-g.hm-feat{margin-top:22px}
+#tileGrid.hm .tile{min-height:112px;padding:16px 14px 14px;gap:16px;justify-content:space-between}
+#tileGrid.hm .tile svg{width:26px;height:26px}
+#tileGrid.hm .tile-t{display:block;margin-top:0;font-size:15.5px;line-height:1.4;overflow-wrap:anywhere}
+.hm-tx{display:block;min-width:0}
+.hm-k{display:block;font-size:9.5px;font-weight:600;letter-spacing:.2em;color:var(--muted);font-family:var(--sans)}
+.hm-s{display:block;font-size:11.5px;line-height:1.5;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.hm-s.live{color:var(--signal)}
+.hm-peek{display:block;font-size:11.5px;line-height:1.5;color:var(--ink-soft);margin-top:6px;padding-top:6px;border-top:1px solid var(--line);overflow-wrap:anywhere;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hm-new{position:absolute;top:12px;right:12px;font-size:9.5px;font-weight:700;letter-spacing:.12em;color:#fff;background:var(--signal);padding:2px 6px;line-height:1.5}
+#tileGrid.hm .tile.feat{min-height:150px;border-top:2px solid var(--signal);padding-top:15px}
+#tileGrid.hm .tile.feat .tile-t{font-size:17px;font-weight:600}
+#tileGrid.hm .tile.wide{flex-direction:row;align-items:center;justify-content:flex-start;min-height:0;gap:14px;padding:18px 16px}
+#tileGrid.hm .tile.wide .hm-tx{flex:1}
+#tileGrid.hm .tile-lock .hm-s,#tileGrid.hm .tile-lock .hm-peek{display:none}
+#tileGrid.hm .tile-dot{top:15px;right:15px}
+.hm-side{display:block}
+.hm-main{display:block}
+/* IG 連結 */
+#p-home .ig-foot{margin-top:30px;padding:16px 0 6px;border-top:1px solid var(--line);min-height:44px}
+#p-home .ig-foot .ig-name{flex:1;border-bottom:1px solid var(--line);padding-bottom:2px}
+#p-home .ig-foot::after{content:"追蹤 ↗";color:var(--muted);font-size:13px;flex:none}
+body.editing #p-home .ig-foot::after{content:none}
+#z-student #p-home>.brand-foot{display:none}
+body.editing #z-student #p-home>.brand-foot{display:flex;opacity:.5}
+/* 平板 */
+@media (min-width:700px){
+  .hm-g{gap:12px}
+  #tileGrid.hm .tile{min-height:140px;padding:20px 18px 18px}
+  #tileGrid.hm .tile.feat{min-height:170px}
+  #tileGrid.hm .tile svg{width:30px;height:30px}
+  #tileGrid.hm .tile-t{font-size:17px}
+  #tileGrid.hm .tile.feat .tile-t{font-size:20px}
+  .hm-s,.hm-peek{font-size:12.5px}
+  .bd-name{font-size:28px}
+  .hm-ekg{margin-top:16px}
+}
+/* 電腦：名牌在左、磁磚在右 */
+@media (min-width:1100px){
+  .wrap:has(#z-student.is-on #p-home.is-on){max-width:1180px}
+  #tileGrid.hm{display:grid;grid-template-columns:380px minmax(0,1fr);gap:32px;align-items:stretch;margin-top:36px}
+  .hm-side{display:flex;flex-direction:column;gap:14px}
+  .hm-side .hm-badge{margin-top:0}
+  .hm-side .tile.wide{flex:1}
+  .hm-g{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:14px}
+  .hm-g.hm-feat{margin-top:0}
+  .hm-g.hm-feat .tile.feat{grid-column:span 2;min-height:180px}
+  .hm-g.hm-feat .tile.feat:only-child{grid-column:1/-1}
+  #tileGrid.hm .tile{min-height:136px}
+  #tileGrid.hm .tile.feat .tile-t{font-size:22px}
+  #tileGrid.hm .tile.wide{min-height:0}
+  .hm-ban{height:400px}
+  .hm-ttl{font-size:52px;gap:6px 18px}
+  .hm-ekg{margin-top:18px}
+  .bd-name{font-size:30px}
+}
+
+/* ===================== v11：上課專區 ===================== */
+#p-quiz .row{align-items:center}
+#p-quiz .row .row-n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;padding:0;border:1px solid var(--line);font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);transition:background .2s}
+#p-quiz .row[data-st]{position:relative}
+#p-quiz .row[data-st] .row-go{display:none}
+#p-quiz .row[data-st]::after{content:attr(data-st);flex:none;font-size:12.5px;color:var(--muted);white-space:nowrap}
+#p-quiz .row.st-now::after{background:var(--signal);color:#fff;font-weight:700;padding:7px 13px}
+#p-quiz .row.st-done .row-n{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+#p-quiz .row.st-now .row-n{background:var(--signal);color:#fff;border-color:var(--signal);box-shadow:0 0 0 5px var(--signal-soft)}
+#p-quiz .row.st-off{opacity:.62}
+#p-quiz .row.st-open::after{color:var(--ink);border:1px solid var(--line);padding:6px 11px}
+.qz-sub{font-size:12px;color:var(--muted);letter-spacing:.08em;padding:26px 0 4px}
+.qz-more{margin:30px 0 0;padding-top:20px;border-top:6px solid var(--surface)}
+.qz-more h2{font-size:18px;font-weight:600}
+.qz-more p{margin:2px 0 12px;font-size:12.5px;color:var(--muted)}
+.qz-rail{display:flex;gap:10px;overflow-x:auto;padding:0 0 8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.qz-card{flex:none;width:200px;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);background:var(--surface);padding:14px;cursor:pointer;color:var(--ink)}
+.qz-card:hover{border-color:var(--ink-soft)}
+.qz-ck{font-size:9.5px;font-weight:600;letter-spacing:.2em;color:var(--signal)}
+.qz-card b{font-size:15px;font-weight:600;line-height:1.45}
+.qz-card span.d{font-size:12px;color:var(--muted);line-height:1.5}
+.qz-card .cg{margin-top:auto;font-size:12.5px;font-weight:600}
+@media (min-width:700px){.qz-card{width:240px}}
+
+/* ===================== v11：挑戰題庫主題卡 ===================== */
+.ch-card.ch-ph{position:relative;display:block;width:100%;height:196px;padding:0;overflow:hidden;text-align:left;border:1px solid var(--line);
+  background-color:var(--deep);background-image:var(--home-banner);background-repeat:no-repeat;background-size:auto 230%;color:#EDEAE4}
+.ch-card.ch-ph[data-chgo="fire"]{background-position:4% 45%}
+.ch-card.ch-ph[data-chgo="rescue"]{background-position:97% 55%}
+.ch-card.ch-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,13,15,.95) 18%,rgba(11,13,15,.35) 70%,rgba(11,13,15,.15))}
+.ch-card.ch-ph .ch-in{position:absolute;left:18px;right:18px;bottom:16px;z-index:1;display:flex;align-items:flex-end;gap:12px}
+.ch-card.ch-ph .ch-n{font:500 40px/1 var(--sans);color:#E2564A}
+.ch-card.ch-ph .ch-b{flex:1;min-width:0}
+.ch-card.ch-ph .ch-k{display:block;font-size:20px;font-weight:700;letter-spacing:.02em;color:#EDEAE4}
+.ch-card.ch-ph .ch-k i{font-style:normal;color:#EDEAE4}
+.ch-card.ch-ph .ch-d{display:block;font-size:12.5px;color:#C9CDCB}
+.ch-card.ch-ph .ch-c{display:block;font-size:11.5px;color:#A5AEB2;margin-top:2px}
+.ch-card.ch-ph .ch-go{width:40px;height:40px;border:1px solid rgba(237,234,228,.4);display:grid;place-items:center;flex:none;font-size:16px;color:#EDEAE4}
+.ch-card.ch-ph:hover .ch-go{border-color:#E2564A}
+.ch-best{margin-top:8px;font-size:12px;color:var(--muted)}
+@media (min-width:700px){.ch-card.ch-ph{height:230px}}
+
+body.editing .dirty-bar{display:none}
+
+.still .hm-badge{animation:none;opacity:1;transform:none}
+#p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
+body.editing #tileGrid .tile-d{display:block;font-size:12px;color:var(--muted);margin-top:4px;min-height:1.4em;outline:1px dashed var(--line);outline-offset:2px}
+body.editing #tileGrid .tile-d:empty::before{content:attr(data-ph);color:var(--muted);opacity:.6}
+
 </style>
 <script>
 /* 在畫面出來之前就決定：學員網址不顯示控制台，並先隱藏內容等資料到齊 */
@@ -1567,7 +1879,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 <body>
 
 <div class="toast" id="toast"></div>
-<div class="boot-spin"><svg class="boot-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><span>IRON WILL｜教育平台</span></div>
+<div class="boot-spin"><svg class="boot-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h3q1.2-2 2.4 0h1l.8 1.2 1.5-8 1.5 10 1-3.2h1.4q1.8-3 3.6 0h2.5"/></svg><span>IRON WILL｜教育平台</span></div>
 <div class="dirty-bar" id="dirtyBar" hidden><b>有未儲存的變更</b>
   <button id="dirtyCancel">放棄</button><button id="dirtySave" class="pri">全部儲存</button></div>
 <div class="opt-sheet" id="optSheet" hidden><div class="opt-in">
@@ -1590,7 +1902,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 <!-- ================= 學員端 ================= -->
 <div class="zone" id="z-home">
   <div class="console">
-    <div class="brand"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><span class="brand-n">IRON WILL｜教育平台</span><span class="brand-s">講師控制台</span></div>
+    <div class="brand"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h3q1.2-2 2.4 0h1l.8 1.2 1.5-8 1.5 10 1-3.2h1.4q1.8-3 3.6 0h2.5"/></svg><span class="brand-n">IRON WILL｜教育平台</span><span class="brand-s">講師控制台</span></div>
     <h1 class="display" style="margin-top:18px" id="conTitle"></h1>
     <p class="sub" style="margin-top:8px" id="conSub"></p>
 
@@ -1654,7 +1966,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="cols" id="tileGrid"></div>
 
     <div class="ig-foot" data-ig><span class="dotmark"></span><span class="ig-name">IRON WILL｜消防員上工去</span></div>
-    <div class="brand brand-foot"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><span class="brand-n">IRON WILL｜教育平台</span></div>
+    <div class="brand brand-foot"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h3q1.2-2 2.4 0h1l.8 1.2 1.5-8 1.5 10 1-3.2h1.4q1.8-3 3.6 0h2.5"/></svg><span class="brand-n">IRON WILL｜教育平台</span></div>
     <div class="gate-mark">
       <span class="foot-mark" id="gate"><i></i></span>
       <span id="cHomeMeta">Copyright © 2026 IRON WILL</span><span class="ver-foot" id="verFoot"></span>
@@ -1681,7 +1993,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <p class="hint rv">如果我們能讓意外少發生一點呢？如果能讓更多人在火災發生前知道怎麼預防，在家人倒下時知道怎麼撥打 119，在等待救護車的幾分鐘裡知道怎麼做 CPR — 那麼消防員是不是就有機會，少晚一點到達。</p>
 
     <svg class="fig rv" viewBox="0 0 400 48" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 26 L150 26 L163 26 L171 6 L180 44 L189 18 L200 26 L400 26"/>
+      <path d="M0 26 H144.4 Q151.4 21.2 158.4 26 H171 L173.8 27.6 L178 6 L182.9 32 L186.4 26 H196.2 Q210.2 16 224.2 26 H400"/>
     </svg>
 
     <div class="section-head rv"><h2>我為什麼一直講</h2><span>因為看過「來不及」</span></div>
@@ -1694,9 +2006,9 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="quote rv" id="abQuote">「希望這社會<br>因為有我的存在，<br>能有一點點正向的改變。」</div>
 
     <svg class="fig accent rv" viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 28 L86 28 L96 20 L100 36 L108 28 L118 20 L122 36 L130 28 L140 20 L144 36 L152 28 L164 28 L206 28 L214 6 L222 48 L230 22 L238 28 L296 28 L304 14 L310 40 L316 24 L326 28 L400 28"/>
+      <path d="M0 28 H170.8 Q176.1 23 181.3 28 H190.8 L192.8 29.7 L196 7 L199.7 34.3 L202.3 28 H209.7 Q220.2 17.5 230.7 28 H242.8 Q248.1 23 253.3 28 H262.8 L264.9 29.7 L268 7 L271.7 34.3 L274.3 28 H281.6 Q292.1 17.5 302.6 28 H314.8 Q320.1 23 325.3 28 H334.8 L336.9 29.7 L340 7 L343.7 34.3 L346.3 28 H353.6 Q364.1 17.5 374.6 28 H400"/>
     </svg>
-    <div class="fig-cap rv"><span class="pulse"></span><span>FLATLINE → COMPRESSIONS → ROSC　110 / MIN</span></div>
+    <div class="fig-cap rv"><span class="pulse"></span><span>FLATLINE → ROSC　恢復自主心跳</span></div>
 
     <div class="story rv" style="margin-top:26px">
       <p>消防員一次可能救一個人、幾個人。但教育可以讓一個人，在事故發生時救自己、救家人，甚至救陌生人。</p>
@@ -1758,15 +2070,17 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
   <!-- 線上測驗 hub -->
   <section class="page" id="p-quiz">
     <div style="padding-top:24px">
-      <div class="meta" data-txt="quizKicker">線上測驗</div>
-      <h1 class="display" style="font-size:24px;margin-top:8px" data-txt="quizTitle">兩份測驗，看自己進步多少</h1>
+      <div class="meta" data-txt="quizKicker">上課專區</div>
+      <h1 class="display" style="font-size:24px;margin-top:8px" data-txt="quizTitle">這堂課要做的，都在這裡</h1>
     </div>
     <div class="rows" style="margin-top:20px">
       <div class="row" data-gate="p-profile"><div class="row-n">前</div><div class="row-b"><div class="row-t">課前測驗</div><div class="row-d">上課前先測，知道自己哪裡不熟</div></div><div class="row-go">→</div></div>
       <div class="row" data-gate="p-name"><div class="row-n">後</div><div class="row-b"><div class="row-t">課後測驗</div><div class="row-d" id="postMeta">約 2 分鐘</div></div><div class="row-go">→</div></div>
+      <div id="fbStep"></div>
       <div class="row" id="rowTop" data-go="p-top3"><div class="row-n">榜</div><div class="row-b"><div class="row-t">前三名</div><div class="row-d">成績榜與進步榜，課堂表揚用</div></div><div class="row-go">→</div></div>
       <div class="row" id="rowStats" data-go="p-stats"><div class="row-n">計</div><div class="row-b"><div class="row-t">本堂統計</div><div class="row-d">跟全班比、看哪幾題最多人誤會</div></div><div class="row-go">→</div></div>
       <div class="row" id="rowExp" data-go="p-explain"><div class="row-n">績</div><div class="row-b"><div class="row-t">我的成績</div><div class="row-d" id="rowExpD">看答案、看解析、複習錯題</div></div><div class="row-go">→</div></div>
+      <div id="qzMore"></div>
     </div>
     <p class="note" hidden></p>
   </section>
@@ -1972,7 +2286,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <p class="sub" style="margin-top:10px">你的評分已經併進全班平均，文字回饋講師會逐則看。</p>
       <div id="fbAgain" style="display:none;margin-top:12px;font-size:13.5px;color:var(--muted)">這堂課的回饋你已經填過了，每堂課每人填一次就好。</div>
       <svg class="trace" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true" style="margin-top:4px">
-        <path d="M0 25 L160 25 L173 25 L181 7 L190 41 L199 18 L212 25 L400 25"/>
+        <path d="M0 25 H154.8 Q161.3 20.9 167.8 25 H179.5 L182.1 26.4 L186 8 L190.6 30.1 L193.8 25 H202.9 Q215.9 16.5 228.9 25 H400"/>
       </svg>
       <button class="btn btn-quiet" data-go="p-home" style="margin-top:20px">回課程首頁</button>
     </div>
@@ -2086,7 +2400,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
         <h1 class="display" style="font-size:25px;margin-top:10px" id="artTitle"></h1>
       </div>
       <svg class="trace trace-thin rv" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0 25 L150 25 L163 25 L171 9 L180 39 L189 19 L200 25 L400 25"/>
+        <path d="M0 25 H146.8 Q153.3 21.4 159.8 25 H171.5 L174.1 26.2 L178 10 L182.6 29.5 L185.8 25 H194.9 Q207.9 17.5 220.9 25 H400"/>
       </svg>
       <div id="artBody" style="margin-top:22px"></div>
       <div class="section-head"><h2>延伸閱讀</h2><span>同分類</span></div>
@@ -2137,42 +2451,74 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 
 <!-- ================= 後台 ================= -->
 <div class="zone" id="z-pro">
-  <div class="pro-bar"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h6l2-4.6 2.6 9.6 2.3-6.4 1.5 1.4h6.6"/></svg><b>後台</b><span class="pb-hint">學員看不到這裡</span><a class="pb-home" id="pbHome" href="./">控制台</a><span class="ver" id="verBar"></span></div>
-
-  <!-- 一、現在的狀況 -->
-  <div style="padding-top:22px">
-    <div class="meta" id="proMeta">進行中</div>
-    <h1 class="display" style="font-size:26px;margin-top:6px" id="proTitle">課程</h1>
-  </div>
-  <div class="stats" style="margin-top:18px">
-    <div class="stat"><div class="stat-n" id="kpiPpl">—</div><div class="stat-l">本堂輸入代號</div></div>
-    <div class="stat" data-jump="w" style="cursor:pointer"><div class="stat-n" id="kpiW">—</div><div class="stat-l">悄悄話 ›</div></div>
-    <div class="stat" data-jump="i" style="cursor:pointer"><div class="stat-n" id="kpiInv">—</div><div class="stat-l">待回邀約 ›</div></div>
-  </div>
-  <div class="qrow">
-    <span class="qrow-l">本堂代號</span>
-    <span class="qrow-v code" id="codeShow">8236</span>
-    <button class="qbtn" id="regenCode">換一組</button>
-  </div>
-
-  <!-- 二、最常做的三件事 -->
-  <div class="edit-entry" id="goEdit">
-    <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path class="hot" d="m13.5 6.5 4 4"/></svg>
-    <div><div class="edit-entry-t">編輯學員畫面</div>
-      <div class="edit-entry-d">學員看得到的一切都在這裡改：文字、欄位、順序、顯示隱藏</div></div>
-    <span class="edit-entry-go">→</span>
-  </div>
-  <div class="twin">
-    <div class="twin-c" data-panel="pnl-inbox">
-      <svg viewBox="0 0 24 24"><path d="M3.6 6.2h16.8v11.6H3.6z"/><path class="hot" d="m3.6 6.9 8.4 6.5 8.4-6.5"/></svg>
-      <div class="twin-t">收件匣</div><div class="twin-m" id="inboxCount">—</div>
+  <div class="pro-bar"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h3q1.2-2 2.4 0h1l.8 1.2 1.5-8 1.5 10 1-3.2h1.4q1.8-3 3.6 0h2.5"/></svg><b>IRON WILL 後台</b><span class="pb-hint">學員看不到這裡</span><button type="button" class="pb-inbox" id="pbInbox" aria-label="收件匣"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 6.2h16.8v11.6H3.6z"/><path d="m3.6 6.9 8.4 6.5 8.4-6.5"/></svg><i id="pbBadge" hidden>0</i></button><a class="pb-home" id="pbHome" href="./">控制台</a><span class="ver" id="verBar"></span></div>
+<div class="adm">
+  <aside class="adm-side" aria-label="後台分頁">
+    <div class="as-brand"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h3q1.2-2 2.4 0h1l.8 1.2 1.5-8 1.5 10 1-3.2h1.4q1.8-3 3.6 0h2.5"/></svg><b>IRON WILL</b><span>後台</span></div>
+    <button type="button" class="atb on" data-atab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3.5l1.6-2.6 2.4 6.6 2.3-9 2.2 5H21"/></svg><span>今天</span></button>
+    <button type="button" class="atb" data-atab="inbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 6.2h16.8v11.6H3.6z"/><path d="m3.6 6.9 8.4 6.5 8.4-6.5"/></svg><span>收件匣</span><i class="atb-n" id="sideBadge" hidden>0</i></button>
+    <button type="button" class="atb" data-atab="bank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.6h10v15.8H7z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span>題庫</span></button><button type="button" class="atb" data-atab="content"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 8 4-8 4-8-4z"/><path d="m4 12 8 4 8-4"/><path d="m4 16 8 4 8-4"/></svg><span>內容</span></button><button type="button" class="atb" data-atab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>設定</span></button>
+  </aside>
+  <div class="adm-main">
+  <section class="atab is-on" id="at-today" data-tab="today">
+  <div class="td-grid"><div class="td-col">
+    <div class="at-head"><div class="meta" id="proMeta">進行中</div>
+      <h1 class="display" id="proTitle">課程</h1></div>
+    <div class="td-code">
+      <div class="td-code-b"><div class="td-l">本堂代號</div><div class="td-c" id="codeShow">8236</div></div>
+      <button class="qbtn" id="regenCode">換一組</button>
     </div>
-    <div class="twin-c" data-panel="pnl-share">
-      <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/><path class="hot" d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5z"/></svg>
-      <div class="twin-t">學員入口</div><div class="twin-m">連結與 QR</div>
+    <div class="td-acts"><button type="button" class="qbtn" id="tdQR">全螢幕 QR</button><button type="button" class="qbtn" id="tdShare">連結與 QR</button></div>
+    <div class="td-share" id="pnl-share" hidden>
+    <p class="sub">投影或列印這個 QR，學員掃了直接進課程頁，看不到任何管理功能。</p>
+    <div class="qrbox"><div id="qrWrap2"></div></div>
+    <div class="linkrow"><span id="stuLink2"></span></div>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="btn btn-quiet" style="margin:0" id="copyLink2">複製連結</button>
+      <button class="btn btn-quiet" style="margin:0" id="openQR2">開啟大圖</button>
     </div>
-  </div>
-  <div class="panel" id="pnl-inbox">
+  
+    </div>
+    <div class="stats td-kpi">
+      <div class="stat"><div class="stat-n" id="kpiPpl">—</div><div class="stat-l">輸入代號</div></div>
+      <div class="stat"><div class="stat-n" id="kpiPre">—</div><div class="stat-l">課前交卷</div></div>
+      <div class="stat"><div class="stat-n" id="kpiPost">—</div><div class="stat-l">課後交卷</div></div>
+    </div>
+    <div class="td-next" id="tdNext" hidden></div>
+
+    <div class="td-h"><h2>測驗</h2><span>按了立刻生效</span></div>
+    <div class="td-box td-instant">
+      <div class="toggle-row"><span>課前測驗<em class="tr-d">學員看得到「課前測驗」入口</em></span><span class="td-st" data-st="qvPre"></span><span class="sw on" id="qvPre" role="switch" aria-checked="true" tabindex="0"></span></div>
+      <div class="toggle-row"><span>課後測驗<em class="tr-d">講完再打開</em></span><span class="td-st" data-st="qvPost"></span><span class="sw on" id="qvPost" role="switch" aria-checked="true" tabindex="0"></span></div>
+      <div class="td-lv"><div class="td-lv-t">作答結果公布到哪裡<span>課前、課後共用</span></div>
+      <div class="chips" data-one id="qvLevel">
+        <span class="chip" data-lv="0">先不公布</span><span class="chip" data-lv="1">只給分數</span>
+        <span class="chip" data-lv="2">分數＋對錯</span><span class="chip" data-lv="3">分數＋對錯＋詳解</span></div>
+      <div class="hint" id="qvLevelNote"></div></div>
+    </div>
+
+    <div class="td-h"><h2>下課</h2><span>按了立刻生效</span></div>
+    <div class="td-box td-instant">
+      <div class="toggle-row"><span>課程回饋入口<em class="tr-d">打開後學員畫面幾秒內出現入口；關掉就填不了</em></span><span class="td-st" data-st="qvFb"></span><span class="sw on" id="qvFb" role="switch" aria-checked="true" tabindex="0"></span></div>
+    </div>
+  </div><div class="td-col">
+    <div class="td-h"><h2>其他</h2><span>點進去處理</span></div>
+    <div class="td-box">
+      <div class="td-row" data-atab-go="inbox"><span class="td-rt">收件匣<em id="tdInboxD">悄悄話 <b id="kpiW" data-jump="w">—</b>．待回邀約 <b id="kpiInv" data-jump="i">—</b></em></span><span class="td-pill" id="tdInboxPill" hidden></span><span id="inboxCount" hidden></span><span class="td-go">›</span></div>
+      <div class="td-row" data-atab-go="bank:challenge"><span class="td-rt">挑戰題庫<em id="tdChD">—</em></span><span class="td-pill" id="tdChPill" hidden></span><span class="td-go">›</span></div>
+      <div class="td-row" data-atab-go="settings:grp-traffic"><span class="td-rt">瀏覽流量<em>各頁真實點閱次數</em></span><span class="td-go">›</span></div>
+      <div class="td-row" data-atab-go="content:grp-home"><span class="td-rt">學員首頁<em>功能磁磚開關、品牌圖、編輯學員畫面</em></span><span class="td-go">›</span></div>
+    </div>
+
+    <div class="td-h" id="tdSessH"><h2>成績與回饋</h2><span id="fbTag"></span></div>
+    <p class="sub td-sub">投影、前三名、姓名顯示、回饋內容都在這裡，即時更新。每換一次代號就是新的一堂，保留最近 8 堂。</p>
+    <div class="chips" id="sessPick"></div>
+    <div id="sessBody"><div class="empty">登入後載入。</div></div>
+  </div></div>
+  </section>
+  <section class="atab" id="at-inbox" data-tab="inbox">
+    <div class="at-head"><div class="meta">收件匣</div><h1 class="display">學員和邀約的訊息</h1></div>
+    <div id="pnl-inbox">
     <div class="seg" id="boxSeg">
       <button class="on" data-box="w">傳聲悄悄話</button><button data-box="i">課程邀約</button>
     </div>
@@ -2194,20 +2540,12 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <button class="btn btn-quiet" id="reloadInv">重新讀取</button>
       <p class="hint">送出的邀約會即時進來。點開看完整內容，可以直接複製 Email 或電話。</p>
     </div>
-  </div>
-  <div class="panel" id="pnl-share">
-    <p class="sub">投影或列印這個 QR，學員掃了直接進課程頁，看不到任何管理功能。</p>
-    <div class="qrbox"><div id="qrWrap2"></div></div>
-    <div class="linkrow"><span id="stuLink2"></span></div>
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button class="btn btn-quiet" style="margin:0" id="copyLink2">複製連結</button>
-      <button class="btn btn-quiet" style="margin:0" id="openQR2">開啟大圖</button>
     </div>
-  </div>
-
-  <!-- 三、內容管理（畫面上改不到的） -->
-  <div class="zone-head"><h2>內容</h2><span>在畫面上改不到的</span></div>
-  <div style="margin-top:4px">
+  </section>
+  <section class="atab" id="at-bank" data-tab="bank">
+    <div class="at-head"><div class="meta">題庫</div><h1 class="display">題目都在這裡</h1></div>
+    <div class="seg bk-seg" id="bankSeg"><button type="button" class="on" data-bk="grp-quiz">上課測驗</button><button type="button" data-bk="grp-challenge">挑戰題庫</button></div>
+    <div class="bk-wrap">
   <div class="grp" id="grp-quiz"><div class="grp-h"><span class="grp-t">題庫與測驗</span><span class="grp-m" id="qTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">課前、課後各選一個題目模板。模板可以重複使用：今天用「初階」，明天換「中階」，後天再選回「初階」就好。選了之後照樣可以增刪修改。</p>
@@ -2223,22 +2561,8 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <button class="btn btn-quiet" id="qeAdd">＋ 新增題目</button>
     <button class="btn btn-quiet" data-save="questions">儲存題庫</button>
 
-    <div class="section-head"><h2>開放哪些測驗</h2><span>2</span></div>
-    <p class="sub">關掉後，學員在「線上測驗」看不到那一份的入口。例如開場只開課前，下課前再打開課後。</p>
-    <div class="toggle-row"><span>課前測驗<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">學員看得到「課前測驗」入口</em></span><span class="sw on" id="qvPre" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <div class="toggle-row"><span>課後測驗<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">學員看得到「課後測驗」入口</em></span><span class="sw on" id="qvPost" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <button class="btn btn-quiet" data-save="course">儲存開放設定</button>
-
-    <div class="section-head"><h2>作答結果開放到哪裡</h2><span>課前、課後共用</span></div>
-    <p class="sub">上課中可以先不公布，下課再往右調。學員不用重開 App，在「線上測驗 → 我的成績」就能回頭看自己的課前、課後結果。</p>
-    <div class="chips" data-one id="qvLevel" style="margin-top:12px">
-      <span class="chip" data-lv="0">先不公布</span><span class="chip" data-lv="1">只給分數</span>
-      <span class="chip" data-lv="2">分數＋對錯</span><span class="chip" data-lv="3">分數＋對錯＋詳解</span></div>
-    <div class="hint" id="qvLevelNote" style="margin-top:10px"></div>
-    <button class="btn btn-quiet" data-save="course">儲存開放設定</button>
-
     <div class="section-head"><h2>作答完學員看得到什麼</h2><span>4</span></div>
-    <p class="sub">關掉的項目，在「線上測驗」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。前三名與姓名顯示方式在「成績與回饋」設定。</p>
+    <p class="sub">關掉的項目，在「上課專區」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。前三名與姓名顯示方式在「今天」分頁的「成績與回饋」設定。</p>
     <div class="toggle-row"><span>本堂統計<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">全班平均、及格率、最多人誤會的題目</em></span><span class="sw on" id="qvStats" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>課前測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">最後多一題「你覺得自己會拿幾分」（不計分）．上課時可投影出來對照實際平均</em></span><span class="sw" id="qvGuessPre" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>課後測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前課後可以分開決定，例如只在課前問</em></span><span class="sw" id="qvGuessPost" role="switch" aria-checked="false" tabindex="0"></span></div>
@@ -2258,39 +2582,11 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <button class="btn btn-quiet" data-save="chbank">儲存挑戰題庫</button>
   </div></div>
 
-  <div class="grp" id="grp-files">
-    <div class="grp-h"><span class="grp-t">檔案下載</span><span class="grp-m" id="filesTag"></span><span class="grp-c">›</span></div>
-    <div class="grp-b">
-    <p class="sub">貼一個雲端硬碟資料夾連結（資料夾設成「知道連結的人可檢視」），按讀取後點選要給學員的檔案。點的順序就是顯示順序。</p>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <input class="f-in" id="edFilesFolder" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:0">
-      <button class="qbtn" id="readFiles">讀取</button></div>
-    <div id="filePick" style="margin-top:12px"></div>
-    <div class="section-head"><h2>已選的檔案</h2><span id="fileCount"></span></div>
-    <div id="fileEdit"></div>
-    <button class="btn btn-quiet" data-save="site">儲存檔案清單</button>
     </div>
-  </div>
-  <div class="grp" id="grp-articles"><div class="grp-h"><span class="grp-t">知識文章</span><span class="grp-m" id="artTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <div class="toggle-row"><span>學員端顯示瀏覽次數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關掉後學員看不到 👁 數字，後台照樣記錄</em></span><span class="sw on" id="nfViews" role="switch" aria-checked="true" tabindex="0"></span></div>
-    <p class="sub">學員端兩個專區的文章都在這裡管。按 📌 置頂，那篇會固定在專區最上面（最近置頂的排最前）；其他文章照日期由新到舊。點標題展開編輯。</p>
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button class="btn btn-quiet" style="margin:0" id="addArticle">新增文章</button>
-      <button class="btn btn-quiet" style="margin:0" data-save="articles">儲存文章</button>
-    </div>
-    <input class="f-in" id="artQ" type="search" placeholder="搜尋標題、分類或內文" style="margin-top:16px">
-    <div class="chips" id="artF" style="margin-top:10px">
-      <span class="chip on" data-af="all">全部</span><span class="chip" data-af="disaster">防災</span>
-      <span class="chip" data-af="firstaid">急救</span><span class="chip" data-af="pinned">📌 置頂</span></div>
-    <div class="hint" id="artCount" style="margin-top:8px"></div>
-    <div id="artEdit" style="margin-top:6px"></div>
-
-    <div class="section-head"><h2>瀏覽排行</h2><span>累計．前 20 名</span></div>
-    <div id="artRank"></div>
-  
-  </div></div>
-
+  </section>
+  <section class="atab" id="at-content" data-tab="content">
+    <div class="at-head"><div class="meta">內容</div><h1 class="display">學員看到的東西</h1>
+      <p class="sub">一次展開一區，標題列右邊是摘要，不用點開就知道狀態。</p></div>
   <div class="grp" id="grp-about"><div class="grp-h"><span class="grp-t">講師影音與聯絡</span><span class="grp-m" id="aboutTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div class="section-head"><h2>影片</h2><span>YouTube</span></div>
@@ -2317,11 +2613,6 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <button class="et-add" data-add="scope">新增一類</button>
     <button class="btn btn-quiet" data-save="site">儲存授課範圍</button>
 
-    <div class="f" style="padding-top:14px"><div class="f-q">首頁品牌圖位置</div>
-      <div class="f-hint">學員首頁的 IRON WILL 主視覺要放哪裡。</div>
-      <div class="chips" data-one id="homePos" style="margin-top:8px">
-        <span class="chip" data-hp="top">放最上面</span><span class="chip" data-hp="bottom">放最下面</span>
-        <span class="chip" data-hp="off">不顯示</span></div></div>
     <div class="f" style="padding-top:14px"><div class="f-q">難字注音</div>
       <div class="f-hint">名字或課程名稱裡有人不會唸的字寫在這裡，畫面上會自動標注音。格式：檁=ㄌㄧㄣˇ，一行一個。</div>
       <textarea class="f-in" id="edRuby" rows="2" placeholder="檁=ㄌㄧㄣˇ"></textarea></div>
@@ -2375,40 +2666,59 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <button class="btn btn-quiet" data-save="site">儲存聯絡資料</button>
   </div></div>
 
-  </div>
-
-  <!-- 四、數據 -->
-  <div class="zone-head"><h2>數據</h2><span>看結果</span></div>
-  <div style="margin-top:4px">
-  <div class="grp" id="grp-feedback"><div class="grp-h"><span class="grp-t">成績與回饋</span><span class="grp-m" id="fbTag"></span><span class="grp-c">›</span></div>
+  <div class="grp" id="grp-articles"><div class="grp-h"><span class="grp-t">知識文章</span><span class="grp-m" id="artTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
-    <p class="sub">每換一次上課代號就是新的一堂。這裡保留最近 8 堂；超過 8 堂最舊的會被移除，需要留存的先下載。</p>
-    <div class="chips" id="sessPick" style="margin-top:14px"></div>
-    <div id="sessBody" style="margin-top:6px"><div class="empty">登入後載入。</div></div>
-</div></div>
+    <div class="toggle-row"><span>學員端顯示瀏覽次數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">關掉後學員看不到 👁 數字，後台照樣記錄</em></span><span class="sw on" id="nfViews" role="switch" aria-checked="true" tabindex="0"></span></div>
+    <p class="sub">學員端兩個專區的文章都在這裡管。按 📌 置頂，那篇會固定在專區最上面（最近置頂的排最前）；其他文章照日期由新到舊。點標題展開編輯。</p>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-quiet" style="margin:0" id="addArticle">新增文章</button>
+      <button class="btn btn-quiet" style="margin:0" data-save="articles">儲存文章</button>
+    </div>
+    <input class="f-in" id="artQ" type="search" placeholder="搜尋標題、分類或內文" style="margin-top:16px">
+    <div class="chips" id="artF" style="margin-top:10px">
+      <span class="chip on" data-af="all">全部</span><span class="chip" data-af="disaster">防災</span>
+      <span class="chip" data-af="firstaid">急救</span><span class="chip" data-af="pinned">📌 置頂</span></div>
+    <div class="hint" id="artCount" style="margin-top:8px"></div>
+    <div id="artEdit" style="margin-top:6px"></div>
 
-  <div class="grp" id="grp-traffic"><div class="grp-h"><span class="grp-t">瀏覽流量</span><span class="grp-m">真實計數</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">真實計數。學員每開一次頁面就 +1，影片播放與 IG 點擊分開算。</p>
-    <div id="traffic" style="margin-top:8px"></div>
+    <div class="section-head"><h2>瀏覽排行</h2><span>累計．前 20 名</span></div>
+    <div id="artRank"></div>
   
   </div></div>
-
-  <div class="grp" id="grp-export"><div class="grp-h"><span class="grp-t">匯出</span><span class="grp-m">CSV</span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">下載成 CSV 檔，Excel 和 Google 試算表都能直接開，中文不會變亂碼。</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-      <button class="btn btn-quiet" style="margin:0" data-exp="invites">課程邀約</button>
-      <button class="btn btn-quiet" style="margin:0" data-exp="whispers">悄悄話</button>
-      <button class="btn btn-quiet" style="margin:0" data-exp="feedback">課程回饋</button>
+  <div class="grp" id="grp-files">
+    <div class="grp-h"><span class="grp-t">檔案下載</span><span class="grp-m" id="filesTag"></span><span class="grp-c">›</span></div>
+    <div class="grp-b">
+    <p class="sub">貼一個雲端硬碟資料夾連結（資料夾設成「知道連結的人可檢視」），按讀取後點選要給學員的檔案。點的順序就是顯示順序。</p>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <input class="f-in" id="edFilesFolder" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:0">
+      <button class="qbtn" id="readFiles">讀取</button></div>
+    <div id="filePick" style="margin-top:12px"></div>
+    <div class="section-head"><h2>已選的檔案</h2><span id="fileCount"></span></div>
+    <div id="fileEdit"></div>
+    <button class="btn btn-quiet" data-save="site">儲存檔案清單</button>
     </div>
-  </div></div>
-
   </div>
-
-  <!-- 五、系統 -->
-  <div class="zone-head"><h2>系統</h2><span>設定一次就好</span></div>
-  <div style="margin-top:4px">
+  <div class="grp" id="grp-home"><div class="grp-h"><span class="grp-t">學員首頁</span><span class="grp-m" id="homeTag"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <div class="edit-entry" id="goEdit">
+      <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path class="hot" d="m13.5 6.5 4 4"/></svg>
+      <div><div class="edit-entry-t">編輯學員畫面</div>
+        <div class="edit-entry-d">學員看得到的一切都在這裡改：文字、欄位、順序、顯示隱藏．磁磚名稱和小字也是</div></div>
+      <span class="edit-entry-go">→</span>
+    </div>
+    <div class="section-head"><h2>功能磁磚</h2><span>開關後按全部儲存</span></div>
+    <p class="sub">關掉的磁磚學員看不到。「講師介紹」關掉時，首頁的講師名牌也會收起來；「上課專區」裡已經包含課程回饋。要改名、排順序請到編輯學員畫面。</p>
+    <div id="homeTiles"></div>
+    <div class="f" style="padding-top:14px"><div class="f-q">首頁品牌圖位置</div>
+      <div class="f-hint">學員首頁的 IRON WILL 主視覺要放哪裡。</div>
+      <div class="chips" data-one id="homePos" style="margin-top:8px">
+        <span class="chip" data-hp="top">放最上面</span><span class="chip" data-hp="bottom">放最下面</span>
+        <span class="chip" data-hp="off">不顯示</span></div></div>
+  </div></div>
+  </section>
+  <section class="atab" id="at-settings" data-tab="settings">
+    <div class="at-head"><div class="meta">設定</div><h1 class="display">設一次就好的東西</h1></div>
+    <div class="st-h">通知</div>
   <div class="grp" id="grp-mail"><div class="grp-h"><span class="grp-t">通知信箱</span><span class="grp-m" id="mailCount"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">學員送出悄悄話或邀約時，寄一封通知給你。收件人存在 Apps Script 裡，要輸入管理密碼才能改，別人拿到網址也沒辦法亂寄。</p>
@@ -2449,6 +2759,38 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <p class="hint">為了防濫用：同一個信箱六小時內只會收到一次自動回覆，每六小時最多 20 封。</p>
 </div></div>
 
+    <div class="st-h">資料</div>
+  <div class="grp" id="grp-traffic"><div class="grp-h"><span class="grp-t">瀏覽流量</span><span class="grp-m">真實計數</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">真實計數。學員每開一次頁面就 +1，影片播放與 IG 點擊分開算。</p>
+    <div id="traffic" style="margin-top:8px"></div>
+  
+  </div></div>
+
+  <div class="grp" id="grp-export"><div class="grp-h"><span class="grp-t">匯出</span><span class="grp-m">CSV</span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">下載成 CSV 檔，Excel 和 Google 試算表都能直接開，中文不會變亂碼。</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn btn-quiet" style="margin:0" data-exp="invites">課程邀約</button>
+      <button class="btn btn-quiet" style="margin:0" data-exp="whispers">悄悄話</button>
+      <button class="btn btn-quiet" style="margin:0" data-exp="feedback">課程回饋</button>
+    </div>
+  </div></div>
+
+  <div class="grp" id="grp-sync"><div class="grp-h"><span class="grp-t">雲端同步</span><span class="grp-m" id="syncTag"></span><span class="grp-c">›</span></div>
+  <div class="grp-b">
+    <p class="sub">第一次使用時按一次「上傳目前資料」，把程式裡預設的課程、講師介紹、題庫全部寫進 Firebase。之後就在上面各組編輯，按各自的儲存鈕即可。</p>
+    <button class="btn" id="seedBtn">上傳目前資料到 Firebase</button>
+    <button class="btn btn-quiet" id="pullBtn">重新讀取雲端資料</button>
+    <p class="hint">上傳會覆蓋雲端同名資料，只在第一次或想整批重設時用。平常編輯用各組的儲存鈕就好。</p>
+    <div class="section-head"><h2>目前狀態</h2><span></span></div>
+    <div class="trow"><span class="trow-n">課程設定</span><span class="trow-v" id="stCourse">—</span></div>
+    <div class="trow"><span class="trow-n">講師介紹</span><span class="trow-v" id="stSite">—</span></div>
+    <div class="trow"><span class="trow-n">題庫</span><span class="trow-v" id="stQ">—</span></div>
+  
+  </div></div>
+
+    <div class="st-h">帳號</div>
   <div class="grp" id="grp-account"><div class="grp-h"><span class="grp-t">帳號與操作者</span><span class="grp-m" id="acctTag"></span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <p class="sub">這是登入後台用的帳號。改了之後，所有共用這組帳號的人都要用新的密碼登入，記得通知他們。</p>
@@ -2485,26 +2827,11 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
   
   </div></div>
 
-  <div class="grp" id="grp-sync"><div class="grp-h"><span class="grp-t">雲端同步</span><span class="grp-m" id="syncTag"></span><span class="grp-c">›</span></div>
-  <div class="grp-b">
-    <p class="sub">第一次使用時按一次「上傳目前資料」，把程式裡預設的課程、講師介紹、題庫全部寫進 Firebase。之後就在上面各組編輯，按各自的儲存鈕即可。</p>
-    <button class="btn" id="seedBtn">上傳目前資料到 Firebase</button>
-    <button class="btn btn-quiet" id="pullBtn">重新讀取雲端資料</button>
-    <p class="hint">上傳會覆蓋雲端同名資料，只在第一次或想整批重設時用。平常編輯用各組的儲存鈕就好。</p>
-    <div class="section-head"><h2>目前狀態</h2><span></span></div>
-    <div class="trow"><span class="trow-n">課程設定</span><span class="trow-v" id="stCourse">—</span></div>
-    <div class="trow"><span class="trow-n">講師介紹</span><span class="trow-v" id="stSite">—</span></div>
-    <div class="trow"><span class="trow-n">題庫</span><span class="trow-v" id="stQ">—</span></div>
-  
-  </div></div>
-
   <div class="grp" id="grp-log"><div class="grp-h"><span class="grp-t">變更紀錄</span><span class="grp-m">誰改了什麼</span><span class="grp-c">›</span></div>
   <div class="grp-b">
     <div id="logList"><div class="empty">登入後載入。</div></div>
   
   </div></div>
-
-  </div>
 
   <div class="pro-foot">
     <div class="conn" id="conn"><span class="conn-d"></span><span id="connT">連線中…</span>
@@ -2514,6 +2841,11 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <button class="theme-btn" id="themeBtn" style="margin-left:auto">淺色</button>
     </div>
   </div>
+  </section>
+  </div>
+  <nav class="adm-tabs" aria-label="後台分頁"><button type="button" class="atb on" data-atab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3.5l1.6-2.6 2.4 6.6 2.3-9 2.2 5H21"/></svg><span>今天</span></button><button type="button" class="atb" data-atab="bank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.6h10v15.8H7z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span>題庫</span></button><button type="button" class="atb" data-atab="content"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 8 4-8 4-8-4z"/><path d="m4 12 8 4 8-4"/><path d="m4 16 8 4 8-4"/></svg><span>內容</span></button><button type="button" class="atb" data-atab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>設定</span></button></nav>
+</div>
+<div class="undo-bar" id="undoBar" hidden><span id="undoT"></span><button type="button" id="undoGo">復原</button></div>
 </div>
 
 </div>
@@ -2565,23 +2897,26 @@ function fmtTime(ts){
       return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
   catch(e){return '--:--'}
 }
-var unsubW=null, unsubI=null, firstW=true, firstI=true;
+var unsubW=null, unsubI=null, firstW=true, firstI=true, SEEN_W=null, SEEN_I=null;
 function loadWhispers(){
   var F=window.fb;if(!F)return;
   if(unsubW)unsubW();
   unsubW=F.onSnapshot(F.query(F.collection(F.db,'courses',F.COURSE,'whispers'),
                               F.orderBy('createdAt','desc')),
     function(snap){
-      var before=WMSG.length;
+      // 只有「這次打開後才出現、以前沒看過的那一則」才算新訊息；刪除、復原、標已讀都不會跳通知
+      var fresh=[],seen=SEEN_W;
       WMSG.length=0;WTRASH.length=0;
       snap.forEach(function(d){
-        var v=d.data();
+        var v=d.data({serverTimestamps:'estimate'});   // 剛按刪除時時間還沒回來，先用預估值，才不會被當成沒刪
         var row={id:d.id,t:v.text||'',m:fmtTime(v.createdAt),st:v.status||'unread',c:v.contact||null};
         (v.deletedAt?WTRASH:WMSG).push(row);
+        if(seen&&!seen[d.id]&&!d.metadata.hasPendingWrites&&!v.deletedAt)fresh.push(row);
       });
+      SEEN_W=SEEN_W||{};snap.forEach(function(d){SEEN_W[d.id]=1});
       LIVE=true;wRender();refreshTags();
-      if(!firstW&&WMSG.length>before){
-        showNotif('有一則新的悄悄話', SITE.notify.showContent?(WMSG[0].t||''):'內容請到收件匣查看');
+      if(fresh.length){
+        showNotif(fresh.length>1?'有 '+fresh.length+' 則新的悄悄話':'有一則新的悄悄話', SITE.notify.showContent?(fresh[0].t||''):'內容請到收件匣查看');
         toast('收到新的悄悄話');
       }
       firstW=false;
@@ -2721,7 +3056,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v10.32　2026/10/08';
+var APP_VERSION='v11.0　2026/10/09';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -2773,6 +3108,8 @@ function paintShare(){
 }
 function showZone(which){
   $$('.zone').forEach(function(z){z.classList.toggle('is-on',z.id===which)});
+  document.body.classList.toggle('adm-on',which==='z-pro');
+  if(which==='z-pro'){try{paintToday()}catch(e){}}
   var b=$('#proSwitch');
   if(PREVIEW){b.hidden=true;}
   else if(STUDENT_ONLY){
@@ -2853,7 +3190,7 @@ function reveal(root){
 }
 
 /* ---- router ---- */
-var TITLES={'p-about':'講師介紹','p-quiz':'線上測驗','p-run':'課後測驗','p-explain':'題目詳解','p-stats':'本堂統計','p-code':'上課代號','p-profile':'基本資料','p-name':'課後測驗','p-top3':'前三名',
+var TITLES={'p-about':'講師介紹','p-quiz':'上課專區','p-run':'課後測驗','p-explain':'題目詳解','p-stats':'本堂統計','p-code':'上課代號','p-profile':'基本資料','p-name':'課後測驗','p-top3':'前三名',
   'p-feedback':'課程回饋','p-invite':'課程邀約','p-disaster':'防災知識專區','p-firstaid':'急救教育專區',
   'p-article':'文章','p-whisper':'傳聲悄悄話','p-challenge':'挑戰題庫'};
 var stack=['p-home'];
@@ -3151,7 +3488,7 @@ $('#qnext').addEventListener('click',function(){
     REV_MODE=QMODE;
     var st0=$('#scoreT'),ss0=$('#scoreS');
     if(st0)st0.dataset.full=st0.textContent;if(ss0)ss0.dataset.full=ss0.textContent;
-    stack=['p-home','p-quiz','p-run'];     // 完成後按返回＝回到線上測驗，不會回到題目
+    stack=['p-home','p-quiz','p-run'];     // 完成後按返回＝回到上課專區，不會回到題目
     applyQuizVis();checkTopPublished();
     renderExplain();pushMyScore(pct);
     window.scrollTo({top:0,behavior:'instant'});
@@ -3497,11 +3834,11 @@ function renderChallenge(){
       '<p class="sub" style="margin-top:8px">每次從題庫隨機抽 '+chN()+' 題，做完馬上看分數、正確答案和詳解。</p>'+
       '<div class="ch-cards">'+Object.keys(CH_TOPICS).map(function(k){var C=CH_TOPICS[k];
         var n=(CH_BANK&&CH_BANK[k])?CH_BANK[k].filter(chValid).length:0;
-        return '<button type="button" class="ch-card" data-chgo="'+k+'"><span class="ch-n">'+C.n+'</span>'+
+        return '<button type="button" class="ch-card ch-ph" data-chgo="'+k+'"><span class="ch-in"><span class="ch-n">'+C.n+'</span>'+
           '<span class="ch-b"><span class="ch-k">'+C.k+'<i>｜</i>'+C.t+'</span><span class="ch-d">'+C.d+'</span>'+
           (n?'<span class="ch-c">題庫 '+n+' 題</span>':'')+'</span>'+
-          '<span class="ch-go">→</span></button>';
-      }).join('')+'</div>'+
+          '<span class="ch-go">→</span></span></button>';
+      }).join('')+'</div>'+chBestLine()+
       '<p class="note">題目由 IRON WILL 講師整理，內容以一般民眾版為主。想讓單位完整學一次，可以從完成畫面直接邀請講師。</p>';
   }else if(CH.step==='run'){
     var q=CH.qs[CH.i],sel=CH.ans[CH.i],last=CH.i===CH.qs.length-1;
@@ -3515,12 +3852,17 @@ function renderChallenge(){
       '<button class="btn btn-quiet" data-chquit>不做了，回到主題選擇</button>';
   }else{
     var n2=CH.qs.length,right=CH.qs.filter(function(q,i){return CH.ans[i]===q.a}).length,sc=n2?Math.round(right/n2*100):0;
+    if(!CH.recd){CH.recd=true;try{chRecordBest(CH.tp,sc)}catch(e){}}
     h+='<div class="meta">完成．'+T.k+'｜'+T.t+(CH.tu?'．時間到交卷':'')+'</div>'+
       '<div class="ch-res-l">你的結果</div>'+
       '<div class="ch-score">'+sc+'<small> / 100</small></div>'+
       '<div class="ch-right">答對 <b>'+right+' / '+n2+'</b> 題</div>'+
       '<div class="ch-line"></div>'+
-      '<button type="button" class="ch-revbtn" data-chrev>'+(CH.rev?'收合詳解 ↑':(right===n2?'全對！看看每一題的詳解 →':'看看你答錯了什麼 →'))+'</button>';
+      '<button type="button" class="ch-revbtn'+(CH.rev?' open':'')+'" data-chrev aria-expanded="'+(!!CH.rev)+'">'+
+        '<span class="ch-rv-i" aria-hidden="true">'+(right===n2?'✓':'!')+'</span>'+
+        '<span class="ch-rv-b"><b>'+(CH.rev?'收合詳解':(right===n2?'全對！看看每一題的詳解':'看看你答錯了什麼'))+'</b>'+
+        '<em>'+(CH.rev?'再點一次收起來':(right===n2?n2+' 題全部答對，點這裡複習正確觀念':'錯了 '+(n2-right)+' 題．點這裡看你的答案、正確答案和詳解'))+'</em></span>'+
+        '<span class="ch-rv-go" aria-hidden="true">'+(CH.rev?'↑':'↓')+'</span></button>';
     if(CH.rev){
       h+='<div class="ch-rev">'+CH.qs.map(function(q,i){
         var m=CH.ans[i],ok=m===q.a;
@@ -4219,13 +4561,14 @@ function toast(msg){
 /* ================= 課程主視覺 ================= */
 var HERO={
  ecg:'<path class="ekg" d="M0 40 H72 Q83 29 94 40 H111 L115 44 L120 5 L125 53 L129 40 H143 Q159 20 175 40 H241 Q252 29 263 40 H280 L284 44 L289 5 L294 53 L298 40 H312 Q328 20 344 40 H400"/>',
- heart:'<path class="soft" d="M0 30 H132"/><path d="M132 30 L146 30 L154 14 L164 46 L173 22 L182 30 L196 30"/><path class="soft" d="M196 30 H244"/><path d="M290 44s-22-13-22-24a10 10 0 0 1 19-5 10 10 0 0 1 19 5c0 11-22 24-22 24z"/><path class="soft" d="M330 30 H400"/>',
+ heart:'<path class="soft" d="M0 30 H132"/><path d="M132 30 H140.9 Q145.3 26.2 149.7 30 H157.6 L159.4 31.3 L162 14 L165.1 34.8 L167.3 30 H173.4 Q182.2 22 191 30 H196"/><path class="soft" d="M196 30 H244"/><path d="M290 44s-22-13-22-24a10 10 0 0 1 19-5 10 10 0 0 1 19 5c0 11-22 24-22 24z"/><path class="soft" d="M330 30 H400"/>',
  flame:'<path class="soft" d="M0 30 H150"/><path d="M200 8c10 12 16 19 16 30a16 16 0 1 1-32 0c0-11 6-18 16-30z"/><path class="soft" d="M200 44a7 7 0 0 1-7-7c0-4 3-7 7-12 4 5 7 8 7 12a7 7 0 0 1-7 7z"/><path class="soft" d="M250 30 H400"/>',
  aed:'<path class="soft" d="M0 30 H132"/><path d="M148 12h104a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H148a6 6 0 0 1-6-6V18a6 6 0 0 1 6-6z"/><path d="m205 20-9 14h11l-8 12"/><path class="soft" d="M274 30 H400"/>',
  shield:'<path class="soft" d="M0 30 H150"/><path d="M200 6l24 9v17c0 13-10 23-24 28-14-5-24-15-24-28V15z"/><path class="soft" d="m189 30 8 8 15-16"/><path class="soft" d="M250 30 H400"/>',
  helmet:'<path class="soft" d="M0 34 H130"/><path d="M152 36c0-19 15-30 34-30s34 11 34 30"/><path d="M144 36h84v8h-84z"/><path class="soft" d="M186 6V36"/><path class="soft" d="M244 34 H400"/>'
 };
 function renderHero(){
+  try{renderHomeHero()}catch(e){}
   var box=$('#heroCard');if(!box)return;
   var raw=(COURSE.tags||[]);
   var tags=EDITING?[0,1,2].map(function(i){return raw[i]||'ENGLISH｜中文'}):raw.filter(Boolean);
@@ -4246,11 +4589,17 @@ function renderHero(){
       ((k||EDITING)?'<div class="ht-k'+(EDITING?' ed-txt':'')+'"'+(EDITING?' contenteditable="true"':'')+' data-tg="'+i+':0">'+(k||'ENGLISH')+'</div>':'')+
       '<div class="ht-v'+(EDITING?' ed-txt':'')+'"'+(EDITING?' contenteditable="true"':'')+' data-tg="'+i+':1">'+v+'</div></div>';
   };
-  box.innerHTML=
-    '<h1 class="display" id="cHomeTitle">'+COURSE.title+'</h1>'+
-    '<svg class="hero-mark'+(!COURSE.icon||COURSE.icon==='ecg'?' hero-ekg':'')+'" viewBox="0 0 400 64" preserveAspectRatio="none" aria-hidden="true">'+
-      (HERO[COURSE.icon]||HERO.ecg)+'</svg>'+
-    (tags.length?'<div class="hero-tags">'+tags.map(cell).join('')+'</div>':'');
+  var title=String(COURSE.title||'').trim(), shown=title||'IRON WILL｜教育平台';
+  var ttl=EDITING?hmEsc(title):shown.split(/[｜|]/).map(function(x){return hmEsc(x.trim())}).filter(Boolean).join('<i class="hm-div" aria-hidden="true"></i>');
+  var ecg=!COURSE.icon||COURSE.icon==='ecg';
+  box.classList.add('hm');
+  box.innerHTML='<div class="hm-ban" role="img" aria-label="IRON WILL 品牌主視覺"></div>'+
+    '<h1 class="display hm-ttl" id="cHomeTitle">'+ttl+'</h1>'+
+    (ecg?hmEkgSVG(hmEkgW()):'<svg class="hero-mark" viewBox="0 0 400 64" preserveAspectRatio="none" aria-hidden="true">'+(HERO[COURSE.icon]||HERO.ecg)+'</svg>')+
+    (EDITING?'<div class="hero-tags">'+tags.map(cell).join('')+'</div>'+
+      '<div class="hint" style="margin-top:8px">課程標籤（上面三格）：'+(COURSE.tagsOn?'學員首頁會顯示':'學員首頁目前不顯示')+
+      '　<button type="button" class="qbtn" id="hmTagsOn">'+(COURSE.tagsOn?'改成不顯示':'改成顯示')+'</button></div>'
+     :(COURSE.tagsOn&&tags.length?'<div class="hm-tags">'+tags.map(function(t){var p=splitTag(t);return '<span>'+hmEsc(p[1]||p[0])+'</span>'}).join('')+'</div>':''));
   if(EDITING){
     var sw=document.createElement('button');
     sw.className='qbtn';sw.textContent='換圖案';sw.style.marginTop='4px';
@@ -4260,6 +4609,8 @@ function renderHero(){
     });
     box.appendChild(sw);
     if(box.classList.contains('blk'))toolbar(box);
+    var tg=$('#hmTagsOn',box);
+    if(tg)tg.addEventListener('click',function(e){e.stopPropagation();COURSE.tagsOn=!COURSE.tagsOn;renderHero();});
     var h=box.querySelector('h1');
     h.classList.add('ed-txt');h.setAttribute('contenteditable','true');
     h.addEventListener('blur',function(){COURSE.title=h.innerText.trim()||COURSE.title});
@@ -4291,14 +4642,14 @@ var ICONS={
  star:'<path d="m12 4 2.42 4.9 5.41.79-3.92 3.81.93 5.39L12 16.35 7.16 18.9l.93-5.39-3.92-3.81 5.41-.79z"/>',
  mail:'<path d="M3.6 6.2h16.8v11.6H3.6z"/><path class="hot" d="m3.6 6.9 8.4 6.5 8.4-6.5"/>',
  flame:'<path d="M12 3c3.5 4.1 5.8 6.7 5.8 10.3a5.8 5.8 0 1 1-11.6 0C6.2 9.7 8.5 7.1 12 3z"/><path class="hot" d="M12 19.1a2.7 2.7 0 0 1-2.7-2.7c0-1.6 1.2-2.5 2.7-4.5 1.5 2 2.7 2.9 2.7 4.5a2.7 2.7 0 0 1-2.7 2.7z"/>',
- heart:'<path d="M20.5 8.5c0-2.6-2.1-4.6-4.5-4.6-1.8 0-3.3 1-4 2.5-.7-1.5-2.2-2.5-4-2.5C5.6 3.9 3.5 5.9 3.5 8.5c0 5.1 8.5 10.8 8.5 10.8s8.5-5.7 8.5-10.8z"/><path class="hot" d="M6.7 11.5h2.4l1.3-2.4 1.8 4.5 1.4-2.1h3.7"/>',
+ heart:'<path d="M20.5 8.5c0-2.6-2.1-4.6-4.5-4.6-1.8 0-3.3 1-4 2.5-.7-1.5-2.2-2.5-4-2.5C5.6 3.9 3.5 5.9 3.5 8.5c0 5.1 8.5 10.8 8.5 10.8s8.5-5.7 8.5-10.8z"/><path class="hot" d="M6 12h1.6q.7-1.2 1.4 0h.8l.5.7.9-4.2.9 5.6.6-2.1h.9q1.1-1.8 2.2 0H18"/>',
  target:'<circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="4.6"/><path class="hot" d="M12 12 19.2 4.8M16.4 4.6h2.8v2.8"/>',
  lock:'<path d="M20 12.4c0 3.2-3.6 5.8-8 5.8-.95 0-1.86-.12-2.7-.35L4.6 19.8l1.2-3.1A5.6 5.6 0 0 1 4 12.4C4 9.2 7.6 6.6 12 6.6s8 2.6 8 5.8z"/><path class="hot" d="M10.9 12.1v-1a1.1 1.1 0 0 1 2.2 0v1"/><path class="hot" d="M10.3 12.1h3.4v2.9h-3.4z"/>',
  link:'<path d="M13.8 5.2h5v5"/><path class="hot" d="M18.8 5.2 11.4 12.6"/><path d="M17.4 14v5.4H4.8V6.6H10"/>'
 };
 var TILES=[
  {id:'about',    t:'講師介紹',     icon:'user',  go:'p-about',     on:true},
- {id:'quiz',     t:'線上測驗',     icon:'quiz',  go:'p-quiz',      on:true, dot:true},
+ {id:'quiz',     t:'上課專區',     icon:'quiz',  go:'p-quiz',      on:true, dot:true},
  {id:'feedback', t:'課程回饋',     icon:'star',  gate:'p-feedback',on:true},
  {id:'invite',   t:'課程邀約',     icon:'mail',  go:'p-invite',    on:true},
  {id:'disaster', t:'防災知識專區', icon:'flame', go:'p-disaster',  on:true},
@@ -4312,6 +4663,8 @@ var TILE_DEF=TILES.slice();
 try{(function(){var mq=matchMedia('(min-width:700px)'),f=function(){try{renderTiles()}catch(e){}};if(mq.addEventListener)mq.addEventListener('change',f);else mq.addListener(f);})()}catch(e){}
 function renderTiles(){
   var grid=$('#tileGrid');if(!grid)return;
+  if(!EDITING){try{if(renderTilesHM())return;}catch(e){console.warn('首頁磁磚',e)}}
+  grid.className='cols'+(grid.classList.contains('still')?' still':'');
   var vis=EDITING?TILES.slice():TILES.filter(function(t){return t.on});
   grid.innerHTML='';
   vis.forEach(function(t,i){
@@ -4329,6 +4682,7 @@ function renderTiles(){
     else el.setAttribute('data-go',t.go||'p-home');
     el.innerHTML='<svg viewBox="0 0 24 24">'+(ICONS[t.icon]||ICONS.link)+'</svg>'+
       '<span class="tile-t"'+(EDITING?' contenteditable="true"':'')+'>'+t.t+'</span>'+
+      (EDITING?'<span class="tile-d" contenteditable="true" data-ph="'+hmEsc(hmDescDef(t)||'小字說明（可空白）')+'">'+hmEsc(t.d||'')+'</span>':'')+
       (t.dot&&!EDITING&&!wide?'<span class="tile-dot"></span>':'')+
       (wide&&!EDITING?'<span class="tile-go">→</span>':'')+
       (EDITING?'<span class="blk-ed" contenteditable="false">'+
@@ -4341,6 +4695,9 @@ function renderTiles(){
         t.t=ev.target.innerText.trim()||'未命名';renderTileEdit();renderMirror();
       });
       el.querySelector('.tile-t').addEventListener('click',function(ev){ev.stopPropagation()});
+      var tdd=el.querySelector('.tile-d');
+      if(tdd){tdd.addEventListener('click',function(ev){ev.stopPropagation()});
+        tdd.addEventListener('blur',function(ev){var v=ev.target.innerText.replace(/\s+/g,' ').trim();if(v!==(t.d||''))t.d=v;if(!v)ev.target.innerHTML='';});}
       el.querySelectorAll('[data-e]').forEach(function(b){
         b.addEventListener('click',function(ev){
           ev.stopPropagation();
@@ -4405,7 +4762,7 @@ var BLOCK_SEL='.page>*,.f,.section-head,.row,.tl,.story>p,.lock,.quote,.hint,.no
               '.stats,.scope,.cts,.brand-head,.brand-banner,#fileList,.course-wrap,.galx';
 var KEY_SEL=TEXT_SEL+','+BLOCK_SEL+',.chip,.chip-s,input,textarea';
 /* 內容是程式產生的容器：容器本身可以移動隱藏，但裡面的東西由資料控制 */
-var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,'+
+var DYN='#qopts,#explainList,#listDisaster,#listFirstaid,#artBody,#artMore,#tileGrid,#fbStep,#qzMore,'+
         '#heroCard,#vidlist,#abStats,#abSpeak,#abIdea,#abCareer,#qstats,#missList,#nav,#stage,'+
         '#abLead,#gal,#abContacts,#clsStats,#topList,#chBody';
 /* 文字綁在資料上的元素：可以移動，但文字另外處理 */
@@ -4787,7 +5144,7 @@ document.addEventListener('click',function(e){
   if(t.closest('#ivSend,#fbSend,#wsend,#qnext,#pfGo,#nmGo,#codeOk,#qagain,#wagain')){
     e.preventDefault();e.stopImmediatePropagation();toast('編輯模式不會送出');return;
   }
-  if(t.closest('#tileGrid .tile')&&t.closest('.tile-t'))return;
+  if(t.closest('#tileGrid .tile')&&t.closest('.tile-t,.tile-d'))return;
   var dyn=t.closest('#qopts,#explainList,#artBody');
   if(dyn){e.stopImmediatePropagation();toast('題目與文章請到後台的「題庫」「知識專區」改');}
 },true);
@@ -4813,7 +5170,7 @@ $('#edSave').addEventListener('click',async function(){
     await F.setDoc(F.doc(F.db,'instructors','main'),
       {texts:TEXTS,patch:JSON.stringify(PATCH)},{merge:true});
     await F.setDoc(F.doc(F.db,'courses',F.COURSE),
-      {tiles:TILES,title:COURSE.title,tags:COURSE.tags||[],icon:COURSE.icon},{merge:true});
+      {tiles:TILES,title:COURSE.title,tags:COURSE.tags||[],tagsOn:!!COURSE.tagsOn,icon:COURSE.icon},{merge:true});
     await F.setDoc(F.doc(F.db,'instructors','main'),{
       headline:SITE.headline,intro:SITE.intro,quote:SITE.quote,ending:SITE.ending,
       stats:SITE.stats.map(function(x){return {n:x[0],l:x[1]}}),
@@ -5282,7 +5639,7 @@ function renderHomeHero(){
   var hero=$('#heroCard');if(!hero)return;
   var pos=(SITE.brand&&SITE.brand.homePos)||'top';
   if(SITE.brand&&SITE.brand.home===false)pos='off';
-  hero.classList.toggle('hero-brand',pos==='top');
+  hero.classList.toggle('hm-top',pos==='top');hero.classList.remove('hero-brand');
   var foot=$('#homeBanner');
   if(pos==='bottom'){
     if(!foot){
@@ -5617,9 +5974,10 @@ function applyForms(){
   var qq=quizOpts();
   try{paintLevel()}catch(e){}
   [['#qvScore',qq.score],['#qvStats',qq.stats],['#qvExp',qq.exp],['#qvRetry',qq.retry],
-   ['#qvGuessPre',qq.guessPre],['#qvGuessPost',qq.guessPost],['#qvPre',qq.pre],['#qvPost',qq.post]].forEach(function(p){
+   ['#qvGuessPre',qq.guessPre],['#qvGuessPost',qq.guessPost],['#qvPre',qq.pre],['#qvPost',qq.post],['#qvFb',qq.fb]].forEach(function(p){
     var e=$(p[0]);if(e){e.classList.toggle('on',!!p[1]);e.setAttribute('aria-checked',String(!!p[1]));}});
   var nv=$('#nfViews');if(nv){nv.classList.toggle('on',SITE.showViews!==false);nv.setAttribute('aria-checked',String(SITE.showViews!==false));}
+  try{paintToday()}catch(e){}
   v('#edIG',SITE.contact.ig);v('#edLine',SITE.contact.line);
   v('#edTel',SITE.contact.tel);v('#edMail',SITE.contact.mail);
   v('#edAckSub',SITE.notify.ackSub);v('#edAckBody',SITE.notify.ackBody);
@@ -5720,7 +6078,7 @@ async function saveCourse(){
   pullForms();
   await F.setDoc(F.doc(F.db,'courses',F.COURSE),{
     title:COURSE.title,subtitle:COURSE.sub,passLine:COURSE.pass,
-    tags:COURSE.tags,proj:COURSE.proj||{},icon:COURSE.icon,quiz:COURSE.quiz
+    tags:COURSE.tags,tagsOn:!!COURSE.tagsOn,proj:COURSE.proj||{},icon:COURSE.icon,quiz:COURSE.quiz
   },{merge:true});
   applySite();
 }
@@ -5784,7 +6142,7 @@ function applyPayload(p){
     if(d){
       COURSE.title=d.title||COURSE.title;COURSE.sub=d.subtitle||COURSE.sub;
       COURSE.pass=d.passLine||COURSE.pass;if(d.quiz)COURSE.quiz=d.quiz;
-      if(d.tags)COURSE.tags=d.tags;if(d.icon)COURSE.icon=d.icon;
+      if(d.tags)COURSE.tags=d.tags;if(d.icon)COURSE.icon=d.icon;if(d.tagsOn!=null)COURSE.tagsOn=!!d.tagsOn;
       if(d.code){CODE=String(d.code);try{showCode()}catch(e){}}
       if(d.sessions&&d.sessions.length)SESSIONS=d.sessions;
       if(d.proj)COURSE.proj=d.proj;
@@ -5798,6 +6156,7 @@ function applyPayload(p){
             TILES.splice(at,0,Object.assign({},def));
           }
         });
+        TILES.forEach(function(t){if(t.id==='quiz'&&t.t==='線上測驗')t.t='上課專區';});   // v11 改名
       }
       try{chApplyCfg(d.challenge)}catch(e){}
       if($('#stCourse'))$('#stCourse').textContent='已同步';
@@ -5836,6 +6195,8 @@ function applyPayload(p){
       SITE.challenge=(v.challenge&&(v.challenge.fire||v.challenge.rescue))?v.challenge:null;
       if(v.courses&&v.courses.length)SITE.courses=v.courses;
       if(v.texts)Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});
+      if(TEXTS.quizKicker==='線上測驗')TEXTS.quizKicker='上課專區';            // v11：線上測驗＋課程回饋合併成上課專區
+      if(TEXTS.quizTitle==='兩份測驗，看自己進步多少')TEXTS.quizTitle='這堂課要做的，都在這裡';
       if(v.patch){try{PATCH=Object.assign({text:{},ph:{},hide:{},del:{},order:{},add:[]},JSON.parse(v.patch));}
                   catch(e){console.warn('編輯資料壞掉',e)}}
       if($('#stSite'))$('#stSite').textContent='已同步';
@@ -5928,7 +6289,7 @@ function countHit(key){
   F.setDoc(F.doc(F.db,'questionStats',F.COURSE+'__views'),patch,{merge:true})
    .catch(function(e){METRIC_ERR=e.code||e.message;console.warn('計數失敗',e)});
 }
-var TKEYS=[['about','講師介紹'],['quiz','線上測驗'],['feedback','課程回饋'],
+var TKEYS=[['about','講師介紹'],['quiz','上課專區'],['feedback','課程回饋'],
            ['invite','課程邀約'],['disaster','防災知識專區'],['firstaid','急救教育專區'],
            ['whisper','傳聲悄悄話'],['challenge','挑戰題庫'],['video','影片播放'],['ig','IG 點擊']];
 function renderTraffic(){
@@ -6117,11 +6478,15 @@ function loadInvites(){
   if(unsubI)unsubI();
   unsubI=F.onSnapshot(F.query(F.collection(F.db,'invites'),F.orderBy('createdAt','desc')),
     function(snap){
-      var before=INV.length;
-      INV=[];snap.forEach(function(d){var v=d.data();v.id=d.id;INV.push(v)});
+      var fresh=[],seen=SEEN_I;
+      INV=[];snap.forEach(function(d){
+        var v=d.data({serverTimestamps:'estimate'});v.id=d.id;INV.push(v);
+        if(seen&&!seen[d.id]&&!d.metadata.hasPendingWrites&&v.status!=='deleted')fresh.push(v);
+      });
+      SEEN_I=SEEN_I||{};snap.forEach(function(d){SEEN_I[d.id]=1});
       iRender();refreshTags();
-      if(!firstI&&INV.length>before){
-        showNotif('新的課程邀約', INV[0].org||'');
+      if(fresh.length){
+        showNotif(fresh.length>1?'有 '+fresh.length+' 筆新的課程邀約':'新的課程邀約', fresh[0].org||'');
         toast('收到新的課程邀約');
       }
       firstI=false;
@@ -6144,6 +6509,7 @@ function updateCounts(){
   set('#kpiW',c.wUnread?(c.wUnread+' 新'):c.wAll);
   set('#kpiInv',c.iPend);
   set('#inboxCount','悄悄話 '+c.wAll+(c.wUnread?'（'+c.wUnread+' 未讀）':'')+' · 邀約 '+c.iPend+' 待回');
+  try{paintToday()}catch(e){}
 }
 function iRender(){
   var box=$('#iInbox');if(!box)return;
@@ -6256,8 +6622,8 @@ function safe(name,fn){try{fn()}catch(e){console.warn('['+name+'] 初始化失�
 
 /* ---- 頁面文字 ---- */
 var TXTDEF=[
- ['quizKicker','線上測驗','測驗 · 小標'],
- ['quizTitle','兩份測驗，看自己進步多少','測驗 · 標題'],
+ ['quizKicker','上課專區','上課專區 · 小標'],
+ ['quizTitle','這堂課要做的，都在這裡','上課專區 · 標題'],
  ['codeTitle','先輸入今天的代號','代號頁 · 標題'],
  ['pfTitle','先問五個問題','基本資料 · 標題'],
  ['fbKicker','課後問卷','回饋 · 小標'],
@@ -6381,7 +6747,7 @@ function setDirty(v){DIRTY=!!v;document.body.classList.toggle('dirty',DIRTY);var
     if(e.target.matches('input,textarea,select'))setDirty(true);
   });
   pro.addEventListener('click',function(e){
-    if(e.target.closest('#pnl-inbox,#pnl-share,.panel'))return;
+    if(e.target.closest('#pnl-inbox,#pnl-share,.panel,.td-instant,#tdNext'))return;
     if(e.target.closest('.sw:not(#nfAck):not(#chOn)')||e.target.closest('#qeList .startog,#qeList .qe-b button,#artEdit .startog,#artEdit .chip,#addQ,#addArticle,.chips[data-one] .chip'))
       setDirty(true);
   });
@@ -6391,9 +6757,9 @@ $('#dirtySave').addEventListener('click',async function(){
   b.textContent='儲存中…';
   try{
     pullForms();
-    await Promise.all([saveSite(),saveCourse(),saveQuestions(),saveArticles(),CH_BANK_DIRTY?saveChBank():null]);
+    await Promise.all([saveSite(),saveCourse(),saveQuestions(),saveArticles(),saveTiles(),CH_BANK_DIRTY?saveChBank():null]);
     setDirty(false);toast('全部已儲存，學員端立即生效');logChange('儲存後台設定');refreshCache();
-    try{applySite();renderHero();renderTiles();}catch(e){}
+    try{applySite();renderHero();renderTiles();paintToday();}catch(e){}
   }catch(e){toast('儲存失敗：'+(e.code||e.message))}
   b.textContent='全部儲存';
 });
@@ -6508,7 +6874,7 @@ async function paintSessBody(code,D0){
       var pub=st.top&&st.top.score&&st.top.score.length;
       h+='<div class="section-head"><h2>前三名榜單</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
          '<div class="toggle-row"><span>對學員公布這一堂的前三名<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">'+
-         (pub?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　'):'打開後學員在「線上測驗 → 前三名」看得到')+
+         (pub?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　'):'打開後學員在「上課專區 → 前三名」看得到')+
          '</em></span><span class="sw'+(pub?' on':'')+'" data-top="'+code+'" role="switch" aria-checked="'+(!!pub)+'" tabindex="0"></span></div>'+
          '<p class="hint">改了姓名顯示方式之後，要把這個開關關掉再打開，學員看到的榜單才會更新。分眾統計預設關閉：班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>';
     }
@@ -6853,7 +7219,7 @@ function artMediaUI(el,a){
   var pick=el.querySelector('[data-ampick]'),list=el.querySelector('[data-amlist]');
   function thumb(m){return m.type==='yt'?ytThumb(m.id):driveImg(m.id,300)}
   function paintPick(){
-    var files=ART_FOLDER[a.id];
+    var files=(ART_FOLDER||{})[a.id];
     if(!files){pick.innerHTML='';return;}
     if(!files.length){pick.innerHTML='<div class="gmsg">這個資料夾裡沒有照片或影片</div>';return;}
     pick.innerHTML=files.map(function(f){
@@ -7591,7 +7957,7 @@ document.addEventListener('click',async function(e){
   if(pk){
     var id=pk.dataset.pickfile,items=SITE.files.items=SITE.files.items||[];
     var at=items.findIndex(function(x){return x.id===id});
-    if(at>=0)items.splice(at,1);else items.push({id:id,name:pk.dataset.name,label:pk.dataset.name.replace(/\.[a-z0-9]+$/i,''),note:'',hidden:false});
+    if(at>=0)items.splice(at,1);else items.push({id:id,name:pk.dataset.name,label:pk.dataset.name.replace(/\.[a-z0-9]+$/i,''),note:'',hidden:false,at:Date.now()});
     setDirty(true);renderFilePick();renderFileEdit();try{renderFiles()}catch(err){}
     return;
   }
@@ -7787,6 +8153,7 @@ function watchSession(){
     SESSION_DOC=d.exists()?d.data():{};
     var n=SESSION_DOC.entered||0;
     ['#kpiPpl','#stPpl'].forEach(function(id){var e=$(id);if(e)e.textContent=n});
+    try{paintToday()}catch(e){}
   },function(){});
 }
 document.addEventListener('click',function(e){
@@ -7796,6 +8163,7 @@ document.addEventListener('click',function(e){
   if(EDITING){if(t.closest('#tileGrid'))return;var dd=t.dataset.gate;if(dd==='p-run')dd='p-profile';go(dd);return;}
   var gm=t.dataset.gate==='p-profile'?'pre':t.dataset.gate==='p-name'?'post':null;
   if(gm&&!quizOpts()[gm]){toast('講師還沒開放'+(gm==='pre'?'課前':'課後')+'測驗');return;}
+  if(t.dataset.gate==='p-feedback'&&!quizOpts().fb&&!PREVIEW){toast('課程回饋還沒開放，下課前講師會打開');return;}
   if(gm&&isDone(gm)&&!quizOpts().retry&&!EDITING){
     var nm=(gm==='pre'?'課前':'課後'),rr=myRes(gm),lv0=quizOpts().level;
     if(!rr){toast('這一堂的'+nm+'測驗你已經做過了（這次是在更新前送出的，沒有存到每題對錯）');return;}
@@ -7830,7 +8198,7 @@ function quizOpts(){
   return {level:lv, score:lv>=1, marks:lv>=2, exp:lv>=3, stats:q.stats!==false, retry:!!q.retry,
           guessPre:(q.guessPre!=null?!!q.guessPre:!!q.guess),      // 舊設定（單一開關）自動沿用
           guessPost:(q.guessPost!=null?!!q.guessPost:!!q.guess),
-          pre:q.pre!==false, post:q.post!==false, nameMode:q.nameMode||'陳○宇'};
+          pre:q.pre!==false, post:q.post!==false, fb:q.fb!==false, nameMode:q.nameMode||'陳○宇'};
 }
 function applyQuizVis(){
   var q=quizOpts();
@@ -7858,7 +8226,10 @@ function applyQuizVis(){
   $$('[data-qv="score"]').forEach(function(e){e.style.display=q.score?'':'none'});
   var st=$('#scoreT'),ss=$('#scoreS');
   if(st&&st.dataset.full){st.textContent=q.score?st.dataset.full:'作答完成';}
-  if(ss&&ss.dataset.full){ss.textContent=q.score?ss.dataset.full:'謝謝你，答案已經送出。講師公布後，可以在「線上測驗 → 我的成績」回頭看。';}
+  if(ss&&ss.dataset.full){ss.textContent=q.score?ss.dataset.full:'謝謝你，答案已經送出。講師公布後，可以在「上課專區 → 我的成績」回頭看。';}
+  try{paintClassZone()}catch(e){console.warn('上課專區',e)}
+  try{hmPaintClassTile()}catch(e){}
+  try{paintToday()}catch(e){}
 }
 function checkTopPublished(){
   if(!window.fb)return;
@@ -8055,7 +8426,7 @@ $$('.sw').forEach(function(s){
     var NF={nfWhisper:'onWhisper',nfInvite:'onInvite',nfFeedback:'onFeedback',
             nfContent:'showContent',nfAck:'ack'};
     if(NF[s.id])SITE.notify[NF[s.id]]=on;
-    var QV={qvScore:'score',qvStats:'stats',qvExp:'exp',qvRetry:'retry',qvGuessPre:'guessPre',qvGuessPost:'guessPost',qvPre:'pre',qvPost:'post'};
+    var QV={qvScore:'score',qvStats:'stats',qvExp:'exp',qvRetry:'retry',qvGuessPre:'guessPre',qvGuessPost:'guessPost',qvPre:'pre',qvPost:'post',qvFb:'fb'};
     if(QV[s.id]){COURSE.quiz=COURSE.quiz||{};COURSE.quiz[QV[s.id]]=on;try{applyQuizVis()}catch(e){}}
     if(s.id==='nfViews'){SITE.showViews=on;try{refreshArts()}catch(e){}}
     if(s.id==='wantReply'){
@@ -8103,6 +8474,7 @@ function fbDone(){try{return !!localStorage.getItem(fbKey())}catch(e){return fal
 var FB_SENDING=false;
 $('#fbSend').addEventListener('click',function(){
   if(FB_SENDING)return;
+  if(!quizOpts().fb&&!PREVIEW&&!EDITING){toast('講師已經關閉課程回饋');return;}
   if(fbDone()&&!PREVIEW&&!EDITING){toast('這堂課的回饋你已經填過了');submitPair('#fbForm','#fbDone');
     var ag=$('#fbAgain');if(ag)ag.style.display='block';return;}
   var fields=collectFields('#fbForm');
@@ -8113,6 +8485,7 @@ $('#fbSend').addEventListener('click',function(){
   submitPair('#fbForm','#fbDone');
   if(PREVIEW){toast('預覽模式：沒有真的送出');return;}
   try{localStorage.setItem(fbKey(),String(Date.now()))}catch(e){}
+  try{paintClassZone();hmPaintClassTile()}catch(e){}
   if(window.fb){var F=window.fb;
     F.addDoc(F.collection(F.db,'courses',F.COURSE,'feedback'),
       {session:CODE,fields:fields,createdAt:F.serverTimestamp()})
@@ -8200,6 +8573,395 @@ gate.addEventListener('pointerdown',function(e){
 ['pointerup','pointerleave','pointercancel'].forEach(function(ev){gate.addEventListener(ev,stopArm)});
 gate.addEventListener('contextmenu',function(e){e.preventDefault()});
 $('#gateclose').addEventListener('click',function(){gv.classList.remove('is-on')});
+/* ===================== v11：學員首頁 ===================== */
+function hmEsc(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function hmEkgW(){
+  var b=$('#heroCard'),w=b&&b.clientWidth;
+  if(!w){var g=$('#tileGrid');w=g&&g.clientWidth;}
+  return Math.max(240,Math.round(w||350));
+}
+function hmEkgPath(W){
+  var beat=function(x){return ' H'+x+' Q'+(x+5)+' 10.5 '+(x+10)+' 14 H'+(x+16)+' L'+(x+18)+' 15.5 L'+(x+21)+' 2 L'+(x+24)+' 21 L'+(x+26)+' 14 H'+(x+32)+' Q'+(x+39)+' 7.5 '+(x+46)+' 14'};
+  return 'M0 14'+beat(Math.round(W*.17))+beat(Math.round(W*.66))+' H'+W;
+}
+function hmEkgSVG(W){
+  var d=hmEkgPath(W);
+  return '<svg class="hm-ekg" viewBox="0 0 '+W+' 28" preserveAspectRatio="none" aria-hidden="true">'+
+    ['b0','b1','b2'].map(function(c){return '<path class="'+c+'" pathLength="100" d="'+d+'"/>'}).join('')+'</svg>';
+}
+(function(){   // 視窗寬度變了，心電圖跟著重畫（不會變形）
+  var tm=0,last=0;
+  window.addEventListener('resize',function(){clearTimeout(tm);tm=setTimeout(function(){
+    var sv=$('#heroCard .hm-ekg');if(!sv)return;var W=hmEkgW();if(W===last)return;last=W;
+    var t=document.createElement('div');t.innerHTML=hmEkgSVG(W);sv.parentNode.replaceChild(t.firstChild,sv);
+  },160)});
+})();
+function hmDescDef(t){
+  var D={invite:'邀請講師到你的單位',whisper:'只有講師看得到',files:'講義、流程卡、自我檢查表',
+         disaster:'火災、地震與避難',firstaid:'CPR、AED 與急救',feedback:'一堂課填一次',about:'認識講師'};
+  if(t.id==='challenge')return '消防．急救，每次 '+chN()+' 題';
+  if(t.id==='quiz')return '測驗、回饋、我的成績';
+  return D[t.id]||(t.url?'外部連結':'');
+}
+function hmFresh(ms){var n=Date.now();return !!ms&&n-ms<7*864e5&&ms<n+864e5}
+function hmLatest(cat){
+  var l=ARTICLES.filter(function(a){return a.cat===cat&&a.t});
+  l.sort(function(a,b){return artTime(b)-artTime(a)});return l[0]||null;
+}
+function hmFiles(){return (typeof SITE!=='undefined'&&SITE&&SITE.files&&SITE.files.items||[]).filter(function(f){return !f.hidden})}
+/* 上課專區現在的狀態：首頁磁磚小字、紅點 */
+function hmClassInfo(){
+  var q=quizOpts(),dp=isDone('pre'),dq=isDone('post'),fd=fbDone();
+  if(q.post&&!dq)return {live:true,s:'課後測驗開放中'};
+  if(q.pre&&!dp&&!dq)return {live:true,s:'課前測驗開放中'};
+  if(q.fb&&!fd&&(dp||dq))return {live:true,s:'課程回饋開放中'};
+  if(dq)return {live:false,s:'看我的成績與詳解'};
+  return {live:false,s:'測驗、回饋、我的成績'};
+}
+function hmPaintClassTile(){
+  var el=$('#tileGrid.hm .tile[data-tid="quiz"]');if(!el)return;
+  var t=TILES.filter(function(x){return x.id==='quiz'})[0]||{};
+  var ci=hmClassInfo(),sm=$('.hm-s',el);
+  if(sm){sm.textContent=ci.live?ci.s:(t.d||ci.s);sm.classList.toggle('live',ci.live);}
+  var dot=$('.tile-dot',el);
+  if(ci.live&&!dot){dot=document.createElement('span');dot.className='tile-dot';el.insertBefore(dot,el.firstChild);}
+  else if(!ci.live&&dot)dot.remove();
+}
+function hmBadgeHTML(){
+  var ab=$('#p-about');
+  var plain=function(sel){var e=ab&&ab.querySelector(sel);if(!e)return '';return String(e.dataset.plain||e.textContent||'').replace(/\s+/g,' ').trim()};
+  var nmEl=ab&&ab.querySelector('.who-n');
+  var name=nmEl?(nmEl.querySelector('.zy')?nmEl.innerHTML:hmEsc(plain('.who-n'))):'尤偉檁';
+  var role=plain('.who-r')||'消防安全 × 急救教育講師';
+  var orgEl=ab&&ab.querySelector('.who');orgEl=orgEl&&orgEl.nextElementSibling;
+  var org=orgEl&&orgEl.classList.contains('meta')?String(orgEl.textContent||'').trim():'';
+  var st=((typeof SITE!=='undefined'&&SITE&&SITE.stats)||[]).slice(0,2).filter(function(x){return x&&x[0]});
+  return '<div class="hm-badge" data-go="p-about" role="link" tabindex="0" aria-label="認識講師">'+
+    '<span class="hm-stripe"></span>'+
+    '<div class="bd-top"><span><b>INSTRUCTOR</b></span><span>認識講師</span></div>'+
+    '<div class="bd-mid"><span class="bd-em"><img alt="IRON WILL" decoding="async" src="'+(typeof EMBLEM_SRC==='string'?EMBLEM_SRC:'')+'"></span>'+
+      '<span class="bd-tx"><span class="bd-name">'+name+'</span><span class="bd-role">'+hmEsc(role)+'</span>'+
+      (org?'<span class="bd-org">'+hmEsc(org)+'</span>':'')+'</span></div>'+
+    '<div class="bd-bot">'+st.map(function(x){return '<span><b>'+hmEsc(x[0])+'</b>'+hmEsc(x[1]||'')+'</span>'}).join('')+
+      '<span class="bd-go">看介紹<i>→</i></span></div></div>';
+}
+function hmTileEl(t,o){
+  var el=document.createElement('div');
+  el.className='tile'+(o.feat?' feat':'')+(o.wide?' wide':'');
+  el.dataset.tid=t.id;
+  if(o.span>1&&!o.wide)el.style.gridColumn='span '+o.span;
+  el.style.animationDelay=(0.2+o.i*0.05).toFixed(2)+'s';
+  if(t.url)el.setAttribute('data-url',t.url);
+  else if(t.gate)el.setAttribute('data-gate',t.gate);
+  else el.setAttribute('data-go',t.go||'p-home');
+  var kick='',small='',peek='',isNew=false,live=false;
+  if(t.id==='quiz'){var ci=hmClassInfo();kick='CLASS';live=ci.live;small=ci.live?ci.s:(t.d||ci.s);}
+  else if(t.id==='challenge'){kick='CHALLENGE';small=t.d||hmDescDef(t);}
+  else if(t.id==='disaster'||t.id==='firstaid'){
+    var a=hmLatest(t.id);
+    if(a){peek=a.t;isNew=hmFresh(artTime(a));}
+    small=t.d||(a?'':hmDescDef(t));
+  }else if(t.id==='files'){
+    var fl=hmFiles();
+    if(fl.length){peek=fl[0].label||fl[0].name||'';isNew=fl.some(function(f){return hmFresh(+f.at||0)});}
+    small=t.d||(fl.length?'':hmDescDef(t));
+  }else small=t.d||hmDescDef(t);
+  el.innerHTML=(live?'<span class="tile-dot"></span>':'')+(isNew?'<span class="hm-new">NEW</span>':'')+
+    '<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[t.icon]||ICONS.link)+'</svg>'+
+    '<span class="hm-tx">'+(o.feat&&kick?'<span class="hm-k">'+kick+'</span>':'')+
+      '<span class="tile-t">'+hmEsc(t.t)+'</span>'+
+      (small?'<small class="hm-s'+(live?' live':'')+'">'+hmEsc(small)+'</small>':'')+
+      (peek?'<span class="hm-peek">'+hmEsc(peek)+'</span>':'')+'</span>'+
+    (o.wide?'<span class="tile-go">→</span>':'');
+  try{chTileDecor(el,t)}catch(e){}
+  return el;
+}
+/* 一般模式的首頁：名牌＋精選＋其他功能．編輯模式照舊用平鋪格子（可拖曳、改名、隱藏、刪除） */
+function renderTilesHM(){
+  var grid=$('#tileGrid');if(!grid)return false;
+  var on=TILES.filter(function(t){return t.on});
+  var has=function(id){return on.some(function(t){return t.id===id})};
+  var feat=on.filter(function(t){return t.id==='quiz'||t.id==='challenge'});
+  var skip=['about','quiz','challenge'];if(has('quiz'))skip.push('feedback');   // 回饋已經在上課專區裡
+  var reg=on.filter(function(t){return skip.indexOf(t.id)<0});
+  var desk=!!(window.matchMedia&&matchMedia('(min-width:1100px)').matches);
+  var side=[];
+  if(desk&&has('about')){for(var x=reg.length-1;x>=0;x--){if(reg[x].id==='whisper'){side=reg.splice(x,1);break;}}}
+  grid.className='cols hm'+(grid.classList.contains('still')?' still':'');
+  grid.innerHTML='';
+  var sideEl=document.createElement('div');sideEl.className='hm-side';
+  var mainEl=document.createElement('div');mainEl.className='hm-main';
+  if(has('about'))sideEl.innerHTML=hmBadgeHTML();
+  var k=0;
+  side.forEach(function(t){sideEl.appendChild(hmTileEl(t,{wide:true,i:k++}))});
+  if(feat.length){
+    var fg=document.createElement('div');fg.className='hm-g hm-feat';
+    feat.forEach(function(t){var el=hmTileEl(t,{feat:true,i:k++});if(feat.length===1&&!desk)el.style.gridColumn='1/-1';fg.appendChild(el)});
+    mainEl.appendChild(fg);
+  }
+  if(reg.length){
+    var cols=desk?4:2, rg=document.createElement('div');rg.className='hm-g';
+    var r=reg.length%cols, lastStart=r?reg.length-r:reg.length;
+    reg.forEach(function(t,i){
+      var span=1,wide=false;
+      if(i>=lastStart){
+        var base=Math.floor(cols/r),rest=cols-base*r;
+        span=base+(i===reg.length-1?rest:0);
+        wide=(r===1);
+      }
+      rg.appendChild(hmTileEl(t,{span:span,wide:wide,i:k++}));
+    });
+    mainEl.appendChild(rg);
+  }
+  if(sideEl.childNodes.length)grid.appendChild(sideEl);
+  grid.appendChild(mainEl);
+  var pg=$('#p-home');
+  if(pg)setTimeout(function(){$$('.rv',pg).forEach(function(n){n.classList.add('in')})},20);
+  return true;
+}
+try{(function(){var mq=matchMedia('(min-width:1100px)'),f=function(){try{if(!EDITING)renderTiles()}catch(e){}};if(mq.addEventListener)mq.addEventListener('change',f);else mq.addListener(f);})()}catch(e){}
+document.addEventListener('keydown',function(e){
+  if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.classList&&e.target.classList.contains('hm-badge')){e.preventDefault();go('p-about');}
+});
+
+/* ===================== v11：上課專區 ===================== */
+function paintClassZone(){
+  var q=quizOpts(),pg=$('#p-quiz');if(!pg)return;
+  var mark=function(row,state,label){
+    if(!row)return;
+    row.classList.remove('st-done','st-now','st-off');
+    if(EDITING||!state){row.removeAttribute('data-st');return;}
+    row.classList.add('st-'+state);row.dataset.st=label;
+  };
+  var pre=$('#p-quiz [data-gate="p-profile"]'),post=$('#p-quiz [data-gate="p-name"]');
+  var dp=isDone('pre'),dq=isDone('post'),fd=fbDone(),first=true;
+  var st=function(open,done){if(done)return 'done';if(!open)return '';if(first){first=false;return 'now';}return 'open';};
+  var sPre=st(q.pre,dp),sPost=st(q.post,dq),sFb=st(q.fb,fd);
+  var dl=function(){return q.retry?'已交卷．可重做':'已交卷'};
+  mark(pre,sPre,sPre==='done'?dl():sPre==='now'?'開始':'可以作答');
+  mark(post,sPost,sPost==='done'?dl():sPost==='now'?'開始':'可以作答');
+  var fs=$('#fbStep');
+  if(fs){
+    var fbT=TILES.filter(function(t){return t.id==='feedback'})[0];
+    var show=!fbT||fbT.on!==false||EDITING;
+    var cls=sFb||'off',lab=fd?'已填寫':sFb==='now'?'填寫':sFb==='open'?'可以填寫':'尚未開放';
+    fs.innerHTML=show?(
+      '<div class="row'+(EDITING?'':' st-'+cls)+'" data-gate="p-feedback"'+(EDITING?'':' data-st="'+lab+'"')+'>'+
+        '<div class="row-n">回</div><div class="row-b"><div class="row-t">課程回饋</div>'+
+        '<div class="row-d">'+(fd?'謝謝你的回饋':q.fb?'一堂課填一次，約 1 分鐘':'下課前講師會打開')+'</div></div><div class="row-go">→</div></div>'):'';
+    fs.insertAdjacentHTML('beforeend','<div class="qz-sub">成績與排名</div>');
+  }
+  var mo=$('#qzMore');
+  if(mo){
+    var on=function(id){return TILES.some(function(t){return t.id===id&&t.on})};
+    var cards=[];
+    var cs=chState();
+    if(cs.visible)cards.push('<div class="qz-card"'+(cs.open?' data-go="p-challenge"':' data-chlock="1"')+'><span class="qz-ck">CHALLENGE</span><b>挑戰題庫</b>'+
+      '<span class="d">'+(cs.open?'今天學的消防、急救，'+chN()+' 題測測記住多少':hmEsc(cs.sub||cs.badge||'目前沒有開放'))+'</span><span class="cg">'+(cs.open?'開始挑戰 →':hmEsc(cs.badge||'未開放'))+'</span></div>');
+    [['firstaid','急救'],['disaster','防災']].forEach(function(c){
+      if(!on(c[0]))return;var a=hmLatest(c[0]);if(!a)return;
+      cards.push('<div class="qz-card" data-hmart="'+hmEsc(a.id)+'"><span class="qz-ck">ARTICLE．'+c[1]+'</span><b>'+hmEsc(a.t)+'</b>'+
+        (a.c?'<span class="d">'+hmEsc(a.c)+'</span>':'')+'<span class="cg">閱讀 →</span></div>');
+    });
+    if(on('files')){var fl=hmFiles();if(fl.length)cards.push('<div class="qz-card" data-file="'+hmEsc(fl[0].id)+'"><span class="qz-ck">DOWNLOAD</span><b>'+hmEsc(fl[0].label||fl[0].name)+'</b>'+
+      '<span class="d">'+hmEsc(fl[0].note||'可以預覽，也能存到手機')+'</span><span class="cg">下載 →</span></div>');}
+    if(on('invite'))cards.push('<div class="qz-card" data-go="p-invite"><span class="qz-ck">INVITE</span><b>把這堂課帶回你的單位</b><span class="d">企業、學校、社區都可以邀請</span><span class="cg">課程邀約 →</span></div>');
+    mo.innerHTML=cards.length?'<div class="qz-more"><h2>課堂之外，還可以看看</h2><p>跟今天的課有關的內容'+(cards.length>1?'，往右滑':'')+'</p><div class="qz-rail">'+cards.join('')+'</div></div>':'';
+  }
+}
+document.addEventListener('click',function(e){
+  var a=e.target.closest('[data-hmart]');if(!a||EDITING)return;
+  openArt(a.dataset.hmart);
+});
+
+/* ===================== v11：挑戰題庫個人最佳 ===================== */
+function chBestGet(){try{return JSON.parse(localStorage.getItem('chBest')||'{}')||{}}catch(e){return {}}}
+function chRecordBest(tp,sc){
+  if(!tp||PREVIEW||EDITING)return;
+  var B=chBestGet(),o=B[tp]||{};
+  o.last=sc;o.best=Math.max(o.best||0,sc);o.at=Date.now();B[tp]=o;
+  try{localStorage.setItem('chBest',JSON.stringify(B))}catch(e){}
+}
+function chBestLine(){
+  var B=chBestGet(),k=Object.keys(B).filter(function(x){return CH_TOPICS[x]&&B[x]&&B[x].at});
+  if(!k.length)return '';
+  k.sort(function(a,b){return B[b].at-B[a].at});
+  var t=k[0],o=B[t];
+  return '<div class="ch-best">上一次：'+CH_TOPICS[t].t+' '+o.last+' 分．個人最佳 '+o.best+' 分</div>';
+}
+
+/* ===================== v11：後台分頁 ===================== */
+var ATAB='today',BK='grp-quiz';
+function admTab(k,sub){
+  if(!$('#at-'+k))k='today';
+  ATAB=k;
+  $$('#z-pro .atab').forEach(function(x){x.classList.toggle('is-on',x.id==='at-'+k)});
+  $$('#z-pro [data-atab]').forEach(function(b){b.classList.toggle('on',b.dataset.atab===k)});
+  if(k==='bank'){admBank(sub==='challenge'?'grp-challenge':(sub&&sub.indexOf('grp-')===0?sub:null));}
+  if(k==='today'){try{paintToday()}catch(e){}}
+  if(sub&&k!=='bank'){
+    var g=$('#'+sub);
+    if(g){if(g.classList.contains('grp')&&!g.classList.contains('open')){var h=g.querySelector('.grp-h');if(h)h.click();}
+      setTimeout(function(){g.scrollIntoView({behavior:'instant',block:'start'});window.scrollBy(0,-70)},40);return;}
+  }
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function admBank(id){
+  id=id||BK;BK=id;
+  $$('#bankSeg [data-bk]').forEach(function(b){b.classList.toggle('on',b.dataset.bk===id)});
+  $$('#at-bank .bk-wrap>.grp').forEach(function(g){g.classList.toggle('bk-on',g.id===id)});
+  var g=$('#'+id);
+  if(g&&!g.classList.contains('open')){var h=g.querySelector('.grp-h');if(h)h.click();}
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('#z-pro [data-atab]');
+  if(t){e.preventDefault();admTab(t.dataset.atab);return;}
+  var g=e.target.closest('#z-pro [data-atab-go]');
+  if(g&&!e.target.closest('[data-jump]')){var a=g.dataset.atabGo.split(':');admTab(a[0],a[1]);return;}
+  var bk=e.target.closest('#bankSeg [data-bk]');
+  if(bk){admBank(bk.dataset.bk);return;}
+  if(e.target.closest('#pbInbox')){admTab('inbox');return;}
+  if(e.target.closest('#tdQR')){window.open(qrSrc(900),'_blank','noopener');return;}
+  if(e.target.closest('#tdShare')){var p=$('#pnl-share');if(!p)return;p.hidden=!p.hidden;if(!p.hidden)paintShare();return;}
+});
+$$('#z-pro [data-jump]').forEach(function(st){
+  st.addEventListener('click',function(e){e.stopPropagation();admTab('inbox');
+    var tab=$$('#boxSeg button')[st.dataset.jump==='w'?0:1];if(tab)tab.click();});
+});
+
+/* 今天：按了立刻生效的開關（課前／課後測驗、公布程度、課程回饋），可以復原 */
+var INST={pre:null,dirty:false},UNDO_T=0;
+function instLabel(before,after){
+  var a=JSON.parse(before||'{}'),b=after||{},o=function(x,k){return x[k]!==false};
+  var nm={pre:'課前測驗',post:'課後測驗',fb:'課程回饋'};
+  for(var k in nm){if(o(a,k)!==o(b,k))return (o(b,k)?'已開放':'已關閉')+nm[k];}
+  if(a.level!==b.level){var L=['先不公布','只給分數','分數＋對錯','分數＋對錯＋詳解'];return '作答結果改成「'+(L[b.level]||'')+'」';}
+  return '已更新測驗設定';
+}
+function showUndo(msg,before){
+  var bar=$('#undoBar');if(!bar)return;
+  $('#undoT').textContent=msg+'．學員畫面幾秒內更新';
+  bar.hidden=false;bar.dataset.before=before||'';
+  clearTimeout(UNDO_T);UNDO_T=setTimeout(function(){bar.hidden=true},6500);
+}
+async function saveQuizNow(before,isUndo){
+  var F=window.fb,msg=instLabel(before,COURSE.quiz||{});
+  try{applyQuizVis()}catch(e){}
+  if(!F||!F.auth.currentUser){toast('還沒登入，這個開關沒有存到雲端');return;}
+  try{
+    await F.setDoc(F.doc(F.db,'courses',F.COURSE),{quiz:COURSE.quiz},{merge:true});
+    if(isUndo){toast('已復原');$('#undoBar').hidden=true;}else showUndo(msg,before);
+    logChange(isUndo?'復原：'+msg:msg);refreshCache();
+  }catch(err){toast('沒有存到：'+(err.code||err.message));}
+}
+function instPaint(){
+  try{applyForms()}catch(e){}
+  try{paintLevel()}catch(e){}
+}
+function quizNorm(){   // 開關都寫成明確的值，雲端合併時才不會留著舊的
+  var o=quizOpts(),q=COURSE.quiz=COURSE.quiz||{};
+  q.pre=o.pre;q.post=o.post;q.fb=o.fb;if(q.level==null)q.level=o.level;
+  q.score=o.level>=1;q.exp=o.level>=3;
+}
+document.addEventListener('click',function(e){            // 先記住按之前的樣子
+  if(e.target.closest('#z-pro .td-instant .sw,#z-pro .td-instant #qvLevel [data-lv]')){quizNorm();INST.pre=JSON.stringify(COURSE.quiz);INST.dirty=DIRTY;}
+},true);
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#z-pro .td-instant .sw,#z-pro .td-instant #qvLevel [data-lv]')||INST.pre==null)return;
+  var before=INST.pre;INST.pre=null;
+  setDirty(INST.dirty);                                  // 這幾個不算「未儲存」
+  if(JSON.stringify(COURSE.quiz||{})===before)return;
+  saveQuizNow(before);
+});
+document.addEventListener('keydown',function(e){
+  if((e.key===' '||e.key==='Enter')&&e.target&&e.target.closest&&e.target.closest('#z-pro .td-instant .sw')){
+    quizNorm();var before=JSON.stringify(COURSE.quiz),d=DIRTY;
+    setTimeout(function(){setDirty(d);if(JSON.stringify(COURSE.quiz||{})!==before)saveQuizNow(before);},0);
+  }
+},true);
+$('#undoGo').addEventListener('click',function(){
+  var bar=$('#undoBar'),b=bar.dataset.before;if(!b)return;
+  var cur=JSON.stringify(COURSE.quiz||{});
+  COURSE.quiz=JSON.parse(b);bar.dataset.before='';instPaint();
+  saveQuizNow(cur,true);
+});
+
+/* 今天：下一步、狀態、人數 */
+function nextStep(){
+  var q=quizOpts(),S=SESSION_DOC||{},n=S.entered||0,pre=(S.pre&&S.pre.n)||0,post=(S.post&&S.post.n)||0;
+  if(!q.pre&&!q.post&&!pre&&!post)return {t:'下一步：打開課前測驗',d:'打開後學員掃 QR、輸入代號就能作答',b:'打開課前',a:'openpre'};
+  if(q.pre&&!pre&&!post)return {t:'下一步：請學員掃 QR 進來',d:(n?n+' 人已輸入代號．':'')+'課前測驗開放中',b:'全螢幕 QR',a:'qr'};
+  if(pre&&!post&&!q.post)return {t:'下一步：投影課前結果',d:pre+' 人已交課前測驗'+(n?'（'+n+' 人進來）':''),b:'投影',a:'projpre'};
+  if(q.post&&!post)return {t:'課後測驗開放中',d:'等學員交卷，交了就能投影課後結果'+(pre?'．課前 '+pre+' 人':''),b:'',a:''};
+  if(post&&!q.fb)return {t:'下一步：打開課程回饋',d:post+' 人已交課後測驗',b:'打開回饋',a:'openfb'};
+  if(post)return {t:'下一步：投影課後結果',d:post+' 人已交卷．含進步幅度、第一名',b:'投影',a:'projpost'};
+  return null;
+}
+function paintToday(){
+  if(!$('#at-today'))return;
+  var q=quizOpts(),S=SESSION_DOC||{};
+  var set=function(id,v){var e=$(id);if(e)e.textContent=v};
+  [['qvPre',q.pre],['qvPost',q.post],['qvFb',q.fb]].forEach(function(p){
+    var e=$('[data-st="'+p[0]+'"]');if(e){e.textContent=p[1]?'開放中':'未開放';e.classList.toggle('ok',!!p[1]);}
+    var s=$('#'+p[0]);if(s&&s.classList.contains('on')!==!!p[1]){s.classList.toggle('on',!!p[1]);s.setAttribute('aria-checked',String(!!p[1]));}
+  });
+  if(S.entered!=null)set('#kpiPpl',S.entered);
+  set('#kpiPre',(S.pre&&S.pre.n)||0);set('#kpiPost',(S.post&&S.post.n)||0);
+  var nx=nextStep(),nb=$('#tdNext');
+  if(nb){
+    if(!nx)nb.hidden=true;
+    else{nb.hidden=false;nb.innerHTML='<div class="td-next-b"><b>'+hmEsc(nx.t)+'</b><em>'+hmEsc(nx.d)+'</em></div>'+(nx.b?'<button type="button" data-next="'+nx.a+'">'+hmEsc(nx.b)+'</button>':'');}
+  }
+  var c={wUnread:0,iPend:0};try{c=inboxCounts()}catch(e){}
+  var un=(c.wUnread||0)+(c.iPend||0);
+  ['#pbBadge','#sideBadge'].forEach(function(id){var e=$(id);if(e){e.hidden=!un;e.textContent=un>99?'99+':un;}});
+  var ip=$('#tdInboxPill');if(ip){ip.hidden=!un;ip.textContent=un+' 待處理';}
+  var cs=chState(),M={open:'開放中',pause:'維護中',scheduled:'預約',hidden:'隱藏',ended:'已結束'};
+  var cp=$('#tdChPill');if(cp){cp.hidden=false;cp.textContent=M[cs.mode]||cs.mode;cp.style.borderColor=cs.open?'var(--ok)':'';cp.style.color=cs.open?'var(--ok)':'';}
+  set('#tdChD',(cs.mode==='scheduled'?chFmt(CH_CFG.at)+' 自動開放．':'')+(CH_CFG.end&&cs.mode!=='hidden'?chFmt(CH_CFG.end)+' 關閉．':'')+'每次 '+chN()+' 題');
+  set('#homeTag',TILES.filter(function(t){return t.on}).length+' 個功能開著．'+TILES.filter(function(t){return !t.on}).length+' 個關閉');
+  paintHomeTiles();
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('#tdNext [data-next]');if(!b)return;
+  var a=b.dataset.next;
+  if(a==='qr'){window.open(qrSrc(900),'_blank','noopener');return;}
+  if(a==='openpre'||a==='openfb'){var sw=$(a==='openpre'?'#qvPre':'#qvFb');if(sw&&!sw.classList.contains('on'))sw.click();return;}
+  if(a==='projpre'||a==='projpost'){
+    var m=a==='projpre'?'pre':'post',pb=$('#sessBody [data-show][data-mode="'+m+'"]');
+    if(pb&&!pb.disabled)pb.click();else{toast('成績還在讀取，或這一堂還沒有人交卷');var h=$('#tdSessH');if(h)h.scrollIntoView({behavior:'smooth'});}
+  }
+});
+setInterval(function(){if(document.body.classList.contains('adm-on')&&ATAB==='today'){try{paintToday()}catch(e){}}},5000);
+
+/* 內容 › 學員首頁：功能磁磚開關 */
+function paintHomeTiles(){
+  var box=$('#homeTiles');if(!box)return;
+  if(box.contains(document.activeElement))return;
+  box.innerHTML=TILES.map(function(t){
+    var note=t.id==='about'?'首頁的講師名牌':t.id==='quiz'?'測驗、回饋、成績都在裡面':t.id==='feedback'?(TILES.some(function(x){return x.id==='quiz'&&x.on})?'已放進上課專區（首頁不另外顯示）':'上課專區關閉時，首頁會顯示這一格'):(t.d||hmDescDef(t));
+    return '<div class="ht-row'+(t.on?'':' off')+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[t.icon]||ICONS.link)+'</svg>'+
+      '<span class="ht-t">'+hmEsc(t.t)+'<em>'+hmEsc(note)+'</em></span>'+
+      '<span class="sw'+(t.on?' on':'')+'" data-htile="'+hmEsc(t.id)+'" role="switch" aria-checked="'+(!!t.on)+'" tabindex="0" aria-label="'+hmEsc(t.t)+'"></span></div>';
+  }).join('');
+}
+function htFlip(sw){
+  var t=TILES.filter(function(x){return x.id===sw.dataset.htile})[0];if(!t)return;
+  t.on=!t.on;setDirty(true);
+  if(t.id==='challenge'&&t.on&&CH_CFG.mode==='hidden')CH_CFG.mode='open';
+  paintHomeTiles();try{renderTiles();paintToday();}catch(e){}
+}
+document.addEventListener('click',function(e){var sw=e.target.closest('#homeTiles [data-htile]');if(sw)htFlip(sw);});
+document.addEventListener('keydown',function(e){
+  var sw=e.target&&e.target.closest&&e.target.closest('#homeTiles [data-htile]');
+  if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();htFlip(sw);var n=$('#homeTiles [data-htile="'+sw.dataset.htile+'"]');if(n)n.focus();}
+});
+async function saveTiles(){
+  var F=window.fb;if(!F||!F.auth.currentUser)throw new Error('尚未登入');
+  await F.setDoc(F.doc(F.db,'courses',F.COURSE),{tiles:TILES},{merge:true});
+}
+try{paintClassZone();paintToday();}catch(e){console.warn('v11 初始化',e)}
+
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
 
