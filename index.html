@@ -88,10 +88,10 @@ h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.01em}
 
 .page{display:none}
 .page.is-on{display:block;animation:pin .34s cubic-bezier(.22,.9,.3,1)}
-.page.is-on.back{animation:pback .34s cubic-bezier(.22,.9,.3,1)}
+.page.is-on.is-back{animation:pback .34s cubic-bezier(.22,.9,.3,1)}
 @keyframes pin{from{opacity:0;transform:translateX(20px) scale(.995)}to{opacity:1;transform:none}}
 @keyframes pback{from{opacity:0;transform:translateX(-16px) scale(.995)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.page.is-on,.page.is-on.back{animation:none}}
+@media (prefers-reduced-motion:reduce){.page.is-on,.page.is-on.is-back{animation:none}}
 
 .display{font-family:var(--sans);font-weight:600;font-size:29px;line-height:1.42}
 .sub{color:var(--ink-soft);font-size:14px;line-height:1.8}
@@ -1736,18 +1736,25 @@ body.dirty .undo-bar{bottom:calc(132px + env(safe-area-inset-bottom,0px))}
 .bd-top{display:flex;justify-content:space-between;align-items:center;padding:20px 18px 6px 20px;font-size:9.5px;font-weight:600;letter-spacing:.24em;color:var(--muted)}
 .bd-top b{color:var(--signal);font-weight:600}
 .bd-mid{display:flex;align-items:center;gap:16px;padding:4px 18px 14px 20px}
-.bd-em{width:74px;height:74px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--deep);border:1px solid var(--line)}
-.bd-em img{width:60px;height:auto}
+.bd-em{flex:none;width:96px;display:grid;place-items:center}
+.bd-em img{width:96px;height:auto;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
 .bd-tx{flex:1;min-width:0}
 .bd-name{display:block;font-size:24px;font-weight:700;letter-spacing:.08em;line-height:1.25}
 .bd-role{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:4px;line-height:1.5}
 .bd-org{display:block;font-size:11.5px;color:var(--muted);line-height:1.5}
 .bd-bot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 18px 14px 20px;border-top:1px dashed var(--line)}
 .bd-bot span{font-size:11px;color:var(--muted)}
+.bd-bot em{font-style:normal}
 .bd-bot b{font-size:15px;font-weight:600;color:var(--ink);margin-right:4px}
-.bd-go{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink)!important}
-.bd-go i{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-style:normal;transition:transform .25s}
-.hm-badge:hover .bd-go i{transform:translateX(3px);border-color:var(--signal)}
+.bd-go{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px!important;font-weight:700;color:#fff!important;
+  background:var(--signal);padding:8px 8px 8px 16px;border-radius:999px;box-shadow:0 6px 16px rgba(226,86,74,.3);white-space:nowrap}
+.bd-go i{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-style:normal;transition:transform .25s}
+.hm-badge:hover .bd-go i{transform:translateX(3px)}
+.hm-badge:active .bd-go{filter:brightness(.92)}
+.hm-badge-wrap{grid-column:1/-1;margin-bottom:6px}
+.hm-badge-wrap .hm-badge{margin-top:0;opacity:1;transform:none;animation:none;cursor:default}
+.hm-badge-ed .ed-txt{outline:1px dashed var(--signal);outline-offset:2px;min-width:1em}
+.hm-badge-hint{margin-top:8px}
 @media (prefers-reduced-motion:reduce){.hm-badge{opacity:1;transform:none;animation:none}}
 /* 磁磚（一般模式） */
 #tileGrid.hm{display:block;margin-top:0}
@@ -1772,14 +1779,17 @@ body.dirty .undo-bar{bottom:calc(132px + env(safe-area-inset-bottom,0px))}
 .hm-side{display:block}
 .hm-main{display:block}
 /* IG 連結 */
-#p-home .ig-foot{margin-top:30px;padding:16px 0 6px;border-top:1px solid var(--line);min-height:44px}
-#p-home .ig-foot .ig-name{flex:1;border-bottom:1px solid var(--line);padding-bottom:2px}
-#p-home .ig-foot::after{content:"追蹤 ↗";color:var(--muted);font-size:13px;flex:none}
+#p-home .ig-foot{margin-top:30px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);min-height:56px;align-items:center;line-height:1.3}
+#p-home .ig-foot .ig-name{flex:1;min-width:0}
+#p-home .ig-foot .dotmark{align-self:center}
+#p-home>.gate-mark{border-top:0;margin-top:14px;padding-top:0}
+#p-home .ig-foot::after{content:"追蹤 ↗";color:var(--muted);font-size:13px;flex:none;line-height:1.3}
 body.editing #p-home .ig-foot::after{content:none}
 #z-student #p-home>.brand-foot{display:none}
 body.editing #z-student #p-home>.brand-foot{display:flex;opacity:.5}
 /* 平板 */
 @media (min-width:700px){
+  .bd-em,.bd-em img{width:112px}
   .hm-g{gap:12px}
   #tileGrid.hm .tile{min-height:140px;padding:20px 18px 18px}
   #tileGrid.hm .tile.feat{min-height:170px}
@@ -1853,6 +1863,8 @@ body.editing #z-student #p-home>.brand-foot{display:flex;opacity:.5}
 @media (min-width:700px){.ch-card.ch-ph{height:230px}}
 
 body.editing .dirty-bar{display:none}
+
+#p-files{padding-top:24px}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -2455,7 +2467,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 <div class="adm">
   <aside class="adm-side" aria-label="後台分頁">
     <div class="as-brand"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M17.3 11.9A15 15 0 1 0 30.7 11.9"/><path d="M24 11V6.5M20.5 6.2h7"/><path class="hot" d="M13.5 28.5h3q1.2-2 2.4 0h1l.8 1.2 1.5-8 1.5 10 1-3.2h1.4q1.8-3 3.6 0h2.5"/></svg><b>IRON WILL</b><span>後台</span></div>
-    <button type="button" class="atb on" data-atab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3.5l1.6-2.6 2.4 6.6 2.3-9 2.2 5H21"/></svg><span>今天</span></button>
+    <button type="button" class="atb on" data-atab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3.5l1.6-2.6 2.4 6.6 2.3-9 2.2 5H21"/></svg><span>課程</span></button>
     <button type="button" class="atb" data-atab="inbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 6.2h16.8v11.6H3.6z"/><path d="m3.6 6.9 8.4 6.5 8.4-6.5"/></svg><span>收件匣</span><i class="atb-n" id="sideBadge" hidden>0</i></button>
     <button type="button" class="atb" data-atab="bank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.6h10v15.8H7z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span>題庫</span></button><button type="button" class="atb" data-atab="content"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 8 4-8 4-8-4z"/><path d="m4 12 8 4 8-4"/><path d="m4 16 8 4 8-4"/></svg><span>內容</span></button><button type="button" class="atb" data-atab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>設定</span></button>
   </aside>
@@ -2562,7 +2574,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <button class="btn btn-quiet" data-save="questions">儲存題庫</button>
 
     <div class="section-head"><h2>作答完學員看得到什麼</h2><span>4</span></div>
-    <p class="sub">關掉的項目，在「上課專區」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。前三名與姓名顯示方式在「今天」分頁的「成績與回饋」設定。</p>
+    <p class="sub">關掉的項目，在「上課專區」和作答完成的畫面都不會出現。不管怎麼設定，完成畫面一定有「回到首頁」。前三名與姓名顯示方式在「課程」分頁的「成績與回饋」設定。</p>
     <div class="toggle-row"><span>本堂統計<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">全班平均、及格率、最多人誤會的題目</em></span><span class="sw on" id="qvStats" role="switch" aria-checked="true" tabindex="0"></span></div>
     <div class="toggle-row"><span>課前測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">最後多一題「你覺得自己會拿幾分」（不計分）．上課時可投影出來對照實際平均</em></span><span class="sw" id="qvGuessPre" role="switch" aria-checked="false" tabindex="0"></span></div>
     <div class="toggle-row"><span>課後測驗：讓學員預估分數<em style="font-style:normal;color:var(--muted);font-size:12px;display:block">課前課後可以分開決定，例如只在課前問</em></span><span class="sw" id="qvGuessPost" role="switch" aria-checked="false" tabindex="0"></span></div>
@@ -2843,7 +2855,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
   </div>
   </section>
   </div>
-  <nav class="adm-tabs" aria-label="後台分頁"><button type="button" class="atb on" data-atab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3.5l1.6-2.6 2.4 6.6 2.3-9 2.2 5H21"/></svg><span>今天</span></button><button type="button" class="atb" data-atab="bank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.6h10v15.8H7z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span>題庫</span></button><button type="button" class="atb" data-atab="content"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 8 4-8 4-8-4z"/><path d="m4 12 8 4 8-4"/><path d="m4 16 8 4 8-4"/></svg><span>內容</span></button><button type="button" class="atb" data-atab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>設定</span></button></nav>
+  <nav class="adm-tabs" aria-label="後台分頁"><button type="button" class="atb on" data-atab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3.5l1.6-2.6 2.4 6.6 2.3-9 2.2 5H21"/></svg><span>課程</span></button><button type="button" class="atb" data-atab="bank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.6h10v15.8H7z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span>題庫</span></button><button type="button" class="atb" data-atab="content"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 8 4-8 4-8-4z"/><path d="m4 12 8 4 8-4"/><path d="m4 16 8 4 8-4"/></svg><span>內容</span></button><button type="button" class="atb" data-atab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>設定</span></button></nav>
 </div>
 <div class="undo-bar" id="undoBar" hidden><span id="undoT"></span><button type="button" id="undoGo">復原</button></div>
 </div>
@@ -3056,7 +3068,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.0　2026/10/09';
+var APP_VERSION='v11.3　2026/10/09';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3192,17 +3204,17 @@ function reveal(root){
 /* ---- router ---- */
 var TITLES={'p-about':'講師介紹','p-quiz':'上課專區','p-run':'課後測驗','p-explain':'題目詳解','p-stats':'本堂統計','p-code':'上課代號','p-profile':'基本資料','p-name':'課後測驗','p-top3':'前三名',
   'p-feedback':'課程回饋','p-invite':'課程邀約','p-disaster':'防災知識專區','p-firstaid':'急救教育專區',
-  'p-article':'文章','p-whisper':'傳聲悄悄話','p-challenge':'挑戰題庫'};
+  'p-article':'文章','p-whisper':'傳聲悄悄話','p-challenge':'挑戰題庫','p-files':'檔案下載'};
 var stack=['p-home'];
 function show(id,isBack){
   if(id==='p-about')requestAnimationFrame(function(){try{layoutMosaic()}catch(e){}});
   $$('.page').forEach(function(p){
-    p.classList.remove('is-on','back');
-    if(p.id===id){p.classList.add('is-on');if(isBack)p.classList.add('back');}
+    p.classList.remove('is-on','back','is-back');
+    if(p.id===id){p.classList.add('is-on');if(isBack)p.classList.add('is-back');}
   });
   var nav=$('#nav');
   if(id==='p-home'){nav.classList.add('hide');}
-  else{nav.classList.remove('hide');$('#navt').textContent=TITLES[id]||'';}
+  else{nav.classList.remove('hide');$('#navt').textContent=(id==='p-run'?(QMODE==='pre'?'課前測驗':'課後測驗'):(TITLES[id]||''));}
   try{var nb=$('#navBrand'),ni=nb&&nb.querySelector('img');
     if(ni&&!ni.getAttribute('src')&&typeof EMBLEM_SRC==='string')ni.src=EMBLEM_SRC;
     // 講師介紹頁本身就有大的品牌頁首，那一頁不重複
@@ -3226,6 +3238,7 @@ function show(id,isBack){
   setTimeout(function(){reveal(pg)},40);
   window.scrollTo({top:0,behavior:'instant'});
   stopPlay();
+  if(id==='p-feedback')try{fbPrefill()}catch(e){}
 }
 var HITMAP={'p-files':'files','p-about':'about','p-quiz':'quiz','p-feedback':'feedback','p-invite':'invite',
             'p-disaster':'disaster','p-firstaid':'firstaid','p-whisper':'whisper','p-challenge':'challenge'};
@@ -3237,6 +3250,8 @@ function go(id){
   if(id==='p-quiz'||id==='p-run')checkTopPublished();
   if(id==='p-explain'&&!EDITING){
     var qo=quizOpts(),hasR=!!(myRes('pre')||myRes('post'));
+    var pend=(qo.pre&&!isDone('pre'))?'課前':(qo.post&&!isDone('post')&&isDone('pre'))?'課後':'';
+    if(pend&&!PREVIEW){toast('先做完'+pend+'測驗，交卷後就能看答案和詳解');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
     if(qo.level===0||(!hasR&&!qo.exp)){toast(hasR?'講師還沒公布成績，下課後就能看':'講師還沒開放題目詳解');stack.pop();show(stack[stack.length-1]||'p-quiz',true);return;}
     if(stack[stack.length-2]!=='p-run'&&!REV_KEEP)REV_MODE=null;
     REV_KEEP=false;
@@ -4667,6 +4682,7 @@ function renderTiles(){
   grid.className='cols'+(grid.classList.contains('still')?' still':'');
   var vis=EDITING?TILES.slice():TILES.filter(function(t){return t.on});
   grid.innerHTML='';
+  if(EDITING){try{hmBadgeEdit(grid)}catch(e){console.warn('名牌',e)}}
   vis.forEach(function(t,i){
     // 手機兩欄、電腦三欄：最後一排沒排滿時，最後一格補滿；整排只剩它一格時才變成橫的長條
     var cols=(window.matchMedia&&matchMedia('(min-width:700px)').matches)?3:2;
@@ -5174,7 +5190,7 @@ $('#edSave').addEventListener('click',async function(){
     await F.setDoc(F.doc(F.db,'instructors','main'),{
       headline:SITE.headline,intro:SITE.intro,quote:SITE.quote,ending:SITE.ending,
       stats:SITE.stats.map(function(x){return {n:x[0],l:x[1]}}),
-      videos:SITE.videos,contact:SITE.contact,galText:SITE.galText||{},brand:SITE.brand,
+      videos:SITE.videos,contact:SITE.contact,galText:SITE.galText||{},brand:SITE.brand,badge:SITE.badge||{},
       courses:SITE.courses||[],ctNote:SITE.ctNote||{},
       speaking:ET.speak.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
     scope:ET.scope.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
@@ -6063,7 +6079,7 @@ async function saveSite(){
     career:ET.career.map(function(x){return {k:x[0],v:x[1],h:!!x[2]}}),
     operators:ET.ops.map(function(x){return x[0]}),
     operatorRows:ET.ops.map(function(x){return {k:x[0],v:x[1]||''}}),
-    brand:SITE.brand, galText:SITE.galText||{}, ruby:SITE.ruby||'', files:SITE.files, courses:SITE.courses, ctNote:SITE.ctNote,
+    brand:SITE.brand, badge:SITE.badge||{}, galText:SITE.galText||{}, ruby:SITE.ruby||'', files:SITE.files, courses:SITE.courses, ctNote:SITE.ctNote,
     notify:{endpoint:SITE.notify.endpoint||'',onWhisper:!!SITE.notify.onWhisper,
             onInvite:!!SITE.notify.onInvite,onFeedback:!!SITE.notify.onFeedback,
             showContent:!!SITE.notify.showContent,ack:!!SITE.notify.ack,
@@ -6181,6 +6197,7 @@ function applyPayload(p){
       Object.keys(GAL_SEC).forEach(function(k){if(!SITE.gallery[k])SITE.gallery[k]={folder:'',ids:[]}});
       if(v.showViews!=null)SITE.showViews=v.showViews;
       if(v.galText)SITE.galText=v.galText;
+      if(v.badge)SITE.badge=v.badge;
       if(v.brand){
         if(v.brand.head)SITE.brand.head=Object.assign({},SITE.brand.head,v.brand.head);
         if(v.brand.banner)SITE.brand.banner=Object.assign({},SITE.brand.banner,v.brand.banner);
@@ -8258,6 +8275,7 @@ $('#pfGo').addEventListener('click',function(){
   profileName=n;QMODE='pre';QNAME=n;GUESS=null;useQuestions('pre');
   try{localStorage.setItem('quizName',n)}catch(e){}
   PROFILE=collectFields('#p-profile');
+  try{localStorage.setItem('pfAns:'+SID(),JSON.stringify(PROFILE.map(function(x){return {label:x.label,value:x.value}})))}catch(e){}
   qi=0;answers=[];$('#runBody').style.display='';$('#runDone').style.display='none';renderQ();
   enterRun('課前測驗 · '+n);
 });
@@ -8627,23 +8645,63 @@ function hmPaintClassTile(){
   if(ci.live&&!dot){dot=document.createElement('span');dot.className='tile-dot';el.insertBefore(dot,el.firstChild);}
   else if(!ci.live&&dot)dot.remove();
 }
-function hmBadgeHTML(){
+function hmRubyHTML(t){
+  var R={};try{R=rubyMap()}catch(e){}
+  return String(t).split('').map(function(c){
+    if(!R[c])return hmEsc(c);
+    var z=R[c],tone='',light=false;
+    if('ˊˇˋ'.indexOf(z.charAt(z.length-1))>=0){tone=z.charAt(z.length-1);z=z.slice(0,-1);}
+    else if(z.charAt(0)==='˙'){tone='˙';light=true;z=z.slice(1);}
+    return '<span class="zy"><span>'+hmEsc(c)+'</span><span class="zy-t"><span class="zy-b">'+z+'</span>'+
+      (tone?'<span class="zy-m'+(light?' light':'')+'">'+tone+'</span>':'')+'</span></span>';
+  }).join('');
+}
+/* 名牌的字：有另外改過就用改過的，沒有就跟講師介紹頁一樣 */
+function hmBadgeData(){
   var ab=$('#p-about');
-  var plain=function(sel){var e=ab&&ab.querySelector(sel);if(!e)return '';return String(e.dataset.plain||e.textContent||'').replace(/\s+/g,' ').trim()};
-  var nmEl=ab&&ab.querySelector('.who-n');
-  var name=nmEl?(nmEl.querySelector('.zy')?nmEl.innerHTML:hmEsc(plain('.who-n'))):'尤偉檁';
-  var role=plain('.who-r')||'消防安全 × 急救教育講師';
+  var txt=function(e){if(!e)return '';if(e.dataset.plain)return e.dataset.plain;var c=e.cloneNode(true);$$('.blk-ed,.blk-mini,.zy-t,button',c).forEach(function(x){x.remove()});return String(c.textContent||'').replace(/\s+/g,' ').trim()};
+  var plain=function(sel){return txt(ab&&ab.querySelector(sel))};
   var orgEl=ab&&ab.querySelector('.who');orgEl=orgEl&&orgEl.nextElementSibling;
-  var org=orgEl&&orgEl.classList.contains('meta')?String(orgEl.textContent||'').trim():'';
-  var st=((typeof SITE!=='undefined'&&SITE&&SITE.stats)||[]).slice(0,2).filter(function(x){return x&&x[0]});
-  return '<div class="hm-badge" data-go="p-about" role="link" tabindex="0" aria-label="認識講師">'+
+  var B=(typeof SITE!=='undefined'&&SITE&&SITE.badge)||{};
+  return {name:B.name||plain('.who-n')||'尤偉檁',role:B.role||plain('.who-r')||'消防安全 × 急救教育講師',
+    org:B.org!=null&&B.org!==''?B.org:(orgEl&&orgEl.classList.contains('meta')?txt(orgEl):'')};
+}
+function hmBadgeHTML(){
+  var D=hmBadgeData(),ed=EDITING,ce=ed?' contenteditable="true"':'';
+  var st=((typeof SITE!=='undefined'&&SITE&&SITE.stats)||[]).slice(0,2).filter(function(x){return x&&(x[0]||ed)});
+  return '<div class="hm-badge'+(ed?' hm-badge-ed':'')+'"'+(ed?'':' data-go="p-about" role="link" tabindex="0" aria-label="認識講師"')+'>'+
     '<span class="hm-stripe"></span>'+
     '<div class="bd-top"><span><b>INSTRUCTOR</b></span><span>認識講師</span></div>'+
     '<div class="bd-mid"><span class="bd-em"><img alt="IRON WILL" decoding="async" src="'+(typeof EMBLEM_SRC==='string'?EMBLEM_SRC:'')+'"></span>'+
-      '<span class="bd-tx"><span class="bd-name">'+name+'</span><span class="bd-role">'+hmEsc(role)+'</span>'+
-      (org?'<span class="bd-org">'+hmEsc(org)+'</span>':'')+'</span></div>'+
-    '<div class="bd-bot">'+st.map(function(x){return '<span><b>'+hmEsc(x[0])+'</b>'+hmEsc(x[1]||'')+'</span>'}).join('')+
-      '<span class="bd-go">看介紹<i>→</i></span></div></div>';
+      '<span class="bd-tx"><span class="bd-name'+(ed?' ed-txt':'')+'"'+ce+' data-bd="name">'+(ed?hmEsc(D.name):hmRubyHTML(D.name))+'</span>'+
+      '<span class="bd-role'+(ed?' ed-txt':'')+'"'+ce+' data-bd="role">'+hmEsc(D.role)+'</span>'+
+      ((D.org||ed)?'<span class="bd-org'+(ed?' ed-txt':'')+'"'+ce+' data-bd="org">'+hmEsc(D.org)+'</span>':'')+'</span></div>'+
+    '<div class="bd-bot">'+st.map(function(x,i){return '<span><b'+(ed?' class="ed-txt"':'')+ce+' data-bs="'+i+':0">'+hmEsc(x[0])+'</b><em'+(ed?' class="ed-txt"':'')+ce+' data-bs="'+i+':1">'+hmEsc(x[1]||'')+'</em></span>'}).join('')+
+      '<span class="bd-go">看介紹<i>→</i></span></div></div>'+
+    (ed?'<p class="hint hm-badge-hint">講師名牌：點字直接改（名字、職稱、單位、兩個數字）。名字的注音照「難字注音」設定自動加上。數字和講師介紹頁共用。要整塊收起來，把下面「講師介紹」那格隱藏。</p>':'');
+}
+function hmBadgeEdit(grid){
+  if(!TILES.some(function(t){return t.id==='about'}))return;
+  var w=document.createElement('div');w.className='hm-badge-wrap';w.innerHTML=hmBadgeHTML();
+  grid.appendChild(w);
+  $$('[data-bd]',w).forEach(function(el){
+    el.addEventListener('click',function(e){e.stopPropagation()});
+    el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();el.blur();}});
+    el.addEventListener('blur',function(){
+      var v=el.innerText.replace(/\s+/g,' ').trim(),k=el.dataset.bd;
+      SITE.badge=SITE.badge||{};
+      if(!v&&k!=='org'){el.textContent=hmBadgeData()[k];toast('名字和職稱不能空白，已還原');return;}
+      SITE.badge[k]=v;
+    });
+  });
+  $$('[data-bs]',w).forEach(function(el){
+    el.addEventListener('click',function(e){e.stopPropagation()});
+    el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();el.blur();}});
+    el.addEventListener('blur',function(){
+      var a=el.dataset.bs.split(':'),i=+a[0],c=+a[1],v=el.innerText.replace(/\s+/g,' ').trim();
+      if(!SITE.stats[i])return;SITE.stats[i][c]=v;try{statsEditor()}catch(e){}
+    });
+  });
 }
 function hmTileEl(t,o){
   var el=document.createElement('div');
@@ -8729,7 +8787,7 @@ function paintClassZone(){
   var q=quizOpts(),pg=$('#p-quiz');if(!pg)return;
   var mark=function(row,state,label){
     if(!row)return;
-    row.classList.remove('st-done','st-now','st-off');
+    row.classList.remove('st-done','st-now','st-off','st-open');
     if(EDITING||!state){row.removeAttribute('data-st');return;}
     row.classList.add('st-'+state);row.dataset.st=label;
   };
@@ -8937,7 +8995,6 @@ setInterval(function(){if(document.body.classList.contains('adm-on')&&ATAB==='to
 /* 內容 › 學員首頁：功能磁磚開關 */
 function paintHomeTiles(){
   var box=$('#homeTiles');if(!box)return;
-  if(box.contains(document.activeElement))return;
   box.innerHTML=TILES.map(function(t){
     var note=t.id==='about'?'首頁的講師名牌':t.id==='quiz'?'測驗、回饋、成績都在裡面':t.id==='feedback'?(TILES.some(function(x){return x.id==='quiz'&&x.on})?'已放進上課專區（首頁不另外顯示）':'上課專區關閉時，首頁會顯示這一格'):(t.d||hmDescDef(t));
     return '<div class="ht-row'+(t.on?'':' off')+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[t.icon]||ICONS.link)+'</svg>'+
@@ -8949,18 +9006,35 @@ function htFlip(sw){
   var t=TILES.filter(function(x){return x.id===sw.dataset.htile})[0];if(!t)return;
   t.on=!t.on;setDirty(true);
   if(t.id==='challenge'&&t.on&&CH_CFG.mode==='hidden')CH_CFG.mode='open';
-  paintHomeTiles();try{renderTiles();paintToday();}catch(e){}
+  sw.classList.toggle('on',t.on);sw.setAttribute('aria-checked',String(t.on));   // 開關當場滑過去
+  var row=sw.closest('.ht-row');if(row)row.classList.toggle('off',!t.on);
+  setTimeout(function(){try{renderTiles();paintToday();}catch(e){}},260);
 }
 document.addEventListener('click',function(e){var sw=e.target.closest('#homeTiles [data-htile]');if(sw)htFlip(sw);});
 document.addEventListener('keydown',function(e){
   var sw=e.target&&e.target.closest&&e.target.closest('#homeTiles [data-htile]');
-  if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();htFlip(sw);var n=$('#homeTiles [data-htile="'+sw.dataset.htile+'"]');if(n)n.focus();}
+  if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();htFlip(sw);}
 });
 async function saveTiles(){
   var F=window.fb;if(!F||!F.auth.currentUser)throw new Error('尚未登入');
   await F.setDoc(F.doc(F.db,'courses',F.COURSE),{tiles:TILES},{merge:true});
 }
 try{paintClassZone();paintToday();}catch(e){console.warn('v11 初始化',e)}
+
+/* 學員：回饋表單的性別、年齡，課前填過就先幫你選好（還是可以改） */
+function fbPrefill(){
+  if(EDITING||fbDone())return;
+  var P=[];try{P=JSON.parse(localStorage.getItem('pfAns:'+SID())||'[]')||[]}catch(e){}
+  if(!P.length&&PROFILE&&PROFILE.length)P=PROFILE;
+  if(!P.length)return;
+  var map={};P.forEach(function(x){if(x&&x.label)map[x.label]=String(x.value||'')});
+  $$('#fbForm .f').forEach(function(f){
+    var q=f.querySelector('.f-q');if(!q)return;
+    var lb=q.innerText.replace('必填','').trim(),v=map[lb];if(!v||v.indexOf('、')>=0)return;
+    var cs=$$('.chips .chip',f);if(!cs.length||cs.some(function(c){return c.classList.contains('on')}))return;
+    cs.forEach(function(c){if(c.innerText.trim()===v)c.classList.add('on')});
+  });
+}
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
