@@ -2100,6 +2100,13 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
 #ivCf .fs-in{padding-bottom:0}
 #ivCf .cf-btns{position:sticky;bottom:0;background:var(--surface);margin-top:0;padding:14px 0 calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);box-shadow:0 -10px 16px -10px rgba(0,0,0,.35)}
 #ivCf .cf-list{margin-bottom:6px}
+/* v11.9 投影：名字跳出來時不要閃出捲軸白線 */
+.reveal .rv-names{overflow-x:hidden;padding:14px 18px;margin-left:-18px;margin-right:-18px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.reveal .rv-names::-webkit-scrollbar{width:6px;height:0}
+.reveal .rv-names::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.reveal .rv-names::-webkit-scrollbar-track{background:transparent}
+.reveal .rv-n.mid{font-size:min(24vw,27vh)}
+.reveal .rv-names{flex-shrink:0}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -3303,7 +3310,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.8　2026/10/09';
+var APP_VERSION='v11.9　2026/10/09';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -8076,7 +8083,7 @@ function runReveal(slides){
       '<div class="rv-body">'+
         '<div class="rv-k">'+esc(sl.k)+'</div>'+
         '<p class="rv-q">'+esc(sl.q)+'</p>'+
-        '<div class="rv-n pop'+(sl.red?' rv-real':'')+(sl.ok?' rv-ok':'')+(nn>4?' sm':'')+'">'+
+        '<div class="rv-n pop'+(sl.red?' rv-real':'')+(sl.ok?' rv-ok':'')+(nn>4?' sm':nn?' mid':'')+'">'+
           '<span data-to="'+sl.n+'">'+sl.n+'</span><small>分</small></div>'+
         (sl.note?'<div class="rv-gap'+(sl.warn?' warn':'')+'">'+esc(sl.note)+'</div>':'')+
         (nn?'<div class="rv-names'+cls+'">'+sl.names.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>':'')+
