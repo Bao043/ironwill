@@ -2050,6 +2050,57 @@ body.editing .nav-aa{display:none}
 .nav.nav-tight2 .back{font-size:0;gap:0;padding-left:12px;padding-right:12px}
 .nav.nav-tight2 .back b{font-size:calc(16px*var(--fs))}
 
+/* v11.7：大螢幕首頁跟著螢幕變寬，不擠在中間 */
+@media (min-width:1500px){
+  .wrap:has(#z-student.is-on #p-home.is-on){max-width:min(1640px,90vw)}
+  #tileGrid.hm{grid-template-columns:minmax(400px,28%) minmax(0,1fr);gap:40px;margin-top:44px}
+  .hm-g{gap:18px;margin-top:18px}
+  .hm-g.hm-feat .tile.feat{min-height:230px}
+  #tileGrid.hm .tile{min-height:178px;padding:26px 24px 22px}
+  #tileGrid.hm .tile svg{width:34px;height:34px}
+  #tileGrid.hm .tile-t{font-size:calc(19px*var(--fs))}
+  #tileGrid.hm .tile.feat .tile-t{font-size:calc(27px*var(--fs))}
+  .hm-s,.hm-peek{font-size:calc(14px*var(--fs))}
+  .hm-k{font-size:calc(11px*var(--fs))}
+  .bd-name{font-size:calc(34px*var(--fs))}
+  .bd-role{font-size:calc(15px*var(--fs))}.bd-org{font-size:calc(13.5px*var(--fs))}
+  .bd-em,.bd-em img{width:128px}
+  .bd-bot b{font-size:calc(18px*var(--fs))}.bd-bot span{font-size:calc(12.5px*var(--fs))}
+  .hm-ban{height:clamp(400px,26vw,560px)}
+  .hero-card .hm-ttl{font-size:min(calc(64px * var(--fs)),calc((100vw - 40px) / 10.4))}
+  #p-home .ig-foot{font-size:calc(16px*var(--fs))}
+}
+@media (min-width:2200px){
+  .wrap:has(#z-student.is-on #p-home.is-on){max-width:min(2140px,84vw)}
+  #tileGrid.hm,#p-home>.ig-foot,#p-home>.brand-foot,#p-home>.gate-mark{zoom:1.3}
+  .hero-card .hm-ttl{font-size:calc(80px * var(--fs))}
+  .hm-ban{height:clamp(560px,24vw,720px)}
+}
+/* v11.8 課程邀約：送出前確認 */
+#ivCf{--fs:var(--fsv);position:fixed;inset:0;z-index:96;display:none}
+#ivCf.on{display:block}
+#ivCf .fs-in{max-width:560px;padding-top:10px}
+.cf-h b{display:block;font-size:calc(20px*var(--fs));font-weight:700}
+.cf-h span{display:block;font-size:calc(13.5px*var(--fs));color:var(--muted);margin-top:4px;line-height:1.55}
+.cf-mail{margin-top:14px;border:1px solid var(--signal);background:var(--signal-soft);padding:11px 14px;font-size:calc(13.5px*var(--fs));line-height:1.6}
+.cf-mail b{display:block;font-size:calc(16px*var(--fs));color:var(--ink);word-break:break-all;margin-top:2px}
+.cf-list{margin-top:12px;border-top:1px solid var(--line)}
+.cf-r{display:grid;grid-template-columns:minmax(84px,32%) minmax(0,1fr);gap:4px 14px;padding:11px 0;border-bottom:1px solid var(--line)}
+.cf-r dt{font-size:calc(13px*var(--fs));color:var(--muted);line-height:1.55}
+.cf-r dd{margin:0;font-size:calc(15px*var(--fs));line-height:1.55;word-break:break-word;white-space:pre-wrap}
+.cf-r dd.no{color:var(--muted)}
+@media (max-width:420px){.cf-r{grid-template-columns:1fr}}
+html[data-fs="2"] .cf-r{grid-template-columns:1fr}
+.cf-btns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;margin-top:16px}
+.cf-btns button{font:inherit;font-weight:700;font-size:calc(15px*var(--fs));padding:14px 8px;cursor:pointer;min-height:50px}
+.cf-back{background:none;border:1px solid var(--line);color:var(--ink)}
+.cf-go{background:var(--signal);border:1px solid var(--signal);color:#fff}
+.cf-go[disabled]{opacity:.6}
+.sec-empty{display:none!important}
+#ivCf .fs-in{padding-bottom:0}
+#ivCf .cf-btns{position:sticky;bottom:0;background:var(--surface);margin-top:0;padding:14px 0 calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);box-shadow:0 -10px 16px -10px rgba(0,0,0,.35)}
+#ivCf .cf-list{margin-bottom:6px}
+
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
 body.editing #tileGrid .tile-d{display:block;font-size:calc(12px*var(--fs));color:var(--muted);margin-top:4px;min-height:1.4em;outline:1px dashed var(--line);outline-offset:2px}
@@ -2223,7 +2274,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <circle cx="6" cy="34" r="3.2"/><circle cx="130" cy="34" r="3.2"/>
       <circle cx="200" cy="28" r="3.2"/><circle cx="300" cy="14" r="3.2"/><circle cx="394" cy="32" r="3.2"/>
     </svg>
-    <div class="fig-cap rv"><span>280 SITES　16,000 PEOPLE</span></div>
+    <div class="fig-cap rv"><span>280+ SESSIONS　16,000+ PEOPLE</span></div>
 
     <div class="section-head rv"><h2>我站過的講台</h2><span>部分列舉</span></div>
     <div class="rv" id="abSpeak"></div>
@@ -2393,7 +2444,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
   <section class="page" id="p-stats">
     <div style="padding-top:24px">
       <div class="meta">本堂統計</div>
-      <h1 class="display" style="font-size:calc(24px*var(--fs));margin-top:8px">三小時，<br>差別有多大</h1>
+      <h1 class="display" style="font-size:calc(24px*var(--fs));margin-top:8px">課前與課後，<br>差別有多大</h1>
     </div>
 
     <div class="section-head"><h2>你自己</h2><span id="myTag">尚未作答</span></div>
@@ -2494,7 +2545,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <div style="padding-top:24px">
         <div class="meta" data-txt="ivKicker">課程邀約</div>
         <h1 class="display" style="font-size:calc(23px*var(--fs));margin-top:8px" data-txt="ivTitle">邀請講師到你的單位</h1>
-        <p class="sub" style="margin-top:10px" data-txt="ivSub">送出後三個工作天內會與您聯繫確認時間與內容。</p>
+        <p class="sub" style="margin-top:10px" data-txt="ivSub">送出後三至五個工作天內會與您聯繫確認時間與內容。</p>
       </div>
 
       <div class="f"><div class="f-q">單位／企業名稱<span class="req">必填</span></div>
@@ -2551,7 +2602,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     </div>
     <div class="done-view" id="ivDone">
       <h2 class="display">報名送出了。</h2>
-      <p class="sub" style="margin-top:10px">系統已經寄了一封確認信到 <b id="ivEcho">您填寫的信箱</b>，請查收。三個工作天內會與您聯繫，確認時間、內容與報價。</p>
+      <p class="sub" style="margin-top:10px">系統已經寄了一封確認信到 <b id="ivEcho">您填寫的信箱</b>，請查收。三至五個工作天內會與您聯繫，確認時間、內容與報價。</p>
 
       <div class="lock" style="margin-top:18px">
         <span aria-hidden="true">⚠️</span>
@@ -2950,7 +3001,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div class="f"><div class="f-q">主旨</div><input class="f-in" id="edAckSub" placeholder="已收到您的課程邀約"></div>
     <div class="f"><div class="f-q">內容</div>
       <div class="f-hint">想讓對方能直接找到你，把你的信箱寫在內容裡</div>
-      <textarea class="f-ta" id="edAckBody" style="min-height:130px" placeholder="您好，已收到您的課程邀約，謝謝您的來信。&#10;&#10;我會在三個工作天內與您聯繫，確認時間、內容與報價。"></textarea></div>
+      <textarea class="f-ta" id="edAckBody" style="min-height:130px" placeholder="您好，已收到您的課程邀約，謝謝您的來信。&#10;&#10;我會在三至五個工作天內與您聯繫，確認時間、內容與報價。"></textarea></div>
     <button class="qbtn" id="setAck" style="margin-top:12px">更新自動回覆</button>
     <p class="hint">為了防濫用：同一個信箱六小時內只會收到一次自動回覆，每六小時最多 20 封。</p>
 </div></div>
@@ -3252,7 +3303,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.6　2026/10/09';
+var APP_VERSION='v11.8　2026/10/09';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4141,9 +4192,9 @@ document.addEventListener('click',function(e){
   if(t.hasAttribute('data-chnext')){
     if(CH.ans[CH.i]==null)return;
     if(CH.i===CH.qs.length-1)CH.tu=false;
-    if(CH.back){CH.back=false;CH.step='review';}
-    else if(CH.i<CH.qs.length-1)CH.i++;
-    else{CH.step='review';}
+    CH.back=false;
+    if(CH.i<CH.qs.length-1)CH.i++;
+    else{CH.step='done';CH.rev=false;chSave(true);}
     renderChallenge();window.scrollTo({top:0,behavior:'instant'});return;
   }
   if(t.hasAttribute('data-chquit')){
@@ -5457,7 +5508,7 @@ var SITE={
   notify:{emails:'',endpoint:'',onWhisper:true,onInvite:true,onFeedback:false,
           ack:true,
           ackSub:'已收到您的課程邀約',
-          ackBody:'您好，已收到您的課程邀約，謝謝您的來信。\n\n我會在三個工作天內與您聯繫，確認時間、內容與報價。\n\n如果超過三個工作天沒有收到回覆，可能是信件往來中間出了問題，再麻煩您直接回覆這封信。'}
+          ackBody:'您好，已收到您的課程邀約，謝謝您的來信。\n\n我會在三至五個工作天內與您聯繫，確認時間、內容與報價。\n\n如果超過五個工作天沒有收到回覆，可能是信件往來中間出了問題，再麻煩您直接回覆這封信。'}
 };
 var COURSE={title:'',sub:'',pass:60,
             tags:['實作課','3 小時','2026 / 09 / 14'], icon:'ecg',
@@ -6413,10 +6464,13 @@ function applyPayload(p){
       SITE.challenge=(v.challenge&&(v.challenge.fire||v.challenge.rescue))?v.challenge:null;
       if(v.courses&&v.courses.length)SITE.courses=v.courses;
       if(v.texts)Object.keys(v.texts).forEach(function(k){TEXTS[k]=v.texts[k]});
+      Object.keys(TEXTS).forEach(function(k){if(typeof TEXTS[k]==='string')TEXTS[k]=TEXTS[k].replace(/三個工作天/g,'三至五個工作天')});   // v11.8
       if(TEXTS.quizKicker==='線上測驗')TEXTS.quizKicker='上課專區';            // v11：線上測驗＋課程回饋合併成上課專區
       if(TEXTS.quizTitle==='兩份測驗，看自己進步多少')TEXTS.quizTitle='這堂課要做的，都在這裡';
       if(v.patch){try{PATCH=Object.assign({text:{},ph:{},hide:{},del:{},order:{},add:[]},JSON.parse(v.patch));}
-                  catch(e){console.warn('編輯資料壞掉',e)}}
+                  catch(e){console.warn('編輯資料壞掉',e)}
+        try{Object.keys(PATCH.text||{}).forEach(function(k){var t=PATCH.text[k];if(typeof t==='string'){
+          t=t.replace(/三個工作天/g,'三至五個工作天').replace('三小時，<br>差別有多大','課前與課後，<br>差別有多大').replace('三小時，差別有多大','課前與課後，差別有多大');PATCH.text[k]=t;}})}catch(e){}}
       if($('#stSite'))$('#stSite').textContent='已同步';
     }
     if(p.questions){
@@ -6622,8 +6676,8 @@ async function mailAdmin(payload){
   var j;try{j=JSON.parse(t)}catch(e){throw new Error('Apps Script 回傳的不是資料：連結可能不是資料夾、資料夾沒開分享，或 Apps Script 需要重新部署')}
   if(!j.ok){
     var er=j.error||'失敗';
-    if(/ADMIN_PIN 還沒改/.test(er))er='Apps Script 裡的密碼還是預設文字。打開 Apps Script，把第 16 行 const ADMIN_PIN = \'請改成你自己的密碼\' 引號裡的字，換成你在上面「管理密碼」填的密碼 → 存檔 →「部署 → 管理部署作業 → 編輯（鉛筆）→ 版本選『新版本』→ 部署」';
-    else if(/管理密碼不對/.test(er))er='管理密碼跟 Apps Script 第 16 行 ADMIN_PIN 的不一樣（大小寫、空白都要一樣）。改其中一邊；改 Apps Script 的話要重新部署「新版本」';
+    if(/ADMIN_PIN 還沒改/.test(er))er='Apps Script 裡的密碼還是預設文字。打開 Apps Script，把第 17 行 const ADMIN_PIN = \'請改成你自己的密碼\' 引號裡的字，換成你在上面「管理密碼」填的密碼 → 存檔 →「部署 → 管理部署作業 → 編輯（鉛筆）→ 版本選『新版本』→ 部署」';
+    else if(/管理密碼不對/.test(er))er='管理密碼跟 Apps Script 第 17 行 ADMIN_PIN 的不一樣（大小寫、空白都要一樣）。改其中一邊；改 Apps Script 的話要重新部署「新版本」';
     throw new Error(er);
   }
   return j;
@@ -6849,7 +6903,7 @@ var TXTDEF=[
  ['fbSub','感謝您耐心聽完這堂課。幾分鐘就好，您的感想會直接影響下一堂課怎麼安排。','回饋 · 說明'],
  ['ivKicker','課程邀約','邀約 · 小標'],
  ['ivTitle','邀請講師到你的單位','邀約 · 標題'],
- ['ivSub','送出後三個工作天內會與您聯繫確認時間與內容。','邀約 · 說明'],
+ ['ivSub','送出後三至五個工作天內會與您聯繫確認時間與內容。','邀約 · 說明'],
  ['dsKicker','防災知識專區','防災 · 小標'],
  ['dsTitle','火災、地震，還有那些來不及想的事','防災 · 標題'],
  ['faKicker','急救教育專區','急救 · 小標'],
@@ -8728,6 +8782,8 @@ $('#ivSend').addEventListener('click',function(){
     budgetMode:bmOn?bmOn.textContent.trim():'每小時預算', budget:g('#budgetAmt'),
     note:g('#ivNote'), status:'new', sourceCourse:COURSE.title
   };
+  if(!IV_OK){ivConfirm(allFields,data);return;}
+  IV_OK=false;
   submitPair('#ivForm','#ivDone');
   if(PREVIEW){toast('預覽模式：沒有真的送出');return;}
   if(window.fb){var F=window.fb;
@@ -8755,7 +8811,9 @@ $('#ivSend').addEventListener('click',function(){
     (picked.join('、')||'未選類型')+'\n'+
     data.when+'　'+data.headcount+' 人　'+data.place+'\n'+
     data.budgetMode+' '+(data.budget||'未填')+(data.note?('\n備註：'+data.note):''),
-    {replyTo:mail, ackTo:(n.ack&&mail)?mail:''});
+    {replyTo:mail, ackTo:(n.ack&&mail)?mail:'',
+     ackSummary:allFields.filter(function(x){return x.value}).map(function(x){
+       return x.label+'：'+(x.label.indexOf('講師費')>=0&&data.budget?(data.budgetMode+' '+data.budget):x.value)}).join('\n')});
 });
 var wt=$('#wt');
 wt.addEventListener('input',function(){$('#wc').textContent=wt.value.length+' / 500'});
@@ -9323,7 +9381,7 @@ function qvReach(){for(var i=0;i<QS.length;i++){if(answers[i]==null)return i;}re
 function qvNextLabel(){
   if(answers[qi]==null)return '選一個答案';
   if(QV.back)return '回到交卷前檢查';
-  return qi===QS.length-1?'檢查答案':'下一題';
+  return qi===QS.length-1?'送出答案':'下一題';
 }
 function qvPaint(){
   var run=$('#runBody'),meta=$('#qmeta'),nx=$('#qnext');if(!run||!meta||!nx||!QS.length)return;
@@ -9375,7 +9433,7 @@ document.addEventListener('click',function(e){
   var t=e.target;
   if(t.closest&&t.closest('#qnext')&&$('#p-run').classList.contains('is-on')&&!EDITING){
     if(answers[qi]==null)return;                    // 讓原本的「請先選一個答案」處理
-    if(QV.back||(qi===QS.length-1&&!QV.ok)){e.stopImmediatePropagation();e.preventDefault();qvShowReview();}
+    // v11.7：不用交卷前檢查，最後一題直接送出（題號列與上一題照常可以回去改）
     return;
   }
 },true);
@@ -9401,7 +9459,7 @@ function chReach(){for(var i=0;i<CH.qs.length;i++){if(CH.ans[i]==null)return i;}
 function chNextLabel(){
   if(CH.ans[CH.i]==null)return '選一個答案';
   if(CH.back)return '回到交卷前檢查';
-  return CH.i===CH.qs.length-1?'檢查答案':'下一題';
+  return CH.i===CH.qs.length-1?'看結果':'下一題';
 }
 function chDotsHTML(){
   var reach=chReach();
@@ -9571,6 +9629,53 @@ function navFit(){
     if(t.scrollWidth>t.clientWidth+1)nav.classList.add('nav-tight2');}
 }
 window.addEventListener('resize',function(){try{navFit()}catch(e){}});
+/* ===== v11.8 課程邀約：送出前確認頁 ===== */
+var IV_OK=false;
+function ivCfEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function ivConfirm(fields,data){
+  var s=$('#ivCf');
+  if(!s){
+    s=document.createElement('div');s.id='ivCf';s.setAttribute('role','dialog');s.setAttribute('aria-modal','true');s.setAttribute('aria-label','確認邀約內容');
+    document.body.appendChild(s);
+    s.addEventListener('click',function(e){
+      if(e.target.closest('[data-cfx]')){s.classList.remove('on');return;}
+      var g=e.target.closest('[data-cfgo]');
+      if(g&&!g.disabled){g.disabled=true;s.classList.remove('on');IV_OK=true;
+        try{$('#ivSend').click()}finally{IV_OK=false;}}
+    });
+  }
+  var rows=fields.map(function(f){
+    var v=f.value;
+    if(f.label.indexOf('講師費')>=0)v=data.budget?(data.budgetMode+'　'+data.budget):'';
+    return '<div class="cf-r"><dt>'+ivCfEsc(f.label)+'</dt><dd'+(v?'':' class="no"')+'>'+(v?ivCfEsc(v):'未填')+'</dd></div>';
+  }).join('');
+  var ackOn=SITE.notify&&SITE.notify.ack;
+  s.innerHTML='<div class="fs-dim" data-cfx></div><div class="fs-in"><div class="fs-grab"></div>'+
+    '<div class="cf-h"><b>確認邀約內容</b><span>送出前再看一次，有錯可以回去改。</span></div>'+
+    (ackOn?'<div class="cf-mail">確認信會寄到這個信箱，請確認沒有打錯<b>'+ivCfEsc(data.email)+'</b></div>':'')+
+    '<dl class="cf-list">'+rows+'</dl>'+
+    '<div class="cf-btns"><button type="button" class="cf-back" data-cfx>返回修改</button><button type="button" class="cf-go" data-cfgo>確認送出</button></div></div>';
+  s.classList.add('on');
+  var go=$('[data-cfgo]',s);if(go)setTimeout(function(){try{go.focus({preventScroll:true})}catch(e){}},60);
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var s=$('#ivCf');if(s&&s.classList.contains('on'))s.classList.remove('on');}});
+
+/* ===== v11.8 講師頁：沒有資料的區塊整段收起來 ===== */
+function secTidy(boxSel){
+  var box=$(boxSel);if(!box)return;
+  var empty=!EDITING&&!box.children.length;
+  box.classList.toggle('sec-empty',empty);
+  var h=box.previousElementSibling;
+  if(h&&h.classList.contains('section-head'))h.classList.toggle('sec-empty',empty);
+}
+(function(){
+  var _le=listEditor;
+  listEditor=function(boxSel){var r=_le.apply(this,arguments);try{secTidy(boxSel)}catch(e){}return r;};
+  var _pp=paintPlayerCaption;
+  paintPlayerCaption=function(){var r=_pp.apply(this,arguments);
+    try{var pl=$('#player');if(pl){var has=!!(SITE.videos&&(SITE.videos.url||'').trim());pl.classList.toggle('sec-empty',!EDITING&&!has);}}catch(e){}
+    return r;};
+})();
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
