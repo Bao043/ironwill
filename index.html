@@ -2116,6 +2116,20 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
 .pgal.open::after{content:"";flex:9999 1 0px;min-width:0}
 @media (min-width:760px){.pgal.open{--gh:150px;gap:8px}}
 @media (min-width:1200px){.pgal.open{--gh:180px}}
+/* v11.12 電腦版首頁：左右兩欄上下切齊（名牌對齊精選那一列、悄悄話對齊下面那一列） */
+@media (min-width:1100px){
+  #tileGrid.hm{grid-template-rows:auto auto;row-gap:14px}
+  #tileGrid.hm>.hm-side,#tileGrid.hm>.hm-main{display:contents}
+  #tileGrid.hm>.hm-side>.hm-badge{grid-column:1;grid-row:1;margin:0}
+  #tileGrid.hm>.hm-side>.tile{grid-column:1;grid-row:2;margin:0}
+  #tileGrid.hm>.hm-side>:only-child{grid-row:1/span 2}
+  #tileGrid.hm>.hm-main>.hm-g{grid-column:2;grid-row:2;margin:0}
+  #tileGrid.hm>.hm-main>.hm-g.hm-feat{grid-row:1}
+  #tileGrid.hm>.hm-main>.hm-g:only-child{grid-row:1/span 2}
+  #tileGrid.hm:not(:has(>.hm-side)){grid-template-columns:minmax(0,1fr)}
+  #tileGrid.hm:not(:has(>.hm-side))>.hm-main>.hm-g{grid-column:1}
+}
+@media (min-width:1500px){#tileGrid.hm{row-gap:18px}}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -3319,7 +3333,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.11　2026/10/10';
+var APP_VERSION='v11.12　2026/10/10';
 (function(){
   var root=document.documentElement;
   function apply(t){
