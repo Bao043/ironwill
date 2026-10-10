@@ -2172,6 +2172,11 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
 #tileGrid.hm .hm-main>.hm-g:not(.hm-feat) .hm-s{margin-top:6px;padding-top:6px;border-top:1px solid var(--line);color:var(--ink-soft)}
 @media (min-width:1100px){#tileGrid.hm .hm-main>.hm-g:not(.hm-feat) .hm-s{margin-top:10px;padding-top:9px}}
 .hm-s .nb{display:inline-block}
+/* v11.15 底部固定的列：被瀏覽器工具列蓋住時往上推（--vvb 由程式算） */
+.adm-tabs,.dirty-bar,.ed-dock,.pro-switch,.undo-bar{margin-bottom:var(--vvb,0px)}
+/* 後台內容很短時也能稍微捲動，Safari 的工具列才會正常收合 */
+@media (max-width:1099px){body.adm-on .wrap{min-height:calc(100vh + 2px)}}
+@media (min-width:1100px){.hm-steps.n2{max-width:360px}}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -3375,7 +3380,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.14　2026/10/10';
+var APP_VERSION='v11.16　2026/10/10';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -9791,7 +9796,8 @@ document.addEventListener('click',function(e){
 function hmStepsHTML(){
   var q=quizOpts(),now=false;
   var S=[['課前測驗',!!q.pre,isDone('pre')],['課程回饋',q.fb!==false,fbDone()],['課後測驗',!!q.post,isDone('post')]];
-  return '<span class="hm-steps" aria-hidden="true">'+S.map(function(s,i){
+  if(!q.post&&!isDone('post'))S.pop();          // v11.16：後台還沒開課後測驗，就先不顯示第三步
+  return '<span class="hm-steps'+(S.length<3?' n2':'')+'" aria-hidden="true">'+S.map(function(s,i){
     var wait=(i===1&&s[1]&&!s[2]&&!isDone('pre')&&!isDone('post'));   // 回饋要先做完一份測驗
     var st=s[2]?'ok':(s[1]&&!wait?(!now?(now=true,'now'):'open'):'off');
     var lb={ok:'完成',now:'現在可以做',open:'開放中',off:wait?'測驗後開放':'還沒開放'}[st];
@@ -9824,6 +9830,23 @@ function hmFeatDecor(el,t){
   hmPaintClassTile=function(){var r=_hpc.apply(this,arguments);
     try{var el=$('#tileGrid.hm .tile[data-tid="quiz"]'),old=el&&$('.hm-steps',el);if(old){var w=document.createElement('span');w.innerHTML=hmStepsHTML();old.replaceWith(w.firstChild);}}catch(e){}
     return r;};
+})();
+/* ===== v11.15 iPhone／iPad Safari：底部工具列蓋住後台分頁列時，把底部的東西往上推 ===== */
+(function(){
+  var vv=window.visualViewport;if(!vv)return;
+  var raf=0;
+  function fix(){
+    raf=0;
+    var lay=Math.max(window.innerHeight||0,document.documentElement.clientHeight||0);
+    var gap=Math.round(lay-vv.height-vv.offsetTop);
+    if(!(gap>0)||gap>160||vv.scale>1.05)gap=0;           // 鍵盤打開、放大時不處理
+    document.documentElement.style.setProperty('--vvb',gap+'px');
+  }
+  function q(){if(!raf)raf=requestAnimationFrame(fix)}
+  vv.addEventListener('resize',q);vv.addEventListener('scroll',q);
+  window.addEventListener('resize',q);window.addEventListener('orientationchange',function(){setTimeout(fix,350)});
+  window.addEventListener('pageshow',q);document.addEventListener('visibilitychange',q);
+  fix();setTimeout(fix,600);
 })();
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
