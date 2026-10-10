@@ -2130,6 +2130,48 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
   #tileGrid.hm:not(:has(>.hm-side))>.hm-main>.hm-g{grid-column:1}
 }
 @media (min-width:1500px){#tileGrid.hm{row-gap:18px}}
+/* v11.13 精選磁磚：上課專區放三個步驟、挑戰題庫放照片 */
+.hm-steps,.hm-phbg,.hm-chbest{display:none}
+@media (min-width:1100px){
+  #tileGrid.hm .tile.feat{position:relative;overflow:hidden}
+  .hm-steps{display:flex;align-items:flex-start;gap:0;margin:auto 0 4px;width:100%;max-width:520px}
+  .hm-steps .hs{display:flex;flex-direction:column;align-items:flex-start;gap:5px;flex:none;min-width:0}
+  .hm-steps .hs i{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;
+    font-style:normal;font-family:var(--mono);font-size:calc(13px*var(--fs));color:var(--muted)}
+  .hm-steps .hs b{font-size:calc(14px*var(--fs));font-weight:600;color:var(--ink-soft);white-space:nowrap}
+  .hm-steps .hs em{font-style:normal;font-size:calc(12px*var(--fs));color:var(--muted);white-space:nowrap}
+  .hm-steps .hs-ok i{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:700}
+  .hm-steps .hs-now i{border-color:var(--signal);color:var(--signal);box-shadow:0 0 0 4px var(--signal-soft)}
+  .hm-steps .hs-now b{color:var(--ink)}.hm-steps .hs-now em{color:var(--signal)}
+  .hm-steps .hs-off{opacity:.55}
+  .hm-steps .hs-ln{flex:1;min-width:18px;height:1.5px;background:var(--line);margin:15px 10px 0}
+  .hm-steps .hs-ln.on{background:linear-gradient(90deg,var(--ink-soft),var(--line))}
+  html[data-fs="2"] .hm-steps .hs em{display:none}
+  /* 挑戰題庫：消防、急救兩張現場照片當底 */
+  .tile.hm-ph{background:var(--deep,#0b0d0f)}
+  .hm-phbg{display:flex;position:absolute;inset:0;z-index:0;pointer-events:none}
+  .hm-phbg i{flex:1;background-image:var(--home-banner);background-repeat:no-repeat;background-size:auto 230%;opacity:.55;transition:opacity .3s,transform .6s cubic-bezier(.22,.61,.36,1)}
+  .hm-phbg i.f{background-position:4% 45%}
+  .hm-phbg i.r{background-position:97% 55%;border-left:1px solid rgba(255,255,255,.06)}
+  .hm-phbg::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,13,15,.96) 22%,rgba(11,13,15,.55) 62%,rgba(11,13,15,.25))}
+  .tile.hm-ph>*:not(.hm-phbg){position:relative;z-index:1}
+  .tile.hm-ph>.tile-badge{position:absolute}
+  .tile.hm-ph:hover .hm-phbg i{opacity:.75}
+  .tile.hm-ph.tile-lock .hm-phbg i{filter:grayscale(1);opacity:.3}
+  .hm-chbest{display:block;margin-top:6px;font-size:calc(13px*var(--fs));color:var(--ink-soft)}
+  .hm-chbest b{font-family:var(--mono);color:var(--ink);font-weight:600}
+  /* 下排小磁磚不要拉太高 */
+  #tileGrid.hm .hm-g:not(.hm-feat) .tile{min-height:136px}
+}
+@media (min-width:1500px){#tileGrid.hm .hm-g:not(.hm-feat) .tile{min-height:150px}}
+@media (min-width:1100px){
+  html[data-fs="1"] .hm-steps .hs-ln,html[data-fs="2"] .hm-steps .hs-ln{margin:15px 6px 0;min-width:8px}
+  html[data-fs="2"] .hm-steps .hs b{font-size:calc(12px*var(--fs))}
+}
+/* v11.14 下排每一格：標題下一條分隔線，下面是灰色副標題 */
+#tileGrid.hm .hm-main>.hm-g:not(.hm-feat) .hm-s{margin-top:6px;padding-top:6px;border-top:1px solid var(--line);color:var(--ink-soft)}
+@media (min-width:1100px){#tileGrid.hm .hm-main>.hm-g:not(.hm-feat) .hm-s{margin-top:10px;padding-top:9px}}
+.hm-s .nb{display:inline-block}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -3333,7 +3375,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.12　2026/10/10';
+var APP_VERSION='v11.14　2026/10/10';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4985,7 +5027,7 @@ function renderTiles(){
     else el.setAttribute('data-go',t.go||'p-home');
     el.innerHTML='<svg viewBox="0 0 24 24">'+(ICONS[t.icon]||ICONS.link)+'</svg>'+
       '<span class="tile-t"'+(EDITING?' contenteditable="true"':'')+'>'+t.t+'</span>'+
-      (EDITING?'<span class="tile-d" contenteditable="true" data-ph="'+hmEsc(hmDescDef(t)||'小字說明（可空白）')+'">'+hmEsc(t.d||'')+'</span>':'')+
+      (EDITING?'<span class="tile-d" contenteditable="true" data-ph="'+hmEsc(hmDescDef(t)||'小字說明（可空白）')+'">'+hmEsc((typeof hmDescOwn==='function'?hmDescOwn(t):t.d)||'')+'</span>':'')+
       (t.dot&&!EDITING&&!wide?'<span class="tile-dot"></span>':'')+
       (wide&&!EDITING?'<span class="tile-go">→</span>':'')+
       (EDITING?'<span class="blk-ed" contenteditable="false">'+
@@ -8907,11 +8949,23 @@ function hmEkgSVG(W){
   },160)});
 })();
 function hmDescDef(t){
-  var D={invite:'邀請講師到你的單位',whisper:'只有講師看得到',files:'講義、流程卡、自我檢查表',
-         disaster:'火災、地震與避難',firstaid:'CPR、AED 與急救',feedback:'一堂課填一次',about:'認識講師'};
+  var D={invite:'邀請講師到你的單位',whisper:'只有講師看得到',files:'讓學過的知識，成為用得上的能力。',
+         disaster:'那些你以為，不會發生的事。',firstaid:'在救護車來之前，你能做什麼？',feedback:'一堂課填一次',about:'認識講師'};
   if(t.id==='challenge')return '消防．急救，每次 '+chN()+' 題';
   if(t.id==='quiz')return '測驗、回饋、我的成績';
   return D[t.id]||(t.url?'外部連結':'');
+}
+/* 講師自己改過的副標題；舊版的預設字當作沒改過，換成新的 */
+function hmDescOwn(t){
+  var d=String(t.d||'').trim();
+  if(['火災、地震與避難','CPR、AED 與急救','講義、流程卡、自我檢查表'].indexOf(d)>=0)return '';
+  return d;
+}
+/* 長句在逗號後面換行，不會剩一兩個字掉到下一行 */
+function hmNiceBreak(t){
+  var parts=String(t).replace(/([，、：])/g,'$1\n').split('\n').filter(function(x){return x});
+  if(parts.length<2)return hmEsc(t);
+  return parts.map(function(p){return '<span class="nb">'+hmEsc(p)+'</span>'}).join('');
 }
 function hmFresh(ms){var n=Date.now();return !!ms&&n-ms<7*864e5&&ms<n+864e5}
 function hmLatest(cat){
@@ -9009,18 +9063,18 @@ function hmTileEl(t,o){
   else if(t.id==='challenge'){kick='CHALLENGE';small=t.d||hmDescDef(t);}
   else if(t.id==='disaster'||t.id==='firstaid'){
     var a=hmLatest(t.id);
-    if(a){peek=a.t;isNew=hmFresh(artTime(a));}
-    small=t.d||(a?'':hmDescDef(t));
+    if(a){isNew=hmFresh(artTime(a));}
+    small=hmDescOwn(t)||hmDescDef(t);          // v11.14：分隔線下面固定放副標題
   }else if(t.id==='files'){
     var fl=hmFiles();
-    if(fl.length){peek=fl[0].label||fl[0].name||'';isNew=fl.some(function(f){return hmFresh(+f.at||0)});}
-    small=t.d||(fl.length?'':hmDescDef(t));
+    if(fl.length){isNew=fl.some(function(f){return hmFresh(+f.at||0)});}
+    small=hmDescOwn(t)||hmDescDef(t);
   }else small=t.d||hmDescDef(t);
   el.innerHTML=(live?'<span class="tile-dot"></span>':'')+(isNew?'<span class="hm-new">NEW</span>':'')+
     '<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[t.icon]||ICONS.link)+'</svg>'+
     '<span class="hm-tx">'+(o.feat&&kick?'<span class="hm-k">'+kick+'</span>':'')+
       '<span class="tile-t">'+hmEsc(t.t)+'</span>'+
-      (small?'<small class="hm-s'+(live?' live':'')+'">'+hmEsc(small)+'</small>':'')+
+      (small?'<small class="hm-s'+(live?' live':'')+'">'+hmNiceBreak(small)+'</small>':'')+
       (peek?'<span class="hm-peek">'+hmEsc(peek)+'</span>':'')+'</span>'+
     (o.wide?'<span class="tile-go">→</span>':'');
   try{chTileDecor(el,t)}catch(e){}
@@ -9733,6 +9787,44 @@ document.addEventListener('click',function(e){
   if(!e.target.closest('[data-galmore]'))return;
   setTimeout(function(){$$('.pgal.open .gp img').forEach(function(im){if(im.complete)galRatio(im);im.loading='eager';});},0);
 });
+/* ===== v11.13 電腦版首頁：精選磁磚放進有用的內容，不再空空的 ===== */
+function hmStepsHTML(){
+  var q=quizOpts(),now=false;
+  var S=[['課前測驗',!!q.pre,isDone('pre')],['課程回饋',q.fb!==false,fbDone()],['課後測驗',!!q.post,isDone('post')]];
+  return '<span class="hm-steps" aria-hidden="true">'+S.map(function(s,i){
+    var wait=(i===1&&s[1]&&!s[2]&&!isDone('pre')&&!isDone('post'));   // 回饋要先做完一份測驗
+    var st=s[2]?'ok':(s[1]&&!wait?(!now?(now=true,'now'):'open'):'off');
+    var lb={ok:'完成',now:'現在可以做',open:'開放中',off:wait?'測驗後開放':'還沒開放'}[st];
+    return (i?'<span class="hs-ln'+(st==='off'?'':' on')+'"></span>':'')+
+      '<span class="hs hs-'+st+'"><i>'+(st==='ok'?'✓':(i+1))+'</i><b>'+s[0]+'</b><em>'+lb+'</em></span>';
+  }).join('')+'</span>';
+}
+function hmChBestHTML(){
+  var B={};try{B=chBestGet()}catch(e){}
+  var k=Object.keys(CH_TOPICS||{}).filter(function(x){return B[x]&&B[x].best!=null});
+  if(!k.length)return '';
+  return '<span class="hm-chbest">個人最佳　'+k.map(function(x){return CH_TOPICS[x].t+' <b>'+B[x].best+'</b>'}).join('．')+'</span>';
+}
+function hmFeatDecor(el,t){
+  if(t.id==='quiz'){
+    var svg=el.querySelector('svg');var w=document.createElement('span');w.innerHTML=hmStepsHTML();
+    el.insertBefore(w.firstChild,svg?svg.nextSibling:el.firstChild);
+  }else if(t.id==='challenge'){
+    el.classList.add('hm-ph');
+    var bg=document.createElement('span');bg.className='hm-phbg';bg.setAttribute('aria-hidden','true');bg.innerHTML='<i class="f"></i><i class="r"></i>';
+    el.insertBefore(bg,el.firstChild);
+    var tx=el.querySelector('.hm-tx'),b=hmChBestHTML();
+    if(tx&&b&&!el.classList.contains('tile-lock')){var s=document.createElement('span');s.innerHTML=b;tx.appendChild(s.firstChild);}
+  }
+}
+(function(){
+  var _hte=hmTileEl;
+  hmTileEl=function(t,o){var el=_hte.apply(this,arguments);try{if(o&&o.feat)hmFeatDecor(el,t)}catch(e){}return el;};
+  var _hpc=hmPaintClassTile;
+  hmPaintClassTile=function(){var r=_hpc.apply(this,arguments);
+    try{var el=$('#tileGrid.hm .tile[data-tid="quiz"]'),old=el&&$('.hm-steps',el);if(old){var w=document.createElement('span');w.innerHTML=hmStepsHTML();old.replaceWith(w.firstChild);}}catch(e){}
+    return r;};
+})();
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
