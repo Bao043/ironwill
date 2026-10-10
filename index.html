@@ -2107,6 +2107,15 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
 .reveal .rv-names::-webkit-scrollbar-track{background:transparent}
 .reveal .rv-n.mid{font-size:min(24vw,27vh)}
 .reveal .rv-names{flex-shrink:0}
+.ch-sheet-msg{margin-top:10px;border:1px solid var(--signal);background:var(--signal-soft);color:var(--ink);padding:11px 14px;font-size:calc(13.5px*var(--fs));line-height:1.65;white-space:pre-wrap}
+.toast{white-space:normal;max-width:min(560px,calc(100vw - 32px));width:max-content;text-align:center;line-height:1.5}
+/* v11.11 照片展開：排成整齊的列，每列左右切齊，照片不裁切 */
+.pgal.open{display:flex;flex-wrap:wrap;gap:6px;overflow:visible;--gh:112px}
+.pgal.open .gp{height:auto;min-width:0;flex:var(--r,1.5) 1 calc(var(--r,1.5) * var(--gh))}
+.pgal.open .gp img{width:100%;height:auto;aspect-ratio:var(--r,1.5);object-fit:cover}
+.pgal.open::after{content:"";flex:9999 1 0px;min-width:0}
+@media (min-width:760px){.pgal.open{--gh:150px;gap:8px}}
+@media (min-width:1200px){.pgal.open{--gh:180px}}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -3310,7 +3319,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.9　2026/10/09';
+var APP_VERSION='v11.11　2026/10/10';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4352,6 +4361,7 @@ function renderChAdmin(){
     '<p class="sub">欄位：主題｜編號｜題目｜A｜B｜C｜D｜答案｜詳解｜停用。主題填「消防」或「急救」，答案填 A–D。編號可以留空，系統會自動配。</p>'+
     '<div style="display:flex;gap:8px;margin-top:12px"><input class="f-in" id="chSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="flex:1;min-width:0">'+
     '<button class="qbtn" data-chsheet>讀取</button></div>'+
+    '<div class="ch-sheet-msg" id="chSheetMsg" hidden></div>'+
     '<p class="hint">試算表要放在你自己的雲端硬碟（Apps Script 用你的帳號去讀，不用公開分享）。也可以直接在試算表選取整片儲存格複製，貼到下面。</p>'+
     '<textarea class="f-in" id="chPaste" rows="3" placeholder="從 Google 試算表或 Excel 複製後貼在這裡（第一列是標題）"></textarea>'+
     '<button class="qbtn" data-chparse style="margin-top:8px">解析貼上的內容</button>'+
@@ -4520,9 +4530,11 @@ document.addEventListener('click',async function(e){
       if(!j2.ok)throw new Error(j2.error||'讀取失敗');
       CH_ED.imp=chParseSheets(j2.sheets||[]);CH_ED.imp.src='試算表「'+(j2.name||'')+'」';
       $('#chImp').innerHTML=chImpHTML();
+      chSheetMsg('');
     }catch(err){
       var m2=String(err.message||err);
-      toast(/不認得的動作/.test(m2)?'Apps Script 還是舊版，請換成新版並重新部署':m2.slice(0,40));
+      if(/不認得的動作/.test(m2))m2='Apps Script 還是舊版，請換成新版並重新部署「新版本」';
+      chSheetMsg(m2);toast('讀取失敗，原因寫在連結下面');
     }
     bt.textContent=old;return;
   }
@@ -9683,6 +9695,30 @@ function secTidy(boxSel){
     try{var pl=$('#player');if(pl){var has=!!(SITE.videos&&(SITE.videos.url||'').trim());pl.classList.toggle('sec-empty',!EDITING&&!has);}}catch(e){}
     return r;};
 })();
+/* ===== v11.10 試算表讀取失敗：原因完整寫出來，不只靠提示條 ===== */
+function chSheetMsg(m){
+  var b=$('#chSheetMsg');if(!b)return;
+  if(!m){b.hidden=true;b.textContent='';return;}
+  b.hidden=false;b.textContent=m;try{b.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
+}
+(function(){
+  var _t=toast;
+  toast=function(msg){_t.apply(this,arguments);
+    try{var n=String(msg||'').length;if(n>22){clearTimeout(toastT);var t=$('#toast');toastT=setTimeout(function(){t.classList.remove('on')},Math.min(7000,2200+(n-22)*90));}}catch(e){}
+  };
+})();
+/* ===== v11.11 照片展開：記下每張照片的長寬比，排成切齊的列 ===== */
+function galRatio(img){
+  if(!img||!img.naturalWidth||!img.naturalHeight)return;
+  var gp=img.closest('.pgal .gp');if(!gp)return;
+  var r=Math.max(.4,Math.min(3,img.naturalWidth/img.naturalHeight));
+  gp.style.setProperty('--r',r.toFixed(3));
+}
+document.addEventListener('load',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.closest&&t.closest('.pgal'))galRatio(t);},true);
+document.addEventListener('click',function(e){
+  if(!e.target.closest('[data-galmore]'))return;
+  setTimeout(function(){$$('.pgal.open .gp img').forEach(function(im){if(im.complete)galRatio(im);im.loading='eager';});},0);
+});
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
