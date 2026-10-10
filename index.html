@@ -2186,6 +2186,15 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
 #dvView .dv-b{position:relative;background:#000}
 #dvView .dv-b iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
 #dvView{--fs:var(--fsv)}
+/* v11.18 前三名：課前／課後分頁 */
+.top-tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);margin-top:16px}
+.top-tabs button{background:none;border:0;padding:12px 8px;font:inherit;font-size:calc(15px*var(--fs));font-weight:600;color:var(--muted);cursor:pointer}
+.top-tabs button+button{border-left:1px solid var(--line)}
+.top-tabs button.on{background:var(--ink);color:var(--paper)}
+.top-cap{margin-top:14px;font-size:calc(13px*var(--fs));color:var(--muted)}
+/* v11.19 專區防複製 */
+body:not(.editing) #p-article,body:not(.editing) #p-disaster,body:not(.editing) #p-firstaid,#lbox.prot,#dvView{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body:not(.editing) #p-article img,body:not(.editing) #p-disaster img,body:not(.editing) #p-firstaid img,#lbox.prot img{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -2551,9 +2560,9 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
   <!-- 前三名 -->
   <section class="page" id="p-top3">
     <div style="padding-top:24px">
-      <div class="meta">本堂課 · 課後測驗</div>
+      <div class="meta">本堂課 · 測驗表揚</div>
       <h1 class="display" style="font-size:calc(23px*var(--fs));margin-top:8px">今天的前三名</h1>
-      <p class="sub" style="margin-top:10px">同分時，進步幅度大的排前面。</p>
+      <p class="sub" style="margin-top:10px">課前、課後各有一個榜，表揚今天表現最好的同學。</p>
     </div>
 
     <div id="topList"><div class="empty">讀取中…</div></div>
@@ -3389,7 +3398,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.17　2026/10/11';
+var APP_VERSION='v11.19　2026/10/11';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -7234,13 +7243,19 @@ async function paintSessBody(code,D0){
         return '<span class="chip'+(quizOpts().nameMode===x?' on':'')+'" data-namemode="'+x+'">'+x+'</span>';
       }).join('')+'</div></div>';
     if(code!=='all'){
+      var pubP=!!(st.topPre&&(st.topPre.on||(st.topPre.score&&st.topPre.score.length)));
+      var pubPN=pubP&&st.topPre.score?st.topPre.score.length:0;
+      h+='<div class="section-head"><h2>課前前三名</h2><span>'+(pubP?'學員看得到':'學員看不到')+'</span></div>'+
+         '<div class="toggle-row"><span>對學員公布這一堂的課前前三名<em style="font-style:normal;color:var(--muted);font-size:calc(12px*var(--fs));display:block">'+
+         (pubPN?'目前公布：'+st.topPre.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.pre+'%'}).join('　'):pubP?'已打開．等學員做完課前測驗，名單會自動出現':'時間不夠只做課前測驗時用．打開後學員在「上課專區 → 前三名」看得到')+
+         '</em></span><span class="sw'+(pubP?' on':'')+'" data-toppre="'+code+'" role="switch" aria-checked="'+pubP+'" tabindex="0"></span></div>';
       var pub=!!(st.top&&(st.top.on||(st.top.score&&st.top.score.length)));
       var pubN=pub&&st.top.score?st.top.score.length:0;
-      h+='<div class="section-head"><h2>前三名榜單</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
-         '<div class="toggle-row"><span>對學員公布這一堂的前三名<em style="font-style:normal;color:var(--muted);font-size:calc(12px*var(--fs));display:block">'+
+      h+='<div class="section-head"><h2>課後前三名</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
+         '<div class="toggle-row"><span>對學員公布這一堂的課後前三名<em style="font-style:normal;color:var(--muted);font-size:calc(12px*var(--fs));display:block">'+
          (pubN?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　'):pub?'已打開．等學員做完課後測驗，名單會自動出現':'打開後學員在「上課專區 → 前三名」看得到')+
          '</em></span><span class="sw'+(pub?' on':'')+'" data-top="'+code+'" role="switch" aria-checked="'+(!!pub)+'" tabindex="0"></span></div>'+
-         '<p class="hint">可以先打開：學員做完課後測驗，榜單會自動更新（後台要開著）。姓名顯示方式改了也會自動套用。分眾統計預設關閉：班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>';
+         '<p class="hint">課前、課後都可以先打開：學員做完測驗，榜單會自動更新（後台要開著）。姓名顯示方式改了也會自動套用。分眾統計預設關閉：班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>';
     }
     // 回饋：分數題算平均，選項題算分布，文字題列出來
     var TEXT_LABELS=$$('#fbForm .f').filter(function(f){return f.querySelector('textarea')})
@@ -7289,6 +7304,23 @@ document.addEventListener('click',function(e){
   var b=t.nextElementSibling;if(b&&b.classList.contains('fb-more'))b.textContent=o?'收合 ▴':'展開全文 ▾';
 });
 document.addEventListener('click',async function(e){
+  var tp=e.target.closest('[data-toppre]');
+  if(tp){
+    var codeP=tp.dataset.toppre,FP=window.fb,onP=!tp.classList.contains('on');
+    try{
+      if(onP){
+        var rp=await buildTop(codeP);
+        var mp=function(x){return {name:maskName(x.name),pre:x.pre}};
+        await FP.setDoc(FP.doc(FP.db,'questionStats',SID(codeP)),{topPre:{on:true,score:rp.pre.map(mp),at:FP.serverTimestamp()}},{merge:true});
+        toast(rp.pre.length?'已公布課前前三名':'已打開：學員做完課前測驗，榜單會自動更新');logChange('公布課前前三名（'+codeP+'）');
+      }else{
+        await FP.setDoc(FP.doc(FP.db,'questionStats',SID(codeP)),{topPre:null},{merge:true});
+        toast('已收回課前前三名');logChange('收回課前前三名（'+codeP+'）');
+      }
+      loadSessBody(codeP);
+    }catch(err){toast('失敗：'+(err.code||err.message))}
+    return;
+  }
   var t=e.target.closest('[data-top]');
   if(t){
     var code=t.dataset.top,F=window.fb,on=!t.classList.contains('on');
@@ -8597,7 +8629,8 @@ function checkTopPublished(){
   if(!window.fb)return;
   var F=window.fb;
   F.getDoc(F.doc(F.db,'questionStats',SID())).then(function(d){
-    var t=d.exists()?d.data().top:null;TOP_PUB=!!(t&&(t.on||(t.score&&t.score.length)));applyQuizVis();
+    var dd=d.exists()?d.data():{},t=dd.top,tp=dd.topPre;
+    TOP_PUB=!!((t&&(t.on||(t.score&&t.score.length)))||(tp&&(tp.on||(tp.score&&tp.score.length))));applyQuizVis();
   }).catch(function(){});
 }
 function doneKey(mode){return 'done:'+SID()+':'+mode}
@@ -8764,10 +8797,12 @@ async function buildTop(code){
     var t=v.createdAt&&v.createdAt.toMillis?v.createdAt.toMillis():0;
     if(!by[k][v.mode+'T']||t>=by[k][v.mode+'T']){by[k][v.mode]=v.score;by[k][v.mode+'T']=t;}
   });
-  var list=Object.keys(by).map(function(k){return by[k]}).filter(function(r){return r.post!=null});
+  var all=Object.keys(by).map(function(k){return by[k]});
+  var list=all.filter(function(r){return r.post!=null});
+  var preTop=all.filter(function(r){return r.pre!=null}).sort(function(a,b){return b.pre-a.pre}).slice(0,3);
   var score=list.slice().sort(function(a,b){return (b.post-a.post)||(((b.post-(b.pre||0)))-((a.post-(a.pre||0))))}).slice(0,3);
   var gain=list.filter(function(r){return r.pre!=null}).sort(function(a,b){return (b.post-b.pre)-(a.post-a.pre)}).slice(0,3);
-  return {count:snap.size,score:score,gain:gain};
+  return {count:snap.size,score:score,gain:gain,pre:preTop};
 }
 function pushMyScore(pct){
   $('#myTag').textContent='已完成';
@@ -9901,18 +9936,24 @@ async function topAutoRefresh(){
   var F=window.fb;
   if(TOP_AUTO.busy||!F||!F.auth||!F.auth.currentUser||document.hidden)return;
   var sd=(typeof SESSION_DOC==='object'&&SESSION_DOC)||{};
-  if(!(sd.top&&sd.top.on))return;
+  var wantPost=!!(sd.top&&sd.top.on),wantPre=!!(sd.topPre&&sd.topPre.on);
+  if(!wantPost&&!wantPre)return;
   TOP_AUTO.busy=true;
   try{
     var r=await buildTop(CODE);
     var m=function(x){return {name:maskName(x.name),pre:x.pre==null?null:x.pre,post:x.post}};
-    var nx={score:r.score.map(m),gain:r.gain.map(m)};
-    var cur=JSON.stringify({score:sd.top.score||[],gain:sd.top.gain||[]});
-    var key=JSON.stringify(nx);
-    if(key!==cur&&key!==TOP_AUTO.last){
-      TOP_AUTO.last=key;
-      await F.setDoc(F.doc(F.db,'questionStats',SID()),{top:{on:true,score:nx.score,gain:nx.gain,at:F.serverTimestamp()}},{merge:true});
+    var up={};
+    if(wantPost){
+      var nx={score:r.score.map(m),gain:r.gain.map(m)};
+      var k1=JSON.stringify(nx);
+      if(k1!==JSON.stringify({score:sd.top.score||[],gain:sd.top.gain||[]})&&k1!==TOP_AUTO.last){TOP_AUTO.last=k1;up.top={on:true,score:nx.score,gain:nx.gain,at:F.serverTimestamp()};}
     }
+    if(wantPre){
+      var np=(r.pre||[]).map(function(x){return {name:maskName(x.name),pre:x.pre}});
+      var k2=JSON.stringify(np);
+      if(k2!==JSON.stringify(sd.topPre.score||[])&&k2!==TOP_AUTO.lastPre){TOP_AUTO.lastPre=k2;up.topPre={on:true,score:np,at:F.serverTimestamp()};}
+    }
+    if(up.top||up.topPre)await F.setDoc(F.doc(F.db,'questionStats',SID()),up,{merge:true});
   }catch(e){console.warn('前三名自動更新',e)}
   TOP_AUTO.busy=false;
 }
@@ -9952,6 +9993,86 @@ document.addEventListener('click',function(e){
   var m=(CUR_ART.media||[])[+d.dataset.amdv];if(!m)return;
   openDriveVideo(m.id,(CUR_ART.t||'')+(m.cap?'．'+m.cap:''));
 });
+/* ===== v11.18 學員端前三名：課前、課後兩個榜（只做課前也看得到） ===== */
+var TOP_TAB=null;
+function topPodHTML(list,kind){
+  return '<div class="podium">'+list.map(function(r,i){
+    if(kind==='pre')return '<div class="pod"><div class="pod-r">'+(i+1)+'</div><div class="pod-b"><div class="pod-n">'+hmEsc(r.name)+
+      '</div><div class="pod-m">課前測驗</div></div><div class="pod-s">'+r.pre+'<small>%</small></div></div>';
+    return '<div class="pod"><div class="pod-r">'+(i+1)+'</div><div class="pod-b"><div class="pod-n">'+hmEsc(r.name)+
+      '</div><div class="pod-m">課前 '+(r.pre==null?'—':r.pre+'%')+' → 課後 '+r.post+'%</div></div>'+
+      '<div class="pod-s">'+r.post+'<small>%</small>'+(r.pre!=null?'<em>+'+(r.post-r.pre)+'</em>':'')+'</div></div>';
+  }).join('')+'</div>';
+}
+loadTop=async function(){
+  var box=$('#topList');if(!box)return;
+  if(!window.fb){box.innerHTML='<div class="empty">離線中。</div>';return;}
+  var F=window.fb;
+  try{
+    var d=await F.getDoc(F.doc(F.db,'questionStats',SID()));
+    var dd=d.exists()?d.data():{},post=dd.top||null,pre=dd.topPre||null;
+    var onPost=!!(post&&(post.on||(post.score&&post.score.length))),onPre=!!(pre&&(pre.on||(pre.score&&pre.score.length)));
+    if(!onPost&&!onPre){box.innerHTML='<div class="empty">講師還沒公布前三名。</div>';return;}
+    var hasPost=onPost&&post.score&&post.score.length;
+    var tab=TOP_TAB&&((TOP_TAB==='pre'&&onPre)||(TOP_TAB==='post'&&onPost))?TOP_TAB:(onPost&&(hasPost||!onPre)?'post':'pre');
+    var h='';
+    if(onPre&&onPost)h+='<div class="top-tabs" role="tablist">'+
+      '<button type="button" role="tab" data-toptab="pre" aria-selected="'+(tab==='pre')+'" class="'+(tab==='pre'?'on':'')+'">課前</button>'+
+      '<button type="button" role="tab" data-toptab="post" aria-selected="'+(tab==='post')+'" class="'+(tab==='post'?'on':'')+'">課後</button></div>';
+    if(tab==='pre'){
+      h+='<div class="top-cap">課前測驗．上課前就答對最多的同學</div>';
+      h+=(pre.score&&pre.score.length)?topPodHTML(pre.score,'pre'):'<div class="empty">課前測驗還在進行中，做完的同學會陸續出現在這裡。</div>';
+    }else{
+      h+=onPre?'<div class="top-cap">課後測驗．同分時，進步幅度大的排前面</div>':'';
+      if(!hasPost){h+='<div class="empty">課後測驗還在進行中，做完的同學會陸續出現在這裡。</div>';}
+      else{
+        h+=topPodHTML(post.score,'post');
+        if(post.gain&&post.gain.length){
+          h+='<div class="section-head"><h2>進步最多</h2><span>另一種表揚</span></div><div class="rows">'+
+            post.gain.map(function(r,i){return '<div class="row" style="cursor:default"><div class="row-n">'+(i+1)+
+              '</div><div class="row-b"><div class="row-t" style="font-size:calc(15px*var(--fs))">'+hmEsc(r.name)+'<span class="delta">+'+(r.post-r.pre)+
+              '</span></div><div class="row-d">課前 '+r.pre+'% → 課後 '+r.post+'%</div></div></div>'}).join('')+'</div>';
+        }
+      }
+    }
+    box.innerHTML=h;
+  }catch(e){box.innerHTML='<div class="empty">讀取失敗：'+(e.code||e.message)+'</div>'}
+};
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-toptab]');if(!b)return;
+  TOP_TAB=b.dataset.toptab;loadTop();
+});
+/* ===== v11.19 防災／急救專區防複製：不能選取、長按、右鍵、拖曳存圖、複製、列印（編輯模式不受影響） ===== */
+var PROT_SEL='#p-article,#p-disaster,#p-firstaid,#lbox.prot,#dvView';
+function protOn(t){return !EDITING&&t&&t.closest&&!!t.closest(PROT_SEL);}
+['copy','cut','contextmenu','dragstart','selectstart'].forEach(function(ev){
+  document.addEventListener(ev,function(e){
+    if(!protOn(e.target))return;
+    var tg=e.target;if(tg.closest&&tg.closest('input,textarea,[contenteditable="true"]'))return;
+    e.preventDefault();
+    if(ev==='copy'||ev==='cut'){try{e.clipboardData&&e.clipboardData.setData('text/plain','');}catch(x){}toast('專區內容僅供線上閱讀');}
+  },true);
+});
+document.addEventListener('keydown',function(e){
+  if(EDITING||!(e.ctrlKey||e.metaKey))return;
+  var k=(e.key||'').toLowerCase();
+  var pg=$('.page.is-on'),inProt=(pg&&pg.matches('#p-article,#p-disaster,#p-firstaid'))||!!$('#lbox.prot.is-on')||!!$('#dvView.on');
+  if(!inProt)return;
+  if(k==='c'||k==='a'||k==='s'||k==='p'||k==='x'){e.preventDefault();if(k!=='a')toast('專區內容僅供線上閱讀');}
+},true);
+(function(){
+  var _ol=openLbox;
+  openLbox=function(){
+    var pg=$('.page.is-on'),art=!!(pg&&pg.id==='p-article');
+    var lb=$('#lbox');if(lb)lb.classList.toggle('prot',art);
+    return _ol.apply(this,arguments);
+  };
+})();
+// 列印時專區頁面不印內容
+(function(){var st=document.createElement('style');
+  st.textContent='@media print{body.prot-page .wrap{display:none!important}body.prot-page::after{content:"此內容僅供線上閱讀";display:block;padding:40px;font-size:calc(18px*var(--fs))}}';
+  document.head.appendChild(st);})();
+setInterval(function(){var pg=$('.page.is-on');document.body.classList.toggle('prot-page',!EDITING&&!!(pg&&pg.matches('#p-article,#p-disaster,#p-firstaid')));},800);
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
