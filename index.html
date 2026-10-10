@@ -2177,6 +2177,15 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
 /* 後台內容很短時也能稍微捲動，Safari 的工具列才會正常收合 */
 @media (max-width:1099px){body.adm-on .wrap{min-height:calc(100vh + 2px)}}
 @media (min-width:1100px){.hm-steps.n2{max-width:360px}}
+/* v11.17 */
+.img-fail{border:1px dashed var(--line);padding:22px 16px;text-align:center;font-size:calc(14px*var(--fs));color:var(--muted);line-height:1.6;background:var(--surface)}
+.am-vid.am-dv{cursor:pointer;background-color:#0b0d0f}
+.am-vid.am-dv::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,13,15,.75),rgba(11,13,15,.15))}
+.am-vid.am-dv .play{z-index:1}
+.am-dv-t{position:absolute;left:14px;bottom:12px;z-index:1;font-size:calc(12.5px*var(--fs));color:#EDEAE4;letter-spacing:.04em}
+#dvView .dv-b{position:relative;background:#000}
+#dvView .dv-b iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+#dvView{--fs:var(--fsv)}
 
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
@@ -2692,7 +2701,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
           <div class="ct-go">複製</div></div>
       </div>
 
-      <button class="btn btn-quiet" data-go="p-home" style="margin-top:20px">回課程首頁</button>
+      <button class="btn btn-quiet" data-go="p-home" style="margin-top:20px">回到首頁</button>
     </div>
   </section>
 
@@ -2766,9 +2775,9 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <button class="btn" id="wsend">送出</button>
     </div>
     <div class="done-view" id="wDone">
-      <h2 class="display">收到了。</h2>
-      <p class="sub" style="margin-top:10px">講師會在課後看到這則訊息。你可以關掉這頁，或再寫一則。</p>
-      <button class="btn btn-quiet" id="wagain" style="margin-top:20px">再寫一則</button>
+      <h2 class="display">已收到您的訊息！</h2>
+      <p class="sub" style="margin-top:10px">謝謝您的分享及回饋，讓IRON WILL有持續成長的機會！</p>
+      <button class="btn btn-quiet" id="wagain" style="margin-top:20px">回到首頁</button>
     </div>
   </section>
 </div>
@@ -3380,7 +3389,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.16　2026/10/10';
+var APP_VERSION='v11.17　2026/10/11';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -6550,6 +6559,8 @@ function applyPayload(p){
       if(v.patch){try{PATCH=Object.assign({text:{},ph:{},hide:{},del:{},order:{},add:[]},JSON.parse(v.patch));}
                   catch(e){console.warn('編輯資料壞掉',e)}
         try{Object.keys(PATCH.text||{}).forEach(function(k){var t=PATCH.text[k];if(typeof t==='string'){
+          if(t==='收到了。')t='已收到您的訊息！';if(t==='再寫一則'||t==='回課程首頁')t='回到首頁';
+          if(t.indexOf('講師會在課後看到這則訊息')===0)t='謝謝您的分享及回饋，讓IRON WILL有持續成長的機會！';
           t=t.replace(/三個工作天/g,'三至五個工作天').replace('三小時，<br>差別有多大','課前與課後，<br>差別有多大').replace('三小時，差別有多大','課前與課後，差別有多大');PATCH.text[k]=t;}})}catch(e){}}
       if($('#stSite'))$('#stSite').textContent='已同步';
     }
@@ -6756,8 +6767,8 @@ async function mailAdmin(payload){
   var j;try{j=JSON.parse(t)}catch(e){throw new Error('Apps Script 回傳的不是資料：連結可能不是資料夾、資料夾沒開分享，或 Apps Script 需要重新部署')}
   if(!j.ok){
     var er=j.error||'失敗';
-    if(/ADMIN_PIN 還沒改/.test(er))er='Apps Script 裡的密碼還是預設文字。打開 Apps Script，把第 17 行 const ADMIN_PIN = \'請改成你自己的密碼\' 引號裡的字，換成你在上面「管理密碼」填的密碼 → 存檔 →「部署 → 管理部署作業 → 編輯（鉛筆）→ 版本選『新版本』→ 部署」';
-    else if(/管理密碼不對/.test(er))er='管理密碼跟 Apps Script 第 17 行 ADMIN_PIN 的不一樣（大小寫、空白都要一樣）。改其中一邊；改 Apps Script 的話要重新部署「新版本」';
+    if(/ADMIN_PIN 還沒改/.test(er))er='Apps Script 裡的密碼還是預設文字。打開 Apps Script，把第 18 行 const ADMIN_PIN = \'請改成你自己的密碼\' 引號裡的字，換成你在上面「管理密碼」填的密碼 → 存檔 →「部署 → 管理部署作業 → 編輯（鉛筆）→ 版本選『新版本』→ 部署」';
+    else if(/管理密碼不對/.test(er))er='管理密碼跟 Apps Script 第 18 行 ADMIN_PIN 的不一樣（大小寫、空白都要一樣）。改其中一邊；改 Apps Script 的話要重新部署「新版本」';
     throw new Error(er);
   }
   return j;
@@ -7223,12 +7234,13 @@ async function paintSessBody(code,D0){
         return '<span class="chip'+(quizOpts().nameMode===x?' on':'')+'" data-namemode="'+x+'">'+x+'</span>';
       }).join('')+'</div></div>';
     if(code!=='all'){
-      var pub=st.top&&st.top.score&&st.top.score.length;
+      var pub=!!(st.top&&(st.top.on||(st.top.score&&st.top.score.length)));
+      var pubN=pub&&st.top.score?st.top.score.length:0;
       h+='<div class="section-head"><h2>前三名榜單</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
          '<div class="toggle-row"><span>對學員公布這一堂的前三名<em style="font-style:normal;color:var(--muted);font-size:calc(12px*var(--fs));display:block">'+
-         (pub?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　'):'打開後學員在「上課專區 → 前三名」看得到')+
+         (pubN?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　'):pub?'已打開．等學員做完課後測驗，名單會自動出現':'打開後學員在「上課專區 → 前三名」看得到')+
          '</em></span><span class="sw'+(pub?' on':'')+'" data-top="'+code+'" role="switch" aria-checked="'+(!!pub)+'" tabindex="0"></span></div>'+
-         '<p class="hint">改了姓名顯示方式之後，要把這個開關關掉再打開，學員看到的榜單才會更新。分眾統計預設關閉：班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>';
+         '<p class="hint">可以先打開：學員做完課後測驗，榜單會自動更新（後台要開著）。姓名顯示方式改了也會自動套用。分眾統計預設關閉：班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>';
     }
     // 回饋：分數題算平均，選項題算分布，文字題列出來
     var TEXT_LABELS=$$('#fbForm .f').filter(function(f){return f.querySelector('textarea')})
@@ -7283,10 +7295,9 @@ document.addEventListener('click',async function(e){
     try{
       if(on){
         var r=await buildTop(code);
-        if(!r.score.length){toast('這一堂還沒有課後測驗成績');return;}
         var m=function(x){return {name:maskName(x.name),pre:x.pre==null?null:x.pre,post:x.post}};
-        await F.setDoc(F.doc(F.db,'questionStats',SID(code)),{top:{score:r.score.map(m),gain:r.gain.map(m),at:F.serverTimestamp()}},{merge:true});
-        toast('已公布，學員重新整理就看得到');logChange('公布前三名（'+code+'）');
+        await F.setDoc(F.doc(F.db,'questionStats',SID(code)),{top:{on:true,score:r.score.map(m),gain:r.gain.map(m),at:F.serverTimestamp()}},{merge:true});
+        toast(r.score.length?'已公布，學員重新整理就看得到':'已打開：學員做完課後測驗，榜單會自動更新');logChange('公布前三名（'+code+'）');
       }else{
         await F.setDoc(F.doc(F.db,'questionStats',SID(code)),{top:null},{merge:true});
         toast('已收回');logChange('收回前三名（'+code+'）');
@@ -7330,10 +7341,9 @@ async function refreshAttempts(){
     var F=window.fb;if(!F||!F.auth.currentUser){toast('請先登入');return;}
     try{
       var r=await buildTop();
-      if(!r.score.length){toast('還沒有課後測驗的成績');return;}
       var m=function(x){return {name:maskName(x.name),pre:x.pre==null?null:x.pre,post:x.post}};
       await F.setDoc(F.doc(F.db,'questionStats',F.COURSE),
-        {top:{score:r.score.map(m),gain:r.gain.map(m),at:F.serverTimestamp()}},{merge:true});
+        {top:{on:true,score:r.score.map(m),gain:r.gain.map(m),at:F.serverTimestamp()}},{merge:true});
       toast('已公布，學員重新整理就看得到');logChange('公布前三名');refreshAttempts();
     }catch(e){toast('公布失敗：'+(e.code||e.message))}
   });
@@ -7533,7 +7543,7 @@ function mediaKind(f){
 function artMediaHTML(m,idx){
   var cap=m.cap?'<figcaption>'+String(m.cap).replace(/</g,'&lt;')+'</figcaption>':'';
   if(m.type==='img')return '<figure class="art-media"><img loading="lazy" alt="" data-amimg="'+idx+'" src="'+driveImg(m.id,1600)+'">'+cap+'</figure>';
-  if(m.type==='video')return '<figure class="art-media"><div class="am-vid am-drive"><iframe loading="lazy" title="影片" src="https://drive.google.com/file/d/'+m.id+'/preview" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe></div>'+cap+'</figure>';
+  if(m.type==='video')return '<figure class="art-media"><div class="am-vid am-dv" data-amdv="'+idx+'" style="background-image:url(\''+driveImg(m.id,1200)+'\')"><span class="play"></span><span class="am-dv-t">點一下全螢幕播放</span></div>'+cap+'</figure>';
   var th=ytThumb(m.id);
   return '<figure class="art-media"><div class="am-vid" data-amvid="'+idx+'" style="background-image:url(\''+th+'\')"><span class="play"></span></div>'+cap+'</figure>';
 }
@@ -8587,7 +8597,7 @@ function checkTopPublished(){
   if(!window.fb)return;
   var F=window.fb;
   F.getDoc(F.doc(F.db,'questionStats',SID())).then(function(d){
-    var t=d.exists()?d.data().top:null;TOP_PUB=!!(t&&t.score&&t.score.length);applyQuizVis();
+    var t=d.exists()?d.data().top:null;TOP_PUB=!!(t&&(t.on||(t.score&&t.score.length)));applyQuizVis();
   }).catch(function(){});
 }
 function doneKey(mode){return 'done:'+SID()+':'+mode}
@@ -8721,7 +8731,7 @@ async function loadTop(){
     var d=await F.getDoc(F.doc(F.db,'questionStats',SID()));
     var top=d.exists()?d.data().top:null;
     if(!top||!top.score||!top.score.length){
-      box.innerHTML='<div class="empty">講師還沒公布前三名。</div>';return;}
+      box.innerHTML='<div class="empty">'+(top&&top.on?'課後測驗還在進行中，做完的同學會陸續出現在這裡。':'講師還沒公布前三名。')+'</div>';return;}
     var h='<div class="podium">'+top.score.map(function(r,i){
       return '<div class="pod"><div class="pod-r">'+(i+1)+'</div><div class="pod-b"><div class="pod-n">'+r.name+
         '</div><div class="pod-m">課前 '+(r.pre==null?'—':r.pre+'%')+' → 課後 '+r.post+'%</div></div>'+
@@ -8913,8 +8923,10 @@ $('#wsend').addEventListener('click',function(){
   }
 });
 $('#wagain').addEventListener('click',function(){
+  if(EDITING)return;
   wt.value='';$('#wc').textContent='0 / 500';
   $('#wForm').style.display='';$('#wDone').classList.remove('is-on');
+  stack=['p-home'];show('p-home',true);          // v11.17：送出後回到首頁
 });
 
 /* ---- hidden gate ---- */
@@ -9848,6 +9860,98 @@ function hmFeatDecor(el,t){
   window.addEventListener('pageshow',q);document.addEventListener('visibilitychange',q);
   fix();setTimeout(fix,600);
 })();
+/* ===== v11.17 雲端硬碟圖片：縮圖網址打不開時，自動換備用網址 ===== */
+function driveIdOf(s){
+  s=String(s||'');
+  var m=s.match(/drive\.google\.com\/thumbnail\?id=([\w-]+)/)||s.match(/googleusercontent\.com\/d\/([\w-]+)/)||s.match(/drive\.google\.com\/uc\?[^#]*id=([\w-]+)/);
+  return m?m[1]:'';
+}
+document.addEventListener('error',function(e){
+  var im=e.target;if(!im||im.tagName!=='IMG')return;
+  var s=im.getAttribute('src')||'',id=driveIdOf(s);if(!id)return;
+  var w=(s.match(/sz=w(\d+)/)||s.match(/=w(\d+)/)||[])[1]||im.dataset.fbw||1200;im.dataset.fbw=w;
+  if(s.indexOf('drive.google.com/thumbnail')>=0){im.src='https://lh3.googleusercontent.com/d/'+id+'=w'+w;return;}
+  if(s.indexOf('googleusercontent.com/d/')>=0){im.src='https://drive.google.com/uc?export=view&id='+id;return;}
+  // 三個網址都打不開：題目圖片顯示提示，不要只剩一個破圖
+  if(im.matches&&im.matches('.q-img,.ans-img')&&!im.dataset.failed){
+    im.dataset.failed='1';
+    var n=document.createElement('div');n.className='img-fail';
+    n.textContent='這張圖片載入不出來，可以看講師的投影，或稍後再試一次。';
+    im.style.display='none';im.parentNode.insertBefore(n,im.nextSibling);
+    var z=im.parentNode.querySelector('.q-zoom');if(z)z.style.display='none';
+  }
+},true);
+(function(){            // 放大檢視：備用網址也能換高解析
+  var _zo=zvOpen;
+  zvOpen=function(src){
+    var s=String(src||'');
+    if(s.indexOf('googleusercontent.com/d/')>=0){
+      var r=_zo.apply(this,arguments);
+      var big=s.replace(/=w\d+/,'=w2400');
+      if(big!==s){var pre=new Image();pre.onload=function(){var i=$('#zv.on .zv-img');if(i)i.src=big;};pre.src=big;}
+      return r;
+    }
+    return _zo.apply(this,arguments);
+  };
+})();
+
+/* ===== v11.17 前三名：先打開也可以，學員做完課後測驗，後台開著就自動更新 ===== */
+var TOP_AUTO={busy:false,last:'',t:0};
+async function topAutoRefresh(){
+  var F=window.fb;
+  if(TOP_AUTO.busy||!F||!F.auth||!F.auth.currentUser||document.hidden)return;
+  var sd=(typeof SESSION_DOC==='object'&&SESSION_DOC)||{};
+  if(!(sd.top&&sd.top.on))return;
+  TOP_AUTO.busy=true;
+  try{
+    var r=await buildTop(CODE);
+    var m=function(x){return {name:maskName(x.name),pre:x.pre==null?null:x.pre,post:x.post}};
+    var nx={score:r.score.map(m),gain:r.gain.map(m)};
+    var cur=JSON.stringify({score:sd.top.score||[],gain:sd.top.gain||[]});
+    var key=JSON.stringify(nx);
+    if(key!==cur&&key!==TOP_AUTO.last){
+      TOP_AUTO.last=key;
+      await F.setDoc(F.doc(F.db,'questionStats',SID()),{top:{on:true,score:nx.score,gain:nx.gain,at:F.serverTimestamp()}},{merge:true});
+    }
+  }catch(e){console.warn('前三名自動更新',e)}
+  TOP_AUTO.busy=false;
+}
+setInterval(topAutoRefresh,20000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(topAutoRefresh,800)});
+document.addEventListener('click',function(e){if(e.target.closest('[data-namemode]'))setTimeout(topAutoRefresh,1500)});
+
+/* ===== v11.17 文章裡的雲端影片：點了用全螢幕播放（手機上嵌在文章裡容易黑畫面、進度條亂跳） ===== */
+function openDriveVideo(id,title){
+  var v=$('#dvView');
+  if(!v){
+    v=document.createElement('div');v.id='dvView';v.className='fview';v.setAttribute('role','dialog');v.setAttribute('aria-modal','true');
+    v.innerHTML='<div class="fview-h"><button class="back" data-dvclose><b>←</b>返回</button><div class="fview-t"></div>'+
+      '<a class="fview-dl" data-dvopen target="_blank" rel="noopener">在雲端開啟</a></div><div class="fview-b dv-b"></div>'+
+      '<div class="fview-n">播不出來的話，按右上角「在雲端開啟」</div>';
+    document.body.appendChild(v);
+    v.addEventListener('click',function(e){if(e.target.closest('[data-dvclose]'))closeDriveVideo();});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&v.classList.contains('on'))closeDriveVideo()});
+  }
+  DV_Y=window.scrollY||0;
+  $('.fview-t',v).textContent=title||'影片';
+  $('[data-dvopen]',v).href='https://drive.google.com/file/d/'+encodeURIComponent(id)+'/view';
+  $('.dv-b',v).innerHTML='<span class="yt-spin fv-spin"></span><iframe title="影片" src="https://drive.google.com/file/d/'+encodeURIComponent(id)+'/preview" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen></iframe>';
+  var fr=$('.dv-b iframe',v),sp=$('.dv-b .fv-spin',v);fr.addEventListener('load',function(){if(sp)sp.remove()});
+  v.classList.add('on');document.body.style.overflow='hidden';
+  try{countHit('video')}catch(e){}
+}
+var DV_Y=0;
+function closeDriveVideo(){
+  var v=$('#dvView');if(!v)return;
+  v.classList.remove('on');$('.dv-b',v).innerHTML='';document.body.style.overflow='';
+  try{window.scrollTo(0,DV_Y)}catch(e){}
+}
+document.addEventListener('click',function(e){
+  var d=e.target.closest('[data-amdv]');if(!d||EDITING||!CUR_ART)return;
+  e.preventDefault();
+  var m=(CUR_ART.media||[])[+d.dataset.amdv];if(!m)return;
+  openDriveVideo(m.id,(CUR_ART.t||'')+(m.cap?'．'+m.cap:''));
+});
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
