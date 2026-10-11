@@ -2196,6 +2196,12 @@ html[data-fs="2"] .cf-r{grid-template-columns:1fr}
 body:not(.editing) #p-article,body:not(.editing) #p-disaster,body:not(.editing) #p-firstaid,#lbox.prot,#dvView{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 body:not(.editing) #p-article img,body:not(.editing) #p-disaster img,body:not(.editing) #p-firstaid img,#lbox.prot img{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 
+/* v11.20 專區圖片浮水印 */
+.wm-wrap{position:relative;display:block}
+body:not(.editing) #p-article .wm-wrap::after,#lbox.prot #lboxPh::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='130'%3E%3Cg transform='rotate(-24 110 65)' fill='white' fill-opacity='.9' stroke='black' stroke-opacity='.45' stroke-width='.7' paint-order='stroke' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='15' letter-spacing='3'%3E%3Ctext x='18' y='58'%3EIRON WILL%3C/text%3E%3Ctext x='128' y='118' font-size='11' letter-spacing='2'%3EIRON WILL%3C/text%3E%3C/g%3E%3C/svg%3E");background-repeat:repeat;opacity:.22;mix-blend-mode:normal}
+#lbox.prot #lboxPh{position:relative}
+
 .still .hm-badge{animation:none;opacity:1;transform:none}
 #p-home.is-on:has(.hm-top){padding-top:env(safe-area-inset-top,0px)}
 body.editing #tileGrid .tile-d{display:block;font-size:calc(12px*var(--fs));color:var(--muted);margin-top:4px;min-height:1.4em;outline:1px dashed var(--line);outline-offset:2px}
@@ -2777,8 +2783,8 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 
       <div class="toggle-row" style="margin-top:6px"><span>希望講師回覆我<em style="font-style:normal;display:block;font-size:calc(12px*var(--fs));color:var(--muted)">留了聯絡方式就不是匿名的了</em></span><span class="sw" id="wantReply" role="switch" aria-checked="false" tabindex="0"></span></div>
       <div id="contactBox" style="display:none">
-        <div class="f"><div class="f-q">聯絡方式</div><div class="f-hint">LINE ID、手機或 email 都可以</div>
-          <input class="f-in" id="wContact" placeholder="例如 LINE：mingchen88"></div>
+        <div class="f"><div class="f-q">聯絡方式</div><div class="f-hint">手機或 email 都可以</div>
+          <input class="f-in" id="wContact" placeholder="例如 0912-345-678 或 name@example.com"></div>
       </div>
 
       <button class="btn" id="wsend">送出</button>
@@ -3398,7 +3404,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.19　2026/10/11';
+var APP_VERSION='v11.20　2026/10/11';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3826,8 +3832,8 @@ $('#qnext').addEventListener('click',function(){
     var myKey='my:'+(window.fb?window.fb.COURSE:'c');
     var mine={};try{mine=JSON.parse(localStorage.getItem(myKey)||'{}')}catch(e){}
     mine[QMODE]=pct;try{localStorage.setItem(myKey,JSON.stringify(mine))}catch(e){}
-    $('#sPre').innerHTML=mine.pre!=null?mine.pre+'<small>%</small>':'—';
-    $('#sPost').innerHTML=mine.post!=null?mine.post+'<small>%</small>':'—';
+    $('#sPre').innerHTML=mine.pre!=null?mine.pre+'<small>分</small>':'—';
+    $('#sPost').innerHTML=mine.post!=null?mine.post+'<small>分</small>':'—';
     $('#sUp').innerHTML=(mine.pre!=null&&mine.post!=null)?((mine.post-mine.pre>=0?'+':'')+(mine.post-mine.pre)):'—';
     saveAttempt(pct);
     if(!PREVIEW&&!EDITING){try{localStorage.setItem(doneKey(QMODE),'1')}catch(e){}}
@@ -7247,13 +7253,13 @@ async function paintSessBody(code,D0){
       var pubPN=pubP&&st.topPre.score?st.topPre.score.length:0;
       h+='<div class="section-head"><h2>課前前三名</h2><span>'+(pubP?'學員看得到':'學員看不到')+'</span></div>'+
          '<div class="toggle-row"><span>對學員公布這一堂的課前前三名<em style="font-style:normal;color:var(--muted);font-size:calc(12px*var(--fs));display:block">'+
-         (pubPN?'目前公布：'+st.topPre.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.pre+'%'}).join('　'):pubP?'已打開．等學員做完課前測驗，名單會自動出現':'時間不夠只做課前測驗時用．打開後學員在「上課專區 → 前三名」看得到')+
+         (pubPN?'目前公布：'+st.topPre.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.pre+' 分'}).join('　'):pubP?'已打開．等學員做完課前測驗，名單會自動出現':'時間不夠只做課前測驗時用．打開後學員在「上課專區 → 前三名」看得到')+
          '</em></span><span class="sw'+(pubP?' on':'')+'" data-toppre="'+code+'" role="switch" aria-checked="'+pubP+'" tabindex="0"></span></div>';
       var pub=!!(st.top&&(st.top.on||(st.top.score&&st.top.score.length)));
       var pubN=pub&&st.top.score?st.top.score.length:0;
       h+='<div class="section-head"><h2>課後前三名</h2><span>'+(pub?'學員看得到':'學員看不到')+'</span></div>'+
          '<div class="toggle-row"><span>對學員公布這一堂的課後前三名<em style="font-style:normal;color:var(--muted);font-size:calc(12px*var(--fs));display:block">'+
-         (pubN?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　'):pub?'已打開．等學員做完課後測驗，名單會自動出現':'打開後學員在「上課專區 → 前三名」看得到')+
+         (pubN?'目前公布：'+st.top.score.map(function(x,i){return (i+1)+'. '+x.name+' '+x.post+' 分'}).join('　'):pub?'已打開．等學員做完課後測驗，名單會自動出現':'打開後學員在「上課專區 → 前三名」看得到')+
          '</em></span><span class="sw'+(pub?' on':'')+'" data-top="'+code+'" role="switch" aria-checked="'+(!!pub)+'" tabindex="0"></span></div>'+
          '<p class="hint">課前、課後都可以先打開：學員做完測驗，榜單會自動更新（後台要開著）。姓名顯示方式改了也會自動套用。分眾統計預設關閉：班上人少時，「50–59 歲組平均 62%」很容易被對號入座。</p>';
     }
@@ -7364,7 +7370,7 @@ async function refreshAttempts(){
     var c=$('#atCount');if(c)c.textContent=r.count+' 筆作答';
     var p=$('#proTop');
     if(p)p.innerHTML=r.score.length?('<div class="hint">目前排名：'+r.score.map(function(x,i){
-      return (i+1)+'. '+x.name+' '+x.post+'%'}).join('　')+'</div>'):'<div class="hint">還沒有課後測驗的成績。</div>';
+      return (i+1)+'. '+x.name+' '+x.post+' 分'}).join('　')+'</div>'):'<div class="hint">還沒有課後測驗的成績。</div>';
   }catch(e){console.warn(e)}
 }
 (function(){
@@ -7574,7 +7580,7 @@ function mediaKind(f){
 }
 function artMediaHTML(m,idx){
   var cap=m.cap?'<figcaption>'+String(m.cap).replace(/</g,'&lt;')+'</figcaption>':'';
-  if(m.type==='img')return '<figure class="art-media"><img loading="lazy" alt="" data-amimg="'+idx+'" src="'+driveImg(m.id,1600)+'">'+cap+'</figure>';
+  if(m.type==='img')return '<figure class="art-media"><span class="wm-wrap"><img loading="lazy" alt="" data-amimg="'+idx+'" src="'+driveImg(m.id,1600)+'"></span>'+cap+'</figure>';
   if(m.type==='video')return '<figure class="art-media"><div class="am-vid am-dv" data-amdv="'+idx+'" style="background-image:url(\''+driveImg(m.id,1200)+'\')"><span class="play"></span><span class="am-dv-t">點一下全螢幕播放</span></div>'+cap+'</figure>';
   var th=ytThumb(m.id);
   return '<figure class="art-media"><div class="am-vid" data-amvid="'+idx+'" style="background-image:url(\''+th+'\')"><span class="play"></span></div>'+cap+'</figure>';
@@ -8705,8 +8711,8 @@ async function loadClassStats(){
   var box=$('#clsStats');if(!box)return;
   var mine={};try{mine=JSON.parse(localStorage.getItem('my:'+(window.fb?window.fb.COURSE:'c'))||'{}')}catch(e){}
   if(!quizOpts().score)mine={};
-  $('#myPre').innerHTML=mine.pre!=null?mine.pre+'<small>%</small>':'—';
-  $('#myPost').innerHTML=mine.post!=null?mine.post+'<small>%</small>':'—';
+  $('#myPre').innerHTML=mine.pre!=null?mine.pre+'<small>分</small>':'—';
+  $('#myPost').innerHTML=mine.post!=null?mine.post+'<small>分</small>':'—';
   $('#myUp').innerHTML=(mine.pre!=null&&mine.post!=null)?((mine.post-mine.pre>=0?'+':'')+(mine.post-mine.pre)):'—';
   $('#myTag').textContent=mine.post!=null?'已完成':mine.pre!=null?'完成課前':'尚未作答';
   if(!window.fb){box.innerHTML='<div class="empty">離線中，看不到全班統計。</div>';return;}
@@ -8767,14 +8773,14 @@ async function loadTop(){
       box.innerHTML='<div class="empty">'+(top&&top.on?'課後測驗還在進行中，做完的同學會陸續出現在這裡。':'講師還沒公布前三名。')+'</div>';return;}
     var h='<div class="podium">'+top.score.map(function(r,i){
       return '<div class="pod"><div class="pod-r">'+(i+1)+'</div><div class="pod-b"><div class="pod-n">'+r.name+
-        '</div><div class="pod-m">課前 '+(r.pre==null?'—':r.pre+'%')+' → 課後 '+r.post+'%</div></div>'+
-        '<div class="pod-s">'+r.post+'<small>%</small>'+(r.pre!=null?'<em>+'+(r.post-r.pre)+'</em>':'')+'</div></div>';
+        '</div><div class="pod-m">課前 '+(r.pre==null?'—':r.pre+' 分')+' → 課後 '+r.post+' 分</div></div>'+
+        '<div class="pod-s">'+r.post+'<small>分</small>'+(r.pre!=null?'<em>+'+(r.post-r.pre)+'</em>':'')+'</div></div>';
     }).join('')+'</div>';
     if(top.gain&&top.gain.length){
       h+='<div class="section-head"><h2>進步最多</h2><span>另一種表揚</span></div><div class="rows">'+
         top.gain.map(function(r,i){return '<div class="row" style="cursor:default"><div class="row-n">'+(i+1)+
           '</div><div class="row-b"><div class="row-t" style="font-size:calc(15px*var(--fs))">'+r.name+'<span class="delta">+'+(r.post-r.pre)+
-          '</span></div><div class="row-d">課前 '+r.pre+'% → 課後 '+r.post+'%</div></div></div>'}).join('')+'</div>';
+          '</span></div><div class="row-d">課前 '+r.pre+' 分 → 課後 '+r.post+' 分</div></div></div>'}).join('')+'</div>';
     }
     box.innerHTML=h;
   }catch(e){box.innerHTML='<div class="empty">讀取失敗：'+(e.code||e.message)+'</div>'}
@@ -8807,7 +8813,7 @@ async function buildTop(code){
 function pushMyScore(pct){
   $('#myTag').textContent='已完成';
   if(!quizOpts().score){$('#myNote').textContent='講師公布後，這裡會出現你自己的分數。';return;}
-  $('#myPost').innerHTML=pct+'<small>%</small>';
+  $('#myPost').innerHTML=pct+'<small>分</small>';
   $('#myUp').innerHTML='—';
   $('#myNote').textContent=pct>=COURSE.pass?'及格了。':'還差一點，錯的那幾題去看詳解。';
 }
@@ -9998,10 +10004,10 @@ var TOP_TAB=null;
 function topPodHTML(list,kind){
   return '<div class="podium">'+list.map(function(r,i){
     if(kind==='pre')return '<div class="pod"><div class="pod-r">'+(i+1)+'</div><div class="pod-b"><div class="pod-n">'+hmEsc(r.name)+
-      '</div><div class="pod-m">課前測驗</div></div><div class="pod-s">'+r.pre+'<small>%</small></div></div>';
+      '</div><div class="pod-m">課前測驗</div></div><div class="pod-s">'+r.pre+'<small>分</small></div></div>';
     return '<div class="pod"><div class="pod-r">'+(i+1)+'</div><div class="pod-b"><div class="pod-n">'+hmEsc(r.name)+
-      '</div><div class="pod-m">課前 '+(r.pre==null?'—':r.pre+'%')+' → 課後 '+r.post+'%</div></div>'+
-      '<div class="pod-s">'+r.post+'<small>%</small>'+(r.pre!=null?'<em>+'+(r.post-r.pre)+'</em>':'')+'</div></div>';
+      '</div><div class="pod-m">課前 '+(r.pre==null?'—':r.pre+' 分')+' → 課後 '+r.post+' 分</div></div>'+
+      '<div class="pod-s">'+r.post+'<small>分</small>'+(r.pre!=null?'<em>+'+(r.post-r.pre)+'</em>':'')+'</div></div>';
   }).join('')+'</div>';
 }
 loadTop=async function(){
@@ -10031,7 +10037,7 @@ loadTop=async function(){
           h+='<div class="section-head"><h2>進步最多</h2><span>另一種表揚</span></div><div class="rows">'+
             post.gain.map(function(r,i){return '<div class="row" style="cursor:default"><div class="row-n">'+(i+1)+
               '</div><div class="row-b"><div class="row-t" style="font-size:calc(15px*var(--fs))">'+hmEsc(r.name)+'<span class="delta">+'+(r.post-r.pre)+
-              '</span></div><div class="row-d">課前 '+r.pre+'% → 課後 '+r.post+'%</div></div></div>'}).join('')+'</div>';
+              '</span></div><div class="row-d">課前 '+r.pre+' 分 → 課後 '+r.post+' 分</div></div></div>'}).join('')+'</div>';
         }
       }
     }
@@ -10073,6 +10079,33 @@ document.addEventListener('keydown',function(e){
   st.textContent='@media print{body.prot-page .wrap{display:none!important}body.prot-page::after{content:"此內容僅供線上閱讀";display:block;padding:40px;font-size:calc(18px*var(--fs))}}';
   document.head.appendChild(st);})();
 setInterval(function(){var pg=$('.page.is-on');document.body.classList.toggle('prot-page',!EDITING&&!!(pg&&pg.matches('#p-article,#p-disaster,#p-firstaid')));},800);
+/* ===== v11.20 文章裡的 YouTube 影片：也改成全螢幕播放（嵌在文章裡 iPhone 常常按了沒反應） ===== */
+function openYTVideo(id,title){
+  openDriveVideo('__yt__',title);           // 借用同一個全螢幕播放框
+  var v=$('#dvView');if(!v)return;
+  var src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&autoplay=1';
+  $('[data-dvopen]',v).href='https://youtu.be/'+encodeURIComponent(id);
+  $('[data-dvopen]',v).textContent='用 YouTube 開';
+  $('.fview-n',v).textContent='播不出來的話，按右上角「用 YouTube 開」';
+  $('.dv-b',v).innerHTML='<span class="yt-spin fv-spin"></span><iframe title="影片" src="'+src+'" referrerpolicy="strict-origin-when-cross-origin" '+
+    'allow="accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture;fullscreen;web-share" allowfullscreen></iframe>';
+  var fr=$('.dv-b iframe',v),sp=$('.dv-b .fv-spin',v);fr.addEventListener('load',function(){if(sp)sp.remove()});
+}
+(function(){
+  var _od=openDriveVideo;
+  openDriveVideo=function(id,title){
+    var r=_od.apply(this,arguments);
+    var v=$('#dvView');
+    if(v&&id!=='__yt__'){$('[data-dvopen]',v).textContent='在雲端開啟';$('.fview-n',v).textContent='播不出來的話，按右上角「在雲端開啟」';}
+    return r;
+  };
+})();
+document.addEventListener('click',function(e){
+  var v=e.target.closest('[data-amvid]');if(!v||EDITING||!CUR_ART)return;
+  var m=(CUR_ART.media||[])[+v.dataset.amvid];if(!m||m.type!=='yt')return;
+  e.preventDefault();e.stopPropagation();
+  openYTVideo(m.id,(CUR_ART.t||'')+(m.cap?'．'+m.cap:''));
+},true);
 
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
