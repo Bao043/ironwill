@@ -2267,6 +2267,12 @@ html.wm-off .wm-wrap::after,html.wm-off #lbox.prot #lboxPh::after{display:none!i
 #artBody.wm-none .wm-wrap::after{display:none!important}
 .wm-prev{position:relative;height:96px;margin-top:10px;background:#5b6670;overflow:hidden;display:grid;place-items:center;font-size:12px;color:#d6dad7}
 .wm-prev::after{content:"";position:absolute;inset:0;background-image:var(--wm-img);opacity:var(--wm-op,.22)}
+/* v11.24 */
+#lbox .lbox-in{max-width:min(900px,94vw)}
+#lboxPh img{cursor:zoom-in}
+#lbox .lbox-cap span::after{content:"　點圖可放大";color:#8C9499}
+#zv.wm .zv-stage::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--wm-img);opacity:var(--wm-op,.22)}
+html.wm-off #zv.wm .zv-stage::after{display:none}
 </style>
 <script>
 /* 在畫面出來之前就決定：學員網址不顯示控制台，並先隱藏內容等資料到齊 */
@@ -3472,7 +3478,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.23　2026/10/11';
+var APP_VERSION='v11.24　2026/10/12';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -8981,6 +8987,13 @@ $('#ivSend').addEventListener('click',function(){
   var picked=$$('#inviteTypes .chip.on').map(function(c){return c.textContent.trim()});
   var bmOn=$$('#budgetMode .chip.on')[0];
   var allFields=collectFields('#ivForm');
+  var ob=$('#otherBox'),otherTxt='';
+  if(ob&&picked.some(function(x){return x.indexOf('其他')>=0})){
+    var oc=$$('.chip.on',ob).map(function(c){return c.textContent.trim()}),oi=ob.querySelector('input'),ot=oi?(oi.value||'').trim():'';
+    otherTxt=oc.concat(ot?[ot]:[]).join('、');
+  }
+  if(otherTxt)picked=picked.map(function(x){return x.indexOf('其他')>=0?'其他專題課程（'+otherTxt+'）':x});
+  allFields.forEach(function(f){if(f.label==='課程類型'&&picked.length)f.value=picked.join('、')});
   var miss=missingRequired(allFields);
   if(miss.length){toast('還沒填：'+miss.slice(0,2).join('、'));return;}
   var data={
@@ -10524,6 +10537,16 @@ document.addEventListener('input',function(e){
 });
 try{applyWM()}catch(e){console.warn('浮水印',e)}
 
+/* ===== v11.24 文章照片：點放大的照片可以再放大（縮放、拖曳），並保留浮水印 ===== */
+(function(){
+  var _z=zvOpen;
+  zvOpen=function(src,wm){var r=_z.apply(this,arguments);var v=$('#zv');if(v)v.classList.toggle('wm',!!wm);return r;};
+})();
+document.addEventListener('click',function(e){
+  var im=e.target.closest('#lboxPh img');if(!im||EDITING||!LB.ids||!LB.ids.length)return;
+  e.stopPropagation();
+  zvOpen(driveImg(LB.ids[LB.i],2400),$('#lbox').classList.contains('prot'));
+},true);
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
 
