@@ -2273,6 +2273,27 @@ html.wm-off .wm-wrap::after,html.wm-off #lbox.prot #lboxPh::after{display:none!i
 #lbox .lbox-cap span::after{content:"　點圖可放大";color:#8C9499}
 #zv.wm .zv-stage::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--wm-img);opacity:var(--wm-op,.22)}
 html.wm-off #zv.wm .zv-stage::after{display:none}
+/* v11.25 電腦版：內頁加寬、字放大、清單分欄 */
+@media (min-width:1100px){
+  .wrap:has(#z-student.is-on){max-width:min(1100px,90vw)}
+  #z-student .page:not(#p-home),#z-student #nav{--fs:calc(var(--fsv)*1.15)}
+  #z-student .page:not(#p-home){font-size:calc(16px*var(--fs))}
+  #p-profile,#p-name,#p-code,#p-run,#p-explain,#p-stats,#p-top3,#p-feedback,#p-invite,#p-whisper,#p-challenge,#p-quiz{max-width:880px;margin-left:auto;margin-right:auto}
+  #p-article{max-width:920px;margin-left:auto;margin-right:auto}
+  #artBody,#p-article .story,#p-article p{max-width:none}
+  #p-about .story,#p-about .sub,#p-about .hint{max-width:46em}
+  #listDisaster,#listFirstaid,#fileList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px;align-items:start}
+  #listDisaster>.course-more,#listDisaster>.empty,#listFirstaid>.course-more,#listFirstaid>.empty,#fileList>.empty{grid-column:1/-1}
+  #fileList{column-gap:18px}
+  #abContacts.cts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .lead{max-width:none}
+}
+@media (min-width:1500px){
+  .wrap:has(#z-student.is-on){max-width:min(1240px,88vw)}
+  #z-student .page:not(#p-home),#z-student #nav{--fs:calc(var(--fsv)*1.25)}
+  #p-profile,#p-name,#p-code,#p-run,#p-explain,#p-stats,#p-top3,#p-feedback,#p-invite,#p-whisper,#p-challenge,#p-quiz{max-width:960px}
+  #p-article{max-width:1000px}
+}
 </style>
 <script>
 /* 在畫面出來之前就決定：學員網址不顯示控制台，並先隱藏內容等資料到齊 */
@@ -3478,7 +3499,7 @@ function watchCourse(){
   },function(e){console.warn('課程設定同步失敗',e)});
 }
 /* ---- 深淺色 ---- */
-var APP_VERSION='v11.24　2026/10/12';
+var APP_VERSION='v11.25　2026/10/13';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -6178,9 +6199,9 @@ function layoutMosaic(){
   if(!W){box.classList.remove('laid');
     if((box._tries=(box._tries||0)+1)<60)requestAnimationFrame(layoutMosaic);return;}
   box._tries=0;
-  var wide=W>560;
-  if(wide)W=Math.min(W,640);                       // 大螢幕：照片不要佔滿整個寬度
-  var maxH=Math.min(window.innerHeight*(wide?0.42:0.62), wide?460:560), pos=[], H;
+  var wide=W>560,big=W>900;
+  if(wide)W=Math.min(W,big?900:640);               // 大螢幕：照片不要佔滿整個寬度
+  var maxH=Math.min(window.innerHeight*(big?0.6:wide?0.42:0.62), big?680:(wide?460:560)), pos=[], H;
   if(ims.length===1){
     var h1=W/r[0];if(h1>maxH)h1=maxH;var w1=h1*r[0];
     pos=[[ (W-w1)/2,0,w1,h1 ]];H=h1;
@@ -9737,8 +9758,8 @@ var ZV={s:1,x:0,y:0,bw:0,bh:0,W:0,H:0,pts:{},g:null,tap:0,tx:0,ty:0,moved:false}
 function zvEl(){
   var v=$('#zv');if(v)return v;
   v=document.createElement('div');v.id='zv';v.setAttribute('role','dialog');v.setAttribute('aria-label','圖片放大檢視');
-  v.innerHTML='<div class="zv-stage"><img class="zv-img" alt="題目圖片" draggable="false"></div>'+
-    '<div class="zv-top"><b>題目圖片</b><button type="button" class="zv-x" data-zvx aria-label="關閉">✕</button></div>'+
+  v.innerHTML='<div class="zv-stage"><img class="zv-img" alt="" draggable="false"></div>'+
+    '<div class="zv-top"><b></b><button type="button" class="zv-x" data-zvx aria-label="關閉">✕</button></div>'+
     '<div class="zv-mini"><img alt=""><i></i></div>'+
     '<div class="zv-bot"><div class="zv-hint"><span>兩指張開放大</span><span>點兩下放大</span><span>單指拖曳移動</span></div>'+
     '<div class="zv-ctl"><button type="button" data-zv="-" aria-label="縮小">－</button><span class="v">100%</span>'+
