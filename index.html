@@ -2918,9 +2918,9 @@ function watchCourse(){
         }
       }
     }catch(e){}
-  },function(e){console.warn('課程設定同步失敗',e)});
+  },function(e){console.warn('課程設定同步失敗',e);unsubC=null;setTimeout(function(){try{watchCourse()}catch(x){}},3000);});
 }
-var APP_VERSION='v11.30　2026/10/15';
+var APP_VERSION='v11.31　2026/10/18';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -6770,6 +6770,20 @@ document.addEventListener('click',function(e){if(e.target.closest('#artShare'))a
     if(hit){clearInterval(tm);try{openArt(id)}catch(e){console.warn('開啟分享文章失敗',e)}}
     else if(tries>40)clearInterval(tm);
   },300);
+})();
+(function(){
+  var last=0;
+  function resync(){
+    var now=Date.now();if(now-last<4000)return;last=now;
+    if(!window.fb||!unsubC)return;
+    try{unsubC()}catch(e){}
+    unsubC=null;
+    try{watchCourse()}catch(e){}
+  }
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')resync();});
+  window.addEventListener('online',resync);
+  window.addEventListener('focus',resync);
+  window.addEventListener('pageshow',function(e){if(e.persisted)resync();});
 })();
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
