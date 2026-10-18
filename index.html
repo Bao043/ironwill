@@ -1394,6 +1394,9 @@ body.editing .wrap{padding-bottom:140px}
 .code-in::placeholder{color:var(--line)}
 .code-bad{color:var(--signal);font-size:calc(12.5px*var(--fs));margin-top:10px;display:none}
 .code-bad.on{display:block}
+.code-why{margin-top:16px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:calc(13px*var(--fs));line-height:1.75;color:var(--ink-soft)}
+.code-why b{color:var(--ink)}
+.code-why p{margin:6px 0 0}
 
 /* article */
 .art p{font-size:calc(16px*var(--fs));line-height:2.05;margin:0 0 20px}
@@ -2581,10 +2584,17 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
       <div class="meta">上課代號</div>
       <h1 class="display" style="font-size:calc(24px*var(--fs));margin-top:8px" data-txt="codeTitle">先輸入今天的代號</h1>
       <p class="sub" style="margin-top:10px">代號請看講師的投影或白板。</p>
+      <div class="code-why">
+        <b>什麼是「上課代號」？</b>
+        <p>「上課專區」是給來上課的學員用的：課前課後測驗、課程回饋、看自己的成績，都在裡面。</p>
+        <p>代號是 4 位數字，由講師在<b>課堂現場</b>的投影或白板上公布，用來確認你有參加這堂課。每堂課的代號不一樣，輸入一次之後，這堂課就不用再輸入。</p>
+        <p>如果你是從分享連結點進來、並沒有來上課，這一區暫時用不到，歡迎回首頁看看其他內容。</p>
+      </div>
       <input class="code-in" id="codeIn" inputmode="numeric" maxlength="4" placeholder="0000">
       <div class="code-bad" id="codeBad">代號不對。講師會寫在白板上，或直接問一下。</div>
       <button class="btn" id="codeOk">確認</button>
       <button class="btn btn-quiet" id="codeExp" data-go="p-explain">我只想看題目詳解</button>
+      <button class="btn btn-quiet" id="codeHome" data-go="p-home">我不是來上課的，回首頁</button>
       <p class="note" hidden></p>
     </div>
   </section>
@@ -2871,7 +2881,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 <script>
 (function(){
 var NOEL=(function(){var t=function(){};var p=new Proxy(t,{get:function(_,k){if(k===Symbol.toPrimitive)return function(){return ''};if(k==='length')return 0;if(k==='then')return undefined;return p},set:function(){return true},apply:function(){return p},construct:function(){return p}});return p})();
-var ADMID={"#z-home":1,"#conTitle":1,"#conSub":1,"#stOpen":1,"#stCode":1,"#stPpl":1,"#actLogin":1,"#actLoginT":1,"#actLoginD":1,"#actPreview":1,"#actOpen":1,"#actShare":1,"#shareBox":1,"#qrWrap":1,"#stuLink":1,"#copyLink":1,"#openQR":1,"#z-pro":1,"#pbInbox":1,"#pbBadge":1,"#pbHome":1,"#verBar":1,"#sideBadge":1,"#at-today":1,"#proMeta":1,"#proTitle":1,"#codeShow":1,"#regenCode":1,"#tdQR":1,"#tdShare":1,"#pnl-share":1,"#qrWrap2":1,"#stuLink2":1,"#copyLink2":1,"#openQR2":1,"#kpiPpl":1,"#kpiPre":1,"#kpiPost":1,"#tdNext":1,"#qvPre":1,"#qvPost":1,"#qvLevel":1,"#qvLevelNote":1,"#qvFb":1,"#tdInboxD":1,"#kpiW":1,"#kpiInv":1,"#tdInboxPill":1,"#inboxCount":1,"#tdChD":1,"#tdChPill":1,"#tdSessH":1,"#fbTag":1,"#sessPick":1,"#sessBody":1,"#at-inbox":1,"#pnl-inbox":1,"#boxSeg":1,"#boxW":1,"#wSeg":1,"#wInbox":1,"#boxI":1,"#iSeg":1,"#iInbox":1,"#reloadInv":1,"#at-bank":1,"#bankSeg":1,"#grp-quiz":1,"#qTag":1,"#qsMode":1,"#setPick":1,"#setNew":1,"#setCopy":1,"#setRename":1,"#setDel":1,"#setNote":1,"#qeHead":1,"#qeCount":1,"#qeList":1,"#qeAdd":1,"#qvStats":1,"#qvGuessPre":1,"#qvGuessPost":1,"#qvRetry":1,"#edPass":1,"#grp-challenge":1,"#chTag":1,"#chAdmin":1,"#at-content":1,"#grp-about":1,"#aboutTag":1,"#edVidUrl":1,"#edVidTitle":1,"#edVidNote":1,"#edVidMore":1,"#cwCount":1,"#courseEdit":1,"#courseAdd":1,"#etScopeN":1,"#etScope":1,"#edRuby":1,"#edIG":1,"#edLine":1,"#edTel":1,"#edMail":1,"#grp-articles":1,"#artTag":1,"#nfViews":1,"#wmOn":1,"#wmBox":1,"#wmText":1,"#wmLv":1,"#wmPrev":1,"#addArticle":1,"#artQ":1,"#artF":1,"#artCount":1,"#artEdit":1,"#artRank":1,"#grp-files":1,"#filesTag":1,"#edFilesFolder":1,"#readFiles":1,"#filePick":1,"#fileCount":1,"#fileEdit":1,"#grp-home":1,"#homeTag":1,"#goEdit":1,"#homeTiles":1,"#homePos":1,"#at-settings":1,"#grp-mail":1,"#mailCount":1,"#edEndpoint":1,"#edPin":1,"#mailStatus":1,"#testMail":1,"#testOpen":1,"#mailMsg":1,"#rcptCount":1,"#edEmails":1,"#mailQuota":1,"#setRcpt":1,"#nfWhisper":1,"#nfInvite":1,"#nfFeedback":1,"#nfContent":1,"#nfAck":1,"#edAckSub":1,"#edAckBody":1,"#setAck":1,"#grp-traffic":1,"#traffic":1,"#grp-export":1,"#grp-backup":1,"#bkTag":1,"#bkEndpoint":1,"#bkNow":1,"#bkReload":1,"#bkMsg":1,"#bkCount":1,"#bkList":1,"#grp-sync":1,"#syncTag":1,"#seedBtn":1,"#pullBtn":1,"#stCourse":1,"#stSite":1,"#stQ":1,"#grp-account":1,"#acctTag":1,"#pwOld":1,"#pwNew":1,"#pwNew2":1,"#pwGo":1,"#emOld":1,"#emNew":1,"#emGo":1,"#pwReset":1,"#opCount":1,"#etOps":1,"#grp-log":1,"#logList":1,"#conn":1,"#connT":1,"#signOut":1,"#verTag":1,"#themeBtn":1,"#undoBar":1,"#undoT":1,"#undoGo":1,"#notif":1,"#notifT":1,"#notifD":1,"#dirtyBar":1,"#dirtyCancel":1,"#dirtySave":1,"#optSheet":1,"#optDone":1,"#optList":1,"#optAdd":1,"#edDock":1,"#edRestore":1,"#edSave":1,"#edExit":1,"#proSwitch":1};
+var ADMID={"#z-home":1,"#conTitle":1,"#conSub":1,"#stOpen":1,"#stCode":1,"#stPpl":1,"#actLogin":1,"#actLoginT":1,"#actLoginD":1,"#actPreview":1,"#actOpen":1,"#actShare":1,"#shareBox":1,"#qrWrap":1,"#stuLink":1,"#copyLink":1,"#openQR":1,"#z-pro":1,"#pbInbox":1,"#pbBadge":1,"#pbHome":1,"#verBar":1,"#sideBadge":1,"#at-today":1,"#proMeta":1,"#proTitle":1,"#codeShow":1,"#regenCode":1,"#tdQR":1,"#tdShare":1,"#pnl-share":1,"#qrWrap2":1,"#stuLink2":1,"#copyLink2":1,"#openQR2":1,"#kpiPpl":1,"#kpiPre":1,"#kpiPost":1,"#tdNext":1,"#qvPre":1,"#qvPost":1,"#qvLevel":1,"#qvLevelNote":1,"#qvFb":1,"#tdInboxD":1,"#kpiW":1,"#kpiInv":1,"#tdInboxPill":1,"#inboxCount":1,"#tdChD":1,"#tdChPill":1,"#tdSessH":1,"#fbTag":1,"#sessPick":1,"#sessBody":1,"#at-inbox":1,"#pnl-inbox":1,"#boxSeg":1,"#boxW":1,"#wSeg":1,"#wInbox":1,"#boxI":1,"#iSeg":1,"#iInbox":1,"#reloadInv":1,"#at-bank":1,"#bankSeg":1,"#grp-quiz":1,"#qTag":1,"#qsMode":1,"#setPick":1,"#setNew":1,"#setCopy":1,"#setRename":1,"#setDel":1,"#setNote":1,"#qeHead":1,"#qeCount":1,"#qeList":1,"#qeAdd":1,"#qvStats":1,"#qvGuessPre":1,"#qvGuessPost":1,"#qvRetry":1,"#edPass":1,"#grp-challenge":1,"#chTag":1,"#chAdmin":1,"#at-content":1,"#grp-about":1,"#aboutTag":1,"#edVidUrl":1,"#edVidTitle":1,"#edVidNote":1,"#edVidMore":1,"#cwCount":1,"#courseEdit":1,"#courseAdd":1,"#etScopeN":1,"#etScope":1,"#edRuby":1,"#edIG":1,"#edLine":1,"#edTel":1,"#edMail":1,"#grp-articles":1,"#artTag":1,"#nfViews":1,"#wmOn":1,"#wmBox":1,"#wmText":1,"#wmLv":1,"#wmPrev":1,"#addArticle":1,"#artQ":1,"#artF":1,"#artCount":1,"#artEdit":1,"#artRank":1,"#grp-files":1,"#filesTag":1,"#edFilesFolder":1,"#readFiles":1,"#filePick":1,"#fileCount":1,"#fileEdit":1,"#grp-home":1,"#homeTag":1,"#goEdit":1,"#homeTiles":1,"#homePos":1,"#at-settings":1,"#grp-mail":1,"#mailCount":1,"#edEndpoint":1,"#edPin":1,"#mailStatus":1,"#testMail":1,"#testOpen":1,"#mailMsg":1,"#rcptCount":1,"#edEmails":1,"#mailQuota":1,"#setRcpt":1,"#nfWhisper":1,"#nfInvite":1,"#nfFeedback":1,"#nfContent":1,"#nfAck":1,"#edAckSub":1,"#edAckBody":1,"#setAck":1,"#grp-traffic":1,"#traffic":1,"#grp-export":1,"#grp-backup":1,"#bkTag":1,"#bkEndpoint":1,"#bkPin":1,"#bkNow":1,"#bkReload":1,"#bkMsg":1,"#bkCount":1,"#bkList":1,"#grp-sync":1,"#syncTag":1,"#seedBtn":1,"#pullBtn":1,"#stCourse":1,"#stSite":1,"#stQ":1,"#grp-account":1,"#acctTag":1,"#pwOld":1,"#pwNew":1,"#pwNew2":1,"#pwGo":1,"#emOld":1,"#emNew":1,"#emGo":1,"#pwReset":1,"#opCount":1,"#etOps":1,"#grp-log":1,"#logList":1,"#conn":1,"#connT":1,"#signOut":1,"#verTag":1,"#themeBtn":1,"#undoBar":1,"#undoT":1,"#undoGo":1,"#notif":1,"#notifT":1,"#notifD":1,"#dirtyBar":1,"#dirtyCancel":1,"#dirtySave":1,"#optSheet":1,"#optDone":1,"#optList":1,"#optAdd":1,"#edDock":1,"#edRestore":1,"#edSave":1,"#edExit":1,"#proSwitch":1};
 var $=function(s,r){var e=(r||document).querySelector(s);return e||(!r&&ADMID[s]?NOEL:null)};
 var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
 function setConn(state,text){
@@ -2920,7 +2930,7 @@ function watchCourse(){
     }catch(e){}
   },function(e){console.warn('課程設定同步失敗',e);unsubC=null;setTimeout(function(){try{watchCourse()}catch(x){}},3000);});
 }
-var APP_VERSION='v11.31　2026/10/18';
+var APP_VERSION='v11.32　2026/10/18';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3029,7 +3039,7 @@ function show(id,isBack){
 }
 var HITMAP={'p-files':'files','p-about':'about','p-quiz':'quiz','p-feedback':'feedback','p-invite':'invite',
             'p-disaster':'disaster','p-firstaid':'firstaid','p-whisper':'whisper','p-challenge':'challenge'};
-function go(id){
+function go(id){ if(id==='p-quiz'&&!EDITING&&!hasPassed()){pending='p-quiz';try{$('#codeIn').value='';$('#codeBad').classList.remove('on')}catch(e){}id='p-code';}
   if(id!==stack[stack.length-1]){stack.push(id);}
   show(id,false);
   if(id==='p-name'||id==='p-profile')prefillName();
@@ -5384,7 +5394,7 @@ $('#codeOk').addEventListener('click',function(){
     try{localStorage.setItem(passKey(),CODE)}catch(e){}
     countEntered();
     $('#codeBad').classList.remove('on');
-    var dest=pending||'p-run';
+    var dest=pending||'p-run';if(stack[stack.length-1]==='p-code')stack.pop();
     if(dest==='p-run')dest=profileName?'p-name':'p-profile';
     go(dest);
   }else{$('#codeBad').classList.add('on');}
@@ -6024,6 +6034,7 @@ function chBestLine(){
   var t=k[0],o=B[t];
   return '<div class="ch-best">上一次：'+CH_TOPICS[t].t+' '+o.last+' 分．個人最佳 '+o.best+' 分</div>';
 }
+var ATAB='today',BK='grp-quiz';
 function paintToday(){}
 try{paintClassZone();paintToday();}catch(e){console.warn('v11 初始化',e)}
 function fbPrefill(){
@@ -6736,6 +6747,76 @@ document.addEventListener('click',function(e){
     if(g&&g._noclick&&Date.now()-g._noclick<300){e.stopPropagation();e.preventDefault();}
   },true);
 })();
+var BK={list:[],busy:false,asked:false};
+var BK_REASON={auto:'自動',save:'儲存前',manual:'手動',restore:'還原前'};
+function bkEp(){return String((($('#bkEndpoint')||{}).value)||((SITE.backup||{}).endpoint)||'').trim()}
+function bkPin(){var p=String((($('#bkPin')||{}).value)||'').trim();if(!p)p=String((($('#edPin')||{}).value)||'').trim();if(!p){try{p=localStorage.getItem('mailPin')||''}catch(e){}}return p}
+function bkReady(){var e=bkEp();return !!(e&&e.indexOf('/exec')>0&&bkPin())}
+async function bkCall(payload){
+  var ep=bkEp(),pin=bkPin();
+  if(!ep)throw new Error('還沒填備份服務網址');
+  if(ep.indexOf('/exec')<0)throw new Error('網址結尾要是 /exec');
+  if(!pin)throw new Error('還沒填管理密碼（就在備份服務網址的下面）');
+  var r;
+  try{r=await fetch(ep,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({pin:pin},payload))});}
+  catch(e){throw new Error('連不到備份服務。部署時「具有存取權的使用者」要選「任何人」')}
+  var t=await r.text(),j;
+  try{j=JSON.parse(t)}catch(e){throw new Error('備份服務回傳的不是資料，可能要重新部署新版本')}
+  if(!j.ok){
+    var er=j.error||'失敗';
+    if(/ADMIN_PIN 還沒改/.test(er))er='備份 Apps Script 裡的密碼還是預設文字，請改成你的管理密碼並重新部署新版本';
+    throw new Error(er);
+  }
+  return j;
+}
+async function bkSnapshot(){
+  var F=window.fb;if(!F||!F.auth.currentUser)throw new Error('尚未登入');
+  var r=await Promise.all([F.getDoc(F.doc(F.db,'courses',F.COURSE)),
+    F.getDocs(F.collection(F.db,'instructors')),F.getDocs(F.collection(F.db,'questions')),F.getDocs(F.collection(F.db,'articles'))]);
+  var cl=function(q){var o={};q.forEach(function(d){o[d.id]=d.data()});return o};
+  var data={v:1,at:Date.now(),app:APP_VERSION.split('　')[0],course:r[0].exists()?r[0].data():null,
+    instructors:cl(r[1]),questions:cl(r[2]),articles:cl(r[3])};
+  return JSON.parse(JSON.stringify(data,function(k,v){return(v&&typeof v==='object'&&(v.type==='firestore/timestamp/1.0'||typeof v.toMillis==='function'))?undefined:v}));
+}
+function bkLooksEmpty(d){return !d.course&&!Object.keys(d.articles).length&&!Object.keys(d.questions).length&&!d.instructors.main}
+async function bkDo(reason){
+  var d=await bkSnapshot();
+  if(bkLooksEmpty(d))throw new Error('雲端目前是空的，不備份（避免蓋掉有用的備份）');
+  var j=await bkCall({action:'backupSave',reason:reason,data:d});
+  try{localStorage.setItem('bkLast',String(Date.now()))}catch(e){}
+  return j;
+}
+function bkFmt(t){
+  var d=new Date(t),p=function(n){return n<10?'0'+n:''+n};
+  return d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function bkPaint(){
+  var box=$('#bkList');if(!box)return;
+  var c=$('#bkCount');if(c)c.textContent=BK.list.length?BK.list.length+' 份':'';
+  var tg=$('#bkTag');if(tg)tg.textContent=BK.list.length?('最近 '+bkFmt(BK.list[0].at)):'每 24 小時';
+  if(!BK.list.length){box.innerHTML='<div class="empty">還沒有備份。按「立即備份」建立第一份。</div>';return;}
+  box.innerHTML=BK.list.map(function(b,i){
+    var n=b.counts||{};
+    return '<div class="trow"><span class="trow-n">'+bkFmt(b.at)+'　<span style="color:var(--muted);font-size:calc(12px*var(--fs))">'+(BK_REASON[b.reason]||'')+
+      (n.articles!=null?'．文章 '+n.articles+'．題庫 '+n.questions:'')+'</span></span>'+
+      '<button class="qbtn" style="margin:0;flex:none" data-bkrestore="'+i+'">還原</button></div>';
+  }).join('');
+}
+async function bkAuto(){
+  if(BK.asked||!bkReady()||!window.fb||!window.fb.auth.currentUser)return;
+  BK.asked=true;
+  try{
+    var j=await bkCall({action:'backupList'});BK.list=j.list||[];bkPaint();
+    var last=BK.list.length?BK.list[0].at:0;
+    if(Date.now()-last<24*3600*1000)return;
+    await bkDo('auto');
+    j=await bkCall({action:'backupList'});BK.list=j.list||[];bkPaint();
+    toast('已自動備份');
+  }catch(e){console.warn('自動備份失敗：',e.message)}
+}
+window.addEventListener('fb-ready',function(){
+  window.fb.onAuthStateChanged(window.fb.auth,function(u){if(u)setTimeout(bkAuto,6000)});
+});
 function artShareUrl(a){
   var base=studentLink();
   return base+'#a='+encodeURIComponent(a.id);
