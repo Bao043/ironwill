@@ -1590,6 +1590,16 @@ body{font-size:calc(clamp(14.5px,1.2vw + 10px,16px)*var(--fs))}
 .atab{display:none}
 .atab.is-on{display:block;animation:gin .25s cubic-bezier(.22,.61,.36,1)}
 @media (prefers-reduced-motion:reduce){.atab.is-on{animation:none}}
+.td-subnav{display:flex;gap:0;margin:16px 0 4px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.td-subnav button{flex:1;appearance:none;background:transparent;border:0;border-right:1px solid var(--line);color:var(--muted);font:inherit;font-size:calc(14px*var(--fs));padding:11px 4px;cursor:pointer;transition:background .15s,color .15s}
+.td-subnav button:last-child{border-right:0}
+.td-subnav button.on{background:var(--ink);color:var(--paper);font-weight:600}
+#at-today[data-tdv="live"] [data-tds]:not([data-tds~="live"]),
+#at-today[data-tdv="result"] [data-tds]:not([data-tds~="result"]),
+#at-today[data-tdv="proj"] [data-tds]:not([data-tds~="proj"]),
+#at-today[data-tdv="fb"] [data-tds]:not([data-tds~="fb"]){display:none!important}
+#at-today:not([data-tdv="live"]) .td-col:first-child{display:none}
+#at-today:not([data-tdv="live"]) .td-grid{display:block}
 .at-head{padding:22px 0 2px}
 .at-head .display{font-size:calc(24px*var(--fs));margin-top:4px;line-height:1.4}
 .at-head .meta{color:var(--signal);letter-spacing:.18em}
@@ -1717,7 +1727,7 @@ body.dirty .undo-bar{bottom:calc(132px + env(safe-area-inset-bottom,0px))}
   .undo-bar{bottom:24px}
   body.dirty .undo-bar{bottom:84px}
   .td-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start}
-  #at-today .td-col:last-child{padding-top:84px}
+  #at-today .td-col:last-child{padding-top:0}
   .td-c{font-size:calc(52px*var(--fs))}
 }
 
@@ -2306,6 +2316,8 @@ html.wm-off #zv.wm .zv-stage::after{display:none}
   #listDisaster,#listFirstaid,#fileList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px;align-items:start}
   #listDisaster>.course-more,#listDisaster>.empty,#listFirstaid>.course-more,#listFirstaid>.empty,#fileList>.empty{grid-column:1/-1}
   #fileList{column-gap:18px}
+  #fileList{display:block}
+  #fileList .fg-b{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;align-items:stretch}
   #abContacts.cts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
   #abContacts .ct-v{overflow-wrap:break-word;word-break:keep-all}
   .lead{max-width:none}
@@ -2950,7 +2962,7 @@ function watchCourse(){
     }catch(e){}
   },function(e){console.warn('課程設定同步失敗',e);unsubC=null;setTimeout(function(){try{watchCourse()}catch(x){}},3000);});
 }
-var APP_VERSION='v11.35　2026/10/19';
+var APP_VERSION='v11.37　2026/10/19';
 (function(){
   var root=document.documentElement;
   function apply(t){
