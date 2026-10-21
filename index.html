@@ -2962,7 +2962,7 @@ function watchCourse(){
     }catch(e){}
   },function(e){console.warn('課程設定同步失敗',e);unsubC=null;setTimeout(function(){try{watchCourse()}catch(x){}},3000);});
 }
-var APP_VERSION='v11.37　2026/10/19';
+var APP_VERSION='v11.38　2026/10/20';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -4543,7 +4543,7 @@ function fvPaint(){
   else{b.textContent='準備中…';b.disabled=true;}
 }
 function fvDownload(){
-  var it=FV.it;if(!it)return;
+  var it=FV.it;if(!it)return;try{countHit('fdl_'+it.id)}catch(e){}
   if(FV.file){
     var f=FV.file;
     if(fvTouch()&&navigator.canShare&&navigator.canShare({files:[f]})){
@@ -5125,14 +5125,13 @@ var HITS={};
 var METRIC_ERR='';
 function countHit(key){
   if(EDITING)return;
-  HITS[key]=(HITS[key]||0)+1;
+  HITS[key]=(HITS[key]||0)+1;hitDayLocal(key);
   if(PREVIEW||!window.fb)return;
   var F=window.fb;
-  var patch={};patch[key]=F.increment(1);
+  var patch={};patch[key]=F.increment(1);hitDay(patch,key);
   F.setDoc(F.doc(F.db,'questionStats',F.COURSE+'__views'),patch,{merge:true})
    .catch(function(e){METRIC_ERR=e.code||e.message;console.warn('計數失敗',e)});
 }
-function renderTraffic(){}
 var unsubH=null;
 function rulesMsg(what,e){
   var c=(e&&e.code)||'';
@@ -5345,6 +5344,7 @@ document.addEventListener('click',function(e){
 });
 function renderPhotos(){}
 renderPhotos();
+renderTraffic();
 function renderArtRank(){}
 var CHIP_LAST=null,CHIP_T=0;
 function chipPick(e){
@@ -6869,13 +6869,19 @@ function fileOpenGuard(it){
     FILE_PEND=it;
     go('p-code');return;
   }
-  openFileView(it);countHit('files');
+  fileOpened(it);
 }
 function fileAfterCode(){
   var it=FILE_PEND;FILE_PEND=null;codeCtxSet('');
   try{renderFiles()}catch(e){}
-  if(it){openFileView(it);countHit('files');}
+  if(it)fileOpened(it);
 }
+function hitDayStr(off){var d=new Date(Date.now()+8*36e5-(off||0)*864e5);return d.toISOString().slice(0,10).replace(/-/g,'')}
+function hitDayCounts(key){return !(key==='video'||key==='ig'||/^(file_|fdl_|day_)/.test(key))}
+function hitDayLocal(key){if(!hitDayCounts(key))return;var k='day_'+hitDayStr(0);HITS[k]=(HITS[k]||0)+1}
+function hitDay(patch,key){if(!hitDayCounts(key)||!window.fb)return;patch['day_'+hitDayStr(0)]=window.fb.increment(1)}
+function fileOpened(it){openFileView(it);countHit('files');countHit('file_'+it.id)}
+function renderTraffic(){}
 (function(){
   var last=0;
   function resync(){
