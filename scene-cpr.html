@@ -114,6 +114,7 @@ body.lite #flashOv,body.lite #dmgOv,body.lite #vigOv{display:block}
 .mark i{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px var(--signal)}
 h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);line-height:1.05;font-weight:900;letter-spacing:.1em}
 .lead{margin:0 0 16px;color:var(--ink2);font-size:16px}
+.prev{margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--ember);background:#ffffff0d;border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.6;color:var(--ink2)}.prev b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px}.prev span{display:block}.prev .tr{margin-top:4px;color:var(--ember)}
 .how{margin:0 0 16px;padding:0;list-style:none;display:grid;gap:7px}
 .how li{display:flex;gap:12px;align-items:flex-start;font-size:14.5px}
 .how li span{flex:none;margin-top:8px;width:6px;height:6px;border-radius:50%;background:var(--ember)}
@@ -218,6 +219,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
     <div class="mark"><i></i>IRON WILL　FIRST AID　求生現場</div>
     <h1>路邊倒下的人</h1>
     <p class="lead">傍晚下班的路上，前面的人突然倒在人行道上，不動了。你是第一個走過去的人。四個關鍵決定，決定他有沒有機會等到救護車。</p>
+    <div class="prev" id="prevNote" hidden></div>
     <ul class="how">
       <li><span></span>用手指或點擊畫面上的標記選擇，也可以直接按下方的選項</li>
       <li><span></span>每個決定都有倒數，時間到會被視為沒有行動</li>
@@ -236,7 +238,8 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 </div>
 
 <div id="nogl" hidden><div class="pad"><h1 style="font-size:28px;letter-spacing:.04em">這個裝置無法顯示 3D</h1><p class="lead">瀏覽器沒有開啟 WebGL。換用 Safari 或 Chrome 最新版再試一次。</p></div></div>
-<script>(function(){
+<script>var SCN_ID='cpr';
+(function(){
 'use strict';
 var $=function(s){return document.querySelector(s)};
 var PI=Math.PI;
@@ -323,7 +326,7 @@ var meshP,sprP,brP,blP,cpP,MU,SU,BU,LU,CU;
 try{
 meshP=program(
 'attribute vec3 aPos;attribute vec3 aNrm;attribute vec2 aUv;uniform mat4 uVP;uniform mat4 uM;uniform vec2 uRep;uniform vec2 uOff;varying vec3 vW;varying vec3 vN;varying vec2 vUv;'+
-'void main(){vec4 w=uM*vec4(aPos,1.0);vW=w.xyz;vN=mat3(uM)*aNrm;vUv=aUv*uRep+uOff;gl_Position=uVP*w;}',
+'void main(){vec4 w=uM*vec4(aPos,1.0);vW=w.xyz;vec3 sc2=vec3(dot(uM[0].xyz,uM[0].xyz),dot(uM[1].xyz,uM[1].xyz),dot(uM[2].xyz,uM[2].xyz));vN=mat3(uM)*(aNrm/sc2);vUv=aUv*uRep+uOff;gl_Position=uVP*w;}',
 PREC+'varying vec3 vW;varying vec3 vN;varying vec2 vUv;uniform vec3 uCol;uniform vec3 uEm;uniform float uAlpha;uniform float uUnlit;uniform float uFogOn;uniform float uUseTex;uniform sampler2D uTex;'+
 'uniform vec3 uCam;uniform vec3 uFogC;uniform float uFogD;uniform vec3 uSky;uniform vec3 uGnd;uniform vec3 uDirD;uniform vec3 uDirC;'+
 'uniform vec3 uP0;uniform vec3 uC0;uniform float uR0;uniform vec3 uP1;uniform vec3 uC1;uniform float uR1;uniform vec3 uP2;uniform vec3 uC2;uniform float uR2;'+
@@ -978,13 +981,14 @@ function startDecision(d,done){
   d.opts.forEach(function(o){if(o.m){var L=labelTex(o.m.s);MARK.push({id:o.id,p:o.m.p,lab:L.t,lw:Math.max(.5,L.w)*2.2,on:true})}});
   markersOn=MARK.length>0;
   show('dec',true);show('fb',false);
-  var timed=S.timer;decideLimit=d.time*1000;
-  el('tfill').style.transform='scaleX(1)';el('decT').textContent=timed?String(d.time):'';el('tbar').style.visibility=timed?'visible':'hidden';
+  var timed=S.timer,tmS=d.time+(d.quick?0:TRUST_SEC);decideLimit=tmS*1000;
+  el('tfill').style.transform='scaleX(1)';el('decT').textContent=timed?String(tmS):'';el('tbar').style.visibility=timed?'visible':'hidden';
   decideEnd=timed?performance.now()+decideLimit:0;
 }
 function pickOption(d,o,timedOut){
   if(phase!=='decide')return;
   phase='cut';controls=false;clearMarkers();tickSnd();
+  if(d.quick){decideEnd=0;QZ.push({d:d,o:o,ok:o.grade==='good'});SC.cards.push({t:d.kc.t,s:d.kc.s,learned:o.grade==='good'});show('dec',false);showFeedback(d,o);return}
   var left=(decideEnd&&!timedOut)?Math.max(0,decideEnd-performance.now())/decideLimit:0;
   var bonus=(o.grade==='good'&&decideEnd)?Math.round(3*left):0;
   var pts=o.pts+bonus;
@@ -1019,27 +1023,126 @@ function showFeedback(d,o){
   el('fbGo').onclick=function(){show('fb',false);curDone()};
 }
 
-/* ================= 人物模型（方塊風格，可擺姿勢） =================
+/* ================= 圓形幾何：球（可壓成橢球）、圓柱（Y 軸）、半圓頂 =================
+   球直徑 1；圓柱直徑 1、高 1（Y 軸）。用 s:[寬,高,深] 縮放，就能做出頭、手、肢體、輪胎。 */
+(function(){
+  function put(name,P,N,T,I){
+    GEO[name]={pos:mkBuf(gl.ARRAY_BUFFER,new Float32Array(P)),nrm:mkBuf(gl.ARRAY_BUFFER,new Float32Array(N)),uv:mkBuf(gl.ARRAY_BUFFER,new Float32Array(T)),idx:mkBuf(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(I)),n:I.length};
+  }
+  // 球
+  (function(){
+    var P=[],N=[],T=[],I=[],SG=22,RG=14;
+    for(var j=0;j<=RG;j++){var th=Math.PI*j/RG,st=Math.sin(th),ct=Math.cos(th);
+      for(var i=0;i<=SG;i++){var ph=2*Math.PI*i/SG,x=st*Math.cos(ph),z=st*Math.sin(ph);
+        P.push(x*.5,ct*.5,z*.5);N.push(x,ct,z);T.push(i/SG,j/RG)}}
+    for(var j=0;j<RG;j++)for(var i=0;i<SG;i++){var a=j*(SG+1)+i,b=a+SG+1;I.push(a,a+1,b,a+1,b+1,b)}
+    put('sph',P,N,T,I);
+  })();
+  // 圓柱（含上下蓋）
+  (function(){
+    var P=[],N=[],T=[],I=[],SG=24;
+    for(var i=0;i<=SG;i++){var ph=2*Math.PI*i/SG,x=Math.cos(ph),z=Math.sin(ph);
+      P.push(x*.5,-.5,z*.5,x*.5,.5,z*.5);N.push(x,0,z,x,0,z);T.push(i/SG,1,i/SG,0)}
+    for(var i=0;i<SG;i++){var a=i*2;I.push(a,a+1,a+2,a+1,a+3,a+2)}
+    [[.5,1],[-.5,-1]].forEach(function(c){var base=P.length/3;P.push(0,c[0],0);N.push(0,c[1],0);T.push(.5,.5);
+      for(var i=0;i<=SG;i++){var ph=2*Math.PI*i/SG;P.push(Math.cos(ph)*.5,c[0],Math.sin(ph)*.5);N.push(0,c[1],0);T.push(.5+Math.cos(ph)*.5,.5+Math.sin(ph)*.5)}
+      for(var i=0;i<SG;i++){if(c[1]>0)I.push(base,base+1+i+1,base+1+i);else I.push(base,base+1+i,base+1+i+1)}});
+    put('cyl',P,N,T,I);
+  })();
+})();
+/* 便利函式：球、圓柱 */
+function SP(par,w,h,d,x,y,z,c,ex){return O(Object.assign({g:'sph',parent:par,dyn:true,s:[w,h,d],p:[x,y,z],col:c,em:[.05,.04,.04]},ex||{}))}
+function CY(par,w,h,d,x,y,z,c,ex){return O(Object.assign({g:'cyl',parent:par,dyn:true,s:[w,h,d],p:[x,y,z],col:c,em:[.05,.04,.04]},ex||{}))}
+
+/* ================= 人物模型（圓潤造型，可擺姿勢） =================
    root 在骨盆中心；站姿時腳底在 root.y-0.94。正面朝 +z。 */
 function mkPerson(o){
-  o=o||{};var skin=hex(o.skin||0xd9a384),shirt=hex(o.shirt||0x3a5a8a),pants=hex(o.pants||0x3d4350),hair=hex(o.hair||0x1f1a17),shoe=hex(o.shoe||0x1c1c1e),sc=o.scale||1;
-  var P={parts:{},sc:sc,skin:skin};
+  o=o||{};var skin=hex(o.skin||0xd9a384),shirt=hex(o.shirt||0x3a5a8a),pants=hex(o.pants||0x3d4350),hair=hex(o.hair||0x1f1a17),shoe=hex(o.shoe||0x1c1c1e),sc=o.scale||1,hs=o.hairStyle||'short';
+  var P={parts:{},sc:sc,skin:skin,phase:Math.random()*6};
   var root=O({g:null,dyn:true,p:o.p||[0,.94*sc,0],r:o.r||[0,0,0],s:[sc,sc,sc]});P.root=root;
-  function bx(par,w,h,d,x,y,z,col,ex){var q=O(Object.assign({g:'box',parent:par,dyn:true,s:[w,h,d],p:[x,y,z],col:col,em:o.em||[.05,.04,.04]},ex||{}));return q}
+  var EM=o.em||[.06,.05,.05];
+  function sp(par,w,h,d,x,y,z,col,ex){return O(Object.assign({g:'sph',parent:par,dyn:true,s:[w,h,d],p:[x,y,z],col:col,em:EM},ex||{}))}
+  function cy(par,w,h,d,x,y,z,col,ex){return O(Object.assign({g:'cyl',parent:par,dyn:true,s:[w,h,d],p:[x,y,z],col:col,em:EM},ex||{}))}
   function nd(par,x,y,z){return O({g:null,parent:par,dyn:true,p:[x,y,z]})}
-  P.hips=bx(root,.38,.2,.22,0,0,0,pants);
-  var tn=nd(root,0,.1,0);P.torsoN=tn;P.torso=bx(tn,.42,.56,.24,0,.28,0,shirt);
-  var hn=nd(tn,0,.58,0);P.headN=hn;P.head=bx(hn,.2,.24,.22,0,.14,0,skin);
-  P.hair=bx(hn,.215,.09,.235,0,.27,-.005,hair);bx(hn,.215,.16,.04,0,.2,-.105,hair);
-  P.eyeL=bx(hn,.035,.03,.01,-.05,.17,.112,hex(0x1a1414),{em:[0,0,0]});P.eyeR=bx(hn,.035,.03,.01,.05,.17,.112,hex(0x1a1414),{em:[0,0,0]});
-  P.mouth=bx(hn,.06,.015,.01,0,.08,.112,hex(0x7a3b36),{em:[0,0,0]});
+  var shirtP=[],skinP=[];
+  function SH(q){shirtP.push(q);return q}function SK(q){skinP.push(q);return q}
+  var dk=function(c,k){return [c[0]*k,c[1]*k,c[2]*k]};
+  /* 骨盆、腰帶、腰、胸 */
+  P.hips=sp(root,.37,.25,.25,0,-.02,0,pants);
+  cy(root,.36,.045,.245,0,.095,0,dk(pants,.55),{em:[.02,.02,.02]});
+  var tn=nd(root,0,.1,0);P.torsoN=tn;
+  SH(sp(tn,.37,.44,.24,0,.13,0,shirt));
+  P.torso=sp(tn,.43,.42,.27,0,.35,0,shirt);
+  SH(sp(tn,.3,.1,.2,0,.55,0,shirt));                 // 肩線
+  /* 脖子、頭 */
+  SK(cy(tn,.095,.14,.1,0,.6,0,skin));
+  SH(cy(tn,.15,.035,.13,0,.585,0,shirt));
+  var hn=nd(tn,0,.62,0);P.headN=hn;
+  P.head=sp(hn,.19,.245,.215,0,.14,0,skin);
+  SK(sp(hn,.152,.15,.178,0,.07,.016,skin));                         // 下巴
+  SK(sp(hn,.03,.058,.036,-.098,.13,-.004,skin));SK(sp(hn,.03,.058,.036,.098,.13,-.004,skin));  // 耳
+  SK(sp(hn,.034,.05,.05,0,.118,.103,skin));                         // 鼻
+  var skinSel=[];
+  /* 眼：眼白、虹膜、眼皮（眨眼用）、眉 */
+  var iris=hex(o.iris||0x2a1c14);
+  [-1,1].forEach(function(sd){
+    sp(hn,.044,.032,.026,sd*.046,.152,.087,hex(0xeeeae4),{em:[.22,.21,.2]});
+    var ir=sp(hn,.025,.025,.016,sd*.046,.152,.099,iris,{em:[0,0,0]});
+    var lid=sp(hn,.05,.04,.03,sd*.046,.158,.092,skin,{});lid.s=[.05,.0001,.03];
+    P[sd<0?'eyeL':'eyeR']=ir;P[sd<0?'lidL':'lidR']=lid;
+    var br=sp(hn,.06,.011,.02,sd*.047,.192,.088,hair,{em:[.02,.02,.02]});P[sd<0?'brL':'brR']=br;
+  });
+  P.mouth=sp(hn,.058,.012,.018,0,.083,.097,hex(0x9a5a55),{em:[.05,.03,.03]});
+  P.lip2=sp(hn,.05,.012,.018,0,.07,.097,hex(0x8a4d49),{em:[.05,.03,.03]});
+  /* 髮型（比頭大一點、往後上方偏，前額露出來） */
+  P.hair=sp(hn,.208,.222,.232,0,.172,-.024,hair,{em:[.03,.03,.03]});
+  if(hs==='bald'){P.hair.vis=false;sp(hn,.045,.1,.14,-.093,.13,-.03,hair,{em:[.03,.03,.03]});sp(hn,.045,.1,.14,.093,.13,-.03,hair,{em:[.03,.03,.03]})}
+  else{sp(hn,.2,.17,.215,0,.1,-.045,hair,{em:[.03,.03,.03]})}
+  if(hs==='long'){sp(hn,.21,.34,.13,0,.01,-.085,hair,{em:[.03,.03,.03]});sp(hn,.05,.2,.09,-.094,.09,-.01,hair,{em:[.03,.03,.03]});sp(hn,.05,.2,.09,.094,.09,-.01,hair,{em:[.03,.03,.03]})}
+  if(hs==='bun')sp(hn,.1,.1,.1,0,.3,-.06,hair,{em:[.03,.03,.03]});
+  /* 手臂：圓柱 + 兩端圓球（膠囊），關節處不會出現縫與突起 */
   [-1,1].forEach(function(sd){
     var k=sd<0?'L':'R';
-    var sh=nd(tn,sd*.27,.5,0);P['sh'+k]=sh;bx(sh,.11,.3,.12,0,-.15,0,shirt);
-    var el=nd(sh,0,-.3,0);P['el'+k]=el;bx(el,.1,.28,.11,0,-.14,0,skin);
-    var hip=nd(root,sd*.1,-.1,0);P['hp'+k]=hip;bx(hip,.16,.44,.18,0,-.22,0,pants);
-    var kn=nd(hip,0,-.44,0);P['kn'+k]=kn;bx(kn,.14,.4,.15,0,-.2,0,pants);bx(kn,.15,.07,.25,0,-.43,.05,shoe);
+    var sh=nd(tn,sd*.27,.5,0);P['sh'+k]=sh;
+    SH(sp(sh,.14,.14,.14,0,0,0,shirt));
+    SK(cy(sh,.094,.3,.1,0,-.15,0,skin));                          // 上臂
+    P['sleeve'+k]=SH(cy(sh,.128,.17,.134,0,-.085,0,shirt));        // 短袖
+    var el=nd(sh,0,-.3,0);P['el'+k]=el;
+    SK(sp(el,.094,.094,.1,0,0,0,skin));
+    P['fore'+k]=SK(cy(el,.082,.27,.09,0,-.135,0,skin));              // 前臂
+    SK(sp(el,.082,.082,.09,0,-.27,0,skin));                        // 手腕
+    SK(sp(el,.082,.118,.044,0,-.335,.004,skin));                   // 手掌
+    SK(sp(el,.03,.075,.032,-sd*.043,-.31,.024,skin));              // 拇指
+    /* 腿 */
+    var hip=nd(root,sd*.1,-.1,0);P['hp'+k]=hip;
+    sp(hip,.17,.17,.185,0,0,0,pants);
+    cy(hip,.15,.44,.165,0,-.22,0,pants);                           // 大腿
+    var kn=nd(hip,0,-.44,0);P['kn'+k]=kn;
+    sp(kn,.15,.15,.165,0,0,0,pants);
+    cy(kn,.115,.4,.13,0,-.2,0,pants);                              // 小腿
+    sp(kn,.115,.115,.13,0,-.4,0,pants);
+    sp(kn,.118,.1,.27,0,-.41,.055,shoe);
+    sp(kn,.108,.07,.1,0,-.395,.13,dk(shoe,1.5),{em:[.03,.03,.03]});
+    cy(kn,.13,.02,.25,0,-.455,.05,[.07,.07,.07],{em:[0,0,0]});
   });
+  /* 色彩代理：scene 程式直接設 P.torso.col / P.head.col 時，整件衣服／整個膚色一起換 */
+  var tc=P.torso.col,hc=P.head.col;
+  Object.defineProperty(P.torso,'col',{configurable:true,get:function(){return tc},set:function(v){tc=v;shirtP.forEach(function(q){q.col=v})}});
+  Object.defineProperty(P.head,'col',{configurable:true,get:function(){return hc},set:function(v){hc=v;skinP.forEach(function(q){q.col=v});P.lidL.col=v;P.lidR.col=v}});
+  /* 眨眼（用遊戲時鐘，跟著暫停） */
+  function blink(){
+    if(P.eyesShut!==true){tween(P.lidL.s,{1:.04},.06);tween(P.lidR.s,{1:.04},.06);after(90,function(){tween(P.lidL.s,{1:.0001},.08);tween(P.lidR.s,{1:.0001},.08)})}
+    after(2200+Math.random()*3200,blink);
+  }
+  after(600+Math.random()*2500,blink);
+  /* 表情：眉毛與嘴 */
+  P.face=function(m){
+    var b={calm:[0,0],worry:[.35,.015],pain:[.5,.0],shock:[-.12,.03],smile:[-.05,.0]}[m]||[0,0];
+    P.brL.r[2]=b[0];P.brR.r[2]=-b[0];
+    P.brL.p[1]=P.brR.p[1]=.192+b[1];
+    var mo={calm:[.058,.012],smile:[.07,.014],worry:[.046,.012],pain:[.05,.026],shock:[.04,.05]}[m]||[.058,.012];
+    P.mouth.s[0]=mo[0];P.mouth.s[1]=mo[1];P.lip2.s[0]=mo[0]*.86;P.lip2.p[1]=.07-(mo[1]>.02?.02:0);
+  };
   P.joints=['root','torsoN','headN','shL','shR','elL','elR','hpL','hpR','knL','knR'];
   return P;
 }
@@ -1066,7 +1169,7 @@ function signTex(txt,bg,fg,fs){return mkTex(512,128,function(g,w,h){g.fillStyle=
 function faceTo(Pp,x,z){Pp.root.r[1]=Math.atan2(x-Pp.root.p[0],z-Pp.root.p[2])}
 function walk(Pp,x,z,dur,done){
   Pp.walk=true;faceTo(Pp,x,z);
-  tween(Pp.root.p,{0:x,2:z},dur,function(){Pp.walk=false;Pp.hpL.r[0]=Pp.hpR.r[0]=0;Pp.shL.r[0]=Pp.shR.r[0]=0;Pp.root.p[1]=.94*Pp.sc;if(done)done()});
+  tween(Pp.root.p,{0:x,2:z},dur,function(){Pp.walk=false;Pp.hpL.r[0]=Pp.hpR.r[0]=0;Pp.shL.r[0]=Pp.shR.r[0]=0;Pp.knL.r[0]=Pp.knR.r[0]=0;Pp.elL.r[0]=Pp.elR.r[0]=0;Pp.torsoN.r[1]=Pp.torsoN.r[2]=0;Pp.headN.r[1]=0;Pp.root.p[1]=.94*Pp.sc;if(done)done()});
 }
 function hw(c,x,y,z){return toCam(c,[x,y,z],0)}
 function flat(c){return [-c.pitch,0,0]}
@@ -1086,9 +1189,157 @@ function chapter(n,title,clock,pose,next){
 }
 
 function walkUpdate(){
-  PEOPLE.forEach(function(p){if(p.walk){var g=Math.sin(vt*.011)*.55;p.hpL.r[0]=g;p.hpR.r[0]=-g;p.shL.r[0]=-g*.7;p.shR.r[0]=g*.7;p.root.p[1]=.94*p.sc+Math.abs(Math.cos(vt*.011))*.025}});
+  PEOPLE.forEach(function(p){
+    var t=vt*.001+p.phase;
+    if(p.walk){
+      var ph=vt*.011,g=Math.sin(ph)*.55,cs=Math.cos(ph);
+      p.hpL.r[0]=g;p.hpR.r[0]=-g;p.shL.r[0]=-g*.7;p.shR.r[0]=g*.7;
+      p.knL.r[0]=.12+Math.max(0,-cs)*.75;p.knR.r[0]=.12+Math.max(0,cs)*.75;
+      p.elL.r[0]=-.25-Math.max(0,g)*.3;p.elR.r[0]=-.25-Math.max(0,-g)*.3;
+      p.torsoN.r[1]=Math.sin(ph)*.07;p.torsoN.r[2]=Math.sin(ph)*.02;p.headN.r[1]=-Math.sin(ph)*.04;
+      p.root.p[1]=.94*p.sc+Math.abs(Math.cos(ph))*.025;
+    }else if(p.torso){            // 站著不動也有呼吸起伏
+      var br=Math.sin(t*1.9);p.torso.s[1]=.42*(1+.016*br);p.torso.s[2]=.27*(1+.012*br);
+      if(!p.noSway)p.headN.r[1]+=0;   // 保留給劇情控制轉頭
+    }
+  });
 }
 function ambFlash(on){ST.amb=on}
+
+/* ================= 現場追問：不用 3D 動畫的快問快答（每次從題庫隨機抽，重玩題目會不一樣）=================
+   題庫格式：QK(題目, 正確答案, 錯誤A, 錯誤B, 說明, 知識卡標題) */
+var QZ=[];
+function QK(q,ok,w1,w2,why,t){return {q:q,ok:ok,w:[w1,w2],why:why,kc:{t:t,s:why}}}
+function runQuick(next){
+  var bank=(SCN.quick||[]).slice(),n=Math.min(SCN.quickN||6,bank.length),qs=[];
+  while(qs.length<n&&bank.length)qs.push(bank.splice(Math.floor(Math.random()*bank.length),1)[0]);
+  var i=0;
+  (function nxt(){
+    if(i>=qs.length){next();return}
+    var q=qs[i++],qi=i;
+    var opts=[{id:'ok',t:q.ok,grade:'good'},{id:'w1',t:q.w[0],grade:'bad'},{id:'w2',t:q.w[1],grade:'bad'}].map(function(o){
+      o.pts=0;o.dmg=0;
+      o.fb=o.grade==='good'?{b:'ok',bt:'答對了',h:'沒錯：'+q.ok,p:q.why}:{b:'bad',bt:'再想想',h:'比較好的答案：'+q.ok,p:q.why};
+      return o});
+    var d={id:'qk'+qi,quick:true,q:'現場追問 '+qi+' / '+qs.length+'　'+q.q,time:15,kc:q.kc,best:q.ok,opts:opts,
+      timeout:{id:'timeout',t:'（時間到）',grade:'bad',pts:0,dmg:0,fb:{b:'wait',bt:'時間到',h:'比較好的答案：'+q.ok,p:q.why}}};
+    startDecision(d,nxt);
+  })();
+}
+
+/* ================= 連續故事：幸福里 7 號樓的一晚 =================
+   進度存在 localStorage（同一網站底下的所有場景頁共用）：iw-day = {burn:{r:'A',s:92,q:'5/6'},...} */
+var DAY_ORDER=[['burn','熱水燙傷','17:48','3 樓，小圓的手臂'],['bleed','廚房割傷','18:05','2 樓，王媽媽的手'],['cpr','路邊倒下的人','18:12','大樓門口的超商'],['choke','餐桌上的噎住','19:08','回到家，晚餐時間']];
+var DAY_KEY='iw-day',TRUST=0,TRUST_SEC=0;
+function dayGet(){try{return JSON.parse(localStorage.getItem(DAY_KEY)||'{}')||{}}catch(e){return {}}}
+function daySave(v){try{var d=dayGet();d[SCN_ID]=v;localStorage.setItem(DAY_KEY,JSON.stringify(d))}catch(e){}}
+function dayIdx(){for(var i=0;i<DAY_ORDER.length;i++)if(DAY_ORDER[i][0]===SCN_ID)return i;return -1}
+function dayInit(){
+  var i=dayIdx();TRUST=0;TRUST_SEC=0;if(i<0)return;
+  var d=dayGet();for(var k=0;k<i;k++){var r=d[DAY_ORDER[k][0]];if(r&&(r.r==='S'||r.r==='A'))TRUST++}
+  TRUST_SEC=TRUST*2;
+  var box=document.getElementById('prevNote');if(!box)return;
+  var h='<b>幸福里 7 號樓的一晚　第 '+(i+1)+' / 4 章　'+DAY_ORDER[i][2]+'</b>';
+  if(i===0)h+='<span>傍晚，下班的人潮還沒散。今晚，這棟樓裡外會發生四件需要有人出手的事，你都在場。</span>';
+  else{
+    for(var k=0;k<i;k++){var r=d[DAY_ORDER[k][0]];
+      h+='<span>'+DAY_ORDER[k][2]+'　'+DAY_ORDER[k][1]+'：'+(r?r.r+' 級'+(r.q?'（追問 '+r.q+'）':''):'你還沒經歷這一章')+'</span>'}
+    h+='<span class="tr">社區信任 '+'★'.repeat(TRUST)+'☆'.repeat(i-TRUST)+(TRUST?'　鄰居願意幫忙，每個決定多 '+TRUST_SEC+' 秒思考':'　前面章節拿到 A 級以上，鄰居就會願意幫忙，每個決定多 2 秒')+'</span>';
+  }
+  box.innerHTML=h;box.hidden=false;
+}
+/* 結算：存成績、顯示下一章 */
+function dayEnd(rk,qok,qn){
+  var i=dayIdx();if(i<0)return '';
+  daySave({r:rk.r,s:SC.score,q:qn?qok+'/'+qn:''});
+  var d=dayGet(),done=DAY_ORDER.filter(function(x){return d[x[0]]}).length;
+  var h='<div class="story day"><b>幸福里 7 號樓的一晚　'+done+' / 4 章完成</b><br>';
+  if(i<3)h+='接下來：'+DAY_ORDER[i+1][2]+'　'+DAY_ORDER[i+1][1]+'（'+DAY_ORDER[i+1][3]+'）';
+  else{
+    var tot=DAY_ORDER.filter(function(x){return d[x[0]]&&(d[x[0]].r==='S'||d[x[0]].r==='A')}).length;
+    h+=done===4?'今晚這四件事，你都在場。有 '+tot+' 章拿到 A 級以上。明天，這棟樓的人遇到事，會想起你。':'還有章節沒玩過，回去補上，這一晚才完整。';
+  }
+  return h+'</div>';
+}
+
+/* ================= 救護車（寫實版）=================
+   mkAmbulance(parent) → {R,L,parts}；前方是 +z。R/L 是紅藍警示燈，場景程式用 .col 讓它閃。 */
+function mkAmbulance(parent){
+  var N0=objs.length;
+  function mb(w,h,d,x,y,z,c,ex){return O(Object.assign({g:'box',parent:parent,dyn:true,s:[w,h,d],p:[x,y,z],col:hex(c)},ex||{}))}
+  function mc(w,h,d,x,y,z,c,ex){return O(Object.assign({g:'cyl',parent:parent,dyn:true,s:[w,h,d],p:[x,y,z],col:hex(c)},ex||{}))}
+  function mq(w,h,x,y,z,rx,ry,tex,ex){return O(Object.assign({g:'quad',parent:parent,dyn:true,s:[w,h,1],p:[x,y,z],r:[rx,ry,0],col:[1,1,1],tex:tex},ex||{}))}
+  var WE={em:[.02,.02,.025]};
+  if(!TX.ambStripe){
+    TX.ambStripe=mkTex(1024,128,function(g,w,h){
+      g.fillStyle='#c3c6ca';g.fillRect(0,0,w,h);
+      g.fillStyle='#d5282b';g.fillRect(0,34,w,52);
+      g.fillStyle='#1a4aa8';g.fillRect(0,22,w,6);g.fillRect(0,92,w,6);
+      g.fillStyle='#fff';g.font='bold 40px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';g.textBaseline='middle';
+      g.fillText('救護車',60,61);g.font='bold 38px sans-serif';g.fillText('AMBULANCE',690,61);
+    },{});
+    TX.ambSide=mkTex(512,256,function(g,w,h){
+      g.fillStyle='#c3c6ca';g.fillRect(0,0,w,h);
+      g.save();g.translate(110,128);g.fillStyle='#1a4aa8';
+      for(var i=0;i<3;i++){g.save();g.rotate(i*Math.PI/3);g.fillRect(-12,-72,24,144);g.restore()}
+      g.fillStyle='#c3c6ca';g.beginPath();g.arc(0,0,22,0,7);g.fill();g.restore();
+      g.fillStyle='#d5282b';g.font='900 120px sans-serif';g.textBaseline='middle';g.fillText('119',210,118);
+      g.font='bold 34px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';g.fillStyle='#223';g.fillText('緊急救護',212,196);
+    },{});
+    TX.ambGlass=mkTex(128,128,function(g,w,h){
+      var gr=g.createLinearGradient(0,0,w,h);gr.addColorStop(0,'#2b3a4c');gr.addColorStop(.5,'#16202c');gr.addColorStop(1,'#243142');g.fillStyle=gr;g.fillRect(0,0,w,h);
+      g.fillStyle='rgba(255,255,255,.14)';g.beginPath();g.moveTo(10,128);g.lineTo(46,0);g.lineTo(70,0);g.lineTo(34,128);g.fill();
+    },{});
+    TX.ambGrille=mkTex(128,64,function(g,w,h){
+      g.fillStyle='#15171a';g.fillRect(0,0,w,h);g.fillStyle='#3a3e44';for(var y=6;y<h;y+=9)g.fillRect(6,y,w-12,4);
+    },{});
+    TX.ambHood=mkTex(256,64,function(g,w,h){
+      g.fillStyle='#c3c6ca';g.fillRect(0,0,w,h);g.save();g.translate(w,0);g.scale(-1,1);
+      g.fillStyle='#d5282b';g.font='bold 42px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';g.textBaseline='middle';g.fillText('救護車',70,34);g.restore();
+    },{});
+  }
+  /* 車身 */
+  mb(2.04,.8,5.5,0,.68,-.05,0xbfc2c6,WE);                 // 下半身
+  mb(2.06,.1,5.52,0,.3,-.05,0x25282c,{em:[.02,.02,.02]});   // 護板
+  mb(2.04,1.05,3.2,0,1.6,-1.15,0xc3c6ca,WE);               // 後廂
+  mb(1.98,.86,1.1,0,1.5,1.3,0xbfc2c6,WE);                  // 駕駛艙上半
+  mb(1.98,.46,.62,0,1.3,2.54,0xbfc2c6,WE);                 // 引擎蓋
+  mb(1.92,.05,.5,0,1.545,2.54,0xbfc2c6,WE);                // 蓋面
+  mb(2.1,.24,.2,0,.5,2.8,0xc4c8cc,{em:[.1,.1,.1]});        // 保險桿
+  mq(1.0,.3,0,.84,2.856,0,0,TX.ambGrille);                   // 水箱罩
+  mb(1.6,.07,.03,0,1.06,2.86,0xd5282b,{em:[.1,0,0]});          // 前面紅線
+  /* 車窗 */
+  mq(1.72,.58,0,1.73,2.1,-.8,0,TX.ambGlass,{em:[.06,.07,.09]});          // 擋風玻璃
+  [-1,1].forEach(function(sd){
+    var ry=sd>0?PI/2:-PI/2,x=sd*1.0;
+    mq(.92,.42,x+sd*.006,1.64,1.25,0,ry,TX.ambGlass,{em:[.05,.06,.08]});         // 駕駛艙側窗
+    mq(.5,.34,x+sd*.032,2.0,-1.3,0,ry,TX.ambGlass,{em:[.05,.06,.08]});           // 後廂小窗
+    mq(5.5,.26,x+sd*.034,.8,-.05,0,ry,TX.ambStripe);                              // 側面紅藍條紋
+    mq(2.5,1.0,x+sd*.03,1.62,-1.3,0,ry,TX.ambSide);                               // 後廂 119 與生命之星
+    mb(.14,.035,.035,x+sd*.03,1.35,.85,0x2a2d31);                                  // 車門把
+    mb(.12,.3,.14,x+sd*.1,1.6,1.9,0x1d2024);mb(.04,.04,.14,x+sd*.04,1.58,1.82,0x1d2024); // 後視鏡
+    // 輪子
+    var wx=sd*.98;
+    [1.75,-1.45].forEach(function(wz){
+      mc(1.0,.1,1.0,sd*1.03,.4,wz,0x0e0f11,{em:[0,0,0],r:[0,0,PI/2]});          // 輪拱暗圈
+      mc(.8,.28,.8,wx,.4,wz,0x16171a,{em:[.02,.02,.02],r:[0,0,PI/2]});          // 輪胎
+      mc(.5,.3,.5,wx+sd*.01,.4,wz,0xbcc2c8,{em:[.14,.14,.15],r:[0,0,PI/2]});    // 鋼圈
+      mc(.17,.32,.17,wx+sd*.02,.4,wz,0x2b2e32,{r:[0,0,PI/2]});                   // 輪軸蓋
+    });
+    // 車燈
+    mb(.34,.15,.05,sd*.72,.86,2.86,0xfff4d8,{unlit:1,nofog:1,em:[1,.95,.8]});
+    mb(.16,.08,.05,sd*.95,.63,2.86,0xffa020,{unlit:1,nofog:1,em:[.8,.4,0]});
+    mb(.14,.34,.05,sd*.96,1.75,-2.76,0xff2a22,{unlit:1,nofog:1,em:[.5,0,0]});   // 尾燈
+  });
+  /* 車頂警示燈 */
+  mb(1.62,.08,.4,0,1.97,1.45,0x1d2024);
+  var R=mb(.78,.16,.32,-.4,2.08,1.45,0xff2020,{unlit:1,nofog:1}),L=mb(.78,.16,.32,.4,2.08,1.45,0x2060ff,{unlit:1,nofog:1});
+  mb(.3,.1,.5,0,2.2,-1.2,0x9aa0a6);mb(1.1,.06,.55,0,2.15,-1.2,0xdfe2e5);   // 空調罩
+  mb(.5,.08,.2,0,2.19,-2.6,0xff3322,{unlit:1,nofog:1,em:[.6,.1,.05]});    // 後頂燈
+  mq(2.8,6.2,0,.02,-.05,-PI/2,0,TX.noise||undefined,{col:[0,0,0],a:.5,blend:'alpha',unlit:1,tex:undefined});
+  var parts=objs.slice(N0);
+  return {R:R,L:L,parts:parts};
+}
 
 /* ===================== 路邊倒下的人（CPR＋AED） ===================== */
 var PX=0,PZ=0;
@@ -1157,9 +1408,7 @@ function aedShow(v){aedParts.forEach(function(o){o.vis=v})}
 var padA=Q(.11,.13,-.1,.256,-.52,-PI/2,0,0xf4f4ef,{unlit:1,nofog:1}),padB=Q(.11,.13,.15,.256,-.28,-PI/2,.5,0xf4f4ef,{unlit:1,nofog:1});padA.vis=padB.vis=false;
 /* 救護車 */
 var ambN=O({g:null,dyn:true,p:[5.5,0,-30]});
-function MB(w,h,d,x,y,z,c,x2){return O(Object.assign({g:'box',parent:ambN,dyn:true,s:[w,h,d],p:[x,y,z],col:hex(c)},x2||{}))}
-MB(2.1,2.0,5.6,0,1.15,0,0xeeeeee,{em:[.08,.08,.08]});MB(2.12,.3,5.62,0,.95,0,0xd9352a);MB(1.9,.9,1.2,0,1.6,2.1,0x1b2733,{unlit:1});
-var ambR=MB(.4,.16,.3,-.5,2.25,.4,0xff2020,{unlit:1,nofog:1}),ambL=MB(.4,.16,.3,.5,2.25,.4,0x2060ff,{unlit:1,nofog:1});
+var AMB=mkAmbulance(ambN),ambR=AMB.R,ambL=AMB.L;window.__amb=AMB;
 var ambParts=objs.filter(function(o){return o.parent===ambN});
 function ambShow(v){ambParts.forEach(function(o){o.vis=v})}
 function resetPeople(){
@@ -1441,7 +1690,8 @@ stages[6]=function(){
   });
 };
 stages[7]=function(){cap('');startDecision(DEC[3],nextStage)};
-stages[8]=function(){
+stages[8]=function(){chapter(5,'追　問','18:22',null,function(){setChap('第五章　現場追問');runQuick(nextStage)})};
+stages[9]=function(){
   phase='cut';controls=false;bars(true);showSkip(false);siren(true);ambShow(true);ST.amb=true;
   tween(cam,{x:.5,y:1.5,z:-.4,yaw:-PI/2,pitch:-.05},1.4);
   tween(ambN.p,{2:-.6},4.5);
@@ -1459,6 +1709,20 @@ stages[8]=function(){
 };
 resetPeople();
 
+SCN.quick=[
+QK('成人胸外按壓，建議的速度是每分鐘幾下？','每分鐘 100 到 120 下','每分鐘 60 到 80 下','每分鐘 150 到 180 下','100 到 120 下大約是「跟著快節奏歌曲」的速度。太慢血流不夠，太快每下壓得不夠深、也回彈不完全。','按壓速度'),
+QK('成人胸外按壓，每一下要壓多深？','大約 5 到 6 公分','大約 2 到 3 公分','盡量壓到 8 公分以上','太淺送不出血，太深容易傷到胸骨與內臟。每一下都要壓到足夠的深度。','按壓深度'),
+QK('每一下按壓之後，手要怎麼做？','讓胸口完全回彈，手掌不離開位置','整個人壓著不放','用力把胸口往上拉','胸口回彈時，心臟才能重新充血。手要留在原位，但不要靠在胸口上用力。','完全回彈'),
+QK('成人使用 AED，兩片貼片要貼在哪裡？','右上胸（鎖骨下方）和左側下胸（腋下側邊）','兩片都貼在背後','貼在肚子上','兩片貼片要讓電流通過心臟。貼片上通常有圖示，照圖貼就對了。','AED 貼片位置'),
+QK('AED 正在分析或電擊時，旁邊的人要怎麼做？','所有人離開病人，不碰他','繼續扶著他的肩膀','繼續按壓，不要停','分析和電擊時碰到病人，會干擾判讀，也可能讓碰到的人被電到。喊「大家離開」，確認沒人碰他再按。','清場後電擊'),
+QK('按壓的人累了，怎麼辦？','大約每 2 分鐘換人，盡量縮短中斷','撐到救護車來為止','累了就休息一下再繼續','按壓品質會隨疲勞下降。有人在旁邊，就約每 2 分鐘換手，換人的空檔要很短。','輪流按壓'),
+QK('病人偶爾倒抽一口氣，像在喘，但沒有意識，這算正常呼吸嗎？','不算，當作沒有正常呼吸，開始 CPR','算，他還在呼吸，等救護車就好','算，幫他拍背','這種「喘息樣呼吸」常出現在心跳停止的最初幾分鐘，不是有效的呼吸。看到就要當作心跳停止處理。','喘息樣呼吸'),
+QK('你打 119 時，調度員可能會做什麼？','在電話中指導你怎麼做 CPR','要你先掛電話','要你把病人搬到車上','調度員受過訓練，會一步一步帶你做。開擴音，把手空出來按壓。','電話指導 CPR'),
+QK('病人躺在積水的地面，要用 AED，應該怎麼做？','先把他移到乾燥處，擦乾胸口再貼貼片','不管，直接貼','不要用 AED','水會讓電流跑到不該去的地方，也會讓貼片貼不牢。盡量移到乾燥處，把胸口擦乾。','AED 使用環境'),
+QK('什麼時候可以停止 CPR？','救護人員接手、病人有反應或正常呼吸，或你已經無法繼續','按壓滿 1 分鐘就可以停','覺得沒有效果就停','只要有人接手、病人醒了、或現場出現危險，就可以停。沒有這些狀況，盡量不要中斷。','何時停止 CPR'),
+QK('發現有人倒地，在靠近之前，第一件要先確認什麼？','現場環境對自己和對方是否安全','他是不是喝醉了','他有沒有帶錢包','救人的人自己不能先倒下。先看有沒有車流、漏電、火源等危險，再靠近。','先確認現場安全')
+];
+
 /* ================= 劇情流程 ================= */
 function nextStage(){STAGE++;if(stages[STAGE])stages[STAGE]()}
 function resetScene(){
@@ -1470,7 +1734,7 @@ function resetScene(){
   el('chcard').classList.remove('on');
 }
 function newGame(){
-  SC={score:0,log:[],cards:[]};resetScene();setSafety(100);setClock(SCN.clock0);setChap(SCN.chap0);STAGE=-1;TS=1;
+  SC={score:0,log:[],cards:[]};QZ=[];dayInit();resetScene();setSafety(100);setClock(SCN.clock0);setChap(SCN.chap0);STAGE=-1;TS=1;
   nextStage();
 }
 function calcRank(){
@@ -1488,6 +1752,7 @@ function showEnd(){
   h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>做對 '+rk.good+' / 4　·　得分 '+SC.score+' / 100</p></div></div>';
   h+='<div class="stats"><div><b>'+sfNow+'</b><span>'+(SCN.safeEnd||'最終急救成效')+'</span></div><div><b>'+rk.good+'/4</b><span>關鍵決定</span></div><div><b>'+(avg==null?'--':avg.toFixed(1)+'s')+'</b><span>平均反應</span></div></div>';
   h+='<div class="story">'+SC.epilogue.map(esc).join('<br>')+'</div>';
+  h+=dayEnd(rk,QZ.filter(function(x){return x.ok}).length,QZ.length);
   h+='<div class="sec">逐題回顧</div><div class="rv">';
   var chs=SCN.chs;
   SC.log.forEach(function(l,i){
@@ -1497,18 +1762,28 @@ function showEnd(){
     if(l.o.grade!=='good')h+='<p>比較好的做法：<b>'+esc(l.d.best)+'</b></p>';
     h+='</div>';
   });
-  h+='</div><div class="sec">知識卡總整理</div><div class="kcs">';
+  h+='</div>';
+  if(QZ.length){var qok=QZ.filter(function(x){return x.ok}).length;
+    h+='<div class="sec">現場追問　'+qok+' / '+QZ.length+' 題答對</div><div class="rv">';
+    QZ.forEach(function(x){var c=x.ok?'ok':'bad';
+      h+='<div class="'+c+'"><div class="h"><span class="m">'+(x.ok?'✓':'✕')+'</span>'+esc(x.d.q.replace(/^現場追問 \d+ \/ \d+　/,''))+'</div>';
+      if(!x.ok)h+='<p>比較好的答案：<b>'+esc(x.d.best)+'</b></p>';
+      h+='</div>'});
+    h+='</div>';}
+  h+='<div class="sec">知識卡總整理</div><div class="kcs">';
   SC.cards.forEach(function(c){h+='<div class="'+(c.learned?'':'rev')+'"><b>'+esc(c.t)+'</b><span>'+esc(c.s)+'</span></div>'});
   h+='</div>';
   var worst=SC.log.filter(function(l){return l.o.grade!=='good'});
   h+='<div class="story" style="margin-top:18px">'+(worst.length?'下一次先複習：<b>'+esc(worst[0].d.kc.t)+'</b>。':'四個決定都做對了。把這些做法記在心裡，也告訴身邊的人，下次真的遇到才會動得起來。')+'</div>';
-  h+='<div class="row"><button class="go" id="again" type="button">再玩一次</button><button class="go alt" id="share" type="button">複製成績</button></div><p id="shareTx"></p>';
+  h+='<div class="row"><button class="go" id="again" type="button">再玩一次</button><button class="go alt" id="share" type="button">複製成績</button></div><p id="shareTx"></p><div class="row">'+(dayIdx()>=0&&dayIdx()<3&&IN_FRAME?'<button class="go" id="nextCh" type="button">下一章：'+DAY_ORDER[dayIdx()+1][1]+' →</button>':'')+'<button class="go alt" id="home" type="button">回首頁</button></div>';
   h+='<p class="src">'+SCN.src+'</p>';
   el('endBox').innerHTML=h;el('end').scrollTop=0;
   show('end',true);fadeTo(0,900);chime(rk.r==='S'||rk.r==='A');
   el('again').onclick=function(){fadeTo(1,500);after(600,function(){show('end',false);newGame()})};
+  if(el('nextCh'))el('nextCh').onclick=function(){toParent({iw:'next',id:DAY_ORDER[dayIdx()+1][0]})};
+  el('home').onclick=function(){if(IN_FRAME)toParent({iw:'close'});else{try{location.href='./'}catch(e){}}};
   el('share').onclick=function(){
-    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/4）。你會怎麼選？';
+    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/4'+(QZ.length?'，現場追問 '+QZ.filter(function(x){return x.ok}).length+'/'+QZ.length:'')+'）。你會怎麼選？';
     var p=el('shareTx');p.textContent=tx;
     try{navigator.clipboard.writeText(tx).then(function(){el('share').textContent='已複製'},function(){p.style.display='block'})}catch(e){p.style.display='block'}
   };
@@ -1569,10 +1844,10 @@ el('goBtn').addEventListener('click',function(){
   if(SCN.ambient)ambient(SCN.ambient);
   newGame();
 });
-resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
+dayInit();resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
 if(SCN.titleCam)SCN.titleCam(0);
 requestAnimationFrame(frame);
-window.__g={HR:HR,HL:HL,HF:HF,hIn:hIn,hTo:hTo,hSet:hSet,HPOSE:HPOSE,ST:ST,cam:cam,get phase(){return phase},get stage(){return STAGE},get SC(){return SC},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},
+window.__g={get people(){return PEOPLE},HR:HR,HL:HL,HF:HF,hIn:hIn,hTo:hTo,hSet:hSet,HPOSE:HPOSE,ST:ST,cam:cam,get phase(){return phase},get stage(){return STAGE},get SC(){return SC},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},
   setTS:function(v){TS=v},adv:function(ms){var t=TS;TS=1;for(var i=0;i<ms;i+=40)stepTime(Math.min(40,ms-i));TS=t},pick:function(id){var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
   go:function(n){STAGE=n-1;nextStage()},newGame:newGame,setSafety:setSafety,get quality(){return quality},SCN:SCN,DEC:DEC,PLAY:PLAY};
 })();
