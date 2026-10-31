@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<style>[hidden]{display:none!important}html,body{margin:0}img{max-width:100%}</style>
+<style>[hidden]{display:none!important}html,body{margin:0;background:#0b0e10}img{max-width:100%}</style>
 <title>IRON WILL 熱水燙傷</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
   --num:'Barlow Condensed','Arial Narrow',sans-serif;
   color-scheme:dark;
 }
-html,body{height:100%}
+html,body{height:100%;overscroll-behavior:none}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55;
   overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer;-webkit-appearance:none;appearance:none}
@@ -72,8 +72,18 @@ body.lite #flashOv,body.lite #dmgOv,body.lite #vigOv{display:block}
 .tbar{height:4px;border-radius:2px;background:#ffffff18;margin:0 2px 12px;overflow:hidden}
 .tbar i{display:block;height:100%;width:100%;background:var(--ember);transform-origin:left}
 #opts{display:grid;gap:8px}
-.card{display:flex;align-items:center;gap:12px;text-align:left;min-height:56px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);animation:rise .4s both}
-.card:nth-child(2){animation-delay:.07s}.card:nth-child(3){animation-delay:.14s}
+.card{display:flex;align-items:center;gap:12px;text-align:left;min-height:56px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);transition:transform .28s cubic-bezier(.2,.9,.3,1.3),opacity .28s,background-color .25s,border-color .25s,filter .25s,box-shadow .25s}
+.card.wait{opacity:0;pointer-events:none;transform:translateY(14px)}
+.card.in{animation:optIn .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes optIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+#decQ.typing::after{content:'';display:inline-block;width:2px;height:1.05em;margin-left:3px;vertical-align:-.15em;background:var(--ember);animation:blinkc .7s steps(1) infinite}
+@keyframes blinkc{50%{opacity:0}}
+#opts.locked .card{pointer-events:none}
+#opts.locked .card:not(.sel){opacity:.3;transform:scale(.96);filter:saturate(.3)}
+.card.sel{background:var(--ember);border-color:var(--ember);transform:scale(1.035);box-shadow:0 8px 26px -8px rgba(255,138,61,.7);animation:none;opacity:1}
+.card.sel .t{font-size:17.5px;font-weight:800;color:#160d06}
+.card.sel .k{background:#160d06;color:var(--ember);border-color:#160d06;transform:scale(1.14)}
+.card .t{transition:font-size .25s}.card .k{transition:transform .25s,background-color .25s,color .25s}
 .card .k{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--num);font-weight:700;font-size:19px;background:#ffffff12;border:1px solid #ffffff30}
 .card .t{font-size:15.5px;font-weight:500;min-width:0;line-height:1.45}
 .card:active{background:#2c363b;border-color:var(--ember)}
@@ -109,7 +119,7 @@ body.lite #flashOv,body.lite #dmgOv,body.lite #vigOv{display:block}
 #chcard p{margin:0;font-family:var(--num);font-size:22px;letter-spacing:.3em;color:var(--ink2)}
 .sheet{position:fixed;inset:0;display:flex;justify-content:center;pointer-events:auto;touch-action:pan-y}
 #start{align-items:flex-end;z-index:5;background:linear-gradient(to top,rgba(5,7,9,.96) 0,rgba(5,7,9,.8) 42%,rgba(5,7,9,.15) 78%,rgba(5,7,9,.35) 100%)}
-.box{width:min(580px,100%);box-sizing:border-box;max-height:100%;overflow:auto;padding-top:24px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 22px)}
+.box{width:min(580px,100%);box-sizing:border-box;max-height:100%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding-top:24px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 22px)}
 .mark{display:flex;align-items:center;gap:8px;font-family:var(--num);font-weight:700;letter-spacing:.22em;font-size:14px;color:var(--ink2)}
 .mark i{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px var(--signal)}
 h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);line-height:1.05;font-weight:900;letter-spacing:.1em}
@@ -133,7 +143,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 #liteNote[hidden]{display:none}
 #set h2{margin:0 0 10px;font-size:13px;letter-spacing:.14em;color:var(--ink2);font-weight:500}
 #set .tgl{margin:0}
-#end{align-items:flex-start;z-index:5;background:radial-gradient(ellipse at 50% 0%,#1d1713 0,#080a0c 70%);overflow:auto}
+#end{align-items:flex-start;z-index:5;background:radial-gradient(ellipse at 50% 0%,#1d1713 0,#080a0c 70%);overflow:hidden}
 #end .box{padding-top:calc(env(safe-area-inset-top,0px) + 28px)}
 .rk{display:flex;align-items:center;gap:18px;margin:6px 0 4px}
 .rk .L{flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-family:var(--num);font-weight:700;font-size:64px;line-height:1;border:3px solid;box-shadow:0 0 28px -8px currentColor;animation:pop .7s cubic-bezier(.2,1.4,.4,1) both}
@@ -164,7 +174,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 .safe span,.clk span{white-space:nowrap}
 #nogl{position:fixed;inset:0;display:grid;place-items:center;text-align:center;background:var(--bg);z-index:9}
 #nogl[hidden]{display:none}
-@media (prefers-reduced-motion:reduce){.card,#dock>div,.bb{animation:none}#hint i::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.card,#dock>div,.bb{animation:none}.card.wait{transform:none}#decQ.typing::after{animation:none}#hint i::after{animation:none}}
 </style>
 
 <canvas id="gl" aria-label="熱水燙傷的 3D 場景，拖曳可以環顧四周"></canvas>
@@ -966,14 +976,31 @@ function addBub(who,txt){
   var sm=document.createElement('small');sm.textContent=who==='d'?'調度員':'你';b.appendChild(sm);
   var s=document.createElement('span');s.textContent=txt;b.appendChild(s);el('bub').appendChild(b);
 }
+var typeT=0,revT=0,SELD=520;
+function typeInto(node,text,done){
+  clearInterval(typeT);var fin=false;
+  function finish(){if(fin)return;fin=true;clearInterval(typeT);node.textContent=text;node.classList.remove('typing');node.onclick=null;done()}
+  if(S.reduce||!text||text.length<2){finish();return}
+  node.textContent=text;node.style.minHeight=node.offsetHeight+'px';node.textContent='';node.classList.add('typing');
+  var i=0,per=Math.max(1,Math.ceil(text.length/62));
+  typeT=setInterval(function(){i=Math.min(text.length,i+per);node.textContent=text.slice(0,i);if(i>=text.length)finish()},28);
+  node.onclick=finish;
+}
 function startDecision(d,done){
   cur=d;curDone=done;phase='decide';controls=true;lookBase.yaw=cam.yaw;TS=1;showSkip(false);bars(false);show('hint',false);
-  el('decQ').textContent=d.q;
-  var opts=el('opts');opts.innerHTML='';
+  clearInterval(typeT);clearTimeout(revT);
+  var opts=el('opts');opts.innerHTML='';opts.classList.remove('locked');
+  var cards=[];
   shuffle(d.opts).forEach(function(o,i){
-    var b=document.createElement('button');b.type='button';b.className='card';
+    var b=document.createElement('button');b.type='button';b.className='card wait';
     b.innerHTML='<span class="k">'+'ABC'[i]+'</span><span class="t"></span>';b.querySelector('.t').textContent=o.t;
-    b.addEventListener('click',function(){pickOption(d,o)});opts.appendChild(b);
+    b.addEventListener('click',function(){
+      if(opts.classList.contains('locked')||phase!=='decide')return;
+      opts.classList.add('locked');b.classList.add('sel');tickSnd();
+      var dl=S.reduce?200:SELD;if(decideEnd)decideEnd+=dl;
+      setTimeout(function(){opts.classList.remove('locked');pickOption(d,o)},dl);
+    });
+    opts.appendChild(b);cards.push(b);
   });
   show('phone',!!d.phone);
   if(d.phone){el('bub').innerHTML='';d.say.forEach(function(s,i){setTimeout(function(){addBub(s[0],s[1])},i*700)});dial119()}
@@ -983,10 +1010,16 @@ function startDecision(d,done){
   show('dec',true);show('fb',false);
   var timed=S.timer,tmS=d.time+(d.quick?0:TRUST_SEC);decideLimit=tmS*1000;
   el('tfill').style.transform='scaleX(1)';el('decT').textContent=timed?String(tmS):'';el('tbar').style.visibility=timed?'visible':'hidden';
-  decideEnd=timed?performance.now()+decideLimit:0;
+  decideEnd=0;
+  /* 題目打字機 → 選項依序淡入 → 才開始倒數 */
+  typeInto(el('decQ'),d.q,function(){
+    cards.forEach(function(c,i){c.classList.remove('wait');c.classList.add('in');c.style.animationDelay=(S.reduce?0:i*120)+'ms'});
+    revT=setTimeout(function(){if(phase==='decide'&&cur===d)decideEnd=timed?performance.now()+decideLimit:0},S.reduce?0:cards.length*120+200);
+  });
 }
 function pickOption(d,o,timedOut){
   if(phase!=='decide')return;
+  clearInterval(typeT);clearTimeout(revT);
   phase='cut';controls=false;clearMarkers();tickSnd();
   if(d.quick){decideEnd=0;QZ.push({d:d,o:o,ok:o.grade==='good'});SC.cards.push({t:d.kc.t,s:d.kc.s,learned:o.grade==='good'});show('dec',false);showFeedback(d,o);return}
   var left=(decideEnd&&!timedOut)?Math.max(0,decideEnd-performance.now())/decideLimit:0;
@@ -1642,7 +1675,7 @@ function resetScene(){
   el('chcard').classList.remove('on');
 }
 function newGame(){
-  SC={score:0,log:[],cards:[]};QZ=[];dayInit();resetScene();setSafety(100);setClock(SCN.clock0);setChap(SCN.chap0);STAGE=-1;TS=1;
+  SC={score:0,log:[],cards:[]};QZ=[];dayInit();canvas.style.pointerEvents='';resetScene();setSafety(100);setClock(SCN.clock0);setChap(SCN.chap0);STAGE=-1;TS=1;
   nextStage();
 }
 function calcRank(){
@@ -1652,7 +1685,7 @@ function calcRank(){
 }
 var RANK0={S:{t:'教科書等級的處置',c:'#f2c14e'},A:{t:'判斷準確的第一目擊者',c:'#74ab90'},B:{t:'做對一半，再練一次',c:'#e3b64e'},C:{t:'還需要練習，值得再試一次',c:'#e2564a'}};
 function showEnd(){
-  audioFadeOut();phase='end';controls=false;['dec','fb','phone'].forEach(function(i){show(i,false)});
+  audioFadeOut();phase='end';controls=false;drag=null;canvas.style.pointerEvents='none';['dec','fb','phone'].forEach(function(i){show(i,false)});
   var rk=calcRank(),R=(SCN.rank||RANK0)[rk.r];
   var times=SC.log.filter(function(l){return l.timeUsed!=null}).map(function(l){return l.timeUsed});
   var avg=times.length?times.reduce(function(a,b){return a+b},0)/times.length:null;
@@ -1714,7 +1747,7 @@ function endDrag(e){
   var moved=Math.hypot(e.clientX-d.sx,e.clientY-d.sy),dt=performance.now()-d.t;
   if(moved<8&&dt<500&&phase==='decide'&&markersOn)pickMarker(e.clientX,e.clientY);
 }
-canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',function(){drag=null});
+canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',function(){drag=null});canvas.addEventListener('lostpointercapture',function(){drag=null});
 function pickMarker(x,y){
   var best=null,bd=1e9;
   MARK.forEach(function(m){if(!m.on)return;var s=project(m.p);if(!s)return;var d=Math.hypot(s.x-x,s.y-y),r=Math.max(44,Math.min(120,(canvas.clientHeight/s.w)*.24));if(d<r&&d<bd){bd=d;best=m}});
