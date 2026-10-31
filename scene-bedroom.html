@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<style>[hidden]{display:none!important}html,body{margin:0}img{max-width:100%}</style>
 <title>IRON WILL 夜間臥室</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +28,11 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-appearance:none;appeara
 button:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
 #gl{position:fixed;inset:0;width:100%;height:100%;display:block;background:#050709;touch-action:none}
 #fade{position:fixed;inset:0;background:#000;opacity:1;pointer-events:none;transition:opacity 1.2s ease;z-index:6}
+#flashOv,#dmgOv,#vigOv{position:fixed;inset:0;pointer-events:none;opacity:0;display:none}
+#flashOv{background:radial-gradient(ellipse at 50% 55%,#ffd9a0 0,#ff9a3c 55%,#e0521a 100%);z-index:2}
+#dmgOv{background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(140,6,0,.85) 100%);z-index:2}
+#vigOv{background:radial-gradient(ellipse at 50% 50%,transparent 42%,rgba(0,0,0,.62) 100%);z-index:2;opacity:1}
+body.lite #flashOv,body.lite #dmgOv,body.lite #vigOv{display:block}
 #bars i{position:fixed;left:0;right:0;height:0;background:#000;z-index:2;pointer-events:none;transition:height .9s ease}
 #bars.on i{height:min(8vh,60px)}
 #bars i:first-child{top:0}#bars i:last-child{bottom:0}
@@ -111,6 +123,13 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 .note{margin:12px 0 0;font-size:12.5px;color:var(--muted)}
 #set{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 64px);width:min(300px,calc(100% - 32px));
   padding:14px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:7}
+#set .tgl+.tgl{margin-top:10px}
+.tgl button.ex{border-color:#e0705a66;color:#f0b3a6;background:#e0705a14}
+.tgl button.ex[hidden]{display:none}
+#start .exl{display:block;margin:12px auto 0;background:none;border:0;color:var(--ink2);font-size:14px;text-decoration:underline;text-underline-offset:3px;min-height:40px;padding:0 12px}
+#start .exl[hidden]{display:none}
+#liteNote{margin:10px 0 0;font-size:12.5px;color:var(--ink2)}
+#liteNote[hidden]{display:none}
 #set h2{margin:0 0 10px;font-size:13px;letter-spacing:.14em;color:var(--ink2);font-weight:500}
 #set .tgl{margin:0}
 #end{align-items:flex-start;z-index:5;background:radial-gradient(ellipse at 50% 0%,#1d1713 0,#080a0c 70%);overflow:auto}
@@ -147,6 +166,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 
 <canvas id="gl" aria-label="夜間臥室的 3D 場景，拖曳可以環顧四周"></canvas>
 <div id="bars"><i></i><i></i></div>
+<div id="flashOv"></div><div id="dmgOv"></div><div id="vigOv"></div>
 <div id="fade"></div>
 
 <div id="hud" hidden>
@@ -184,7 +204,9 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
     <button type="button" id="tSound" aria-pressed="true">聲音</button>
     <button type="button" id="tTimer" aria-pressed="true">倒數計時</button>
     <button type="button" id="tReduce" aria-pressed="false">減少動態</button>
+    <button type="button" id="tLite" aria-pressed="false">省電模式</button>
   </div>
+  <div class="tgl"><button type="button" class="ex" id="tExit" hidden>離開遊戲</button></div>
 </div>
 
 <div id="chcard"><div><small id="ccS"></small><h2 id="ccH"></h2><p id="ccP"></p></div></div>
@@ -204,8 +226,11 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
       <button type="button" id="sReduce" aria-pressed="false">減少動態</button>
+      <button type="button" id="sLite" aria-pressed="false">省電模式</button>
     </div>
+    <p id="liteNote" hidden>偵測到上次執行不順，已自動切換成省電模式（效果簡化、畫質降低）。想要完整效果，可以把上面的「省電模式」關掉（會重新載入）。</p>
     <button class="go" id="goBtn" type="button">開始（建議開聲音）</button>
+    <button type="button" class="exl" id="sExit" hidden>← 回到課程</button>
     <p class="note">這是互動火災逃生遊戲的原型，用來試玩手感。劇情是虛構的，題目內容還沒完成官方查證，請當作示範，不要當作正式的逃生教材。</p>
   </div>
 </div>
@@ -222,10 +247,30 @@ var S={sound:true,timer:true,reduce:false};
 try{S.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
 try{var sv=JSON.parse(localStorage.getItem('iw-bedroom2')||'null');if(sv&&typeof sv==='object'){['sound','timer','reduce'].forEach(function(k){if(typeof sv[k]==='boolean')S[k]=sv[k]})}}catch(e){}
 function saveS(){try{localStorage.setItem('iw-bedroom2',JSON.stringify(S))}catch(e){}}
+/* 省電模式：網址 ?safe=1、使用者手動開啟，或偵測到連續當機重載時自動啟用 */
+var SAFE=false,AUTOSAFE=false,IN_FRAME=false;
+try{IN_FRAME=window.parent!==window}catch(e){IN_FRAME=true}
+try{
+  var qs=location.search||'';
+  if(/[?&]safe=1/.test(qs))SAFE=true;
+  if(/[?&]safe=0/.test(qs))localStorage.removeItem('iw-safe');
+  else if(localStorage.getItem('iw-safe')==='1')SAFE=true;
+  var bt=JSON.parse(localStorage.getItem('iw-boot')||'null'),nowT=Date.now(),bn=0;
+  if(bt&&!bt.ok&&nowT-bt.t<30000)bn=bt.n+1;
+  localStorage.setItem('iw-boot',JSON.stringify({n:bn,t:nowT,ok:false}));
+  if(bn>=2&&!SAFE){SAFE=true;AUTOSAFE=true;localStorage.setItem('iw-safe','1')}
+}catch(e){}
+function bootOK(){try{localStorage.setItem('iw-boot',JSON.stringify({n:0,t:Date.now(),ok:true}))}catch(e){}}
+function setSafePref(on){try{if(on)localStorage.setItem('iw-safe','1');else localStorage.removeItem('iw-safe');localStorage.setItem('iw-boot',JSON.stringify({n:0,t:Date.now(),ok:true}))}catch(e){}}
+function toParent(msg){try{if(IN_FRAME)window.parent.postMessage(msg,'*')}catch(e){}}
+if(SAFE)document.body.classList.add('lite');
+window.addEventListener('error',function(ev){
+  try{var m=String(ev&&ev.message||'error');var n=document.getElementById('liteNote');if(n&&!document.getElementById('start').hidden){n.hidden=false;n.textContent='發生錯誤：'+m.slice(0,80)+'　（可截圖給講師）'}}catch(e){}
+});
 var master=null;
 function paintToggles(){
-  [['sSound','sound'],['tSound','sound'],['sTimer','timer'],['tTimer','timer'],['sReduce','reduce'],['tReduce','reduce']].forEach(function(p){
-    var b=$('#'+p[0]);if(b)b.setAttribute('aria-pressed',S[p[1]]?'true':'false');
+  [['sLite','lite'],['tLite','lite'],['sSound','sound'],['tSound','sound'],['sTimer','timer'],['tTimer','timer'],['sReduce','reduce'],['tReduce','reduce']].forEach(function(p){
+    var b=$('#'+p[0]);if(b)b.setAttribute('aria-pressed',(p[1]==='lite'?SAFE:S[p[1]])?'true':'false');
   });
   if(master&&phase!=='end')master.gain.value=S.sound?1:0;
 }
@@ -233,14 +278,20 @@ function bindToggle(id,key){$('#'+id).addEventListener('click',function(){S[key]
 ['sSound','tSound'].forEach(function(i){bindToggle(i,'sound')});
 ['sTimer','tTimer'].forEach(function(i){bindToggle(i,'timer')});
 ['sReduce','tReduce'].forEach(function(i){bindToggle(i,'reduce')});
+['sLite','tLite'].forEach(function(i){$('#'+i).addEventListener('click',function(){setSafePref(!SAFE);try{location.reload()}catch(e){}})});
+['sExit','tExit'].forEach(function(i){var b=$('#'+i);if(IN_FRAME)b.hidden=false;b.addEventListener('click',function(){toParent({iw:'close'})})});
+if(AUTOSAFE){var ln=$('#liteNote');if(ln)ln.hidden=false}
 $('#btnSet').addEventListener('click',function(){var o=$('#set');o.hidden=!o.hidden;$('#btnSet').setAttribute('aria-expanded',o.hidden?'false':'true')});
 
 /* ================= WebGL 基礎（不依賴外部函式庫） ================= */
 var canvas=$('#gl');
 var gl=null;
 try{gl=canvas.getContext('webgl',{antialias:false,alpha:false,powerPreference:'high-performance'})||canvas.getContext('experimental-webgl')}catch(e){}
-if(!gl){$('#nogl').hidden=false;$('#start').hidden=true;return}
-canvas.addEventListener('webglcontextlost',function(e){e.preventDefault();$('#nogl').hidden=false});
+if(!gl){$('#nogl').hidden=false;$('#start').hidden=true;toParent({iw:'fail'});return}
+canvas.addEventListener('webglcontextlost',function(e){e.preventDefault();
+  if(!SAFE){setSafePref(true);try{location.reload();return}catch(er){}}
+  $('#nogl').hidden=false;toParent({iw:'fail'});
+});
 
 function mul(a,b){var o=new Float32Array(16);for(var c=0;c<4;c++)for(var r=0;r<4;r++){var s=0;for(var k=0;k<4;k++)s+=a[k*4+r]*b[c*4+k];o[c*4+r]=s}return o}
 function persp(f,a,n,fr){var t=1/Math.tan(f/2),nf=1/(n-fr);return new Float32Array([t/a,0,0,0,0,t,0,0,0,0,(fr+n)*nf,-1,0,0,2*fr*n*nf,0])}
@@ -290,6 +341,9 @@ sprP=program(
 PREC+'varying vec2 vUv;uniform sampler2D uTex;uniform vec4 uTint;void main(){vec4 t=texture2D(uTex,vec2(vUv.x,1.0-vUv.y));gl_FragColor=vec4(uTint.rgb*t.rgb,uTint.a*t.a);}',
 ['aC']);
 SU=uniforms(sprP,['uVP','uCen','uSize','uRight','uUp','uRot','uTex','uTint']);
+}catch(err){console.error(err);$('#nogl').hidden=false;$('#start').hidden=true;toParent({iw:'fail'});return}
+var NOPOST=false;
+try{
 var postVS='attribute vec2 aP;varying vec2 vUv;void main(){vUv=aP*.5+.5;gl_Position=vec4(aP,0.,1.);}';
 brP=program(postVS,PREC+'varying vec2 vUv;uniform sampler2D uT;void main(){vec3 c=texture2D(uT,vUv).rgb;float l=dot(c,vec3(.299,.587,.114));float k=max(l-.42,0.)*1.9;gl_FragColor=vec4(c*k,1.);}',['aP']);
 BU=uniforms(brP,['uT']);
@@ -306,7 +360,7 @@ cpP=program(postVS,PREC+'varying vec2 vUv;uniform sampler2D uS;uniform sampler2D
 'float d=length(c*vec2(1.05,.95));col*=mix(1.,smoothstep(.95,.28,d),uVig);col+=vec3(.55,.02,0.)*pow(clamp(d*1.45,0.,1.),2.2)*uDmg;col+=vec3(.32,.09,0.)*uHeat*clamp(.55-c.y*.9,0.,1.);'+
 'col+=vec3(1.,.62,.28)*uFlash;float g=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233))+uTime*43.)*43758.5453);col+=(g-.5)*uGrain;gl_FragColor=vec4(col,1.);}',['aP']);
 CU=uniforms(cpP,['uS','uB','uPx','uTime','uBloom','uVig','uGrain','uHeat','uDmg','uSat','uAb','uWob','uFlash','uRad','uTint']);
-}catch(err){console.error(err);$('#nogl').hidden=false;$('#start').hidden=true;return}
+}catch(err){console.error(err);NOPOST=true}
 
 function mkBuf(type,data){var b=gl.createBuffer();gl.bindBuffer(type,b);gl.bufferData(type,data,gl.STATIC_DRAW);return b}
 var GEO={};
@@ -579,7 +633,7 @@ var haze=[];
  objsTrans=objsTrans.concat(haze)})();
 
 /* ================= 煙霧粒子 ================= */
-var NP=300,parts=[];
+var NP=SAFE?140:300,parts=[];
 for(var pi=0;pi<NP;pi++)parts.push({on:false,x:0,y:0,z:0,vx:0,vy:0,vz:0,age:0,life:10,size:1,band:Math.random(),ceil:false,rot:Math.random()*6,al:.2});
 function spawn(p,burst){
   p.on=true;p.hot=0;p.age=0;p.ceil=false;p.life=rnd(8,13);p.band=Math.random();p.size=rnd(.6,1.05);p.rot=Math.random()*6;p.al=rnd(.1,.18);
@@ -588,7 +642,7 @@ function spawn(p,burst){
 }
 
 /* 火星 */
-var NE=110,embers=[];
+var NE=SAFE?40:110,embers=[];
 for(var ei=0;ei<NE;ei++)embers.push({on:false,x:0,y:0,z:0,vx:0,vy:0,vz:0,age:0,life:1,size:.1,ph:Math.random()*6});
 function burstSmoke(n){
   var c=0;for(var i=0;i<NP&&c<n;i++){var p=parts[i];if(p.on)continue;spawn(p,true);p.hot=1;p.vz=rnd(2.2,4.6);p.vx=rnd(-1.1,1.3);p.vy=rnd(-.3,.7);p.size=rnd(1.0,1.7);p.al=rnd(.2,.32);p.life=rnd(4,7);p.y=rnd(.2,2.2);c++}
@@ -608,15 +662,19 @@ var ST={flash:0,rad:0,flameK:0,smoke:.12,smokeT:.12,emit:.3,surge:0,burstOn:0,fi
 var fogBase=[.035,.04,.052],fogSmoke=[.2,.17,.14];
 var cam={x:.3,y:1.28,z:1.55,yaw:.18,pitch:0};
 var VP=new Float32Array(16),camR=[1,0,0],camU=[0,1,0],camF=[0,0,-1],camPos=[0,0,0];
-var W=1,Hh=1,quality=1.5,RT={},usePost=false,tNow=0,sfNow=100,phase='title';
+var W=1,Hh=1,quality=SAFE?1:1.5,RT={},usePost=false,tNow=0,sfNow=100,phase='title';
 function resize(){
   var dpr=Math.min(window.devicePixelRatio||1,quality);
   var w=Math.max(2,Math.round(canvas.clientWidth*dpr)),h=Math.max(2,Math.round(canvas.clientHeight*dpr));
-  if(canvas.width!==w||canvas.height!==h||!RT.scene){
+  if(canvas.width!==w||canvas.height!==h||(!RT.scene&&!RT.none)){
     canvas.width=w;canvas.height=h;W=w;Hh=h;
-    freeRT(RT.scene);freeRT(RT.a);freeRT(RT.b);
-    RT.scene=mkRT(W,Hh,true);RT.a=mkRT(Math.max(2,W>>2),Math.max(2,Hh>>2),false);RT.b=mkRT(Math.max(2,W>>2),Math.max(2,Hh>>2),false);
-    usePost=RT.scene.ok&&RT.a.ok&&RT.b.ok;
+    freeRT(RT.scene);freeRT(RT.a);freeRT(RT.b);RT.scene=RT.a=RT.b=null;
+    if(SAFE||NOPOST){RT.none=true;usePost=false}
+    else{
+      RT.scene=mkRT(W,Hh,true);RT.a=mkRT(Math.max(2,W>>2),Math.max(2,Hh>>2),false);RT.b=mkRT(Math.max(2,W>>2),Math.max(2,Hh>>2),false);
+      usePost=RT.scene.ok&&RT.a.ok&&RT.b.ok;
+      if(!usePost)document.body.classList.add('lite');
+    }
   }
 }
 window.addEventListener('resize',resize);
@@ -1344,13 +1402,16 @@ function frame(now){
   if(phase==='title'){cam.x=.3;cam.y=1.28;cam.z=1.55;cam.yaw=.18+Math.sin(tNow*.22)*.2;cam.pitch=-.14+Math.sin(tNow*.17)*.03}
   audioLevels();
   render();
+  if(!usePost){flashOv.style.opacity=Math.min(.92,ST.flash*1.1);dmgOv.style.opacity=Math.min(1,ST.dmg+ST.emerg*.25+Math.max(0,(40-sfNow)/40)*.3)}
+  if(!stable&&++nfr>150){stable=true;bootOK()}
 }
+var stable=false,nfr=0,flashOv=el('flashOv'),dmgOv=el('dmgOv');
 el('goBtn').addEventListener('click',function(){
   audioStart();paintToggles();show('start',false);show('hud',true);
   var f=el('fade');f.style.transition='none';f.style.opacity=1;void f.offsetWidth;
   newGame();
 });
-resize();paintToggles();fadeTo(0,1400);
+resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
 requestAnimationFrame(frame);
 window.__g={ff:ffNode,ffp:ffParts,doorNode:doorNode,hall:hall,ST:ST,cam:cam,get phase(){return phase},get stage(){return STAGE},get SC(){return SC},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},
   setTS:function(v){TS=v},pick:function(id){var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
