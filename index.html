@@ -804,6 +804,20 @@ body.dirty #z-pro{padding-bottom:80px}
 
 /* 挑戰題庫 v10.24 */
 .tile.tile-lock{background:var(--paper);border-style:dashed}
+.tile .tile-badge.test{background:var(--ok)}
+.sc-card{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.sc-card .sc-k{flex:none;font-family:var(--mono);font-size:calc(11px*var(--fs));letter-spacing:.06em;color:var(--signal);min-width:4.6em}
+.sc-card .sc-b{flex:1;min-width:0}
+.sc-card .sc-t{font-size:calc(16px*var(--fs));font-weight:600;line-height:1.35}
+.sc-card .sc-d{font-size:calc(13px*var(--fs));color:var(--muted);margin-top:3px;line-height:1.5}
+.sc-card .sc-go{flex:none;border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:9px 16px;font-size:calc(13.5px*var(--fs));cursor:pointer;min-height:40px}
+.sc-card.off{opacity:.45}.sc-card.off .sc-go{background:none;color:var(--muted);border-color:var(--line);cursor:default}
+.sc-test{margin:14px 0 4px;padding:10px 12px;border:1px dashed var(--ok);color:var(--ok);font-size:calc(12.5px*var(--fs));line-height:1.5}
+#sceneBox{position:fixed;inset:0;z-index:9999;background:#000}
+#sceneBox[hidden]{display:none}
+#sceneFrame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+#sceneClose{position:absolute;z-index:2;top:50%;left:max(6px,env(safe-area-inset-left,0px));width:34px;height:34px;margin-top:-17px;padding:0;background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:50%;font-size:15px;line-height:1;cursor:pointer;opacity:.7}
+.gm-adm .f-in{width:100%}
 .tile.tile-lock svg,.tile.tile-lock .tile-t{opacity:.35}
 .tile.tile-lock:hover svg{transform:none}
 .tile.tile-lock::after{display:none}
@@ -2858,6 +2872,19 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
     <div id="chBody" style="padding-top:22px"></div>
   </section>
 
+  <!-- 求生現場（情境遊戲） -->
+  <section class="page" id="p-scene">
+    <div class="pg-k rv">求生現場</div>
+    <h1 class="display rv">災難發生的那一刻，你會怎麼做？</h1>
+    <p class="p rv">第一人稱的情境模擬，每個選擇只有幾秒鐘。做完會告訴你哪裡對、哪裡要修正。</p>
+    <div class="rv" id="sceneList"></div>
+    <p class="note rv">教育用途的模擬，內容正式上線前會逐條對照官方資料。建議手機直立、戴上耳機。</p>
+  </section>
+  <div id="sceneBox" hidden>
+    <button type="button" id="sceneClose" aria-label="離開遊戲">✕</button>
+    <iframe id="sceneFrame" title="求生現場" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
   <section class="page" id="p-files">
     <div class="pg-k rv">檔案下載</div>
     <h1 class="display rv" id="filesTitle">上課用得到的教材</h1>
@@ -2913,7 +2940,7 @@ window.addEventListener('unhandledrejection',function(e){console.warn('未處理
 <script>
 (function(){
 var NOEL=(function(){var t=function(){};var p=new Proxy(t,{get:function(_,k){if(k===Symbol.toPrimitive)return function(){return ''};if(k==='length')return 0;if(k==='then')return undefined;return p},set:function(){return true},apply:function(){return p},construct:function(){return p}});return p})();
-var ADMID={"#z-home":1,"#conTitle":1,"#conSub":1,"#stOpen":1,"#stCode":1,"#stPpl":1,"#actLogin":1,"#actLoginT":1,"#actLoginD":1,"#actPreview":1,"#actOpen":1,"#actShare":1,"#shareBox":1,"#qrWrap":1,"#stuLink":1,"#copyLink":1,"#openQR":1,"#z-pro":1,"#pbInbox":1,"#pbBadge":1,"#pbHome":1,"#verBar":1,"#sideBadge":1,"#at-today":1,"#proMeta":1,"#proTitle":1,"#codeShow":1,"#regenCode":1,"#tdQR":1,"#tdShare":1,"#pnl-share":1,"#qrWrap2":1,"#stuLink2":1,"#copyLink2":1,"#openQR2":1,"#kpiPpl":1,"#kpiPre":1,"#kpiPost":1,"#tdNext":1,"#qvPre":1,"#qvPost":1,"#qvLevel":1,"#qvLevelNote":1,"#qvFb":1,"#tdInboxD":1,"#kpiW":1,"#kpiInv":1,"#tdInboxPill":1,"#inboxCount":1,"#tdChD":1,"#tdChPill":1,"#tdSessH":1,"#fbTag":1,"#sessPick":1,"#sessBody":1,"#at-inbox":1,"#pnl-inbox":1,"#boxSeg":1,"#boxW":1,"#wSeg":1,"#wInbox":1,"#boxI":1,"#iSeg":1,"#iInbox":1,"#reloadInv":1,"#at-bank":1,"#bankSeg":1,"#grp-quiz":1,"#qTag":1,"#qsMode":1,"#setPick":1,"#setNew":1,"#setCopy":1,"#setRename":1,"#setDel":1,"#setNote":1,"#qeHead":1,"#qeCount":1,"#qeList":1,"#qeAdd":1,"#qvStats":1,"#qvGuessPre":1,"#qvGuessPost":1,"#qvRetry":1,"#edPass":1,"#grp-challenge":1,"#chTag":1,"#chAdmin":1,"#at-content":1,"#grp-about":1,"#aboutTag":1,"#edVidUrl":1,"#edVidTitle":1,"#edVidNote":1,"#edVidMore":1,"#cwCount":1,"#courseEdit":1,"#courseAdd":1,"#etScopeN":1,"#etScope":1,"#edRuby":1,"#edIG":1,"#edLine":1,"#edTel":1,"#edMail":1,"#grp-articles":1,"#artTag":1,"#nfViews":1,"#wmOn":1,"#wmBox":1,"#wmText":1,"#wmLv":1,"#wmPrev":1,"#addArticle":1,"#artQ":1,"#artF":1,"#artCount":1,"#artEdit":1,"#artRank":1,"#grp-files":1,"#filesTag":1,"#edFilesFolder":1,"#readFiles":1,"#filePick":1,"#fileCount":1,"#fileEdit":1,"#grp-home":1,"#homeTag":1,"#goEdit":1,"#homeTiles":1,"#homePos":1,"#at-settings":1,"#grp-mail":1,"#mailCount":1,"#edEndpoint":1,"#edPin":1,"#mailStatus":1,"#testMail":1,"#testOpen":1,"#mailMsg":1,"#rcptCount":1,"#edEmails":1,"#mailQuota":1,"#setRcpt":1,"#nfWhisper":1,"#nfInvite":1,"#nfFeedback":1,"#nfContent":1,"#nfAck":1,"#edAckSub":1,"#edAckBody":1,"#setAck":1,"#grp-traffic":1,"#traffic":1,"#grp-export":1,"#grp-backup":1,"#bkTag":1,"#bkEndpoint":1,"#bkPin":1,"#bkPinEye":1,"#bkNow":1,"#bkReload":1,"#bkMsg":1,"#bkCount":1,"#bkList":1,"#grp-sync":1,"#syncTag":1,"#seedBtn":1,"#pullBtn":1,"#stCourse":1,"#stSite":1,"#stQ":1,"#grp-account":1,"#acctTag":1,"#pwOld":1,"#pwNew":1,"#pwNew2":1,"#pwGo":1,"#emOld":1,"#emNew":1,"#emGo":1,"#pwReset":1,"#opCount":1,"#etOps":1,"#grp-log":1,"#logList":1,"#conn":1,"#connT":1,"#signOut":1,"#verTag":1,"#themeBtn":1,"#undoBar":1,"#undoT":1,"#undoGo":1,"#notif":1,"#notifT":1,"#notifD":1,"#dirtyBar":1,"#dirtyCancel":1,"#dirtySave":1,"#optSheet":1,"#optDone":1,"#optList":1,"#optAdd":1,"#edDock":1,"#edRestore":1,"#edSave":1,"#edExit":1,"#proSwitch":1};
+var ADMID={"#z-home":1,"#conTitle":1,"#conSub":1,"#stOpen":1,"#stCode":1,"#stPpl":1,"#actLogin":1,"#actLoginT":1,"#actLoginD":1,"#actPreview":1,"#actOpen":1,"#actShare":1,"#shareBox":1,"#qrWrap":1,"#stuLink":1,"#copyLink":1,"#openQR":1,"#z-pro":1,"#pbInbox":1,"#pbBadge":1,"#pbHome":1,"#verBar":1,"#sideBadge":1,"#at-today":1,"#proMeta":1,"#proTitle":1,"#codeShow":1,"#regenCode":1,"#tdQR":1,"#tdShare":1,"#pnl-share":1,"#qrWrap2":1,"#stuLink2":1,"#copyLink2":1,"#openQR2":1,"#kpiPpl":1,"#kpiPre":1,"#kpiPost":1,"#tdNext":1,"#qvPre":1,"#qvPost":1,"#qvLevel":1,"#qvLevelNote":1,"#qvFb":1,"#tdInboxD":1,"#kpiW":1,"#kpiInv":1,"#tdInboxPill":1,"#inboxCount":1,"#tdChD":1,"#tdChPill":1,"#tdSessH":1,"#fbTag":1,"#sessPick":1,"#sessBody":1,"#at-inbox":1,"#pnl-inbox":1,"#boxSeg":1,"#boxW":1,"#wSeg":1,"#wInbox":1,"#boxI":1,"#iSeg":1,"#iInbox":1,"#reloadInv":1,"#at-bank":1,"#bankSeg":1,"#grp-quiz":1,"#qTag":1,"#qsMode":1,"#setPick":1,"#setNew":1,"#setCopy":1,"#setRename":1,"#setDel":1,"#setNote":1,"#qeHead":1,"#qeCount":1,"#qeList":1,"#qeAdd":1,"#qvStats":1,"#qvGuessPre":1,"#qvGuessPost":1,"#qvRetry":1,"#edPass":1,"#grp-challenge":1,"#chTag":1,"#chAdmin":1,"#at-content":1,"#grp-about":1,"#aboutTag":1,"#edVidUrl":1,"#edVidTitle":1,"#edVidNote":1,"#edVidMore":1,"#cwCount":1,"#courseEdit":1,"#courseAdd":1,"#etScopeN":1,"#etScope":1,"#edRuby":1,"#edIG":1,"#edLine":1,"#edTel":1,"#edMail":1,"#grp-articles":1,"#artTag":1,"#nfViews":1,"#wmOn":1,"#wmBox":1,"#wmText":1,"#wmLv":1,"#wmPrev":1,"#addArticle":1,"#artQ":1,"#artF":1,"#artCount":1,"#artEdit":1,"#artRank":1,"#grp-files":1,"#filesTag":1,"#edFilesFolder":1,"#readFiles":1,"#filePick":1,"#fileCount":1,"#fileEdit":1,"#grp-home":1,"#homeTag":1,"#goEdit":1,"#homeTiles":1,"#gmAdmin":1,"#homePos":1,"#at-settings":1,"#grp-mail":1,"#mailCount":1,"#edEndpoint":1,"#edPin":1,"#mailStatus":1,"#testMail":1,"#testOpen":1,"#mailMsg":1,"#rcptCount":1,"#edEmails":1,"#mailQuota":1,"#setRcpt":1,"#nfWhisper":1,"#nfInvite":1,"#nfFeedback":1,"#nfContent":1,"#nfAck":1,"#edAckSub":1,"#edAckBody":1,"#setAck":1,"#grp-traffic":1,"#traffic":1,"#grp-export":1,"#grp-backup":1,"#bkTag":1,"#bkEndpoint":1,"#bkPin":1,"#bkPinEye":1,"#bkNow":1,"#bkReload":1,"#bkMsg":1,"#bkCount":1,"#bkList":1,"#grp-sync":1,"#syncTag":1,"#seedBtn":1,"#pullBtn":1,"#stCourse":1,"#stSite":1,"#stQ":1,"#grp-account":1,"#acctTag":1,"#pwOld":1,"#pwNew":1,"#pwNew2":1,"#pwGo":1,"#emOld":1,"#emNew":1,"#emGo":1,"#pwReset":1,"#opCount":1,"#etOps":1,"#grp-log":1,"#logList":1,"#conn":1,"#connT":1,"#signOut":1,"#verTag":1,"#themeBtn":1,"#undoBar":1,"#undoT":1,"#undoGo":1,"#notif":1,"#notifT":1,"#notifD":1,"#dirtyBar":1,"#dirtyCancel":1,"#dirtySave":1,"#optSheet":1,"#optDone":1,"#optList":1,"#optAdd":1,"#edDock":1,"#edRestore":1,"#edSave":1,"#edExit":1,"#proSwitch":1};
 var $=function(s,r){var e=(r||document).querySelector(s);return e||(!r&&ADMID[s]?NOEL:null)};
 var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
 function setConn(state,text){
@@ -2946,6 +2973,12 @@ function watchCourse(){
     if(v.sessions&&v.sessions.length)SESSIONS=v.sessions;
     if(v.code&&String(v.code)!==CODE){CODE=String(v.code);try{showCode()}catch(e){}}
     try{applyQuizVis();checkTopPublished();}catch(e){}
+    // 求生現場：開發中／維修中／預約開放，學員畫面不用重新整理（gmTick 每秒比對）
+    try{
+      if(v.scene)gmApplyCfg(v.scene);
+      var st2=(v.tiles||[]).filter(function(t){return t.id==='scene'})[0],mine2=gmTile();
+      if(st2&&mine2)mine2.on=!!st2.on;
+    }catch(e){}
     // 挑戰題庫：講師按「題庫維護中／預約／隱藏」，學員畫面不用重新整理就跟著變
     try{
       if(!EDITING&&(v.challenge||v.tiles)){
@@ -2962,7 +2995,7 @@ function watchCourse(){
     }catch(e){}
   },function(e){console.warn('課程設定同步失敗',e);unsubC=null;setTimeout(function(){try{watchCourse()}catch(x){}},3000);});
 }
-var APP_VERSION='v11.39　2026/10/22';
+var APP_VERSION='v11.41　2026/10/31';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3010,7 +3043,7 @@ function showZone(which){
   window.scrollTo({top:0,behavior:'instant'});
 }
 $('#pvExit').addEventListener('click',function(){
-  PREVIEW=false;$('#pvBar').style.display='none';showZone('z-home');
+  PREVIEW=false;$('#pvBar').style.display='none';showZone('z-home');try{renderTiles()}catch(e){}
 });
 showZone('z-student');
 function armFig(sv){
@@ -3031,7 +3064,7 @@ function reveal(root){
   },{threshold:.15,rootMargin:'0px 0px -6% 0px'});
   items.forEach(function(n){io.observe(n)});
 }
-var TITLES={'p-about':'講師介紹','p-quiz':'上課專區','p-run':'課後測驗','p-explain':'題目詳解','p-stats':'本堂統計','p-code':'上課代號','p-profile':'基本資料','p-name':'課後測驗','p-top3':'前三名',
+var TITLES={'p-scene':'求生現場','p-about':'講師介紹','p-quiz':'上課專區','p-run':'課後測驗','p-explain':'題目詳解','p-stats':'本堂統計','p-code':'上課代號','p-profile':'基本資料','p-name':'課後測驗','p-top3':'前三名',
   'p-feedback':'課程回饋','p-invite':'課程邀約','p-disaster':'防災知識專區','p-firstaid':'急救教育專區',
   'p-article':'文章','p-whisper':'傳聲悄悄話','p-challenge':'挑戰題庫','p-files':'檔案下載'};
 var stack=['p-home'];
@@ -3085,6 +3118,11 @@ function go(id){ if(id==='p-quiz'&&!EDITING&&!hasPassed()){pending='p-quiz';code
     if(stack[stack.length-2]!=='p-run'&&!REV_KEEP)REV_MODE=null;
     REV_KEEP=false;
     renderExplain();
+  }
+  if(id==='p-scene'){
+    var gst=gmState();
+    if(!gst.open&&!PREVIEW&&!EDITING){toast(gst.note);stack.pop();show(stack[stack.length-1]||'p-home',true);return;}
+    paintScene();
   }
   if(id==='p-challenge'){
     var cst=chState();
@@ -3556,6 +3594,105 @@ function chOnClose(st){
   if((CH.step==='run'||CH.step==='review')&&st.mode==='ended'){CH.timeup=true;renderChallenge();window.scrollTo({top:0,behavior:'instant'});return;}
   if(CH.step==='pick'){toast(st.note||'挑戰題庫目前沒有開放');stack=['p-home'];show('p-home',true);}
 }
+var GM_CFG={mode:'soon',at:0,end:0,note:''};
+var GM_GAMES=[
+ {id:'bedroom',k:'火災',t:'夜間臥室',d:'凌晨，煙霧警報器響了，門縫下透著橘紅色的光。',file:'scene-bedroom.html',ready:true},
+ {id:'quake',k:'地震',t:'凌晨搖晃',d:'03:12，整棟樓劇烈搖晃。',ready:false},
+ {id:'cpr',k:'急救',t:'路邊倒下的人',d:'超商門口，有人突然倒地。',ready:false},
+ {id:'choke',k:'急救',t:'餐桌上的噎住',d:'家人吃著吃著，突然說不出話。',ready:false},
+ {id:'pan',k:'火災',t:'廚房油鍋起火',d:'炒菜的時候，鍋子著火了。',ready:false},
+ {id:'mall',k:'火災',t:'商場走道的警報',d:'人潮中警報大響，走道開始有煙。',ready:false},
+ {id:'co',k:'一氧化碳',t:'浴室熱水器',d:'洗澡洗到一半，頭好暈。',ready:false},
+ {id:'flood',k:'淹水',t:'颱風夜的停車場',d:'地下停車場，水位正在上升。',ready:false},
+ {id:'bleed',k:'急救',t:'廚房割傷',d:'傷口一直流血，止不住。',ready:false},
+ {id:'burn',k:'急救',t:'熱水燙傷',d:'小孩被熱湯燙到了。',ready:false}
+];
+function gmTile(){return TILES.filter(function(t){return t.id==='scene'})[0]}
+function gmApplyCfg(c){if(c)GM_CFG={mode:c.mode||'soon',at:+c.at||0,end:+c.end||0,note:c.note||''}}
+function gmState(){
+  var t=gmTile();
+  if(!t||!t.on)return {open:false,visible:false,mode:'hidden'};
+  var m=GM_CFG.mode||'soon',now=Date.now();
+  if(m==='scheduled'&&GM_CFG.at&&now>=GM_CFG.at)m='open';
+  if(m==='soon')return {open:false,visible:true,mode:m,badge:'開發中',sub:'Coming Soon',note:GM_CFG.note||'「求生現場」開發中，敬請期待'};
+  if(m==='pause')return {open:false,visible:true,mode:m,badge:'維修中',sub:'維修中',note:GM_CFG.note||'「求生現場」維修中，請稍後再來'};
+  if(m==='scheduled')return {open:false,visible:true,mode:m,badge:'即將開放',sub:chFmt(GM_CFG.at)+' 開放',note:GM_CFG.note||('「求生現場」將於 '+chFmt(GM_CFG.at,true)+' 開放')};
+  if(GM_CFG.end&&now>=GM_CFG.end)return {open:false,visible:true,mode:'ended',badge:'已結束',sub:chFmt(GM_CFG.end)+' 已關閉',note:GM_CFG.note||'這一次的開放時間已經結束，謝謝參與！'};
+  return {open:true,visible:true,mode:'open',end:GM_CFG.end||0};
+}
+function gmTileDecor(el,t){
+  if(t.id!=='scene'||EDITING)return;
+  var st=gmState();
+  if(st.open){
+    if(st.end){var s0=document.createElement('span');s0.className='tile-lk soft';s0.textContent=chFmt(st.end).split('（')[0]+' '+chFmt(st.end).split('）')[1]+' 關閉';
+      var t0=el.querySelector('.tile-t');if(t0)t0.parentNode.insertBefore(s0,t0.nextSibling);}
+    return;
+  }
+  if(PREVIEW){
+    var bt=document.createElement('span');bt.className='tile-badge test';bt.textContent='測試';el.appendChild(bt);
+    var st1=document.createElement('span');st1.className='tile-lk soft';st1.textContent='預覽可進入．學員看到：'+st.badge;
+    var tt1=el.querySelector('.tile-t');if(tt1)tt1.parentNode.insertBefore(st1,tt1.nextSibling);
+    return;
+  }
+  el.classList.add('tile-lock');
+  el.removeAttribute('data-go');el.setAttribute('data-gmlock','1');
+  var b=document.createElement('span');b.className='tile-badge';b.textContent=st.badge;el.appendChild(b);
+  var s=document.createElement('span');s.className='tile-lk';s.textContent=st.sub;
+  var tt=el.querySelector('.tile-t');if(tt)tt.parentNode.insertBefore(s,tt.nextSibling);
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-gmlock]');if(!t||EDITING)return;
+  e.preventDefault();toast(gmState().note);
+});
+function paintScene(){
+  var box=$('#sceneList');if(!box)return;
+  var st=gmState(),h='';
+  if(PREVIEW&&!st.open)h+='<div class="sc-test">預覽測試：一般學員目前看到的是「'+hmEsc(st.badge||'未開放')+'」，進不來這一頁。</div>';
+  h+=GM_GAMES.map(function(g){
+    var can=g.ready&&(st.open||PREVIEW);
+    return '<div class="sc-card'+(g.ready?'':' off')+'"><span class="sc-k">'+hmEsc(g.k)+'</span>'+
+      '<span class="sc-b"><div class="sc-t">'+hmEsc(g.t)+'</div><div class="sc-d">'+hmEsc(g.d)+'</div></span>'+
+      '<button type="button" class="sc-go" '+(can?'data-scgo="'+hmEsc(g.id)+'"':'disabled')+'>'+(g.ready?'開始':'設計中')+'</button></div>';
+  }).join('');
+  box.innerHTML=h;
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-scgo]');
+  if(b){
+    var g=GM_GAMES.filter(function(x){return x.id===b.dataset.scgo})[0];if(!g||!g.file)return;
+    var fr=$('#sceneFrame'),bx=$('#sceneBox');if(!fr||!bx)return;
+    fr.setAttribute('allow','autoplay; fullscreen');fr.src=(typeof FRONT_URL==='string'?FRONT_URL:'')+g.file+'?v='+Date.now();bx.hidden=false;
+    try{if(bx.requestFullscreen)bx.requestFullscreen().catch(function(){})}catch(err){}
+    return;
+  }
+  if(e.target.closest('#sceneClose'))gmCloseGame();
+});
+function gmCloseGame(){
+  var fr=$('#sceneFrame'),bx=$('#sceneBox');if(!bx||bx.hidden)return;
+  fr.src='about:blank';bx.hidden=true;
+  try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen()}catch(err){}
+}
+var GM_SIG=null;
+setInterval(function(){
+  if(EDITING)return;
+  var st=gmState(),sig=JSON.stringify([st.mode,st.open,st.sub,PREVIEW]);
+  if(GM_SIG!==null&&sig!==GM_SIG){
+    try{renderTiles()}catch(e){}
+    var pg=document.querySelector('.page.is-on');
+    if(pg&&pg.id==='p-scene'){
+      if(!st.open&&!PREVIEW){gmCloseGame();toast(st.note||'「求生現場」目前沒有開放');stack=['p-home'];show('p-home',true);}
+      else paintScene();
+    }
+  }
+  GM_SIG=sig;
+},1000);
+async function gmCommit(patch,msg){}
+document.addEventListener('change',function(e){
+  if(e.target&&e.target.id==='gmNote'){
+    var v=e.target.value.trim();if(v===GM_CFG.note)return;
+    gmCommit({note:v},'求生現場：更新提示文字');
+  }
+});
 function chPaintTimer(st){
   var el=$('#chTimer');if(!el)return;
   st=st||chState();
@@ -3944,6 +4081,7 @@ var ICONS={
  heart:'<path d="M20.5 8.5c0-2.6-2.1-4.6-4.5-4.6-1.8 0-3.3 1-4 2.5-.7-1.5-2.2-2.5-4-2.5C5.6 3.9 3.5 5.9 3.5 8.5c0 5.1 8.5 10.8 8.5 10.8s8.5-5.7 8.5-10.8z"/><path class="hot" d="M6 12h1.6q.7-1.2 1.4 0h.8l.5.7.9-4.2.9 5.6.6-2.1h.9q1.1-1.8 2.2 0H18"/>',
  target:'<circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="4.6"/><path class="hot" d="M12 12 19.2 4.8M16.4 4.6h2.8v2.8"/>',
  lock:'<path d="M20 12.4c0 3.2-3.6 5.8-8 5.8-.95 0-1.86-.12-2.7-.35L4.6 19.8l1.2-3.1A5.6 5.6 0 0 1 4 12.4C4 9.2 7.6 6.6 12 6.6s8 2.6 8 5.8z"/><path class="hot" d="M10.9 12.1v-1a1.1 1.1 0 0 1 2.2 0v1"/><path class="hot" d="M10.3 12.1h3.4v2.9h-3.4z"/>',
+ scene:'<path d="M4.6 20.4V4.2h9.4v16.2"/><path d="M3 20.4h18"/><path d="m14 6.3 4.6 1.7v12.4"/><path class="hot" d="M9.3 17.4c-1.6 0-2.6-1-2.6-2.5 0-1.6 1.5-2.4 2.6-4.2 1.1 1.8 2.6 2.6 2.6 4.2 0 1.5-1 2.5-2.6 2.5z"/>',
  link:'<path d="M13.8 5.2h5v5"/><path class="hot" d="M18.8 5.2 11.4 12.6"/><path d="M17.4 14v5.4H4.8V6.6H10"/>'
 };
 var TILES=[
@@ -3954,6 +4092,7 @@ var TILES=[
  {id:'disaster', t:'防災知識專區', icon:'flame', go:'p-disaster',  on:true},
  {id:'firstaid', t:'急救教育專區', icon:'heart', go:'p-firstaid',  on:true},
  {id:'challenge',t:'挑戰題庫',     icon:'target',go:'p-challenge', on:false},
+ {id:'scene',    t:'求生現場',     icon:'scene', go:'p-scene',     on:true},
  {id:'files',    t:'檔案下載',     icon:'file',  go:'p-files',     on:true},
  {id:'whisper',  t:'傳聲悄悄話',   icon:'lock',  go:'p-whisper',   on:true}
 ];
@@ -4018,6 +4157,7 @@ function renderTiles(){
       });
     }
     try{chTileDecor(el,t)}catch(e){}
+    try{gmTileDecor(el,t)}catch(e){}
     grid.appendChild(el);
   });
   if(EDITING){
@@ -4988,13 +5128,14 @@ function applyPayload(p){
         TILE_DEF.forEach(function(def,i){
           if(!TILES.some(function(t){return t.id===def.id})){
             var at=Math.min(i,TILES.length);
-            if(def.id==='challenge'){var fi=TILES.findIndex(function(t){return t.id==='files'});if(fi>=0)at=fi;}   // 放在「檔案下載」前面
+            if(def.id==='challenge'||def.id==='scene'){var fi=TILES.findIndex(function(t){return t.id==='files'});if(fi>=0)at=fi;}   // 放在「檔案下載」前面
             TILES.splice(at,0,Object.assign({},def));
           }
         });
         TILES.forEach(function(t){if(t.id==='quiz'&&t.t==='線上測驗')t.t='上課專區';});   // v11 改名
       }
       try{chApplyCfg(d.challenge)}catch(e){}
+      try{gmApplyCfg(d.scene)}catch(e){}
       if($('#stCourse'))$('#stCourse').textContent='已同步';
     }
     var v=p.inst;
@@ -5819,6 +5960,7 @@ function hmDescDef(t){
   var D={invite:'邀請講師到你的單位',whisper:'只有講師看得到',files:'讓學過的知識，成為用得上的能力。',
          disaster:'那些你以為，不會發生的事。',firstaid:'在救護車來之前，你能做什麼？',feedback:'一堂課填一次',about:'認識講師'};
   if(t.id==='challenge')return '消防．急救，每次 '+chN()+' 題';
+  if(t.id==='scene')return '第一人稱，只有幾秒鐘能決定';
   if(t.id==='quiz')return '測驗、回饋、我的成績';
   return D[t.id]||(t.url?'外部連結':'');
 }
@@ -5924,6 +6066,7 @@ function hmTileEl(t,o){
   var kick='',small='',peek='',isNew=false,live=false;
   if(t.id==='quiz'){var ci=hmClassInfo();kick='CLASS';live=ci.live;small=ci.live?ci.s:(t.d||ci.s);}
   else if(t.id==='challenge'){kick='CHALLENGE';small=t.d||hmDescDef(t);}
+  else if(t.id==='scene'){kick='SCENARIO';small=t.d||hmDescDef(t);}
   else if(t.id==='disaster'||t.id==='firstaid'){
     var a=hmLatest(t.id);
     if(a){isNew=hmFresh(artTime(a));}
@@ -5941,6 +6084,7 @@ function hmTileEl(t,o){
       (peek?'<span class="hm-peek">'+hmEsc(peek)+'</span>':'')+'</span>'+
     (o.wide?'<span class="tile-go">→</span>':'');
   try{chTileDecor(el,t)}catch(e){}
+  try{gmTileDecor(el,t)}catch(e){}
   return el;
 }
 function renderTilesHM(){
@@ -6896,6 +7040,7 @@ function renderTraffic(){}
   window.addEventListener('focus',resync);
   window.addEventListener('pageshow',function(e){if(e.persisted)resync();});
 })();
+function wnCheck(){}
 try{bootFromCache()}catch(e){console.warn('開頁',e);document.documentElement.classList.remove('pre')}
 })();
 </script>
