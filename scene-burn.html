@@ -347,6 +347,16 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   #fb #fbP{font-size:15.5px}
   #fb .kct span{font-size:14.5px}
 }
+
+/* 回饋卡「繼續」按鈕：米白實心＋右側箭頭方塊 */
+#fb .go{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:56px;padding:0 8px 0 22px;border:0;border-radius:16px;
+  background:linear-gradient(180deg,#f8f6f0,#e4e0d6);color:#14171a;font-size:16px;font-weight:800;letter-spacing:.12em;
+  box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 #0000001f,0 12px 26px -16px #000;transition:transform .12s,box-shadow .12s}
+#fb .go .gl{flex:1;text-align:center;padding-left:38px}
+#fb .go .ar{flex:none;width:40px;height:40px;border-radius:12px;background:#15181b;display:grid;place-items:center}
+#fb .go .ar svg{width:18px;height:18px;fill:none;stroke:#f4f1ea;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#fb .go:hover{box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 #0000001f,0 14px 30px -14px #000}
+#fb .go:active{transform:translateY(1px) scale(.995)}
 </style>
 
 <canvas id="gl" aria-label="熱水燙傷的 3D 場景，可以拖曳環顧四周"></canvas>
@@ -387,7 +397,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
       <div class="fbh"><span class="badge" id="fbB"></span><div><h3 id="fbT"></h3><p id="fbH"></p></div></div>
       <p id="fbP"></p>
       <div class="kc"><span class="bulb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><div class="kct"><small>知識補充</small><div id="fbKt"></div><span id="fbKs"></span></div></div>
-      <button class="go" id="fbGo" type="button">繼續下一關 →</button>
+      <button class="go" id="fbGo" type="button"><span class="gl">繼續下一關</span><span class="ar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span></button>
     </div>
   </div>
 </div>
@@ -1860,6 +1870,7 @@ function camTo(t,dur,done){cam.yaw=wrapA(cam.yaw);var ty=cam.yaw+wrapA((t.yaw==n
 function restHands(){[HR,HL].forEach(function(H){var e=[H.mirror?-.32:.32,-1.05,.3];if(!H.vis){H.elbow=e;hIn(H,'rest',.6)}else{H.hold='';hTo(H,HPOSE.rest,.5);tween(H.elbow,{0:e[0],1:e[1],2:e[2]},.5)}})}
 function toast(txt,ms){var d=el('toastD');d.textContent=txt;d.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(function(){d.classList.remove('on')},ms||2600)}
 function notify(){beep(880,.12,.12,0);beep(1175,.2,.12,.15)}
+function goLab(t){el('fbGo').innerHTML='<span class="gl"></span><span class="ar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>';el('fbGo').firstChild.textContent=t}
 function addBub(who,txt){
   var b=document.createElement('div');b.className='bb '+who;
   var sm=document.createElement('small');sm.textContent=who==='d'?'調度員':who==='m'?'你':(SCN.who&&SCN.who[who])||'';b.appendChild(sm);
@@ -1956,8 +1967,8 @@ function showFeedback(d,o){
   el('fbKt').textContent=d.kc.t;el('fbKs').textContent=d.kc.s;
   var lab;
   if(d.quick)lab=d.qlast?'查看成績單 →':'下一題 →';
-  else lab=SC.log.length>=4?((SCN.quick&&SCN.quick.length)?'進入現場追問 →':'查看成績單 →'):'繼續下一關 →';
-  el('fbGo').textContent=lab;
+  else lab=SC.log.length>=DEC.length?((SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單'):'繼續下一關';
+  goLab(lab.replace(/ →$/,''));
   chime(o.grade==='good');show('fb',true);
   el('fbGo').onclick=function(){show('fb',false);curDone()};
 }
