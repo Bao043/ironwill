@@ -336,6 +336,17 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 }
 @media (prefers-reduced-motion:reduce){#qbar{animation:none}}
 
+
+@media (min-aspect-ratio:1/1) and (min-width:700px){
+  #cap{left:0;right:calc(min(460px,42vw) + 24px);bottom:calc(env(safe-area-inset-bottom,0px) + 30px);justify-content:center}
+  #capP{max-width:min(34em,100%);font-size:20px;line-height:1.55;padding:14px 22px;text-align:center;background:rgba(6,8,10,.78);border:1px solid #ffffff26}
+  #capP b{font-size:15px}
+  #dock{width:min(460px,42vw)}
+  #dock>div{max-height:calc(100% - 96px)}
+  #fb{padding:20px 22px}
+  #fb #fbP{font-size:15.5px}
+  #fb .kct span{font-size:14.5px}
+}
 </style>
 
 <canvas id="gl" aria-label="熱水燙傷的 3D 場景，可以拖曳環顧四周"></canvas>
@@ -880,10 +891,10 @@ B(.16,.2,.06,-.1,CTOP+.1,-RD/2+.06,0xe9e4da,{tex:TX.fabric});
 var TB={x:.2,z:.75,y:.76};
 B(1.5,.04,.9,TB.x,TB.y-.02,TB.z,0x8c6b4f,{tex:TX.wood,rep:[2,1],spec:.35});
 [[-.68,-.38],[.68,-.38],[-.68,.38],[.68,.38]].forEach(function(l){B(.05,TB.y-.04,.05,TB.x+l[0],(TB.y-.04)/2,TB.z+l[1],0x6e5341,{tex:TX.wood})});
-function chairAt(x,z,ry){var n=O({g:null,p:[x,0,z],r:[0,ry,0]});
-  O({g:'box',parent:n,p:[0,.45,0],s:[.44,.04,.42],col:hex(0x7a5c45),tex:TX.wood});
-  [[-.19,-.18],[.19,-.18],[-.19,.18],[.19,.18]].forEach(function(l){O({g:'box',parent:n,p:[l[0],.22,l[1]],s:[.035,.44,.035],col:hex(0x6e5341),tex:TX.wood})});
-  O({g:'box',parent:n,p:[0,.75,.19],s:[.44,.5,.03],col:hex(0x7a5c45),tex:TX.wood});return n}
+function chairAt(x,z,ry){var n=O({g:null,p:[x,0,z],r:[0,ry,0],dyn:true});
+  O({g:'box',parent:n,dyn:true,p:[0,.45,0],s:[.44,.04,.42],col:hex(0x7a5c45),tex:TX.wood});
+  [[-.19,-.18],[.19,-.18],[-.19,.18],[.19,.18]].forEach(function(l){O({g:'box',parent:n,dyn:true,p:[l[0],.22,l[1]],s:[.035,.44,.035],col:hex(0x6e5341),tex:TX.wood})});
+  O({g:'box',parent:n,dyn:true,p:[0,.75,.19],s:[.44,.5,.03],col:hex(0x7a5c45),tex:TX.wood});return n}
 var chairs=[chairAt(TB.x-.35,TB.z+.62,0),chairAt(TB.x+.35,TB.z+.62,0),chairAt(TB.x-.35,TB.z-.62,PI),chairAt(TB.x+.35,TB.z-.62,PI)];
 /* 餐桌上的東西 */
 var placemat=Q(.4,.3,TB.x-.35,TB.y+.002,TB.z+.2,-PI/2,0,0x8f7f66,{tex:TX.fabric,rep:[1,1]});
@@ -911,7 +922,14 @@ function mkBody(o){
   var sh=o.shirt,pa=o.pants,sk=o.skin;
   /* 腿與鞋 */
   [-1,1].forEach(function(sd){
-    if(o.sit){
+    if(o.kneel){
+      /* 跪姿：膝蓋著地、大腿直立、小腿往後平放（身體節點要往下移 .27*k） */
+      P('cyl',[.13,.3,.13],[sd*.085,.42,0],pa,{tex:TX.fabric,rep:[1,2]});
+      P('sph',[.13,.1,.13],[sd*.085,.5,0],pa,{tex:TX.fabric});
+      P('sph',[.13,.12,.14],[sd*.085,.31,.01],pa,{tex:TX.fabric});
+      P('cyl',[.115,.4,.11],[sd*.085,.33,-.2],pa,{tex:TX.fabric,rep:[1,2],r:[PI/2,0,0]});
+      P('box',[.09,.24,.06],[sd*.085,.34,-.44],0x2a2a2c,{spec:.3});
+    }else if(o.sit){
       P('cyl',[.14,.4,.14],[sd*.09,.5,.2],pa,{tex:TX.fabric,rep:[1,2],r:[PI/2,0,0]});
       P('sph',[.14,.14,.14],[sd*.09,.5,.4],pa,{tex:TX.fabric});
       P('cyl',[.12,.44,.12],[sd*.09,.27,.42],pa,{tex:TX.fabric,rep:[1,2]});
@@ -995,7 +1013,7 @@ for(var pi=0;pi<NP;pi++)parts.push({on:false,x:0,y:0,z:0,vx:0,vy:0,vz:0,age:0,li
 function spawn(p,burst){
   p.on=true;p.hot=0;p.age=0;p.ceil=false;p.life=rnd(8,13);p.band=Math.random();p.size=rnd(.6,1.05);p.rot=Math.random()*6;p.al=rnd(.1,.18);
   if(burst){p.x=rnd(-1.35,-.45);p.y=rnd(.1,2.0);p.z=-RD/2+.1;p.vx=rnd(-.3,.4);p.vy=rnd(-.05,.25);p.vz=rnd(.5,1.1);p.size=rnd(.8,1.3);p.al=rnd(.14,.22)}
-  else{p.x=rnd(-1.32,-.48);p.y=rnd(.04,.2);p.z=-RD/2+.12;p.vx=rnd(-.08,.12);p.vy=rnd(.3,.55);p.vz=rnd(.06,.2)}
+  else{p.x=rnd(-1.32,-.48);p.y=rnd(1.96,2.04);p.z=-RD/2+.12;p.vx=rnd(-.08,.12);p.vy=rnd(.12,.3);p.vz=rnd(.12,.28)}
 }
 
 /* 火星 */
@@ -1295,7 +1313,7 @@ function mkHand(skin,sleeve,mirror,o){
 }
 var HS=.85;
 var HR=mkHand(0xbd9783,0x65759a,false),HL=mkHand(0xbd9783,0x65759a,true);
-var HF=mkHand(0x8a6e3a,0x3a3d2e,false,{glove:true,elbow:[.12,-.3,-2.4]});
+var HF=mkHand(0x4a4036,0x8a6e3a,false,{glove:true,elbow:[.12,-.3,-2.4]});
 
 function hBasisM(){return new Float32Array([camR[0],camR[1],camR[2],0,camU[0],camU[1],camU[2],0,-camF[0],-camF[1],-camF[2],0,camPos[0],camPos[1],camPos[2],1])}
 function vsub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
@@ -1689,7 +1707,7 @@ SCN.start=function(){
   after(11000,function(){showSkip(false);step(1)});
 };
 function step(n){
-  if(n>4){toQuick();return}
+  if(n>DEC.length){toQuick();return}
   phase='cut';controls=false;
   var go=function(){chap(n,CHS[n-1],CLKS[n-1],function(){startDecision(DEC[n-1],function(){after(200,function(){step(n+1)})})})};
   if(PRE[n])PRE[n](go);else go();
@@ -1864,6 +1882,9 @@ var OI={
  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
  run:'<path d="M14 4.5a1.8 1.8 0 1 0 0 .01M7 21l3.5-6.5L14 17l2-6M10.5 14.5 8 11l4-3 3 1.5 3 3.5 2.5.5"/>',
  wait:'<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>',
+ padA:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><rect x="6.2" y="7.2" width="4.2" height="3.6" rx=".6" fill="#f4f6f8" stroke="none"/><rect x="16.4" y="11.6" width="3.2" height="4.8" rx=".6" fill="#f4f6f8" stroke="none"/>',
+ padC:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><path d="M12 4.5V22" stroke-dasharray="1.5 2"/><rect x="9.6" y="7.6" width="4.8" height="3.4" rx=".6" fill="none"/><rect x="9.6" y="12.6" width="4.8" height="3.4" rx=".6" fill="none"/>',
+ padL:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><rect x="13" y="7.4" width="4" height="3.4" rx=".6" fill="#f4f6f8" stroke="none"/><rect x="13" y="11.6" width="4" height="3.4" rx=".6" fill="#f4f6f8" stroke="none"/>',
  q:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.8.4-1.1.9-1.1 1.7M12 17h.01"/>'
 };
 var OIM=SCN.icons||{};
@@ -1910,7 +1931,7 @@ function pickOption(d,o,timedOut){
   }
   var bonus=(o.grade==='good')?Math.round(3*left):0;
   var pts=o.pts+bonus;
-  SC.score+=pts;
+  SC.score=Math.min(100,SC.score+pts);
   SC.log.push({d:d,o:o,pts:pts,timeUsed:decideLimit?decideLimit*(timedOut?1:(1-left))/1000:null});
   SC.cards.push({t:d.kc.t,s:d.kc.s,learned:o.grade==='good'});
   G[d.id]=o;
@@ -1961,7 +1982,7 @@ function runQuick(next){
   })();
 }
 /* ================= 章節 ================= */
-function chap(n,name,clock,done){setChap('第'+'一二三四五'[n-1]+'章　'+name);if(clock)setClock(clock);chapterCard('第 '+n+' 章',name,clock||'',done)}
+function chap(n,name,clock,done){setChap('第'+'一二三四五六七'[n-1]+'章　'+name);if(clock)setClock(clock);chapterCard('第 '+n+' 章',name,clock||'',done)}
 function resetScene(){
   audioRestore();clearAll();handsReset();
   for(var k in ST)if(typeof ST[k]==='number')ST[k]=0;ST.zoom=1;ST.sat=1;
@@ -1979,7 +2000,7 @@ function newGame(){
 function toQuick(){
   if(!SCN.quick||!SCN.quick.length){endScene();return}
   phase='cut';controls=false;restHands();
-  chap(5,'現場追問',SCN.clockQ||'',function(){
+  chap(DEC.length+1,'現場追問',SCN.clockQ||'',function(){
     if(SCN.quickCam)SCN.quickCam();
     runQuick(endScene);
   });
@@ -2071,9 +2092,9 @@ function dayEnd(rk,qok,qn){
 
 /* ================= 成績單 ================= */
 function calcRank(){
-  var good=SC.log.filter(function(l){return l.o.grade==='good'}).length,score=SC.score,sf=sfNow,r;
-  if(good===4&&score>=92)r='S';else if(good===4||(good===3&&sf>=60))r='A';else if(good>=2)r='B';else r='C';
-  return {r:r,good:good};
+  var N=DEC.length,good=SC.log.filter(function(l){return l.o.grade==='good'}).length,score=SC.score,sf=sfNow,r;
+  if(good===N&&score>=92)r='S';else if(good===N||(good===N-1&&sf>=60))r='A';else if(good>=Math.ceil(N/2))r='B';else r='C';
+  return {r:r,good:good,n:N};
 }
 var RANK={S:{t:'教科書等級的急救',c:'#f2c14e'},A:{t:'冷靜可靠的第一反應者',c:'#74ab90'},B:{t:'有幫上忙，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}};
 var HAND_CREDIT='雙手 3D 模型：This work is based on "Free Pack - VR Hands (Rigged)" (https://sketchfab.com/3d-models/free-pack-vr-hands-rigged-b3b8309e59c748e3956531c8f57dd233) by PolyOne Studio (https://sketchfab.com/polyone) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)';
@@ -2084,8 +2105,8 @@ function showEnd(){
   var avg=times.length?times.reduce(function(a,b){return a+b},0)/times.length:null;
   var qok=QZ.filter(function(x){return x.ok}).length;
   var h='<div class="mark"><i></i>成績單　FIRST AID REPORT</div>';
-  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　做對 '+rk.good+' / 4　·　得分 '+SC.score+' / 100</p></div></div>';
-  h+='<div class="stats"><div><b>'+sfNow+'</b><span>傷者狀況</span></div><div><b>'+rk.good+'/4</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
+  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　做對 '+rk.good+' / '+rk.n+'　·　得分 '+SC.score+' / 100</p></div></div>';
+  h+='<div class="stats"><div><b>'+sfNow+'</b><span>傷者狀況</span></div><div><b>'+rk.good+'/'+rk.n+'</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
   h+='<div class="story">'+SC.epilogue.map(esc).join('<br>')+'</div>';
   h+='<div class="sec">逐題回顧</div><div class="rv">';
   SC.log.forEach(function(l){
@@ -2109,7 +2130,7 @@ function showEnd(){
   SC.cards.forEach(function(c){h+='<div class="'+(c.learned?'':'rev')+'"><b>'+esc(c.t)+'</b><span>'+esc(c.s)+'</span></div>'});
   h+='</div>';
   var worst=SC.log.filter(function(l){return l.o.grade!=='good'});
-  h+='<div class="story" style="margin-top:18px">'+(worst.length?'下一次先複習：<b>'+esc(worst[0].d.kc.t)+'</b>。':'四個決定都做對了。把這些做法記在心裡，也告訴身邊的人。')+'</div>';
+  h+='<div class="story" style="margin-top:18px">'+(worst.length?'下一次先複習：<b>'+esc(worst[0].d.kc.t)+'</b>。':'一二三四五六七八'[rk.n-1]+'個決定都做對了。把這些做法記在心裡，也告訴身邊的人。')+'</div>';
   h+=dayEnd(rk,qok,QZ.length);
   h+='<div class="row"><button class="go" id="again" type="button">再玩一次</button><button class="go alt" id="share" type="button">複製成績</button></div><p id="shareTx"></p>';
   h+='<div class="row">'+(dayIdx()>=0&&dayIdx()<3&&IN_FRAME?'<button class="go" id="nextCh" type="button">下一章：'+DAY_ORDER[dayIdx()+1][1]+' →</button>':'')+'<button class="go alt" id="endExit" type="button">'+(IN_FRAME?'回情境學院':'離開遊戲')+'</button></div>';
@@ -2121,7 +2142,7 @@ function showEnd(){
   el('endExit').onclick=exitGame;
   if(el('nextCh'))el('nextCh').onclick=function(){toParent({iw:'next',id:DAY_ORDER[dayIdx()+1][0]})};
   el('share').onclick=function(){
-    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/4'+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
+    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/'+rk.n+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
     var p=el('shareTx');p.textContent=tx;
     try{navigator.clipboard.writeText(tx).then(function(){el('share').textContent='已複製'},function(){p.style.display='block'})}catch(e){p.style.display='block'}
   };
@@ -2250,7 +2271,7 @@ el('briefGo').addEventListener('click',function(){
 });
 dayInit();resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
 requestAnimationFrame(frame);
-window.__g={HR:HR,HL:HL,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,SCN:SCN,
+window.__vtA=function(){return vt};window.__fin=function(){finale()};window.__g={HR:HR,HL:HL,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,SCN:SCN,
   get G(){return G},get phase(){return phase},get SC(){return SC},get QZ(){return QZ},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},get paused(){return paused},
   setTS:function(v){TS=v},pick:function(id){var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
   pickGood:function(){var o=cur.opts.filter(function(q){return q.grade==='good'})[0];pickOption(cur,o)},fbGo:function(){el('fbGo').click()},

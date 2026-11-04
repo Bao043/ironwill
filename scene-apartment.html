@@ -335,6 +335,17 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 }
 @media (prefers-reduced-motion:reduce){#qbar{animation:none}}
 
+
+@media (min-aspect-ratio:1/1) and (min-width:700px){
+  #cap{left:0;right:calc(min(460px,42vw) + 24px);bottom:calc(env(safe-area-inset-bottom,0px) + 30px);justify-content:center}
+  #capP{max-width:min(34em,100%);font-size:20px;line-height:1.55;padding:14px 22px;text-align:center;background:rgba(6,8,10,.78);border:1px solid #ffffff26}
+  #capP b{font-size:15px}
+  #dock{width:min(460px,42vw)}
+  #dock>div{max-height:calc(100% - 96px)}
+  #fb{padding:20px 22px}
+  #fb #fbP{font-size:15.5px}
+  #fb .kct span{font-size:14.5px}
+}
 </style>
 
 <canvas id="gl" aria-label="深夜公寓的 3D 場景，可以走動、拖曳環顧四周"></canvas>
@@ -432,7 +443,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="bi"><b>你要做</b><ol>
     <li>走近房門，查看外面的狀況</li>
     <li>拿起手機，處理室友的訊息</li>
-    <li>想辦法擋住煙</li>
+    <li>想辦法讓房裡的煙排出去</li>
     <li>等消防隊到了，讓他們看見你</li>
   </ol><small>共 4 個限時決定，選錯會扣安全值。</small></div>
   <div class="bi how"><b>怎麼移動</b>
@@ -995,7 +1006,7 @@ for(var pi=0;pi<NP;pi++)parts.push({on:false,x:0,y:0,z:0,vx:0,vy:0,vz:0,age:0,li
 function spawn(p,burst){
   p.on=true;p.hot=0;p.age=0;p.ceil=false;p.life=rnd(8,13);p.band=Math.random();p.size=rnd(.6,1.05);p.rot=Math.random()*6;p.al=rnd(.1,.18);
   if(burst){p.x=rnd(-1.35,-.45);p.y=rnd(.1,2.0);p.z=-RD/2+.1;p.vx=rnd(-.3,.4);p.vy=rnd(-.05,.25);p.vz=rnd(.5,1.1);p.size=rnd(.8,1.3);p.al=rnd(.14,.22)}
-  else{p.x=rnd(-1.32,-.48);p.y=rnd(.04,.2);p.z=-RD/2+.12;p.vx=rnd(-.08,.12);p.vy=rnd(.3,.55);p.vz=rnd(.06,.2)}
+  else{p.x=rnd(-1.32,-.48);p.y=rnd(1.96,2.04);p.z=-RD/2+.12;p.vx=rnd(-.08,.12);p.vy=rnd(.12,.3);p.vz=rnd(.12,.28)}
 }
 
 /* 火星 */
@@ -1336,7 +1347,7 @@ function mkHand(skin,sleeve,mirror,o){
 }
 var HS=.85;
 var HR=mkHand(0xbd9783,0x65759a,false),HL=mkHand(0xbd9783,0x65759a,true);
-var HF=mkHand(0x8a6e3a,0x3a3d2e,false,{glove:true,elbow:[.12,-.3,-2.4]});
+var HF=mkHand(0x4a4036,0x8a6e3a,false,{glove:true,elbow:[.12,-.3,-2.4]});
 
 function hBasisM(){return new Float32Array([camR[0],camR[1],camR[2],0,camU[0],camU[1],camU[2],0,-camF[0],-camF[1],-camF[2],0,camPos[0],camPos[1],camPos[2],1])}
 function vsub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
@@ -1629,13 +1640,13 @@ var SRC='出處：澎湖縣政府防災文件（未註明日期）；台南市�
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
 var EYE=1.52,CLK=['02:13','02:15','02:18','02:21','02:27'];
 var DEC={
-k1:{id:'k1',ch:'查看房門',q:'門縫下透出橘紅色的光，煙正在進來。你怎麼做？',time:8,
- kc:{t:'開門前先用手背試溫度',s:'門板或門把燙手、門縫有煙，就不要開門。改用其他方式避難，並通報 119。'},
- best:'先用手背試門板和門把；燙手或有濃煙就不開門',
+k1:{id:'k1',ch:'查看房門',q:'門縫透出橘紅色的光，煙正在進來。你怎麼做？',time:8,
+ kc:{t:'開門前，用手背摸上方門縫',s:'住宅火災實驗發現：門外火勢猛烈時，上方門縫會很燙，門把卻可能跟室溫差不多。用手背摸上方門縫判斷比較準；燙手或有煙，就不要開門，改在房裡避難並通報 119。'},
+ best:'用手背摸房門上方的門縫；燙手或有煙就不開門',
  opts:[
   {id:'open',t:'直接開門衝出去逃生',grade:'bad',pts:0,dmg:35,fb:{b:'bad',bt:'這步有風險',h:'一開門，煙和高溫就灌進房間',p:'門外已經是濃煙與高溫時，不該往外衝。門是你和火場之間的屏障，先別打開它。'}},
-  {id:'touch',t:'先用手背試門板和門把的溫度，看門縫有沒有煙',grade:'good',pts:22,dmg:0,fb:{b:'ok',bt:'做對了',h:'門板燙手，門縫不斷冒煙。外面很危險',p:'開門前先用手背試溫度。燙手、有濃煙就不要開門，改成待在房裡想辦法擋煙、通報。'}},
-  {id:'towel',t:'抓起毛巾蓋住口鼻，衝出去',grade:'bad',pts:0,dmg:40,fb:{b:'bad',bt:'常見迷思',h:'毛巾救不了你',p:'毛巾擋不住火場裡的有毒氣體，何況門外已經是濃煙高溫。衝出去只會讓自己更危險。'}}],
+  {id:'touch',t:'先用手背摸房門上方的門縫，感覺溫度、看有沒有煙',grade:'good',pts:22,dmg:0,fb:{b:'ok',bt:'做對了',h:'上方門縫燙手，還不斷冒煙。外面很危險',p:'熱煙會往上跑，上方門縫最能感覺到門外的溫度。燙手或有煙，就不要開門。'}},
+  {id:'knob',t:'摸摸門把，不燙就開門出去',grade:'bad',pts:0,dmg:35,fb:{b:'bad',bt:'門把會騙人',h:'門把不燙，不代表外面安全',p:'火場實驗發現，門外火勢猛烈時，門把摸起來常常跟室溫差不多。要用手背摸上方門縫才準。'}}],
  timeout:{id:'timeout',t:'（時間到，沒有行動）',grade:'bad',pts:0,dmg:15,fb:{b:'wait',bt:'時間到',h:'猶豫的時候，煙還在進來',p:'火場裡沒有行動也是一種選擇。你回過神，決定先確認門外的狀況。'}}},
 k2:{id:'k2',ch:'手機與通報',q:'室友傳來訊息：「外面是不是失火了？」你怎麼辦？',time:12,phone:true,
  say:[['r','外面是不是失火了？']],
@@ -1646,14 +1657,14 @@ k2:{id:'k2',ch:'手機與通報',q:'室友傳來訊息：「外面是不是失�
   {id:'shout',t:'撥 119：「失火了！快來救我！」',call:true,grade:'mid',pts:8,dmg:10,reply:'請你冷靜，先告訴我你的地址和所在位置。',fb:{b:'mid',bt:'不夠完整',h:'光喊救命，消防隊不知道該去哪',p:'報案要說清楚受困位置與現場狀況。這次調度員多花了時間才問出地址。'}},
   {id:'report',t:'撥 119，說出地址、樓層、被困在臥室、門外有濃煙，並傳訊叫室友不要開門',say:'地址在幸福路 7 號 4 樓，我被困在臥室，門外有濃煙。我也叫室友不要開門。',call:true,grade:'good',pts:22,dmg:0,reply:'收到，消防隊已經出動。請留在房間裡，不要開門。',fb:{b:'ok',bt:'做對了',h:'位置、樓層、狀況，一次說清楚',p:'調度員立刻掌握你在哪裡、發生什麼事，也請你就地避難。'}}],
  timeout:{id:'timeout',t:'（時間到，沒有回答）',grade:'bad',pts:0,dmg:10,fb:{b:'wait',bt:'時間到',h:'手機一直亮著，沒有人通報',p:'報案時每一秒都重要，先說出地址和位置。'}}},
-k3:{id:'k3',ch:'擋住煙',q:'煙還在從門縫鑽進來。你手上拿著東西，要怎麼做？',time:9,
- kc:{t:'濃煙關門，用布料塞住門縫',s:'門外有煙或高溫時，關緊門，用濕布、膠布或布料塞住門縫，防止煙流進來，為消防隊爭取時間。'},
- best:'關著門，用毛巾或被子塞住門縫',
+k3:{id:'k3',ch:'讓煙排出去',q:'房門關著，煙還是從上方門縫一直鑽進來，房間越來越嗆。你怎麼做？',time:10,
+ kc:{t:'先關門，再開窗',s:'火場實驗發現，煙大多從門的上方縫隙流進來，塞住下方門縫效果有限。確認房門關緊，再打開對外窗戶，讓煙往外排、新鮮空氣進來。順序很重要：先開窗才去開關門，窗戶會變成洩壓口，把門外的濃煙和熱氣抽進房間。'},
+ best:'確認房門關緊，再打開對外窗戶，讓煙排出去',
  opts:[
-  {id:'hide',t:'躲進衣櫃，關上門等救援',grade:'bad',pts:0,dmg:25,fb:{b:'bad',bt:'躲起來更危險',h:'衣櫃擋不住煙，消防員也不容易找到你',p:'不要躲在衣櫃或床底下。要待在容易被發現的地方，例如窗邊。'}},
-  {id:'seal',t:'用手上的東西塞住門縫，擋住煙',grade:'good',pts:22,dmg:0,fb:{b:'ok',bt:'做對了',h:'先把煙擋在門外',p:'關緊門、塞住門縫，煙進來的速度變慢，為消防隊爭取時間。'}},
-  {id:'run',t:'把它披在頭上，直接衝出門',grade:'bad',pts:0,dmg:40,fb:{b:'bad',bt:'常見迷思',h:'披著被子也擋不住高溫與毒煙',p:'門外已經是濃煙，貿然衝出去，你自己也會被困住。'}}],
- timeout:{id:'timeout',t:'（時間到，沒有行動）',grade:'bad',pts:0,dmg:15,fb:{b:'wait',bt:'時間到',h:'煙一直進來，你站在原地',p:'火場裡每一秒都重要，先擋住門縫。'}}},
+  {id:'window',t:'確認房門關緊，再打開對外窗戶，讓煙往外排',grade:'good',pts:22,dmg:0,fb:{b:'ok',bt:'做對了',h:'煙往窗外流，空氣變好了一點',p:'房門擋住門外的火煙，窗戶讓房裡的煙排出去、新鮮空氣進來，房間就能撐到消防隊來。'}},
+  {id:'seal',t:'拿毛巾、棉被塞住下方門縫',grade:'mid',pts:8,dmg:12,fb:{b:'mid',bt:'效果有限',h:'煙大多是從上方門縫進來的',p:'只塞下方門縫擋不住多少煙。關緊房門、打開對外窗戶通風，效果比較好。'}},
+  {id:'order',t:'先打開窗戶，再把房門打開一點，看看走廊的煙有多濃',grade:'bad',pts:0,dmg:35,fb:{b:'bad',bt:'這步有風險',h:'窗戶開著再開門，濃煙會整個被抽進來',p:'門和窗同時打開，房間變成通道，門外的濃煙和熱氣會快速灌進來。一定要先關門，再開窗。'}}],
+ timeout:{id:'timeout',t:'（時間到，沒有行動）',grade:'bad',pts:0,dmg:15,fb:{b:'wait',bt:'時間到',h:'煙越積越多',p:'關緊房門、打開對外窗戶，讓煙排出去。'}}},
 k4:{id:'k4',ch:'等待救援',q:'消防車到了，警示燈掃過窗外。怎麼讓他們發現你？',time:10,
  kc:{t:'等待救援：待在室內，讓人看見你',s:'不跳樓。站在窗邊明顯處、大聲呼救；夜間用手電筒，白天揮動明顯顏色的衣物或手帕。'},
  best:'壓低身體待在窗邊，用手機手電筒向外揮動、呼救',
@@ -1690,9 +1701,10 @@ var OI={
  seal:'<path d="M3 18h18M5 18V8h14v10M8 12h8"/>',
  down:'<path d="M12 4v14M6 13l6 6 6-6"/>',
  light:'<path d="M8 3h8l-1.2 5H9.2zM9.2 8h5.6v13H9.2zM12 12v2M3 6l2 1M21 6l-2 1"/>',
+  win:'<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M12 3v18M4 12h8M15 9l3 3-3 3"/>',
  rope:'<path d="M5 3v8a4 4 0 0 0 8 0V6M13 6l6 15M5 11l-1 10"/>'
 };
-var OIM={open:'door',touch:'hand',towel:'run',ask:'chat',shout:'phone',report:'phone',hide:'hide',seal:'seal',run:'run',jump:'down',signal:'light',rope:'rope'};
+var OIM={knob:'door',window:'win',order:'door',open:'door',touch:'hand',towel:'run',ask:'chat',shout:'phone',report:'phone',hide:'hide',seal:'seal',run:'run',jump:'down',signal:'light',rope:'rope'};
 function optIcon(id){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+(OI[OIM[id]]||'<path d="M5 12h14M13 6l6 6-6 6"/>')+'</svg>'}
 /* 階段標籤（①劇情 ②選擇 ③互動 ④任務 ⑤回饋） */
 function stageNow(){
@@ -1741,7 +1753,7 @@ function pickOption(d,o,timedOut){
   SC.score+=pts;
   SC.log.push({d:d,o:o,pts:pts,timeUsed:decideEnd?decideLimit*(timedOut?1:(1-left))/1000:null});
   SC.cards.push({t:d.kc.t,s:d.kc.s,learned:o.grade==='good'});
-  G[d.id]=true;if(d.id==='k2')G.k2good=(o.grade==='good');if(d.id==='k3')G.sealed=(o.id==='seal');
+  G[d.id]=true;if(d.id==='k2')G.k2good=(o.grade==='good');
   if(o.dmg)hurt(o.dmg);
   decideEnd=0;
   if(d.phone){
@@ -1796,12 +1808,18 @@ function doorBurst(txt,done){
 var PLAY={
  k1:{
   open:function(done){doorBurst('你一把拉開房門——',done)},
-  towel:function(done){doorBurst('你把毛巾按在口鼻上，衝向房門——',done)},
+  knob:function(done){
+    cap('你握住門把，摸起來不太燙。');doorGrab();
+    after(900,function(){cap('門把不燙，你以為外面沒事——')});
+    after(1200,function(){ST.burstOn=1;ST.surge=.6;ST.flash=.28;tween(ST,{flash:0},.7);ST.shake=1;tween(ST,{shake:0},1);tween(ST,{heat:1},.3);tween(ST,{door:.8},.35);burstSmoke(24);burstEmbers(22);whoosh(1.3);bang();ST.emit=1.2;cap('熱浪和濃煙一下子灌進房間。')});
+    after(2400,function(){cap('你用力把門撞上。');tween(ST,{door:0},.3,function(){thud(1.6);knock(1)});tween(ST,{surge:0,burstOn:0,heat:0,emit:.6},1.2)});
+    after(3600,function(){hOut(HR,.4);after(400,function(){restHands();done()})});
+  },
   touch:function(done){
-    cap('你走近一步，伸出手，用手背貼上門板。');camTo({x:-.62,z:-1.8,yaw:0,pitch:-.22},.6);
-    after(620,function(){var dc=w2c(wOf(doorNode,[.64,1.3,.03])),pt=[dc[0],dc[1],dc[2]+.036];
+    cap('你走近一步，抬起手，用手背貼上房門上方的門縫。');camTo({x:-.68,z:-1.82,yaw:0,pitch:.36},.6);
+    after(620,function(){var dc=w2c(wOf(doorNode,[.5,1.96,.03])),pt=[dc[0],dc[1]-.02,dc[2]+.04];
       hTo(HR,{p:pt,r:[1.45,0,3.14],curl:.18,thumb:.2,spread:.35,fo:[-.04,0,.04,.09],hook:0,elbow:[pt[0]+.2,pt[1]-.3,pt[2]+.26]},.6)});
-    after(1500,function(){ST.heat=.5;tween(ST,{heat:.25},1);thud(.3);cap('燙的。門縫還在不斷冒出濃煙。')});
+    after(1500,function(){ST.heat=.5;tween(ST,{heat:.25},1);thud(.3);cap('上方門縫燙手，煙還在不斷往房間裡冒。')});
     after(3400,function(){hOut(HR,.4);after(450,function(){restHands();done()})});
   },
   timeout:function(done){cap('你愣在原地，煙還在進來。');after(1400,done)}
@@ -1813,17 +1831,28 @@ var PLAY={
   timeout:function(done){hOut(HR,.5);after(500,function(){restHands();done()})}
  },
  k3:{
-  hide:function(done){cap('你鑽進衣櫃，把門關上。');fadeTo(.96,700);after(2300,function(){cap('衣櫃裡又悶又黑，什麼都聽不到。');cough()});after(3900,function(){fadeTo(0,700);cap('');done()})},
-  seal:function(done){
-    cap('你蹲下，把它一圈一圈塞進門縫。');
-    roll.vis=true;roll.col=hex(G.item==='towel'?0xe3f1f2:0x4a6b8c);roll.s=[.2,.2,.2];
-    hTo(HR,{p:[.0,-.52,-.52],r:[.9,0,0],curl:.5,thumb:.4},.7);
-    after(700,function(){tween(roll.s,{0:.95,1:.2,2:.2},1.1);thud(.3)});
-    after(1500,function(){tween(ST,{emit:.1},1.5)});
-    after(2400,function(){baseSmoke=.15;cap('門縫的煙變少了。');HR.hold='';hOut(HR,.4);after(450,function(){restHands();done()})});
+  window:function(done){
+    cap('你確認房門關緊，走到窗邊，打開窗戶。');
+    var c=w2c([RW/2-.05,1.2,-.85]);hIn(HR,{p:[c[0],c[1],c[2]+.03],r:[.3,-.6,0],curl:.6,thumb:.5,abs:true},.5);
+    after(700,function(){tween(glass.p,{2:-.95},1.1);thud(.25);G.vent=true;baseSmoke=Math.min(baseSmoke,.2)});
+    after(2200,function(){hOut(HR,.4);cap('冷風吹進來，房裡的煙慢慢往窗外流，呼吸順了一點。')});
+    after(4200,function(){restHands();done()});
   },
-  run:function(done){doorBurst('你把它披在頭上，衝向房門——',done)},
-  timeout:function(done){cap('門縫的煙越來越多。');after(1200,function(){restHands();done()})}
+  seal:function(done){
+    cap('你拿毛巾塞住下方門縫。');camTo({x:-.9,z:-1.48,yaw:0,pitch:-.2},.6);
+    roll.vis=true;roll.col=hex(0xe3f1f2);roll.s=[.2,.2,.2];after(500,function(){tween(roll.s,{0:.95,1:.2,2:.2},1.1);thud(.3)});
+    after(2000,function(){tween(cam,{pitch:.3},.8);cap('可是煙還是從上方門縫一直鑽進來。')});
+    after(4000,function(){restHands();done()});
+  },
+  order:function(done){
+    cap('你先打開窗戶，再走回去把房門打開一點……');
+    after(300,function(){tween(glass.p,{2:-.95},.8)});
+    after(1200,function(){camTo({x:-.62,z:-1.55,yaw:0,pitch:-.1},.8)});
+    after(2100,function(){ST.burstOn=1;ST.surge=.7;ST.shake=1;tween(ST,{shake:0},1);tween(ST,{heat:1},.3);tween(ST,{door:.45},.3);burstSmoke(30);burstEmbers(16);whoosh(1.5);ST.emit=1.4;cap('窗戶一開、門一開，走廊的濃煙整個被抽進房間！')});
+    after(3600,function(){cap('你用力把門撞上。');tween(ST,{door:0},.3,function(){thud(1.6)});tween(ST,{surge:0,burstOn:0,heat:0,emit:.6},1.2);G.vent=true});
+    after(4800,function(){restHands();done()});
+  },
+  timeout:function(done){cap('煙越來越多，你咳個不停。');cough();after(1600,function(){restHands();done()})}
  },
  k4:{
   jump:function(done){cap('你爬上窗台，往下看——');fadeTo(.9,900);after(1800,function(){cap('樓下的消防員大喊：「不要跳！」');fadeTo(0,700);done()})},
@@ -1848,10 +1877,8 @@ function labFor(txt){if(!LABC[txt]){var L=labelTex(txt);LABC[txt]={t:L.t,lw:Math
 function faceDoorThen(pose,fn){phase='cut';controls=false;show('prompt',false);show('useBtn',false);camTo(pose,.8);after(850,fn)}
 function actDoor(){
   if(!G.k1){faceDoorThen({x:-.62,z:-1.55,yaw:0,pitch:-.3},function(){startDecision(DEC.k1,afterDecision)});return}
-  if(!G.k3){
-    if(!G.item){cap('煙一直從門縫鑽進來。得找東西擋住它。');toast('找找看：毛巾、被子');setObj();return}
-    faceDoorThen({x:-.9,z:-1.48,yaw:0,pitch:-.7},function(){startDecision(DEC.k3,afterDecision)});return}
-  cap(G.sealed?'門縫已經塞住了。不要再靠近門。':'門還是燙的。不要開。');
+  if(!G.k3){cap('門外很燙，不要開門。煙一直從上方門縫鑽進來，想想怎麼讓房裡的煙排出去。');toast('走到窗邊看看');return}
+  cap('門外很燙，不要開門。');
 }
 function actPhone(){
   phase='cut';controls=false;show('prompt',false);show('useBtn',false);
@@ -1878,16 +1905,15 @@ function actTowel(){grabItem('towel',{x:-1.42,z:1.0,yaw:PI/2,pitch:-.1})}
 function actBlanket(){grabItem('blanket',{x:-1.05,z:1.1,yaw:-PI/2,pitch:-.55})}
 function actWindow(){
   phase='cut';controls=false;show('prompt',false);show('useBtn',false);
+  if(!G.k3){camTo({x:1.6,z:-.5,yaw:-PI/2-.25,pitch:-.05},.9);after(950,function(){startDecision(DEC.k3,afterDecision)});return}
   camTo({x:1.85,z:-.3,yaw:-PI/2,pitch:-.4},.9);
   after(950,function(){startDecision(DEC.k4,afterDecision)});
 }
 function actAlarm(){G.alarmSeen=true;cap('警報器一直在響。它只能通知你，接下來該怎麼做要靠你自己判斷。');after(4200,function(){cap('')})}
 var IA=[
- {id:'door',p:[-.9,1.12,-RD/2+.1],reach:2.0,lab:function(){return !G.k1?'查看房門':(!G.k3?(G.item?'塞住門縫':'門縫在冒煙'):'房門')},en:function(){return true},act:actDoor},
+ {id:'door',p:[-.9,1.12,-RD/2+.1],reach:2.0,lab:function(){return !G.k1?'查看房門':(!G.k3?'上方門縫在冒煙':'房門')},en:function(){return true},act:actDoor},
  {id:'phone',p:[-.78,.64,2.0],reach:1.7,lab:'查看手機',en:function(){return !G.k2},act:actPhone},
- {id:'towel',p:[-RW/2+.14,1.2,1.0],reach:1.8,lab:'拿毛巾',en:function(){return !G.item&&G.k1&&!G.k3},act:actTowel},
- {id:'bed',p:[.3,.72,1.0],reach:1.9,lab:'拿被子',en:function(){return !G.item&&G.k1&&!G.k3},act:actBlanket},
- {id:'window',p:[RW/2-.15,1.5,-.3],reach:2.1,lab:'到窗邊求救',en:function(){return G.sirens&&!G.k4},act:actWindow},
+ {id:'window',p:[RW/2-.15,1.5,-.3],reach:2.1,lab:function(){return G.k3?'到窗邊求救':'窗戶'},en:function(){return (G.k1&&!G.k3)||(G.sirens&&!G.k4)},act:actWindow},
  {id:'alarm',p:[0,RH-.12,-.4],reach:3.4,lab:'火災警報器',en:function(){return !G.alarmSeen},act:actAlarm}
 ];
 var IAV=[],focusIA=null,lastFocus=null;
@@ -1958,7 +1984,7 @@ function setObj(){
   else{
     if(!G.k1)a.push('走到房門前，查看門外的狀況');
     if(!G.k2)a.push('查看手機（有新訊息）');
-    if(G.k1&&!G.k3)a.push(G.item?'回到房門邊，擋住門縫':'找東西擋住門縫（毛巾、被子）');
+    if(G.k1&&!G.k3)a.push('煙從上方門縫鑽進來，想辦法讓煙排出去');
   }
   el('objT').textContent=a.join('\n');show('obj',!!a.length&&phase!=='end');
 }
@@ -1980,7 +2006,7 @@ function sirenEvent(){
 function resetScene(){
   audioRestore();clearAll();handsReset();
   ST.smoke=.12;ST.smokeT=.12;ST.emit=.3;ST.surge=0;ST.burstOn=0;ST.fire=.35;ST.shake=0;ST.door=0;ST.heat=0;ST.zoom=1;ST.dmg=0;ST.emerg=0;ST.beam=0;ST.beamA=0;ST.ffLight=0;ST.sat=1;ST.flash=0;ST.rad=0;ST.flameK=0;regOn=false;
-  hall.vis=false;roll.vis=false;roll.s=[.95,.2,.2];towel.vis=true;phoneObj.vis=true;ffShow(false);ffNode.p=[-.9,0,-RD/2+.25];hallL.p=[-.9,1.3,-RD/2-.2];
+  hall.vis=false;roll.vis=false;glass.p[2]=-.3;roll.s=[.95,.2,.2];towel.vis=true;phoneObj.vis=true;ffShow(false);ffNode.p=[-.9,0,-RD/2+.25];ffNode.r=[0,0,0];FF.arm=0;FF.grip=0;FF.walk=0;hallL.p=[-.9,1.3,-RD/2-.2];
   parts.forEach(function(p){p.on=false});embers.forEach(function(e){e.on=false});alarmLevel=1;baseSmoke=.12;
   ['dec','fb','hint','end','phone','prompt','useBtn','obj','pause'].forEach(function(i){show(i,false)});cap('');
   el('chcard').classList.remove('on');el('fade').style.opacity=0;
@@ -2022,15 +2048,28 @@ function finale(){
   after(5000,function(){bang();splinter();regOn=true;ST.shake=1;hall.vis=false;ST.burstOn=.5;tween(ST,{door:1.3},.4);tween(ST,{shake:0},.8);
     ffShow(true);ST.ffLight=1;hallL.p=[-.9,1.5,-RD/2+.5];tween(ST,{emit:1.4},1)});
   after(5800,function(){radio();cap('消防隊！裡面有人嗎？','消防員')});
-  after(8000,function(){cap('在這裡！我在窗邊！','你')});
-  after(9600,function(){tween(ffNode.p,{0:.7,2:-.35},4.2);cap(bro?'你通報的位置很準。我們另一組已經去找你室友了。':'還有其他人嗎？我們得馬上確認每個房間。','消防員')});
-  after(14000,function(){radio();cap('抓緊我，我們走。','消防員');tween(ST,{ffLight:1.4},1);
-    hSet(HF,{p:[.06,-.1,-1.5],r:[.2,3.14,0],curl:.1,thumb:.3,abs:true});HF.vis=true;hTo(HF,{p:[.05,-.16,-.66],abs:true},1.1);
-    hTo(HR,HPOSE.off,.3);
-    after(500,function(){hIn(HR,{p:[.04,-.2,-.6],r:[.2,-.1,0],curl:.15,thumb:.3,abs:true},.9)});
-    after(1800,function(){hTo(HR,{curl:1,thumb:.9,p:[.04,-.2,-.6],abs:true},.25);hTo(HF,{curl:1,thumb:.9,abs:true},.25)});
-    after(2400,function(){hTo(HR,{p:[.04,-.2,-.5],abs:true},.5);hTo(HF,{p:[.05,-.16,-.56],abs:true},.5)})});
-  after(17600,function(){showSkip(false);endScene()});
+  after(7000,function(){tween(ffNode.p,{2:-RD/2+.9},1.0)});
+  after(8000,function(){tween(ST,{door:0},.7,function(){thud(1.2)});tween(ST,{emit:.3,burstOn:0},1);cap('消防員一進門，就順手把房門關上，擋住走廊的濃煙。')});
+  after(9200,function(){cap('在這裡！我在窗邊！','你');FF.walk=1;var to=[1.85-.79*1.02,0,-.35-.61*1.02];tween(ffNode.p,{0:to[0],2:to[2]},3.0);tween(ffNode.r,{1:.91},1.2);camTo({x:1.85,y:1.45,z:-.35,yaw:.91,pitch:.02},2.4)});
+  after(10600,function(){cap(bro?'你通報的位置很準。我們另一組已經去找你室友了。':'還有其他人嗎？我們得馬上確認每個房間。','消防員');});
+  after(13000,function(){radio();cap('抓緊我，我們走。','消防員');tween(ST,{ffLight:1.4},1);
+    FF.arm=1;ffArmBox.vis=false;ffArmStripe.vis=false;HF.vis=true;HF.curl=.15;HF.thumb=.3;
+    hIn(HR,{p:[.05,-.2,-.42],r:[.35,-.1,0],curl:.15,thumb:.3,abs:true},.8);
+    after(1300,function(){hTo(HR,{curl:.95,thumb:.85},.25);FF.grip=1});
+    after(2000,function(){tween(ffNode.p,{0:ffNode.p[0]-.3,2:ffNode.p[2]+.25},1.4);tween(cam,{x:cam.x-.3,z:cam.z+.25},1.4)})});
+  after(17200,function(){showSkip(false);endScene()});
+}
+/* 消防員伸過來的手：從他的右肩出發，抓住你的手 */
+var FF={arm:0,grip:0,walk:0};
+var ffArmBox=ffParts[8],ffArmStripe=ffParts[10];
+function ffShoulder(){var m=matOf(ffNode);var x=-.3,y=1.32,z=.06;return [m[0]*x+m[4]*y+m[8]*z+m[12],m[1]*x+m[5]*y+m[9]*z+m[13],m[2]*x+m[6]*y+m[10]*z+m[14]]}
+function ffArmTick(){
+  if(!FF.arm||!HF.vis)return;
+  var sh=w2c(ffShoulder()),t=FF.grip?[HR.p[0]-.01,HR.p[1]+.02,HR.p[2]-.03]:[.06,-.16,-.5],d=[t[0]-sh[0],t[1]-sh[1],t[2]-sh[2]],L=Math.hypot(d[0],d[1],d[2]),R=.68;
+  if(L>R){t=[sh[0]+d[0]*R/L,sh[1]+d[1]*R/L,sh[2]+d[2]*R/L]}
+  HF.p[0]=t[0];HF.p[1]=t[1];HF.p[2]=t[2];HF.r=[.2,PI,0];
+  HF.elbow=[(sh[0]+t[0])/2+.04,(sh[1]+t[1])/2-.1,(sh[2]+t[2])/2];
+  if(FF.grip){HF.curl=1;HF.thumb=.9}
 }
 function endScene(){regOn=false;
   fadeTo(1,1600);bars(false);cap('');showSkip(false);
@@ -2183,8 +2222,8 @@ function frame(now){
   if(paused){render();return}
   stepTime(dt*1000);stepPlayer(dt);updateFocus();tutTick();
   acc+=dt;frames++;if(acc>2){var fps=frames/acc;acc=0;frames=0;if(fps<26&&quality>1){quality=Math.max(1,quality-.25);resize()}}
-  if((phase==='explore'||phase==='decide')&&!G.sealed&&baseSmoke<.42)baseSmoke+=dt*.0016;
-  if(G.sealed&&baseSmoke>.18)baseSmoke-=dt*.006;
+  if((phase==='explore'||phase==='decide')&&!G.vent&&baseSmoke<.42)baseSmoke+=dt*.0016;
+  if(G.vent&&baseSmoke>.16)baseSmoke-=dt*.008;
   ST.smokeT=baseSmoke+(100-sfNow)/100*.32;
   ST.smoke+=(ST.smokeT-ST.smoke)*Math.min(1,dt*.35);
   if(ST.beam>.01)ST.beamA=Math.sin(tNow*2.2)*.5;
@@ -2195,6 +2234,7 @@ function frame(now){
     if(!p.ceil){p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;if(p.y>RH-.05-p.band*thick){p.ceil=true;p.vx=rnd(-.2,.2);p.vz=rnd(-.2,.25)}}
     else{p.x+=p.vx*dt;p.z+=p.vz*dt;p.vx*=.995;p.vz*=.995;
       if(p.x<-RW/2+.2||p.x>RW/2-.2)p.vx*=-1;if(p.z<-RD/2+.2||p.z>RD/2-.2)p.vz*=-1}
+    if(G.vent&&p.ceil&&!p.hot){p.vx+=dt*.35;if(p.x>RW/2-.35&&p.z>-1.1&&p.z<.5)p.on=false}
     if(p.hot){p.vz*=Math.max(0,1-dt*1.1);p.vx*=Math.max(0,1-dt*.8);if(p.z>RD/2-.3){p.vz=-Math.abs(p.vz)*.3}}
     if(p.age>p.life)p.on=false}
   for(i=0;i<NE;i++){var e=embers[i];if(!e.on)continue;e.age+=dt;e.vy-=dt*1.6;e.x+=e.vx*dt;e.y+=e.vy*dt;e.z+=e.vz*dt;e.vx*=.99;e.vz*=.99;if(e.y<.03){e.y=.03;e.vy*=-.3;e.vx*=.6;e.vz*=.6}if(e.age>e.life||e.z>RD/2)e.on=false}
@@ -2204,7 +2244,7 @@ function frame(now){
   haze.forEach(function(h,idx){h.p[1]=RH-.18-idx*.28-sm*idx*.35;h.a=clamp(sm*.5-idx*.05,0,.55);h.off=[tNow*.012*(idx+1),tNow*.008];
     h.col=mixv([.2,.18,.17],[.5,.24,.1],clamp(ST.fire*.3*(1-idx*.25),0,.5))});
   doorNode.r=[0,-ST.door,0];
-  spill.a=Math.min(.85,(.38+ST.smoke*.4)*(.8+.2*Math.sin(tNow*9)))*(ST.door>.1?0:1)*(G.sealed?.55:1);
+  spill.a=Math.min(.85,(.38+ST.smoke*.4)*(.8+.2*Math.sin(tNow*9)))*(ST.door>.1?0:1)*(G.vent?.7:1);
   doorStrip.col=[1,.38+.1*Math.sin(tNow*13),.1];
   led.col=(Math.floor(tNow*1.4)%2)?[1,.1,.1]:[.2,0,0];
   glass.a=.07+ST.emerg*.04;
@@ -2215,6 +2255,7 @@ function frame(now){
     var sec=Math.ceil(left/1000);if(left>0&&sec<=3&&sec!==window.__lastSec){window.__lastSec=sec;tickWarn()}
     if(left<=0&&cur)pickOption(cur,cur.timeout,true);
   }
+  ffArmTick();
   if(phase==='title'){cam.x=.3;cam.y=1.4;cam.z=1.55;cam.yaw=.18+Math.sin(tNow*.22)*.2;cam.pitch=-.14+Math.sin(tNow*.17)*.03}
   audioLevels();
   render();
@@ -2233,7 +2274,7 @@ el('briefGo').addEventListener('click',function(){
 });
 resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
 requestAnimationFrame(frame);
-window.__g={HR:HR,HL:HL,HF:HF,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,IA:IA,
+window.__vtA=function(){return vt};window.__fin=function(){finale()};window.__g={HR:HR,HL:HL,HF:HF,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,IA:IA,
   get G(){return G},get phase(){return phase},get SC(){return SC},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},get paused(){return paused},get focus(){return focusIA&&focusIA.id},
   setTS:function(v){TS=v},pick:function(id){var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
   tp:function(x,z,yaw,pitch){cam.x=x;cam.z=z;if(yaw!=null)cam.yaw=yaw;if(pitch!=null)cam.pitch=pitch},

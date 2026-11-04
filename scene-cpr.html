@@ -336,6 +336,17 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 }
 @media (prefers-reduced-motion:reduce){#qbar{animation:none}}
 
+
+@media (min-aspect-ratio:1/1) and (min-width:700px){
+  #cap{left:0;right:calc(min(460px,42vw) + 24px);bottom:calc(env(safe-area-inset-bottom,0px) + 30px);justify-content:center}
+  #capP{max-width:min(34em,100%);font-size:20px;line-height:1.55;padding:14px 22px;text-align:center;background:rgba(6,8,10,.78);border:1px solid #ffffff26}
+  #capP b{font-size:15px}
+  #dock{width:min(460px,42vw)}
+  #dock>div{max-height:calc(100% - 96px)}
+  #fb{padding:20px 22px}
+  #fb #fbP{font-size:15.5px}
+  #fb .kct span{font-size:14.5px}
+}
 </style>
 
 <canvas id="gl" aria-label="路邊倒下的人的 3D 場景，可以拖曳環顧四周"></canvas>
@@ -412,7 +423,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　急救現場</div>
     <h1>路邊倒下的人</h1>
-    <p class="lead">傍晚 18:12，下班路上，前面的人突然倒在人行道上。確認反應、指定求救、胸外按壓、使用 AED，你會怎麼做？</p>
+    <p class="lead">傍晚 18:12，下班路上，前面的人突然倒在人行道上。確認反應、指定求救、胸外按壓、貼上 AED 貼片、電擊，你會怎麼做？</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -431,7 +442,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="mark"><i></i>情境提要</div>
   <h2>路邊倒下的人</h2>
   <div class="bi now"><b>現在</b><p>傍晚 18:12，下班路上，便利商店門口。前面一位中年男子抓著胸口倒在人行道上，一動也不動。旁邊開始圍了幾個人。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>確認他的反應與呼吸</li><li>求救</li><li>胸外按壓</li><li>使用 AED</li></ol><small>共 4 個限時決定，選錯會扣「傷者狀況」；最後還有 6 題現場追問。</small></div>
+  <div class="bi"><b>你要做</b><ol><li>確認他的反應與呼吸</li><li>求救</li><li>胸外按壓</li><li>告訴店員 AED 貼片貼哪裡</li><li>安全地電擊</li></ol><small>共 5 個限時決定，選錯會扣「傷者狀況」；最後還有 6 題現場追問。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -872,7 +883,14 @@ function mkBody(o){
   var sh=o.shirt,pa=o.pants,sk=o.skin;
   /* 腿與鞋 */
   [-1,1].forEach(function(sd){
-    if(o.sit){
+    if(o.kneel){
+      /* 跪姿：膝蓋著地、大腿直立、小腿往後平放（身體節點要往下移 .27*k） */
+      P('cyl',[.13,.3,.13],[sd*.085,.42,0],pa,{tex:TX.fabric,rep:[1,2]});
+      P('sph',[.13,.1,.13],[sd*.085,.5,0],pa,{tex:TX.fabric});
+      P('sph',[.13,.12,.14],[sd*.085,.31,.01],pa,{tex:TX.fabric});
+      P('cyl',[.115,.4,.11],[sd*.085,.33,-.2],pa,{tex:TX.fabric,rep:[1,2],r:[PI/2,0,0]});
+      P('box',[.09,.24,.06],[sd*.085,.34,-.44],0x2a2a2c,{spec:.3});
+    }else if(o.sit){
       P('cyl',[.14,.4,.14],[sd*.09,.5,.2],pa,{tex:TX.fabric,rep:[1,2],r:[PI/2,0,0]});
       P('sph',[.14,.14,.14],[sd*.09,.5,.4],pa,{tex:TX.fabric});
       P('cyl',[.12,.44,.12],[sd*.09,.27,.42],pa,{tex:TX.fabric,rep:[1,2]});
@@ -919,12 +937,26 @@ var MANL=mkBody({p:[0,0,0],ry:0,k:MK,shirt:0x8fb3cf,pants:0x2e3036,skin:0xc9977a
 var MAN=mkBody({p:[0,0,0],ry:PI,k:MK,shirt:0x8fb3cf,pants:0x2e3036,skin:0xc9977a});MAN.show(false);
 var P1=mkBody({p:[0,0,0],ry:0,k:1.22,shirt:0x3a3d44,pants:0x4a5a7a,skin:0xd9a98d});P1.show(false);
 var P2=mkBody({p:[0,0,0],ry:0,k:1.25,shirt:0x2f8a5c,pants:0x2e3036,skin:0xc99a7e});P2.show(false);
+/* 店員跪在病人另一側（跪姿） */
+var P2K=mkBody({p:[0,0,0],ry:0,k:1.25,shirt:0x2f8a5c,pants:0x2e3036,skin:0xc99a7e,kneel:true});P2K.show(false);
 var P3=mkBody({p:[0,0,0],ry:0,k:1.15,shirt:0xb35a4a,pants:0x2e3036,skin:0xd9a98d,long:true});P3.show(false);
-/* 掀開衣服後露出的胸口、AED 貼片（掛在躺著的病人身上） */
+/* 剪開衣服後露出的胸口，和往兩側攤開的衣片（掛在躺著的病人身上） */
 function onMan(g,s,p,c,ex){var q=O(Object.assign({g:g,parent:MANL.node,dyn:true,s:[s[0]*MK,s[1]*MK,s[2]*MK],p:[p[0]*MK,p[1]*MK,p[2]*MK],col:hex(c)},ex||{}));q.vis=false;return q}
-var chestSkin=onMan('sph',[.27,.36,.06],[0,.83,.098],0xc9977a,{skin:1,spec:.15});
-var shirtL=onMan('box',[.08,.4,.03],[-.16,.83,.1],0x8fb3cf,{tex:TX.fabric}),shirtR=onMan('box',[.08,.4,.03],[.16,.83,.1],0x8fb3cf,{tex:TX.fabric});
-var pad1=onMan('box',[.1,.12,.008],[-.085,.93,.132],0xf4f4f0,{em:[.1,.1,.1]}),pad2=onMan('box',[.1,.12,.008],[.13,.72,.12],0xf4f4f0,{em:[.1,.1,.1]});
+var chestSkin=onMan('fr',[.27,.4,.05],[0,.79,.098],0xc9977a,{skin:1,spec:.15,r:[PI,0,0]}),sideSkin=onMan('sph',[.07,.27,.15],[.162,.75,.03],0xc9977a,{skin:1,spec:.15});
+var shirtL=onMan('box',[.11,.44,.018],[-.1,.81,.115],0x8fb3cf,{tex:TX.fabric}),shirtR=onMan('box',[.13,.44,.018],[.1,.81,.115],0x8fb3cf,{tex:TX.fabric});
+var SH={o:0,cut:0};
+/* AED 貼片：白色貼片（有灰邊與圖示），連著電線到 AED */
+function mkPad(){
+  var n=O({g:null,p:[0,0,0],dyn:true});
+  var a=O({g:'box',parent:n,dyn:true,p:[0,0,0],s:[.118,.006,.142],col:hex(0xb9bcb8),spec:.2});
+  var b=O({g:'box',parent:n,dyn:true,p:[0,.0015,0],s:[.104,.006,.128],col:hex(0xeeeeea),spec:.35});
+  var c=O({g:'box',parent:n,dyn:true,p:[.018,.0032,-.02],s:[.034,.004,.044],col:hex(0xb8463c)});
+  var d=O({g:'box',parent:n,dyn:true,p:[-.02,.0032,.03],s:[.03,.004,.02],col:hex(0x5a6470)});
+  var w1=O({g:'cyl',dyn:true,p:[0,0,0],s:[.011,.1,.011],col:hex(0x4a4f57),spec:.4}),w2=O({g:'cyl',dyn:true,p:[0,0,0],s:[.011,.1,.011],col:hex(0x4a4f57),spec:.4});
+  var P={node:n,parts:[a,b,c,d],w:[w1,w2],mode:'off',lp:null,rz:0,hand:null};
+  P.show=function(v){P.parts.concat(P.w).forEach(function(q){q.vis=v})};P.show(false);return P;
+}
+var PADS=[mkPad(),mkPad()];
 var phoneP1=B(.07,.14,.012,0,0,0,0x15181c,{dyn:true});phoneP1.vis=false;var phoneGlow=B(.062,.12,.004,0,0,0,0xbfe0ff,{unlit:1,dyn:true});phoneGlow.vis=false;
 
 var objsOpaque=[],objsTrans=[];
@@ -939,7 +971,7 @@ for(var pi=0;pi<NP;pi++)parts.push({on:false,x:0,y:0,z:0,vx:0,vy:0,vz:0,age:0,li
 function spawn(p,burst){
   p.on=true;p.hot=0;p.age=0;p.ceil=false;p.life=rnd(8,13);p.band=Math.random();p.size=rnd(.6,1.05);p.rot=Math.random()*6;p.al=rnd(.1,.18);
   if(burst){p.x=rnd(-1.35,-.45);p.y=rnd(.1,2.0);p.z=-RD/2+.1;p.vx=rnd(-.3,.4);p.vy=rnd(-.05,.25);p.vz=rnd(.5,1.1);p.size=rnd(.8,1.3);p.al=rnd(.14,.22)}
-  else{p.x=rnd(-1.32,-.48);p.y=rnd(.04,.2);p.z=-RD/2+.12;p.vx=rnd(-.08,.12);p.vy=rnd(.3,.55);p.vz=rnd(.06,.2)}
+  else{p.x=rnd(-1.32,-.48);p.y=rnd(1.96,2.04);p.z=-RD/2+.12;p.vx=rnd(-.08,.12);p.vy=rnd(.12,.3);p.vz=rnd(.12,.28)}
 }
 
 /* 火星 */
@@ -1239,7 +1271,7 @@ function mkHand(skin,sleeve,mirror,o){
 }
 var HS=.85;
 var HR=mkHand(0xbd9783,0x65759a,false),HL=mkHand(0xbd9783,0x65759a,true);
-var HF=mkHand(0x8a6e3a,0x3a3d2e,false,{glove:true,elbow:[.12,-.3,-2.4]});
+var HF=mkHand(0x4a4036,0x8a6e3a,false,{glove:true,elbow:[.12,-.3,-2.4]});
 
 function hBasisM(){return new Float32Array([camR[0],camR[1],camR[2],0,camU[0],camU[1],camU[2],0,-camF[0],-camF[1],-camF[2],0,camPos[0],camPos[1],camPos[2],1])}
 function vsub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
@@ -1539,18 +1571,20 @@ var SCN={
   id:'cpr',title:'路邊倒下的人',eye:1.62,clock0:'18:12',clockQ:'18:22',stage1:'下班路上，便利商店門口…',
   src:'內容整理自一般 CPR＋AED 急救教學重點（確認反應與呼吸、指定求救、胸外按壓、AED 操作）。數字與步驟仍待對照最新版官方教材，教學前請以主管機關公布版本為準。',
   env:{fog:[.12,.13,.17],fogD:.03,sky:[.42,.45,.56],gnd:[.22,.21,.2],dirD:[.3,-.5,-.6],dirC:[.25,.22,.24],ao:0},
-  icons:{check:'look',shake:'x',sit:'water',assign:'phone',shout:'shout',leave:'run',chest:'heart',belly:'x',light:'hand',use:'bolt',wait:'wait',touch:'x'},
+  icons:{check:'look',shake:'x',sit:'water',assign:'phone',shout:'shout',leave:'run',chest:'heart',belly:'x',light:'hand',pads:'padA',cloth:'padC',close:'padL',use:'bolt',wait:'wait',touch:'x'},
   hurtSnd:function(){thud(.3)}
 };
-var DEC=[{"id": "d1", "q": "一位中年男子抓著胸口倒在人行道上，一動也不動。你走到他身邊，第一件事做什麼？", "time": 8, "kc": {"t": "先確認意識與呼吸", "s": "拍打雙肩、大聲呼叫，同時看胸腹部有沒有起伏，判斷不要超過 10 秒。沒有反應，而且沒有呼吸，或只是偶爾倒抽一口氣（喘息樣呼吸，一下之後要隔很久才又一下），都當作沒有正常呼吸，就當作心跳停止處理。"}, "best": "拍他的雙肩、大聲呼叫，並看胸口有沒有起伏", "opts": [{"id": "check", "t": "跪在他身旁，拍他的雙肩、大聲呼叫，並看胸口有沒有起伏", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先判斷，才知道接下來要做什麼", "p": "拍雙肩、大聲叫，眼睛同時看胸口有沒有起伏。沒有反應、沒有正常呼吸，就要立刻求救並開始 CPR。"}}, {"id": "shake", "t": "用力搖晃他的肩膀和頭，直到他醒來", "grade": "bad", "pts": 0, "dmg": 12, "fb": {"b": "bad", "bt": "常見錯誤", "h": "不要用力搖晃", "p": "用力搖晃可能傷到頸部，而且浪費時間。輕拍肩膀、大聲呼叫就夠了，同時要看他有沒有呼吸。"}}, {"id": "sit", "t": "扶他坐起來，拿水給他喝", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "這步有風險", "h": "失去意識的人不能餵東西", "p": "沒有意識就不會吞嚥，餵水可能嗆進氣管。扶起來也會讓你錯過判斷呼吸的時間。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 12, "fb": {"b": "wait", "bt": "時間到", "h": "愣在原地，黃金時間一分一秒在流失", "p": "看到有人倒下，要馬上靠近確認：拍肩、呼叫、看呼吸。"}}}, {"id": "d2", "q": "他沒有反應，胸口也沒有起伏。旁邊圍了幾個人，有人在拍影片，沒有人動手。你怎麼做？", "time": 8, "kc": {"t": "指定特定的人，自己打 119 開擴音", "s": "不要只喊「有人可以幫忙嗎？」，常常沒有人動。直接指著某個人，說出具體的事：「穿綠色衣服的先生，請你去拿 AED！」。119 由你自己撥、開擴音，把手空出來，調度員會在電話裡指導你做 CPR，並播放按壓的節奏。"}, "best": "指定特定的人去拿 AED，自己撥 119 並開擴音", "opts": [{"id": "assign", "t": "指著穿綠色衣服的店員：「請你去拿 AED！」自己撥 119、開擴音，邊聽調度員指導邊準備壓胸", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "被指名的人，就知道那是他的事", "p": "具體的人加上具體的事，求救的效率最高。119 自己撥並開擴音，調度員會在電話裡一步一步帶你做 CPR，你也不用離開病人。"}}, {"id": "shout", "t": "對著所有人大喊：「有人可以幫忙嗎？」", "grade": "mid", "pts": 8, "dmg": 12, "fb": {"b": "mid", "bt": "不夠明確", "h": "每個人都以為會有別人去做", "p": "沒有指定對象時，旁觀者容易互相觀望。下次直接指著人、說出要他做什麼，119 則自己撥並開擴音。"}}, {"id": "leave", "t": "自己跑進便利商店借電話，請店員幫忙打", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "這步有風險", "h": "把病人單獨留下，壓胸整整晚了好幾分鐘", "p": "身邊明明有人可以幫忙，卻讓自己離開現場。有人可以打電話的時候，你應該留在病人身旁。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "沒有人打 119，救護車根本還沒出發", "p": "求救要在第一時間完成，並指定具體的人去做。"}}}, {"id": "d3", "q": "救護車還在路上。你跪在他身旁，雙手要放在哪裡、怎麼壓？", "time": 10, "kc": {"t": "胸外按壓：位置、速度、力道", "s": "雙手交疊放在胸口正中間（胸骨下半段），手臂打直、用身體重量垂直往下壓。每分鐘 100～120 下，請用盡全力壓（成人約 5～6 公分），不用怕壓傷；每下讓胸口完全回彈，盡量不要中斷。"}, "best": "雙手交疊壓在胸口正中間，手臂打直，用盡全力快速地壓", "opts": [{"id": "chest", "t": "雙手交疊壓在胸口正中間，手臂打直，用力快速地壓", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "位置對、速度夠、力道夠", "p": "壓在胸口正中間，每分鐘 100～120 下，用盡全力往下壓，每下都讓胸口彈回來。多數人一開始都壓得不夠用力，寧可用力，也不要太輕。"}}, {"id": "belly", "t": "雙手壓在他的上腹部", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "位置不對", "h": "壓肚子，血流根本送不出去", "p": "胸外按壓要壓在胸口正中間，才能擠壓到心臟。壓上腹部沒有效果，還可能造成傷害。"}}, {"id": "light", "t": "怕壓斷肋骨，輕輕地、慢慢地壓", "grade": "mid", "pts": 8, "dmg": 12, "fb": {"b": "mid", "bt": "太輕、太慢", "h": "怕壓傷是人之常情，但力道不夠就沒有用", "p": "肋骨可能被壓傷，但比起心臟停止，這是可以接受的代價。壓得太輕太慢，血流送不到腦部。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "沒有按壓，血就沒有在流動", "p": "心跳停止時，每一分鐘沒有壓胸，救回的機會都在下降。"}}}, {"id": "d4", "q": "店員抱著 AED 跑回來了。你要怎麼使用？", "time": 12, "kc": {"t": "AED：貼在皮膚上、分析前壓胸不停", "s": "打開電源，照語音指示操作。胸口要露出來（衣服脫掉或剪開），貼片直接貼在乾燥的皮膚上，貼的時候壓胸不要停；AED 開始分析時，大家才放手、不碰病人。電擊後立刻繼續壓胸，直到救護人員接手或病人有反應。"}, "best": "繼續壓胸，請人掀開衣服把貼片貼在皮膚上；分析時才放手，清場後電擊，電擊完立刻繼續壓", "opts": [{"id": "use", "t": "繼續壓胸，請人掀開他的衣服，把貼片貼在皮膚上；AED 開始分析才放手，確認沒人碰他再電擊，電擊完立刻繼續壓", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "AED 會一步一步說話，照著做就行", "p": "衣服要掀開或剪開，貼片貼在乾燥的皮膚上；在 AED 開始分析之前，壓胸都不能停。分析時才放手，清場後再按電擊，電擊完馬上繼續壓胸。"}}, {"id": "wait", "t": "不敢亂用，等救護人員到了再電", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "錯失時間", "h": "AED 是設計給一般民眾使用的", "p": "機器會用語音指示每一步，也只在需要時才會電擊。早一分鐘電擊，救回的機會就多很多。"}}, {"id": "touch", "t": "貼好貼片就按電擊，旁邊的人繼續壓胸沒關係", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "這步有風險", "h": "電擊時碰到病人，旁人也會被電到", "p": "分析和電擊時，所有人都要離開病人，不能碰到身體。確認清場，才能按下電擊鈕。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "AED 在旁邊，卻沒有打開", "p": "拿到 AED 就先打開電源，它會一步步說明該怎麼做。"}}}];
-SCN.quick=[{"q": "成人胸外按壓，建議的速度是每分鐘幾下？", "ok": "每分鐘 100 到 120 下", "w": ["每分鐘 60 到 80 下", "每分鐘 150 到 180 下"], "why": "100 到 120 下大約是「跟著快節奏歌曲」的速度。太慢血流不夠，太快每下壓得不夠深、也回彈不完全。", "kc": {"t": "按壓速度", "s": "100 到 120 下大約是「跟著快節奏歌曲」的速度。太慢血流不夠，太快每下壓得不夠深、也回彈不完全。"}}, {"q": "第一次壓胸，力道要怎麼拿捏？", "ok": "用盡全力，又快又用力地壓", "w": ["輕輕地壓，怕把他壓傷", "壓一壓就停下來看看他有沒有醒"], "why": "實際急救時，多數人一開始都壓得不夠用力。寧可壓得太用力，也不要太輕：不用怕壓傷，請用盡全力往下壓（成人約 5～6 公分），每下都讓胸口彈回來。", "kc": {"t": "按壓力道", "s": "實際急救時，多數人一開始都壓得不夠用力。寧可壓得太用力，也不要太輕：不用怕壓傷，請用盡全力往下壓（成人約 5～6 公分），每下都讓胸口彈回來。"}}, {"q": "每一下按壓之後，手要怎麼做？", "ok": "讓胸口完全回彈，手掌不離開位置", "w": ["整個人壓著不放", "用力把胸口往上拉"], "why": "胸口回彈時，心臟才能重新充血。手要留在原位，但不要靠在胸口上用力。", "kc": {"t": "胸口回彈", "s": "胸口回彈時，心臟才能重新充血。手要留在原位，但不要靠在胸口上用力。"}}, {"q": "成人使用 AED，貼片要貼在哪裡、怎麼貼？", "ok": "把衣服掀開或剪開，貼在乾燥的皮膚上：右上胸和左側下胸", "w": ["隔著衣服貼，比較快", "兩片都貼在背後"], "why": "貼片一定要貼在乾燥、沒有衣服遮住的皮膚上；衣服要先脫掉或剪開，胸口有水或汗要擦乾。位置是右上胸（鎖骨下方）和左側下胸（腋下側邊），貼片上有圖示，照圖貼就對了。", "kc": {"t": "AED 貼片", "s": "貼片一定要貼在乾燥、沒有衣服遮住的皮膚上；衣服要先脫掉或剪開，胸口有水或汗要擦乾。位置是右上胸（鎖骨下方）和左側下胸（腋下側邊），貼片上有圖示，照圖貼就對了。"}}, {"q": "AED 還沒開始分析之前，在拿 AED、貼貼片的這段時間，按壓的人要怎麼做？", "ok": "繼續壓胸，不要停", "w": ["先停下來，等 AED 說話", "停下來幫忙一起貼貼片"], "why": "AED 開始分析之前，壓胸都不能中斷：貼貼片交給別人，你一直壓。直到 AED 說「分析心律中，請勿碰觸病人」，大家才放手。", "kc": {"t": "分析前壓胸不停", "s": "AED 開始分析之前，壓胸都不能中斷：貼貼片交給別人，你一直壓。直到 AED 說「分析心律中，請勿碰觸病人」，大家才放手。"}}, {"q": "AED 說「分析心律中」或準備電擊時，旁邊的人要怎麼做？", "ok": "所有人離開病人，不碰他", "w": ["繼續扶著他的肩膀", "繼續按壓，不要停"], "why": "AED 開始分析和電擊時，碰到病人會干擾判讀，也可能讓碰到的人被電到。喊「大家離開」，確認沒人碰他再按；電擊完立刻繼續壓胸。", "kc": {"t": "分析與電擊時清場", "s": "AED 開始分析和電擊時，碰到病人會干擾判讀，也可能讓碰到的人被電到。喊「大家離開」，確認沒人碰他再按；電擊完立刻繼續壓胸。"}}, {"q": "按壓的人累了，怎麼辦？", "ok": "大約每 2 分鐘換人，盡量縮短中斷", "w": ["撐到救護車來為止", "累了就休息一下再繼續"], "why": "按壓品質會隨疲勞下降。有人在旁邊，就約每 2 分鐘換手，換人的空檔要很短。", "kc": {"t": "換手", "s": "按壓品質會隨疲勞下降。有人在旁邊，就約每 2 分鐘換手，換人的空檔要很短。"}}, {"q": "病人每隔很久才倒抽一口氣，一下、停很久、再一下，像在喘，但沒有意識，這算正常呼吸嗎？", "ok": "不算，那是間隔很長的喘息樣呼吸，當作沒有正常呼吸，開始 CPR", "w": ["算，他還在呼吸，等救護車就好", "算，幫他拍背"], "why": "這種「喘息樣呼吸」的特徵是：一下之後要隔很久才又一下，間隔長、不規律，不是正常呼吸。常出現在心跳停止的最初幾分鐘，看到就要當作心跳停止處理。", "kc": {"t": "喘息樣呼吸", "s": "這種「喘息樣呼吸」的特徵是：一下之後要隔很久才又一下，間隔長、不規律，不是正常呼吸。常出現在心跳停止的最初幾分鐘，看到就要當作心跳停止處理。"}}, {"q": "你打 119 時，調度員可能會做什麼？", "ok": "在電話中指導你怎麼做 CPR", "w": ["要你先掛電話", "要你把病人搬到車上"], "why": "調度員受過訓練，會一步一步帶你做。開擴音，把手空出來按壓。", "kc": {"t": "調度員指導", "s": "調度員受過訓練，會一步一步帶你做。開擴音，把手空出來按壓。"}}, {"q": "病人躺在積水的地面，要用 AED，應該怎麼做？", "ok": "先把他移到乾燥處，擦乾胸口再貼貼片", "w": ["不管，直接貼", "不要用 AED"], "why": "水會讓電流跑到不該去的地方，也會讓貼片貼不牢。盡量移到乾燥處，把胸口擦乾。", "kc": {"t": "積水環境", "s": "水會讓電流跑到不該去的地方，也會讓貼片貼不牢。盡量移到乾燥處，把胸口擦乾。"}}, {"q": "什麼時候可以停止 CPR？", "ok": "救護人員接手、病人有反應或正常呼吸，或你已經無法繼續", "w": ["按壓滿 1 分鐘就可以停", "覺得沒有效果就停"], "why": "只要有人接手、病人醒了、或現場出現危險，就可以停。沒有這些狀況，盡量不要中斷。", "kc": {"t": "停止 CPR 的時機", "s": "只要有人接手、病人醒了、或現場出現危險，就可以停。沒有這些狀況，盡量不要中斷。"}}, {"q": "發現有人倒地，在靠近之前，第一件要先確認什麼？", "ok": "現場環境對自己和對方是否安全", "w": ["他是不是喝醉了", "他有沒有帶錢包"], "why": "救人的人自己不能先倒下。先看有沒有車流、漏電、火源等危險，再靠近。", "kc": {"t": "現場安全", "s": "救人的人自己不能先倒下。先看有沒有車流、漏電、火源等危險，再靠近。"}}];
-var CHS=['確認反應','指定求救','胸外按壓','使用 AED'],CLKS=['18:12','18:13','18:13','18:17'];
-DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
+var DEC=[{"id": "d1", "q": "一位中年男子抓著胸口倒在人行道上，一動也不動。你走到他身邊，第一件事做什麼？", "time": 8, "kc": {"t": "先確認意識與呼吸", "s": "拍打雙肩、大聲呼叫，同時看胸腹部有沒有起伏，判斷不要超過 10 秒。沒有反應，而且沒有呼吸，或只是偶爾倒抽一口氣（喘息樣呼吸，一下之後要隔很久才又一下），都當作沒有正常呼吸，就當作心跳停止處理。"}, "best": "拍他的雙肩、大聲呼叫，並看胸口有沒有起伏", "opts": [{"id": "check", "t": "跪在他身旁，拍他的雙肩、大聲呼叫，並看胸口有沒有起伏", "grade": "good", "pts": 17, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先判斷，才知道接下來要做什麼", "p": "拍雙肩、大聲叫，眼睛同時看胸口有沒有起伏。沒有反應、沒有正常呼吸，就要立刻求救並開始 CPR。"}}, {"id": "shake", "t": "用力搖晃他的肩膀和頭，直到他醒來", "grade": "bad", "pts": 0, "dmg": 12, "fb": {"b": "bad", "bt": "常見錯誤", "h": "不要用力搖晃", "p": "用力搖晃可能傷到頸部，而且浪費時間。輕拍肩膀、大聲呼叫就夠了，同時要看他有沒有呼吸。"}}, {"id": "sit", "t": "扶他坐起來，拿水給他喝", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "這步有風險", "h": "失去意識的人不能餵東西", "p": "沒有意識就不會吞嚥，餵水可能嗆進氣管。扶起來也會讓你錯過判斷呼吸的時間。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 12, "fb": {"b": "wait", "bt": "時間到", "h": "愣在原地，黃金時間一分一秒在流失", "p": "看到有人倒下，要馬上靠近確認：拍肩、呼叫、看呼吸。"}}}, {"id": "d2", "q": "他沒有反應，胸口也沒有起伏。旁邊圍了幾個人，有人在拍影片，沒有人動手。你怎麼做？", "time": 8, "kc": {"t": "指定特定的人，自己打 119 開擴音", "s": "不要只喊「有人可以幫忙嗎？」，常常沒有人動。直接指著某個人，說出具體的事：「穿綠色衣服的先生，請你去拿 AED！」。119 由你自己撥、開擴音，把手空出來，調度員會在電話裡指導你做 CPR，並播放按壓的節奏。"}, "best": "指定特定的人去拿 AED，自己撥 119 並開擴音", "opts": [{"id": "assign", "t": "指著穿綠色衣服的店員：「請你去拿 AED！」自己撥 119、開擴音，邊聽調度員指導邊準備壓胸", "grade": "good", "pts": 17, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "被指名的人，就知道那是他的事", "p": "具體的人加上具體的事，求救的效率最高。119 自己撥並開擴音，調度員會在電話裡一步一步帶你做 CPR，你也不用離開病人。"}}, {"id": "shout", "t": "對著所有人大喊：「有人可以幫忙嗎？」", "grade": "mid", "pts": 6, "dmg": 12, "fb": {"b": "mid", "bt": "不夠明確", "h": "每個人都以為會有別人去做", "p": "沒有指定對象時，旁觀者容易互相觀望。下次直接指著人、說出要他做什麼，119 則自己撥並開擴音。"}}, {"id": "leave", "t": "自己跑進便利商店借電話，請店員幫忙打", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "這步有風險", "h": "把病人單獨留下，壓胸整整晚了好幾分鐘", "p": "身邊明明有人可以幫忙，卻讓自己離開現場。有人可以打電話的時候，你應該留在病人身旁。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "沒有人打 119，救護車根本還沒出發", "p": "求救要在第一時間完成，並指定具體的人去做。"}}}, {"id": "d3", "q": "救護車還在路上。你跪在他身旁，雙手要放在哪裡、怎麼壓？", "time": 10, "kc": {"t": "胸外按壓：位置、速度、力道", "s": "雙手交疊放在胸口正中間（胸骨下半段），手臂打直、用身體重量垂直往下壓。每分鐘 100～120 下，請用盡全力壓（成人約 5～6 公分），不用怕壓傷；每下讓胸口完全回彈，盡量不要中斷。"}, "best": "雙手交疊壓在胸口正中間，手臂打直，用盡全力快速地壓", "opts": [{"id": "chest", "t": "雙手交疊壓在胸口正中間，手臂打直，用力快速地壓", "grade": "good", "pts": 17, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "位置對、速度夠、力道夠", "p": "壓在胸口正中間，每分鐘 100～120 下，用盡全力往下壓，每下都讓胸口彈回來。多數人一開始都壓得不夠用力，寧可用力，也不要太輕。"}}, {"id": "belly", "t": "雙手壓在他的上腹部", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "位置不對", "h": "壓肚子，血流根本送不出去", "p": "胸外按壓要壓在胸口正中間，才能擠壓到心臟。壓上腹部沒有效果，還可能造成傷害。"}}, {"id": "light", "t": "怕壓斷肋骨，輕輕地、慢慢地壓", "grade": "mid", "pts": 6, "dmg": 12, "fb": {"b": "mid", "bt": "太輕、太慢", "h": "怕壓傷是人之常情，但力道不夠就沒有用", "p": "肋骨可能被壓傷，但比起心臟停止，這是可以接受的代價。壓得太輕太慢，血流送不到腦部。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "沒有按壓，血就沒有在流動", "p": "心跳停止時，每一分鐘沒有壓胸，救回的機會都在下降。"}}}, {"id": "d4", "q": "店員打開 AED，拿出貼片問你：「貼片要貼哪裡？衣服要脫嗎？」", "time": 12, "kc": {"t": "AED 貼片：露出胸口，右上胸＋左側胸", "s": "衣服要脫掉或剪開，貼片直接貼在乾燥、裸露的皮膚上（胸口濕的先擦乾）。最常見的是「前側位」：一片貼在右上胸（右鎖骨下方、胸骨右側），另一片貼在左側胸壁（左腋下、腋中線上）；貼片上也可能畫「一前一後」（前胸、後背），兩種都可以，照貼片上的圖示貼就對了。貼的時候壓胸不要停。"}, "best": "剪開衣服，一片貼右上胸（右鎖骨下方），一片貼左側胸（左腋下）", "opts": [{"id": "pads", "t": "先剪開衣服露出胸口；一片貼右上胸（右鎖骨下方），另一片貼左邊腋下的側胸", "grade": "good", "pts": 17, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "一前一側，把心臟夾在中間", "p": "電流要從一片穿過心臟流到另一片，所以兩片要把心臟「夾」在中間：右上胸一片、左側胸（腋下）一片。貼片要貼在乾燥、裸露的皮膚上；貼的時候，壓胸的人不要停。"}}, {"id": "cloth", "t": "衣服不用脫，隔著衣服把兩片貼在胸口正中間", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "貼不上皮膚", "h": "貼片一定要直接貼在皮膚上", "p": "隔著衣服，AED 讀不到心律，也沒辦法電擊，只會一直提示檢查貼片。衣服要掀開、脫掉或剪開；胸口濕的要先擦乾。"}}, {"id": "close", "t": "剪開衣服，兩片並排貼在左胸、心臟正上方", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "位置不對", "h": "兩片太近，電流沒有穿過心臟", "p": "直覺會想貼在心臟上，但兩片靠太近，電流會直接從兩片之間的皮膚流走。要一片在右上胸、一片在左側胸，讓電流斜斜穿過心臟。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有回答）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "店員拿著貼片，等你告訴他", "p": "貼片上都有圖示，可以照著貼：右上胸一片、左側胸（腋下）一片，直接貼在皮膚上。"}}}, {"id": "d5", "q": "AED：「建議電擊。請勿碰觸病人。」店員的手還扶在他的肩膀上。你要怎麼做？", "time": 10, "kc": {"t": "AED 電擊：清場、按鈕、馬上繼續壓", "s": "AED 分析心律時，所有人都不能碰病人。建議電擊時，大聲喊「大家離開」，看一圈確認沒有人碰到病人，再按下閃爍的電擊鈕。電擊後立刻繼續壓胸，照語音指示做，直到救護人員接手或病人有反應。"}, "best": "大喊「大家離開」，確認沒有人碰他再按電擊鈕；電擊完立刻繼續壓胸", "opts": [{"id": "use", "t": "大喊「大家離開！」，確認沒人碰到他才按電擊，電完立刻繼續壓胸", "grade": "good", "pts": 17, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "AED 會一步一步說話，照著做就行", "p": "分析和電擊時，所有人都要離開病人。確認清場再按電擊；電擊完不用等，馬上繼續壓胸。"}}, {"id": "wait", "t": "不敢按，等救護人員到了再電", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "錯失時間", "h": "AED 是設計給一般民眾使用的", "p": "機器會用語音指示每一步，也只在需要時才會建議電擊。早一分鐘電擊，救回的機會就多很多。"}}, {"id": "touch", "t": "機器說要電擊，馬上按下去，越快越好", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "有人被電到", "h": "電擊時碰到病人，旁人也會被電到", "p": "按下電擊鈕前，一定要喊「大家離開」，看一圈確認沒有人碰到病人，才能按。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "AED 一直提示按下電擊鈕", "p": "建議電擊時，清場後就按下電擊鈕。晚一分鐘，救回的機會就少一些。"}}}];
+SCN.quick=[{"q": "成人胸外按壓，建議的速度是每分鐘幾下？", "ok": "每分鐘 100 到 120 下", "w": ["每分鐘 60 到 80 下", "每分鐘 150 到 180 下"], "why": "100 到 120 下大約是「跟著快節奏歌曲」的速度。太慢血流不夠，太快每下壓得不夠深、也回彈不完全。", "kc": {"t": "按壓速度", "s": "100 到 120 下大約是「跟著快節奏歌曲」的速度。太慢血流不夠，太快每下壓得不夠深、也回彈不完全。"}}, {"q": "第一次壓胸，力道要怎麼拿捏？", "ok": "用盡全力，又快又用力地壓", "w": ["輕輕地壓，怕把他壓傷", "壓一壓就停下來看看他有沒有醒"], "why": "實際急救時，多數人一開始都壓得不夠用力。寧可壓得太用力，也不要太輕：不用怕壓傷，請用盡全力往下壓（成人約 5～6 公分），每下都讓胸口彈回來。", "kc": {"t": "按壓力道", "s": "實際急救時，多數人一開始都壓得不夠用力。寧可壓得太用力，也不要太輕：不用怕壓傷，請用盡全力往下壓（成人約 5～6 公分），每下都讓胸口彈回來。"}}, {"q": "每一下按壓之後，手要怎麼做？", "ok": "讓胸口完全回彈，手掌不離開位置", "w": ["整個人壓著不放", "用力把胸口往上拉"], "why": "胸口回彈時，心臟才能重新充血。手要留在原位，但不要靠在胸口上用力。", "kc": {"t": "胸口回彈", "s": "胸口回彈時，心臟才能重新充血。手要留在原位，但不要靠在胸口上用力。"}}, {"q": "成人使用 AED，貼片要貼在哪裡、怎麼貼？", "ok": "把衣服掀開或剪開，貼在乾燥的皮膚上：右上胸和左側下胸", "w": ["隔著衣服貼，比較快", "兩片都貼在背後"], "why": "貼片一定要貼在乾燥、沒有衣服遮住的皮膚上；衣服要先脫掉或剪開，胸口有水或汗要擦乾。位置是右上胸（鎖骨下方）和左側下胸（腋下側邊），貼片上有圖示，照圖貼就對了。", "kc": {"t": "AED 貼片", "s": "貼片一定要貼在乾燥、沒有衣服遮住的皮膚上；衣服要先脫掉或剪開，胸口有水或汗要擦乾。位置是右上胸（鎖骨下方）和左側下胸（腋下側邊），貼片上有圖示，照圖貼就對了。"}}, {"q": "AED 還沒開始分析之前，在拿 AED、貼貼片的這段時間，按壓的人要怎麼做？", "ok": "繼續壓胸，不要停", "w": ["先停下來，等 AED 說話", "停下來幫忙一起貼貼片"], "why": "AED 開始分析之前，壓胸都不能中斷：貼貼片交給別人，你一直壓。直到 AED 說「分析心律中，請勿碰觸病人」，大家才放手。", "kc": {"t": "分析前壓胸不停", "s": "AED 開始分析之前，壓胸都不能中斷：貼貼片交給別人，你一直壓。直到 AED 說「分析心律中，請勿碰觸病人」，大家才放手。"}}, {"q": "AED 說「分析心律中」或準備電擊時，旁邊的人要怎麼做？", "ok": "所有人離開病人，不碰他", "w": ["繼續扶著他的肩膀", "繼續按壓，不要停"], "why": "AED 開始分析和電擊時，碰到病人會干擾判讀，也可能讓碰到的人被電到。喊「大家離開」，確認沒人碰他再按；電擊完立刻繼續壓胸。", "kc": {"t": "分析與電擊時清場", "s": "AED 開始分析和電擊時，碰到病人會干擾判讀，也可能讓碰到的人被電到。喊「大家離開」，確認沒人碰他再按；電擊完立刻繼續壓胸。"}}, {"q": "按壓的人累了，怎麼辦？", "ok": "大約每 2 分鐘換人，盡量縮短中斷", "w": ["撐到救護車來為止", "累了就休息一下再繼續"], "why": "按壓品質會隨疲勞下降。有人在旁邊，就約每 2 分鐘換手，換人的空檔要很短。", "kc": {"t": "換手", "s": "按壓品質會隨疲勞下降。有人在旁邊，就約每 2 分鐘換手，換人的空檔要很短。"}}, {"q": "病人每隔很久才倒抽一口氣，一下、停很久、再一下，像在喘，但沒有意識，這算正常呼吸嗎？", "ok": "不算，那是間隔很長的喘息樣呼吸，當作沒有正常呼吸，開始 CPR", "w": ["算，他還在呼吸，等救護車就好", "算，幫他拍背"], "why": "這種「喘息樣呼吸」的特徵是：一下之後要隔很久才又一下，間隔長、不規律，不是正常呼吸。常出現在心跳停止的最初幾分鐘，看到就要當作心跳停止處理。", "kc": {"t": "喘息樣呼吸", "s": "這種「喘息樣呼吸」的特徵是：一下之後要隔很久才又一下，間隔長、不規律，不是正常呼吸。常出現在心跳停止的最初幾分鐘，看到就要當作心跳停止處理。"}}, {"q": "你打 119 時，調度員可能會做什麼？", "ok": "在電話中指導你怎麼做 CPR", "w": ["要你先掛電話", "要你把病人搬到車上"], "why": "調度員受過訓練，會一步一步帶你做。開擴音，把手空出來按壓。", "kc": {"t": "調度員指導", "s": "調度員受過訓練，會一步一步帶你做。開擴音，把手空出來按壓。"}}, {"q": "病人躺在積水的地面，要用 AED，應該怎麼做？", "ok": "先把他移到乾燥處，擦乾胸口再貼貼片", "w": ["不管，直接貼", "不要用 AED"], "why": "水會讓電流跑到不該去的地方，也會讓貼片貼不牢。盡量移到乾燥處，把胸口擦乾。", "kc": {"t": "積水環境", "s": "水會讓電流跑到不該去的地方，也會讓貼片貼不牢。盡量移到乾燥處，把胸口擦乾。"}}, {"q": "什麼時候可以停止 CPR？", "ok": "救護人員接手、病人有反應或正常呼吸，或你已經無法繼續", "w": ["按壓滿 1 分鐘就可以停", "覺得沒有效果就停"], "why": "只要有人接手、病人醒了、或現場出現危險，就可以停。沒有這些狀況，盡量不要中斷。", "kc": {"t": "停止 CPR 的時機", "s": "只要有人接手、病人醒了、或現場出現危險，就可以停。沒有這些狀況，盡量不要中斷。"}}, {"q": "發現有人倒地，在靠近之前，第一件要先確認什麼？", "ok": "現場環境對自己和對方是否安全", "w": ["他是不是喝醉了", "他有沒有帶錢包"], "why": "救人的人自己不能先倒下。先看有沒有車流、漏電、火源等危險，再靠近。", "kc": {"t": "現場安全", "s": "救人的人自己不能先倒下。先看有沒有車流、漏電、火源等危險，再靠近。"}}, {"q": "要貼 AED 貼片時，發現他胸口都是汗，怎麼辦？", "ok": "先用衣服或毛巾很快地擦乾，再貼", "w": ["直接貼上去，不影響", "等胸口自然乾了再貼"], "why": "貼片要貼在乾燥的皮膚上才貼得牢、導電好；用手邊的衣服或毛巾快速擦乾就好，不要等。", "kc": {"t": "貼片前擦乾胸口", "s": "貼片要貼在乾燥的皮膚上才貼得牢、導電好；用手邊的衣服或毛巾快速擦乾就好，不要等。"}}];
+var CHS=['確認反應','指定求救','胸外按壓','貼上 AED 貼片','電擊'],CLKS=['18:12','18:13','18:13','18:17','18:18'];
+DEC.forEach(function(d,i){d.ch='第'+'一二三四五'[i]+'章　'+CHS[i]});
 /* 病人的雙手（寫實手部模型） */
 var PHL=mkHand(0xc9977a,0x8fb3cf,true,{world:true,hs:.95}),PHR=mkHand(0xc9977a,0x8fb3cf,false,{world:true,hs:.95});
 [PHL,PHR].forEach(function(H){H.tint=[.86,.72,.64];H.slW=.1;H.slH=.09;H.slEnd=0;H.sl0=.04;H.curl=.35;H.thumb=.3});
 bodyArm(PHL,MAN,[.22,.5,.04]);bodyArm(PHR,MAN,[-.22,.5,.04]);PHL.aim=-PI/2;PHR.aim=PI/2;
 addArms(P1,0xd9a98d,0x3a3d44,[.22,.5,.04],[-.06,1.06,.3],{aim:0});addArms(P2,0xc99a7e,0x2f8a5c,[.22,.5,.04],[-.22,.5,.04]);addArms(P3,0xd9a98d,0xb35a4a,[.06,1.0,.24],[-.06,1.0,.24],{aim:0,curl:.6});
+addArms(P2K,0xc99a7e,0x2f8a5c,[.13,.62,.2],[-.13,.62,.2],{aim:0,curl:.45});P2K.canLean=true;
+P2K.arms.forEach(function(H){H.poleB=[(H.mirror?1:-1)*.6,-.6,-.3]});
 var PZ=-1.2,PX=.25;
 function manWorld(x,y,z){var m=matOf(MANL.node);x*=MK;y*=MK;z*=MK;return [m[0]*x+m[4]*y+m[8]*z+m[12],m[1]*x+m[5]*y+m[9]*z+m[13],m[2]*x+m[6]*y+m[10]*z+m[14]]}
 function layMan(){
@@ -1565,6 +1599,7 @@ function camSetup(){
   CAM.crowd=lookAt([PX-.42,.98,PZ-.02],[PX+.6,1.2,PZ+1.6]);
   CAM.cpr=lookAt([PX-.2,1.0,PZ+.05],[PX+.06,.22,PZ-.01]);
   CAM.aed=CAM.cpr;
+  CAM.padv=lookAt([PX-.52,1.42,PZ+.32],[PX+.1,.2,PZ-.12]);
 }
 camSetup();
 function chestPt(){return manWorld(0,.8,.13)}
@@ -1593,10 +1628,63 @@ function crowd(v){
   var m=matOf(P1.node),k=P1.k,f=function(x,y,z){return [m[0]*x*k+m[4]*y*k+m[8]*z*k+m[12],m[1]*x*k+m[5]*y*k+m[9]*z*k+m[13],m[2]*x*k+m[6]*y*k+m[10]*z*k+m[14]]};
   phoneP1.p=f(-.06,1.1,.34);phoneP1.r=[0,-2.4,0];phoneGlow.p=f(-.06,1.1,.333);phoneGlow.r=[0,-2.4+PI,0];phoneP1.vis=phoneGlow.vis=true;
 }
-function aedHere(v){aedP.forEach(function(q){q.vis=v});if(v){aedN.p=[PX-.35,.0,PZ-.55]}}
-function shirtOpen(v){chestSkin.vis=shirtL.vis=shirtR.vis=v}
+var AEDP=[PX-.36,0,PZ-.42];
+function aedHere(v){aedP.forEach(function(q){q.vis=v});if(v){aedN.p=AEDP.slice()}}
+function aedBtn(){return [AEDP[0]+.07,AEDP[1]+.13,AEDP[2]-.08]}
+function aedPlug(i){return [AEDP[0]+(i?.05:-.05),AEDP[1]+.1,AEDP[2]+.13]}
+/* 衣服：SH.o 0＝扣著、1＝剪開攤到兩側 */
+function shirtOpen(v){SH.o=v?1:0;shirtTick()}
+function shirtTick(){
+  var o=SH.o,on=o>.01;chestSkin.vis=shirtL.vis=shirtR.vis=on;sideSkin.vis=false;if(!on)return;
+  chestSkin.s[0]=(.03+.32*o)*MK;chestSkin.s[2]=.05*MK;sideSkin.s[1]=.27*MK*clamp(o*1.6-.6,.02,1);
+  /* 右邊衣片攤平在右胸外側；左邊衣片往左腋下外面垂下，露出側胸 */
+  shirtL.p=[(-.065-.1*o)*MK,.8*MK,(.124-.02*o)*MK];shirtL.r=[0,-.75*o,0];
+  shirtR.p=[(.065+.19*o)*MK,.8*MK,(.117-.13*o)*MK];shirtR.r=[0,1.35*o,0];
+}
+/* 貼片位置（病人身體座標）：前側位＝右上胸＋左側胸（腋中線） */
+var PADPOS={
+  A:{lp:[-.085,.93,.13],rz:0},B:{lp:[.158,.74,.112],rz:-.5},
+  clA:{lp:[-.03,.9,.122],rz:0},clB:{lp:[.03,.74,.122],rz:0},
+  lA:{lp:[.085,.92,.128],rz:0},lB:{lp:[.095,.765,.126],rz:0}
+};
+/* 店員（跪在病人左側，面向病人） */
+var CLK={p:[PX+.52,0,PZ-.02]};
+function clerkKneel(){P2.show(false);P2K.node.p=[CLK.p[0],-.27*P2K.k,CLK.p[2]];P2K.node.r=[0,-PI/2,0];P2K.r0=0;resetBody(P2K);P2K.show(true);clerkRest(0)}
+function clerkRestW(i){var k=P2K.k,l=i?[-.12,.6,.13]:[.12,.6,.13];return [CLK.p[0]-l[2]*k,l[1]*k-.27*k,CLK.p[2]+l[0]*k]}
+function clerkRest(dur){P2K.arms.forEach(function(H,i){clerkHand(i,clerkRestW(i),dur)})}
+function clerkHand(i,w,dur,done){var H=P2K.arms[i];if(!H.wt){H.wt=H.p.slice();H.lp=null}if(!dur){H.wt=w.slice();if(done)done();return}tween(H.wt,{0:w[0],1:w[1],2:w[2]},dur,done)}
+function padW(P){return manWorld(P.lp[0],P.lp[1],P.lp[2])}
+/* 店員把貼片拿在手上（0 號貼片在右手、1 號在左手） */
+function padsInHand(){PADS.forEach(function(P,i){P.mode='hand';P.hand=P2K.arms[i?0:1];P.show(true)})}
+/* 店員的手伸到位置、把貼片貼上去 */
+function placePad(i,key,dur,done){
+  var P=PADS[i],pos=PADPOS[key],hi=i?0:1,w=manWorld(pos.lp[0],pos.lp[1],pos.lp[2]);
+  if(P.mode!=='hand'){P.mode='hand';P.hand=P2K.arms[hi];P.show(true)}
+  clerkHand(hi,[w[0],w[1]+.05,w[2]],dur,function(){P.mode='body';P.lp=pos.lp.slice();P.rz=pos.rz;thud(.08);after(250,function(){clerkHand(hi,clerkRestW(hi),.5);if(done)done()})});
+}
+function takePad(i,dur){var P=PADS[i],hi=i?0:1,w=padW(P);clerkHand(hi,[w[0],w[1]+.05,w[2]],dur,function(){P.mode='hand';P.hand=P2K.arms[hi]})}
+/* 剪開衣服：右手從肚子剪到領口 */
+function cutShirt(dur,done){
+  var a=manWorld(0,.6,.16),b=manWorld(0,1.0,.16);
+  clerkHand(1,a,.5,function(){cap('店員用 AED 包裡的剪刀，從衣襬一路剪到領口。');tween(SH,{o:1},dur,function(){clerkHand(1,clerkRestW(1),.5);if(done)done()});clerkHand(1,b,dur)});
+}
+function setCyl(o,a,b){var d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(d[0],d[1],d[2])||1e-4;o.p=[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];o.s[1]=L;o.r=[Math.acos(clamp(d[1]/L,-1,1)),Math.atan2(d[0],d[2]),0]}
+function padsTick(){
+  PADS.forEach(function(P,i){
+    if(P.mode==='off')return;
+    var w,rz=0;
+    if(P.mode==='hand'&&P.hand){w=[P.hand.p[0],P.hand.p[1]-.035,P.hand.p[2]]}
+    else{w=padW(P);rz=P.rz;var up=[-Math.sin(rz),Math.cos(rz)];w=[w[0]+up[0]*.004,w[1]+up[1]*.004,w[2]]}
+    P.node.p=w;P.node.r=[0,0,rz];
+    /* 電線：貼片 → 身體上方/地上 → AED */
+    var c=aedPlug(i),m=[(w[0]+c[0])/2,(w[1]+c[1])/2,(w[2]+c[2])/2],onBody=Math.abs(m[0]-PX)<.3&&m[2]>PZ-.55&&m[2]<PZ+.6;
+    m[1]=onBody?Math.max(m[1],.32+MANL.node.p[1]-.13):Math.max(.02,Math.min(m[1],.05));
+    var s0=[w[0]+(i?-.04:.0),w[1]+.004,w[2]-.06];
+    setCyl(P.w[0],s0,m);setCyl(P.w[1],m,c);
+  });
+}
 SCN.reset=function(){
-  [MANL,MAN].forEach(function(b){b.show(false)});crowd(false);aedHere(false);shirtOpen(false);pad1.vis=pad2.vis=false;ambShow(false);
+  [MANL,MAN,P2K].forEach(function(b){b.show(false)});crowd(false);aedHere(false);shirtOpen(false);PADS.forEach(function(P){P.mode='off';P.show(false)});ambShow(false);
   PHL.vis=PHR.vis=false;compress(false);ST.emerg=0;
 };
 SCN.start=function(){
@@ -1611,7 +1699,7 @@ SCN.start=function(){
   after(7400,function(){showSkip(false);step(1)});
 };
 function step(n){
-  if(n>4){toQuick();return}
+  if(n>DEC.length){toQuick();return}
   phase='cut';controls=false;
   var go=function(){chap(n,CHS[n-1],CLKS[n-1],function(){startDecision(DEC[n-1],function(){after(200,function(){step(n+1)})})})};
   if(PRE[n])PRE[n](go);else go();
@@ -1625,8 +1713,19 @@ var PRE={
   3:function(go){bothOut(.2);camTo(CAM.cpr,.8);cap('救護車還在路上。電話裡，調度員要你開始壓胸。');after(2000,go)},
   4:function(go){
     if(!(G.d3&&G.d3.id==='chest')){handsOnChest(.3);compress(true,110,.045)}
-    cap('你持續壓胸。店員抱著 AED 跑了回來。');P2.node.p=[PX-.25,0,PZ-1.1];P2.node.r=[0,.3,0];aedHere(true);
-    after(2200,go);
+    cap('你持續壓胸。店員抱著 AED 跑了回來，跪在他的另一側。');
+    P2.node.p=[PX+.6,0,PZ-1.4];P2.node.r=[0,-.4,0];P2.show(true);tween(P2.node.p,{0:CLK.p[0]+.1,2:CLK.p[2]-.35},.9);
+    after(1000,function(){clerkKneel();aedHere(true);beep(660,.12,.06,0)});
+    after(1700,function(){aedVoice('請將衣服脫掉或剪開，把電極片貼在病人裸露的胸部。');beep(660,.2,.08,0)});
+    after(4200,function(){padsInHand();cap('「貼片要貼哪裡？衣服要脫嗎？」','店員')});
+    after(5600,go);
+  },
+  5:function(go){
+    camTo(CAM.cpr,.6);
+    clerkHand(1,manWorld(.2,.98,.1),.5);
+    aedVoice('建議電擊。請勿碰觸病人。');beep(980,.3,.1,0);beep(980,.3,.1,.5);aedBlink(true);
+    after(1800,function(){cap('店員的手還扶在他的肩膀上。')});
+    after(3000,go);
   }
 };
 var PLAY={
@@ -1672,33 +1771,89 @@ var PLAY={
   _:function(done){cap('你跪在旁邊，不知道從哪裡開始。');after(2600,done)}
  },
  d4:{
+  pads:function(done){
+    cap('「衣服剪開。一片貼右上胸、鎖骨下面；另一片貼左邊腋下。」','你');
+    after(900,function(){cutShirt(1.4)});
+    after(3600,function(){cap('店員撕開貼片，照你說的位置貼上。你的手沒有停。');placePad(0,'A',.7)});
+    after(5000,function(){placePad(1,'B',.7)});
+    after(6600,analyze);after(8200,done);
+  },
+  cloth:function(done){
+    cap('「衣服不用脫，直接貼在胸口中間。」','你');
+    after(900,function(){placePad(0,'clA',.6)});after(2000,function(){placePad(1,'clB',.6)});
+    after(3200,function(){aedVoice('請檢查電極片。');beep(520,.25,.08,0)});
+    after(4800,function(){aedVoice('請檢查電極片。');beep(520,.25,.08,0);cap('貼片隔著衣服，碰不到皮膚，機器沒辦法分析。')});
+    after(6600,function(){cap('店員只好撕下貼片、剪開衣服重貼，又耽誤了好幾秒。');takePad(0,.4);after(500,function(){takePad(1,.4)})});
+    after(7800,function(){cutShirt(.9)});
+    after(10000,function(){placePad(0,'A',.5)});after(11000,function(){placePad(1,'B',.5)});
+    after(12200,analyze);after(13600,done);
+  },
+  close:function(done){
+    cap('「剪開衣服，兩片都貼在左胸、心臟上面。」','你');
+    after(900,function(){cutShirt(1.2)});
+    after(3300,function(){placePad(0,'lA',.6)});after(4400,function(){placePad(1,'lB',.6)});
+    after(5800,function(){cap('兩片貼得太近，電流會直接從兩片之間的皮膚流走，大部分沒有穿過心臟。')});
+    after(8000,function(){cap('你想起貼片上的圖示，請他把一片改貼到右上胸。');takePad(0,.4)});
+    after(9000,function(){placePad(0,'A',.6)});
+    after(10400,analyze);after(11800,done);
+  },
+  _:function(done){
+    cap('店員拿著貼片，不知道該貼哪裡。');
+    after(1800,function(){aedVoice('請將電極片貼在病人裸露的胸部。');beep(660,.2,.08,0)});
+    after(3400,function(){cap('他看著貼片上的圖示，自己剪開衣服、照圖貼上。');cutShirt(1.0)});
+    after(6200,function(){placePad(0,'A',.5)});after(7200,function(){placePad(1,'B',.5)});
+    after(8400,analyze);after(9800,done);
+  }
+ },
+ d5:{
   use:function(done){
-    aedVoice('請將貼片貼在病人裸露的胸口。');beep(660,.2,.08,0);
-    after(1200,function(){cap('你繼續壓胸。店員掀開他的衣服，把貼片貼在皮膚上。');shirtOpen(true)});
-    after(2600,function(){pad1.vis=true});after(3200,function(){pad2.vis=true});
-    after(4200,function(){compress(false);bothOut(.25);aedVoice('分析心律中，請勿碰觸病人。');beep(880,.15,.08,0)});
-    after(6400,function(){aedVoice('建議電擊。請大家離開病人，按下閃爍的電擊鈕。');beep(980,.3,.1,0);beep(980,.3,.1,.5)});
-    after(7800,function(){cap('「大家離開！」你確認沒有人碰他，按下電擊鈕。','你')});
-    after(8800,function(){ST.flash=.35;tween(ST,{flash:0},.4);thud(1.2);tween(MANL.node.p,{1:.2},.08,function(){tween(MANL.node.p,{1:.13},.15)});aedVoice('已電擊。請立刻繼續 CPR。')});
-    after(10000,function(){handsOnChest(.3);compress(true,110,.045)});
-    after(11400,done);
+    cap('「大家離開！不要碰他！」','你');clerkHand(1,clerkRestW(1),.4);
+    after(300,function(){tween(P2K.node.p,{0:CLK.p[0]+.1},.5)});
+    after(1300,function(){cap('你看了一圈，沒有人碰到他，按下閃爍的電擊鈕。');pressShock(function(){
+      ST.flash=.35;tween(ST,{flash:0},.4);thud(1.2);aedBlink(false);jolt();aedVoice('已電擊。請立刻繼續 CPR。');
+      after(1300,function(){backToChest(function(){compress(true,110,.045);cap('電擊完，你馬上繼續壓胸。')})});
+    })});
+    after(6800,done);
   },
-  wait:function(done){cap('你不敢用，叫店員把 AED 放在旁邊。');after(2000,function(){cap('時間一分一秒過去。')});after(3800,done)},
   touch:function(done){
-    shirtOpen(true);pad1.vis=pad2.vis=true;aedVoice('建議電擊。請大家離開病人。');
-    after(1400,function(){cap('你貼好貼片就按下電擊，旁邊的人還在壓胸——')});
-    after(2400,function(){ST.flash=.35;tween(ST,{flash:0},.4);thud(1.2);ST.shake=.6;tween(ST,{shake:0},.5);cap('壓胸的人被電得往後彈開。')});
-    after(4200,done);
+    cap('你一聽到「建議電擊」，馬上伸手去按。');
+    after(500,function(){pressShock(function(){
+      ST.flash=.35;tween(ST,{flash:0},.4);thud(1.2);aedBlink(false);jolt();ST.shake=.6;tween(ST,{shake:0},.5);
+      cap('店員的手還搭在他身上，被電得整個人往後彈開。');clerkHand(1,clerkRestW(1),.15);tween(P2K.node.p,{0:CLK.p[0]+.22},.15,function(){tween(P2K.node.p,{0:CLK.p[0]+.12},.5)});
+      after(1500,function(){backToChest(function(){compress(true,110,.045)})});
+    })});
+    after(5600,done);
   },
-  _:function(done){cap('AED 放在地上，沒有人打開。');after(2600,done)}
+  wait:function(done){
+    cap('你不敢按，跟大家說等救護人員來。');clerkHand(1,clerkRestW(1),.5);
+    after(1800,function(){aedVoice('請按下閃爍的電擊鈕。');beep(980,.3,.1,0)});
+    after(3600,function(){cap('時間一分一秒過去，AED 一直在提醒。');backToChest(function(){compress(true,110,.045)})});
+    after(5200,done);
+  },
+  _:function(done){
+    cap('你愣住了，AED 一直重複提示。');aedVoice('請按下閃爍的電擊鈕。');
+    after(2600,function(){backToChest(function(){compress(true,110,.045)})});after(3800,done);
+  }
  }
 };
+/* AED 分析：大家放手 */
+function analyze(){compress(false);bothOut(.25);after(300,function(){camTo(CAM.padv,.9)});aedVoice('分析心律中，請勿碰觸病人。');beep(880,.15,.08,0)}
+var AEDB={on:0};
+function aedBlink(v){AEDB.on=v?1:0}
+function jolt(){tween(MANL.node.p,{1:.2},.08,function(){tween(MANL.node.p,{1:.13},.15)})}
+/* 你伸手按電擊鈕：身體往 AED 靠過去 */
+function pressShock(fn){
+  bothOut(.2);camTo(lookAt([PX-.32,.86,PZ-.12],[AEDP[0]+.04,.1,AEDP[2]-.06]),.6);
+  after(700,function(){var b=w2c(aedBtn()),pr=-cam.pitch;hIn(HR,{p:[b[0],b[1]+.06,b[2]],r:[pr,.2,0],curl:.75,thumb:.5,abs:true},.35);
+    after(500,function(){var b2=w2c(aedBtn());tween(HR.p,{1:b2[1]+.015},.12,function(){fn();after(250,function(){tween(HR.p,{1:b2[1]+.06},.15)})})})});
+}
+function backToChest(fn){hOut(HR,.25);camTo(CAM.cpr,.6);after(700,function(){handsOnChest(.35);after(400,fn)})}
 SCN.quickCam=function(){compress(false);bothOut(.3);ST.emerg=1;ambShow(true);amb.p=[6.0,0,2.5];camTo(lookAt([PX-.2,1.6,PZ+2.2],[PX+1.5,1.0,PZ+.5]),1.5)};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
   return ['18:22，救護人員抵達，接手急救與電擊。',
-    g===4?'因為你們一路沒有中斷，他的心跳在救護人員接手時恢復了。':g>=2?'因為有部分處置延誤，他被緊急送醫。能不能救回來，要看醫院接下來的急救。':'因為急救的時間被耽誤了，他被緊急送醫，情況危急。',
-    g===4?'你和身邊的路人，一起在那幾分鐘裡做對了最關鍵的事。':'下一次遇到，你會更快想起：叫、叫、壓、電。'];
+    g===DEC.length?'因為你們一路沒有中斷，他的心跳在救護人員接手時恢復了。':g>=2?'因為有部分處置延誤，他被緊急送醫。能不能救回來，要看醫院接下來的急救。':'因為急救的時間被耽誤了，他被緊急送醫，情況危急。',
+    g===DEC.length?'你和身邊的路人，一起在那幾分鐘裡做對了最關鍵的事。':'下一次遇到，你會更快想起：叫、叫、壓、電。'];
 };
 function sceneLights(){
   var e=ST.emerg,ph=(Math.floor(tNow*(S.reduce?1:4))%2);
@@ -1724,8 +1879,12 @@ function sceneTick(dt){
     var n=Math.floor(CPR.t/per);if(n!==CPR.last){CPR.last=n;beep(1046,.03,.04,0)}
     MANL.node.p[1]=.13+y*.25;
   }
+  shirtTick();padsTick();
+  if(aedP[3]){var bl=AEDB.on&&(Math.floor(tNow*3)%2);aedP[3].em=bl?[1,.25,.2]:[.5,.1,.1]}
 }
 function titleCam(){var c=CAM.walk;cam.x=c.x+Math.sin(tNow*.2)*.1;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.05;cam.pitch=c.pitch}
+
+window.__cprDbg=function(open,keyA,keyB,cam){SCN.reset();phase='cut';controls=false;layMan();clerkKneel();aedHere(true);shirtOpen(open);PADS.forEach(function(P,i){P.mode='body';P.lp=PADPOS[i?keyB:keyA].lp.slice();P.rz=PADPOS[i?keyB:keyA].rz;P.show(true)});setCam(CAM[cam||'padv'])};
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -1763,6 +1922,9 @@ var OI={
  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
  run:'<path d="M14 4.5a1.8 1.8 0 1 0 0 .01M7 21l3.5-6.5L14 17l2-6M10.5 14.5 8 11l4-3 3 1.5 3 3.5 2.5.5"/>',
  wait:'<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>',
+ padA:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><rect x="6.2" y="7.2" width="4.2" height="3.6" rx=".6" fill="#f4f6f8" stroke="none"/><rect x="16.4" y="11.6" width="3.2" height="4.8" rx=".6" fill="#f4f6f8" stroke="none"/>',
+ padC:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><path d="M12 4.5V22" stroke-dasharray="1.5 2"/><rect x="9.6" y="7.6" width="4.8" height="3.4" rx=".6" fill="none"/><rect x="9.6" y="12.6" width="4.8" height="3.4" rx=".6" fill="none"/>',
+ padL:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><rect x="13" y="7.4" width="4" height="3.4" rx=".6" fill="#f4f6f8" stroke="none"/><rect x="13" y="11.6" width="4" height="3.4" rx=".6" fill="#f4f6f8" stroke="none"/>',
  q:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.8.4-1.1.9-1.1 1.7M12 17h.01"/>'
 };
 var OIM=SCN.icons||{};
@@ -1809,7 +1971,7 @@ function pickOption(d,o,timedOut){
   }
   var bonus=(o.grade==='good')?Math.round(3*left):0;
   var pts=o.pts+bonus;
-  SC.score+=pts;
+  SC.score=Math.min(100,SC.score+pts);
   SC.log.push({d:d,o:o,pts:pts,timeUsed:decideLimit?decideLimit*(timedOut?1:(1-left))/1000:null});
   SC.cards.push({t:d.kc.t,s:d.kc.s,learned:o.grade==='good'});
   G[d.id]=o;
@@ -1860,7 +2022,7 @@ function runQuick(next){
   })();
 }
 /* ================= 章節 ================= */
-function chap(n,name,clock,done){setChap('第'+'一二三四五'[n-1]+'章　'+name);if(clock)setClock(clock);chapterCard('第 '+n+' 章',name,clock||'',done)}
+function chap(n,name,clock,done){setChap('第'+'一二三四五六七'[n-1]+'章　'+name);if(clock)setClock(clock);chapterCard('第 '+n+' 章',name,clock||'',done)}
 function resetScene(){
   audioRestore();clearAll();handsReset();
   for(var k in ST)if(typeof ST[k]==='number')ST[k]=0;ST.zoom=1;ST.sat=1;
@@ -1878,7 +2040,7 @@ function newGame(){
 function toQuick(){
   if(!SCN.quick||!SCN.quick.length){endScene();return}
   phase='cut';controls=false;restHands();
-  chap(5,'現場追問',SCN.clockQ||'',function(){
+  chap(DEC.length+1,'現場追問',SCN.clockQ||'',function(){
     if(SCN.quickCam)SCN.quickCam();
     runQuick(endScene);
   });
@@ -1970,9 +2132,9 @@ function dayEnd(rk,qok,qn){
 
 /* ================= 成績單 ================= */
 function calcRank(){
-  var good=SC.log.filter(function(l){return l.o.grade==='good'}).length,score=SC.score,sf=sfNow,r;
-  if(good===4&&score>=92)r='S';else if(good===4||(good===3&&sf>=60))r='A';else if(good>=2)r='B';else r='C';
-  return {r:r,good:good};
+  var N=DEC.length,good=SC.log.filter(function(l){return l.o.grade==='good'}).length,score=SC.score,sf=sfNow,r;
+  if(good===N&&score>=92)r='S';else if(good===N||(good===N-1&&sf>=60))r='A';else if(good>=Math.ceil(N/2))r='B';else r='C';
+  return {r:r,good:good,n:N};
 }
 var RANK={S:{t:'教科書等級的急救',c:'#f2c14e'},A:{t:'冷靜可靠的第一反應者',c:'#74ab90'},B:{t:'有幫上忙，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}};
 var HAND_CREDIT='雙手 3D 模型：This work is based on "Free Pack - VR Hands (Rigged)" (https://sketchfab.com/3d-models/free-pack-vr-hands-rigged-b3b8309e59c748e3956531c8f57dd233) by PolyOne Studio (https://sketchfab.com/polyone) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)';
@@ -1983,8 +2145,8 @@ function showEnd(){
   var avg=times.length?times.reduce(function(a,b){return a+b},0)/times.length:null;
   var qok=QZ.filter(function(x){return x.ok}).length;
   var h='<div class="mark"><i></i>成績單　FIRST AID REPORT</div>';
-  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　做對 '+rk.good+' / 4　·　得分 '+SC.score+' / 100</p></div></div>';
-  h+='<div class="stats"><div><b>'+sfNow+'</b><span>傷者狀況</span></div><div><b>'+rk.good+'/4</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
+  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　做對 '+rk.good+' / '+rk.n+'　·　得分 '+SC.score+' / 100</p></div></div>';
+  h+='<div class="stats"><div><b>'+sfNow+'</b><span>傷者狀況</span></div><div><b>'+rk.good+'/'+rk.n+'</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
   h+='<div class="story">'+SC.epilogue.map(esc).join('<br>')+'</div>';
   h+='<div class="sec">逐題回顧</div><div class="rv">';
   SC.log.forEach(function(l){
@@ -2008,7 +2170,7 @@ function showEnd(){
   SC.cards.forEach(function(c){h+='<div class="'+(c.learned?'':'rev')+'"><b>'+esc(c.t)+'</b><span>'+esc(c.s)+'</span></div>'});
   h+='</div>';
   var worst=SC.log.filter(function(l){return l.o.grade!=='good'});
-  h+='<div class="story" style="margin-top:18px">'+(worst.length?'下一次先複習：<b>'+esc(worst[0].d.kc.t)+'</b>。':'四個決定都做對了。把這些做法記在心裡，也告訴身邊的人。')+'</div>';
+  h+='<div class="story" style="margin-top:18px">'+(worst.length?'下一次先複習：<b>'+esc(worst[0].d.kc.t)+'</b>。':'一二三四五六七八'[rk.n-1]+'個決定都做對了。把這些做法記在心裡，也告訴身邊的人。')+'</div>';
   h+=dayEnd(rk,qok,QZ.length);
   h+='<div class="row"><button class="go" id="again" type="button">再玩一次</button><button class="go alt" id="share" type="button">複製成績</button></div><p id="shareTx"></p>';
   h+='<div class="row">'+(dayIdx()>=0&&dayIdx()<3&&IN_FRAME?'<button class="go" id="nextCh" type="button">下一章：'+DAY_ORDER[dayIdx()+1][1]+' →</button>':'')+'<button class="go alt" id="endExit" type="button">'+(IN_FRAME?'回情境學院':'離開遊戲')+'</button></div>';
@@ -2020,7 +2182,7 @@ function showEnd(){
   el('endExit').onclick=exitGame;
   if(el('nextCh'))el('nextCh').onclick=function(){toParent({iw:'next',id:DAY_ORDER[dayIdx()+1][0]})};
   el('share').onclick=function(){
-    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/4'+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
+    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/'+rk.n+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
     var p=el('shareTx');p.textContent=tx;
     try{navigator.clipboard.writeText(tx).then(function(){el('share').textContent='已複製'},function(){p.style.display='block'})}catch(e){p.style.display='block'}
   };
@@ -2149,7 +2311,7 @@ el('briefGo').addEventListener('click',function(){
 });
 dayInit();resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
 requestAnimationFrame(frame);
-window.__g={HR:HR,HL:HL,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,SCN:SCN,
+window.__vtA=function(){return vt};window.__fin=function(){finale()};window.__g={HR:HR,HL:HL,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,SCN:SCN,
   get G(){return G},get phase(){return phase},get SC(){return SC},get QZ(){return QZ},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},get paused(){return paused},
   setTS:function(v){TS=v},pick:function(id){var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
   pickGood:function(){var o=cur.opts.filter(function(q){return q.grade==='good'})[0];pickOption(cur,o)},fbGo:function(){el('fbGo').click()},
