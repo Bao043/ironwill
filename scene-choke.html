@@ -434,7 +434,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
     <p id="liteNote" hidden>偵測到上次執行不順，已自動簡化畫面效果讓遊戲順暢。</p>
     <button class="go" id="goBtn" type="button">下一步：看情境提要</button>
     <button type="button" class="exl" id="sExit" hidden>← 回到課程</button>
-    <p class="note">新版第一人稱試玩原型。劇情是虛構的，題目內容還沒完成官方查證，請當作示範，不要當作正式的急救教材。</p>
+    <p class="note">新版第一人稱試玩原型。劇情是虛構的，題目內容還沒完成官方查證，請當作示範，不要當作正式的教材。</p>
   </div>
 </div>
 
@@ -910,7 +910,7 @@ B(.66,.51,.02,-1.4,1.55,RD/2-.002,0x3a332c);
 var clk=Cy(.3,.03,.3,1.4,1.95,RD/2-.02,0xf4f2ee,{r:[PI/2,0,0]});
 Q(.27,.27,1.4,1.95,RD/2-.04,0,PI,0xffffff,{tex:TX.clockF||TX.clock});
 /* 門口 */
-B(1.0,2.1,.02,-.1,1.05,RD/2+.09,0x2a2420);
+var frontDoor=B(1.0,2.1,.02,-.1,1.05,RD/2+.09,0x2a2420);
 /* ---- 暫代的人物身體（衣著身形，只從背後、側面入鏡；之後可換成真人模型） ---- */
 function hairTex(base){var c=cv(256,256),x=c.getContext('2d');x.fillStyle=base;x.fillRect(0,0,256,256);
   for(var i=0;i<2600;i++){var y=Math.random()*256,xx=Math.random()*256;x.strokeStyle='rgba('+(Math.random()<.5?'0,0,0':'255,255,255')+','+(Math.random()*.08)+')';x.lineWidth=1;x.beginPath();x.moveTo(xx,y);x.lineTo(xx+(Math.random()-.5)*6,y+10+Math.random()*16);x.stroke()}
@@ -1772,6 +1772,9 @@ var OI={
  padA:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><rect x="6.2" y="7.2" width="4.2" height="3.6" rx=".6" fill="#f4f6f8" stroke="none"/><rect x="16.4" y="11.6" width="3.2" height="4.8" rx=".6" fill="#f4f6f8" stroke="none"/>',
  padC:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><path d="M12 4.5V22" stroke-dasharray="1.5 2"/><rect x="9.6" y="7.6" width="4.8" height="3.4" rx=".6" fill="none"/><rect x="9.6" y="12.6" width="4.8" height="3.4" rx=".6" fill="none"/>',
  padL:'<path d="M9.5 2.5c0 1.6-1.2 2.3-3 2.8L3.5 6.5V22M14.5 2.5c0 1.6 1.2 2.3 3 2.8l3 1.2V22"/><rect x="13" y="7.4" width="4" height="3.4" rx=".6" fill="#f4f6f8" stroke="none"/><rect x="13" y="11.6" width="4" height="3.4" rx=".6" fill="#f4f6f8" stroke="none"/>',
+ ext:'<rect x="8" y="8.5" width="7" height="12.5" rx="3"/><path d="M11.5 8.5V5.5h3M14.5 5.5l4-1.5M11.5 5.5H8.5"/>',
+ valve:'<circle cx="12" cy="13" r="2.6"/><path d="M3 13h6.4M14.6 13H21M12 10.4V5M8 5h8"/>',
+ win:'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 4v16M4 12h16"/>',
  q:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.8.4-1.1.9-1.1 1.7M12 17h.01"/>'
 };
 var OIM=SCN.icons||{};
@@ -1780,7 +1783,7 @@ function optIcon(id){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+(OI[O
 function stageNow(){
   if(phase==='decide')return cur&&cur.quick?[4,'現場追問','快問快答，看你記住了多少…']:[2,'關鍵選擇','你必須做出正確的判斷…'];
   if(phase==='fb')return [5,'結果回饋','看看這個決定的結果，了解正確知識…'];
-  if(SC&&SC.log&&SC.log.length)return [3,'急救處置','看清楚你的處置帶來什麼結果…'];
+  if(SC&&SC.log&&SC.log.length)return [3,SCN.kind==='survive'?'應變處置':'急救處置','看清楚你的處置帶來什麼結果…'];
   return [1,'劇情開場',SCN.stage1||'看清楚現場發生了什麼事…'];
 }
 var _stgK='';
@@ -1967,7 +1970,7 @@ function dayInit(){
   box.innerHTML=h;box.hidden=false;
 }
 function dayEnd(rk,qok,qn){
-  var i=dayIdx();if(i<0)return '';
+  var i=dayIdx();if(i<0){daySave({r:rk.r,s:SC.score,q:qn?qok+'/'+qn:''});return ''}
   daySave({r:rk.r,s:SC.score,q:qn?qok+'/'+qn:''});
   var d=dayGet(),done=DAY_ORDER.filter(function(x){return d[x[0]]}).length;
   var h='<div class="story"><b>幸福里 7 號樓的一晚　'+done+' / 4 章完成</b><br>';
@@ -1983,7 +1986,8 @@ function calcRank(){
   if(good===N&&score>=92)r='S';else if(good===N||(good===N-1&&sf>=60))r='A';else if(good>=Math.ceil(N/2))r='B';else r='C';
   return {r:r,good:good,n:N};
 }
-var RANK={S:{t:'教科書等級的急救',c:'#f2c14e'},A:{t:'冷靜可靠的第一反應者',c:'#74ab90'},B:{t:'有幫上忙，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}};
+var SV=SCN.kind==='survive';
+var RANK=SV?{S:{t:'教科書等級的應變',c:'#f2c14e'},A:{t:'冷靜判斷，全身而退',c:'#74ab90'},B:{t:'有驚無險，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}}:{S:{t:'教科書等級的急救',c:'#f2c14e'},A:{t:'冷靜可靠的第一反應者',c:'#74ab90'},B:{t:'有幫上忙，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}};
 var HAND_CREDIT='雙手 3D 模型：This work is based on "Free Pack - VR Hands (Rigged)" (https://sketchfab.com/3d-models/free-pack-vr-hands-rigged-b3b8309e59c748e3956531c8f57dd233) by PolyOne Studio (https://sketchfab.com/polyone) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)';
 function showEnd(){
   audioFadeOut();phase='end';controls=false;['dec','fb','phone','obj','prompt','useBtn'].forEach(function(i){show(i,false)});
@@ -1991,9 +1995,9 @@ function showEnd(){
   var times=SC.log.filter(function(l){return l.timeUsed!=null}).map(function(l){return l.timeUsed});
   var avg=times.length?times.reduce(function(a,b){return a+b},0)/times.length:null;
   var qok=QZ.filter(function(x){return x.ok}).length;
-  var h='<div class="mark"><i></i>成績單　FIRST AID REPORT</div>';
+  var h='<div class="mark"><i></i>成績單　'+(SV?'SURVIVAL REPORT':'FIRST AID REPORT')+'</div>';
   h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　做對 '+rk.good+' / '+rk.n+'　·　得分 '+SC.score+' / 100</p></div></div>';
-  h+='<div class="stats"><div><b>'+sfNow+'</b><span>傷者狀況</span></div><div><b>'+rk.good+'/'+rk.n+'</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
+  h+='<div class="stats"><div><b>'+sfNow+'</b><span>'+(SV?'安全值':'傷者狀況')+'</span></div><div><b>'+rk.good+'/'+rk.n+'</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
   h+='<div class="story">'+SC.epilogue.map(esc).join('<br>')+'</div>';
   h+='<div class="sec">逐題回顧</div><div class="rv">';
   SC.log.forEach(function(l){
