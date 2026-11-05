@@ -5,6 +5,143 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <style>[hidden]{display:none!important}html,body{margin:0}img{max-width:100%}.prev{margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--ember);background:#ffffff0d;border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.6;color:var(--ink2)}.prev b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px}.prev span{display:block}.prev .tr{margin-top:4px;color:var(--ember)}
+
+/* ===== 精緻版 ===== */
+.v2tag{font-style:normal;margin-left:6px;padding:1px 10px;border-radius:99px;background:#f2c14e;color:#1a1204;font-family:var(--font);font-size:12px;letter-spacing:.12em}
+.bi.smk>b{background:#9aa3a8;color:#0b1017}
+.bi .kbd{display:inline-block;margin:0 4px;padding:0 10px;border-radius:99px;background:#f4f6f8;color:#0b1017;font-size:15px}
+#smkOv{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity .35s;background:linear-gradient(180deg,rgba(40,34,30,.92) 0,rgba(52,44,38,.78) 55%,rgba(30,26,24,.55) 100%)}
+/* 煙層量表 */
+#smk{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 132px);width:40px;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none}
+#smk[hidden]{display:none}
+#smk small{font-size:11px;letter-spacing:.12em;color:var(--ink2);text-shadow:0 1px 6px #000}
+#smk .sg{position:relative;width:14px;height:120px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid var(--gline);overflow:hidden}
+#smk .sg i{position:absolute;left:0;right:0;top:0;height:8%;background:linear-gradient(180deg,#3a332d,#6b625a);transition:height .4s}
+#smk .sg b{position:absolute;left:50%;width:10px;height:10px;margin:0 0 -5px -5px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #0b1017,0 0 10px #fff;transition:bottom .25s}
+#smk em{font-style:normal;font-family:var(--num);font-size:14px;color:var(--ink2);text-shadow:0 1px 6px #000}
+#smk.in .sg{border-color:#ff7d70;box-shadow:0 0 14px -2px #ff7d70}
+#smk.in .sg b{background:#ff7d70}
+/* 低姿勢按鈕 */
+#crBtn{position:absolute;right:max(10px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 330px);width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:1.5px solid rgba(255,255,255,.6);background:rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background .2s,transform .12s}
+#crBtn[hidden]{display:none}
+#crBtn svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#crBtn span{font-size:11.5px;font-weight:700}
+#crBtn[aria-pressed=true]{background:#f2c14e;border-color:#f2c14e;color:#1a1204}#crBtn[aria-pressed=true] svg{stroke:#1a1204}
+#crBtn.nudge{animation:nud 1s ease-in-out infinite}
+@keyframes nud{0%,100%{box-shadow:0 0 0 0 #f2c14e88}50%{box-shadow:0 0 0 12px #f2c14e00;transform:scale(1.06)}}
+.nt #crBtn{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);right:auto;left:max(18px,env(safe-area-inset-left,0px))}
+/* 得分浮字 */
+#ptsF{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 196px);transform:translate(-50%,8px);padding:6px 16px;border-radius:99px;font-family:var(--num);font-weight:700;font-size:20px;letter-spacing:.06em;opacity:0;pointer-events:none;transition:opacity .25s,transform .45s cubic-bezier(.2,1.4,.4,1)}
+#ptsF.on{opacity:1;transform:translate(-50%,0)}
+#ptsF.good{background:#2fa66a;color:#fff}#ptsF.mid{background:#d6a331;color:#1a1204}#ptsF.bad{background:#d9483b;color:#fff}
+/* 門上的熱點 */
+#hot{position:absolute;inset:0;pointer-events:none}
+#hot[hidden]{display:none}
+.hs{position:absolute;left:0;top:0;pointer-events:auto;display:flex;align-items:center;gap:8px;margin:-22px 0 0 -22px;padding:0 14px 0 0;height:44px;border-radius:22px;border:0;background:none;will-change:transform}
+.hs i{position:relative;flex:none;width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:rgba(255,255,255,.18);box-shadow:0 0 18px -2px #fff}
+.hs i::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid #ffffffaa;animation:ring 1.6s ease-out infinite}
+@keyframes ring{from{transform:scale(.7);opacity:1}to{transform:scale(1.35);opacity:0}}
+.hs span{padding:5px 12px;border-radius:99px;background:var(--glass2);border:1px solid var(--gline);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:15px;font-weight:700;white-space:nowrap}
+.hs:active i{background:#f2c14e}
+/* 排序題 */
+#opts.k-seq{grid-template-columns:1fr 1fr}
+.card.sq{min-height:70px;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;position:relative}
+.card.sq .no{position:absolute;right:10px;top:8px;font-size:22px;font-weight:900;color:#f2c14e}
+.card.sq .t{font-size:15.5px}
+.card.sq.on{border-color:#f2c14e;background:rgba(242,193,78,.16)}
+.sqr{grid-column:1/-1;justify-self:center;min-height:36px;padding:0 18px;border-radius:99px;border:1px solid var(--gline);background:var(--glass);font-size:13.5px;color:var(--ink2)}
+/* 揮手電筒 */
+#wave{position:fixed;inset:0;z-index:4;display:flex;align-items:flex-end;justify-content:center;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 150px);touch-action:none}
+#wave[hidden]{display:none}
+.wv{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 22px;border-radius:18px;background:var(--glass);border:1px solid var(--gline);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:none}
+.wv b{font-size:17px}
+.wv span{display:flex;gap:8px}.wv span i{width:14px;height:14px;border-radius:50%;border:2px solid #fff}.wv span i.on{background:#f2c14e;border-color:#f2c14e}
+.wv small{font-size:12.5px;color:var(--ink2)}
+/* 章末詳解卡 */
+#fb.v2 .fbh{position:relative;padding-right:64px}
+#fb.v2 .fpt{position:absolute;right:2px;top:6px;font-family:var(--num);font-size:30px;line-height:1}
+#fb.v2 .fpt small{font-size:15px;color:var(--ink2)}
+.fst{display:grid;gap:6px;margin:4px 0 10px}
+.fst>div{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.fst i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+.fst i svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fst .good i{background:#2fa66a}.fst .mid i{background:#d6a331}.fst .bad i{background:#d9483b}
+.fst>div>div{flex:1;min-width:0}
+.fst small{display:block;font-size:12px;color:var(--ink2);letter-spacing:.06em}
+.fst b{display:block;font-size:14.5px;line-height:1.45}
+.fst span{display:block;font-size:13px;color:#f2c14e;line-height:1.45;margin-top:2px}
+.fst em{flex:none;font-style:normal;font-family:var(--num);font-size:17px;color:var(--ink)}
+.fwhy{margin:0 0 10px!important;font-size:14.5px!important;line-height:1.6;color:var(--ink)!important}
+.ftab{display:flex;gap:6px;margin:0 0 8px}
+.ftab button{flex:1;min-height:36px;border-radius:10px;border:1px solid var(--gline);background:none;font-size:13.5px;font-weight:700;color:var(--ink2)}
+.ftab button.on{background:rgba(255,255,255,.12);color:var(--ink);border-color:rgba(255,255,255,.4)}
+.fpn[hidden]{display:none}
+.dgp{margin:0 0 12px;padding:8px;border-radius:12px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1)}
+.dgp svg{display:block;width:100%;height:auto;font-family:var(--font)}
+.dgp text{fill:#e9ecec;font-size:11.5px;font-weight:700}
+.dgp .t1{fill:#ffb27a;font-size:11px}.dgp .t2{fill:#fff;font-size:12.5px}.dgp .t3{fill:#b0b8ba;font-size:11px;font-weight:500}
+.dgp .door{fill:#8e6d49}.dgp .ln{stroke:#ffffff55;stroke-width:1.5}.dgp .knob{fill:#c9c2b0}
+.dgp .pt.hot circle{fill:#ff5a3c}.dgp .pt.cool circle{stroke:#7fb2ff;stroke-width:2.5}.dgp .pt.warm circle{fill:#d6a331}
+.dgp .pt.hot text{fill:#ffb27a}.dgp .pt.cool text{fill:#9cc4ff}.dgp .pt.warm text{fill:#f2c14e}
+.dgp .box rect{fill:rgba(255,255,255,.07);stroke:rgba(255,255,255,.3)}
+.dgp .box text{text-anchor:middle}.dgp .box .n{fill:#f2c14e;font-size:16px;font-family:var(--num)}.dgp .box .s{fill:#b0b8ba;font-size:10px;font-weight:500}
+.dgp .ar{stroke:#f2c14e;stroke-width:2.5;fill:none}
+.dgp .room{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.35)}
+.dgp .win{fill:#7fb2ff55;stroke:#9cc4ff}
+.dgp .door.open{fill:none;stroke:#ff7d70;stroke-dasharray:3 3}
+.dgp .flow{fill:none;stroke:#9cc4ff;stroke-width:2.5;stroke-linecap:round}
+.dgp .hotflow{fill:none;stroke:#ff7a2e;stroke-width:4;stroke-linecap:round}
+.dgp .ok{fill:#5fd39a}.dgp .bad{fill:#ff7d70}
+.dgp .me{fill:#f4f6f8}.dgp .me2{fill:none;stroke:#f4f6f8;stroke-width:3;stroke-linecap:round}
+.dgp .beam{fill:#fff3c4;opacity:.45}
+/* 成績單 */
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.stats4 div{padding:10px 6px;border-radius:12px;background:#ffffff0a;border:1px solid var(--line);text-align:center}
+.stats4 b{display:block;font-family:var(--num);font-size:26px;line-height:1.1}.stats4 b small{font-size:14px;color:var(--ink2);margin-left:1px}
+.stats4 span{font-size:11.5px;color:var(--ink2);letter-spacing:.04em}
+.dms{display:grid;gap:12px;padding:14px;border-radius:14px;background:#ffffff08;border:1px solid var(--line)}
+.dh{display:flex;align-items:baseline;justify-content:space-between}.dh b{font-size:15px}.dh em{font-style:normal;font-family:var(--num);font-size:22px}
+.db{height:8px;border-radius:4px;background:#ffffff14;overflow:hidden;margin:4px 0 3px}
+.db i{display:block;height:100%;border-radius:4px;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.db i.g{background:#2fa66a}.db i.y{background:#d6a331}.db i.r{background:#d9483b}
+.dm small{font-size:12px;color:var(--muted)}
+.tl{position:relative;display:grid;gap:10px;padding-left:4px}
+.tl::before{content:"";position:absolute;left:30px;top:6px;bottom:6px;width:2px;background:#ffffff1c}
+.tli{position:relative;display:flex;gap:12px;align-items:flex-start}
+.tli .tc{flex:none;width:52px;padding:3px 0;border-radius:99px;background:#1b2126;border:1px solid var(--line);font-family:var(--num);font-size:14px;text-align:center;position:relative;z-index:1}
+.tli.good .tc{border-color:#2fa66a}.tli.mid .tc{border-color:#d6a331}.tli.bad .tc{border-color:#d9483b}
+.tli>div{flex:1;min-width:0;padding:10px 12px;border-radius:12px;background:#ffffff09;border:1px solid var(--line)}
+.tli b{display:flex;justify-content:space-between;font-size:15px;margin-bottom:4px}.tli b em{font-style:normal;font-family:var(--num);font-size:16px;color:var(--ink2)}
+.tli p{margin:2px 0;display:flex;gap:6px;align-items:flex-start;font-size:13.5px;color:var(--ink2);line-height:1.5}
+.tli p i{flex:none;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;margin-top:2px}
+.tli p i svg{width:10px;height:10px;fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round}
+.tli p i.good{background:#2fa66a}.tli p i.mid{background:#d6a331}.tli p i.bad{background:#d9483b}
+.tli p.fix{padding-left:22px;color:#f2c14e}
+.tli details{margin-top:6px}.tli summary{cursor:pointer;font-size:13px;color:var(--ink);font-weight:700;list-style:none;padding:4px 0}
+.tli summary::before{content:"▸ ";color:#f2c14e}.tli details[open] summary::before{content:"▾ "}
+.tli .kcx{margin:4px 0 0;font-size:13px;color:var(--ink2);line-height:1.6}.tli .kcx b{display:block;color:var(--ink);font-size:14px}
+.tli.fin>div{background:none;border-style:dashed}
+.crit{display:grid;gap:4px;padding:12px 14px;border-radius:12px;background:#ffffff08;border:1px solid var(--line)}
+.crit p{margin:0;font-size:13.5px;color:var(--ink2)}.crit b{display:inline-block;width:22px;font-family:var(--num);font-size:16px;color:var(--ink)}
+@media (max-width:420px){.stats4 b{font-size:22px}.stats4 span{font-size:10.5px}}
+@media (min-aspect-ratio:1/1) and (min-width:700px){#dock>#fb.v2{max-height:calc(100% - 120px)}}
+.v2new{margin:-6px 0 14px;padding:10px 14px;border-radius:12px;background:#f2c14e14;border:1px solid #f2c14e44;font-size:13.5px;line-height:1.6;color:var(--ink2)}.v2new b{color:#f2c14e}
+@media (min-width:900px){#end .box .tl,#end .box .dms{max-width:none}}
+.dgp .fs rect{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.18)}
+.dgp .fs circle{fill:#2a3238;stroke:rgba(255,255,255,.35)}
+.dgp .fs .no{fill:#fff;font-size:12px;font-family:var(--num)}
+.dgp .fs.done circle{fill:#3b464d}
+.dgp .fs.on rect{stroke-width:2}
+.dgp .fs.on.good rect{stroke:#2fa66a;fill:#2fa66a26}.dgp .fs.on.good circle{fill:#2fa66a;stroke:none}
+.dgp .fs.on.mid rect{stroke:#d6a331;fill:#d6a33126}.dgp .fs.on.mid circle{fill:#d6a331;stroke:none}
+.dgp .fs.on.bad rect{stroke:#d9483b;fill:#d9483b26}.dgp .fs.on.bad circle{fill:#d9483b;stroke:none}
+.dgp .fs .tag{fill:#f2c14e;font-size:11px}
+.dgp .fln{stroke:rgba(255,255,255,.25);stroke-width:2}
+#fb.v2 .kc{margin-bottom:12px}
+.card.sq small{font-size:12.5px;color:var(--ink2);line-height:1.4;padding-right:24px}
+.card.sq .t{padding-right:24px}
+.fst.cmp{gap:4px}.fst.cmp>div{padding:6px 10px;align-items:center}.fst.cmp small{display:inline;margin-right:8px}.fst.cmp b{display:inline;font-size:14px}.fst.cmp span{font-size:12.5px}
+.tli p.kcx{display:block}
 </style>
 <title>IRON WILL 地震：晚餐時的搖晃｜求生現場</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -387,6 +524,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div id="hint" class="pad" hidden></div>
   <button id="useBtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4a1.5 1.5 0 0 1 3 0v6M14 10V5.5a1.5 1.5 0 0 1 3 0V14c0 4-2 7-6 7-3 0-4.5-1.6-6.5-5L3 13.2a1.5 1.5 0 0 1 2.6-1.4L8 14"/></svg><span id="useT">互動</span></button>
   <button id="skip" type="button" hidden>略過 ▸▸</button>
+  <div id="ptsF"></div>
   <div id="dock" class="pad">
     <div id="dec" hidden>
       <div id="qbar"><span class="qi"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.8.4-1.1.9-1.1 1.7M12 17h.01"/></svg></span><span id="decQ"></span><b id="decT">8</b><div class="tbar" id="tbar"><i id="tfill"></i></div></div>
@@ -433,7 +571,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　求生現場</div>
     <h1>地震：晚餐時的搖晃</h1>
-    <p class="lead">晚上 21:05，你在家裡餐桌前吃飯，整棟樓突然劇烈搖晃。趴下掩護、搖晃後處理火源、疏散、報平安，你會怎麼做？</p>
+    <p class="lead">晚上 21:05，你在家裡餐桌前吃飯，整棟樓突然劇烈搖晃。趴下掩護、搖晃後判斷瓦斯外洩、疏散、報平安，你會怎麼做？</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -452,7 +590,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="mark"><i></i>情境提要</div>
   <h2>地震：晚餐時的搖晃</h2>
   <div class="bi now"><b>現在</b><p>晚上 21:05，你一個人在家，坐在餐桌前吃晚餐。廚房爐子上還小火煮著湯。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>搖晃的時候</li><li>搖晃停止後</li><li>要不要離開、怎麼離開</li><li>跟家人報平安</li></ol><small>共 4 個限時決定，選錯會扣「安全值」；最後還有 6 題現場追問。</small></div>
+  <div class="bi"><b>你要做</b><ol><li>搖晃的時候</li><li>搖晃停止，瓦斯味很濃</li><li>怎麼下樓、去哪裡</li><li>跟家人報平安</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -980,6 +1118,23 @@ function mkBody(o){
     shoulder:function(sd){var m=matOf(n),x=sd*.18*k,y=.95*k;return [m[0]*x+m[4]*y+m[12],m[1]*x+m[5]*y+m[13],m[2]*x+m[6]*y+m[14]]},
     show:function(v){parts.forEach(function(q){q.vis=v})}};
 }
+/* 消防員：深色消防衣＋反光條＋頭盔（從背後、側面入鏡） */
+function mkFF(o){
+  var b=mkBody({p:o.p,ry:o.ry||0,k:o.k||1.12,shirt:0x2a2e35,pants:0x2a2e35,skin:0xd2a184,face:o.face}),k=b.k,n=b.node,h=b.head;
+  function A(par,g,s,p,c,ex){var q=O(Object.assign({g:g,parent:par,dyn:true,s:[s[0]*k,s[1]*k,s[2]*k],p:[p[0]*k,p[1]*k,p[2]*k],col:hex(c)},ex||{}));b.parts.push(q);return q}
+  /* 反光條：胸口、腰、褲管 */
+  A(n,'cyl',[.385,.045,.235],[0,.86,0],0xd8d23a,{em:[.25,.24,.05],spec:.8});
+  A(n,'cyl',[.37,.04,.23],[0,.64,0],0xc9cfd2,{em:[.2,.2,.2],spec:1});
+  [-1,1].forEach(function(sd){A(n,'cyl',[.14,.035,.14],[sd*.085,.2,0],0xd8d23a,{em:[.25,.24,.05],spec:.8})});
+  /* 頭盔：圓頂＋帽緣＋後簷 */
+  A(h,'sph',[.26,.2,.28],[0,.17,0],o.helmet||0xd9b23a,{spec:.8});
+  A(h,'cyl',[.31,.02,.33],[0,.1,-.01],o.helmet||0xd9b23a,{spec:.8});
+  A(h,'box',[.24,.1,.06],[0,.06,-.14],o.helmet||0xd9b23a,{spec:.7,r:[.4,0,0]});
+  A(h,'box',[.2,.025,.02],[0,.16,.13],0xc9cfd2,{em:[.2,.2,.2],spec:1});
+  /* 空氣呼吸器背架 */
+  A(n,'cyl',[.14,.5,.14],[0,.8,-.17],0x9aa2a8,{spec:.9});
+  return b;
+}
 /* ---- 求生現場共用：鏡頭座標、細圓柱、火焰、煙、火花、水花 ---- */
 function c2w(v){var sy=Math.sin(cam.yaw),cy=Math.cos(cam.yaw),sp=Math.sin(cam.pitch),cp=Math.cos(cam.pitch),F=[-sy*cp,sp,-cy*cp],R=[cy,0,-sy],U=[R[1]*F[2]-R[2]*F[1],R[2]*F[0]-R[0]*F[2],R[0]*F[1]-R[1]*F[0]];
   return [cam.x+R[0]*v[0]+U[0]*v[1]-F[0]*v[2],cam.y+R[1]*v[0]+U[1]*v[1]-F[1]*v[2],cam.z+R[2]*v[0]+U[2]*v[1]-F[2]*v[2]]}
@@ -1471,7 +1626,7 @@ function hIn(H,name,dur,done){H.follow=null;
   hTo(H,typeof name==='string'?HPOSE[name]:name,dur==null?.6:dur,done);
 }
 function hOut(H,dur,done){H.follow=null;
-  hTo(H,HPOSE.off,dur==null?.45:dur,function(){H.vis=false;H.hold='';H.tr=0;if(H!==HF){H.elbow=[H.mirror?-.32:.32,-1.05,.3]}if(done)done()});
+  if(H!==HF&&H.elbow)tween(H.elbow,{0:H.mirror?-.32:.32,1:-1.05,2:.3},dur==null?.45:dur);hTo(H,HPOSE.off,dur==null?.45:dur,function(){H.vis=false;H.hold='';H.tr=0;if(H!==HF){H.elbow=[H.mirror?-.32:.32,-1.05,.3]}if(done)done()});
 }
 function handsReset(){HLIST.forEach(function(H){H.vis=false;H.follow=null;H.hold='';H.tr=0;H.curl=.3;H.thumb=.2;H.hook=0;H.spread=0;H.thAbd=0;if(H.fo)H.fo=[0,0,0,0];H.elbow=H===HF?[.12,-.3,-2.4]:[H.mirror?-.32:.32,-1.05,.3]})}
 /* 兩手同時 */
@@ -1683,12 +1838,12 @@ var SCN={
   id:'quake',kind:'survive',title:'地震：晚餐時的搖晃',eye:1.2,clock0:'21:05',clockQ:'21:40',stage1:'晚上，家裡的餐桌…',
   src:'內容整理自內政部消防署地震保命三步驟（趴下、掩護、穩住）與地震後應變宣導、火災逃生避難原則，以及中華電信 1991 報平安留言平台說明。細節仍待對照官方原文。',
   env:{fog:[.05,.05,.06],fogD:.012,sky:[.3,.32,.4],gnd:[.24,.22,.2],dirD:[-.4,-.8,-.2],dirC:[.06,.06,.08],ao:1},
-  icons:{drop:'hand',run:'run',door:'x',shoes:'hand',bare:'x',light:'x',stairs:'run',elev:'x',arcade:'x',msg:'phone',redial:'phone',back:'x'},
+  icons:{drop:'hand',run:'run',door:'x',leave:'run',valve:'x',light:'x',stairs:'run',elev:'x',arcade:'x',msg:'phone',redial:'phone',back:'x'},
   hurtSnd:function(){thud(.5)}
 };
-var DEC=[{"id": "d1", "q": "整棟樓突然劇烈搖晃，櫃子裡的碗盤嘩啦啦地掉下來，燈在頭上晃。", "time": 8, "kc": {"t": "地震來了：趴下、掩護、穩住", "s": "搖晃時最重要的是保護頭頸：趴下，躲到堅固的桌子底下，一手抓住桌腳，直到搖晃停止。不要急著往外跑。"}, "best": "趴下，躲到餐桌底下，一手抓住桌腳", "opts": [{"id": "drop", "t": "趴下，躲到餐桌底下，一手護住頭頸、一手抓住桌腳", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "趴下、掩護、穩住", "p": "大部分的受傷，是被掉落的東西砸到，或在搖晃中跌倒。躲在堅固的桌子底下、抓住桌腳，讓桌子跟著你一起晃。"}}, {"id": "run", "t": "衝出門，往樓下跑", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "搖晃時移動最容易受傷", "p": "搖晃中跑樓梯很容易跌倒，門外的東西也可能掉下來砸到你。先就地保護自己，搖晃停了再判斷要不要離開。"}}, {"id": "door", "t": "跑到門框下面站著", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "這是舊觀念", "h": "現在的門框不比其他地方堅固", "p": "門框下沒有東西能擋住掉下來的物品，門還可能被搖得甩來甩去夾傷手。趴下、躲在桌子底下比較安全。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "你被搖得站不穩", "p": "搖晃時先趴下、找掩護、穩住。"}}}, {"id": "d2", "q": "搖晃停了。地上都是碎玻璃，廚房的爐子上還在煮湯，空氣裡有一點瓦斯味。", "time": 10, "kc": {"t": "搖晃停止後：先穿鞋，關火，注意瓦斯", "s": "搖晃停止後，先穿上鞋子保護雙腳，再去關火；聞到瓦斯味，不要開關任何電器，關掉瓦斯開關、打開門窗。"}, "best": "先穿上鞋子，再去關火、關瓦斯開關，打開窗戶，不碰電器開關", "opts": [{"id": "shoes", "t": "先穿上鞋子，再去關火、關瓦斯開關，打開窗戶，不碰任何電器開關", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先保護腳，再處理火源", "p": "地震後地上常有碎玻璃，赤腳最容易受傷。接著處理火源和瓦斯，避免地震引發火災。"}}, {"id": "bare", "t": "光著腳衝去廚房關火", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "腳會受傷", "h": "地上都是碎玻璃", "p": "地震後到處是碎玻璃和掉落物，赤腳衝過去很容易割傷，受傷後就更難逃生。先穿鞋。"}}, {"id": "light", "t": "先把燈打開，看清楚再說", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "有瓦斯味不能碰開關", "h": "開關的火花可能引爆瓦斯", "p": "聞到瓦斯味時，開燈、按開關都可能產生火花。先關瓦斯、開窗，什麼開關都不要碰。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "爐子還在燒", "p": "搖晃停止後先穿鞋，再關火、關瓦斯。"}}}, {"id": "d3", "q": "牆上出現了好幾道裂縫，大樓廣播請住戶到戶外空曠處。", "time": 10, "kc": {"t": "疏散：走樓梯、帶避難包、到空曠處", "s": "地震後疏散要走樓梯，不要搭電梯（可能停電或受損卡住）。帶上緊急避難包，到遠離建築物的空曠處，不要在騎樓、外牆、招牌底下停留，小心餘震。"}, "best": "帶著避難包，走樓梯下樓，到遠離建築物的空曠處", "opts": [{"id": "stairs", "t": "帶著緊急避難包，走樓梯下樓，到遠離建築物的空曠處", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "走樓梯、到空曠處", "p": "電梯可能因為停電或損壞把你困住；騎樓和外牆附近也可能有掉落物。到空曠的地方，才能避開餘震時掉下來的東西。"}}, {"id": "elev", "t": "搭電梯下樓比較快", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "餘震或停電會把你困在電梯裡", "p": "地震後電梯可能已經受損，再遇到餘震或停電，就會被困在電梯裡。疏散一律走樓梯。"}}, {"id": "arcade", "t": "到樓下騎樓，靠著大樓外牆等", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不夠安全", "h": "外牆、招牌、玻璃可能掉下來", "p": "騎樓上方有招牌、冷氣、玻璃，餘震時最容易掉落。要到遠離建築物的空曠處。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "廣播一直在催", "p": "走樓梯、帶避難包，到遠離建築物的空曠處。"}}}, {"id": "d4", "q": "到了公園。你想打電話給家人報平安，但電話一直打不通。", "time": 10, "kc": {"t": "報平安：用 1991 留言或文字訊息", "s": "災害發生後電話線路很塞，一直重撥只會讓救災電話更難打進來。可以用 1991 報平安留言平台，或用簡訊、通訊軟體留言報平安。"}, "best": "用 1991 報平安留言平台，或傳簡訊、通訊軟體報平安", "opts": [{"id": "msg", "t": "用 1991 報平安留言平台留言，或傳簡訊、通訊軟體報平安", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "把線路留給救災電話", "p": "1991 報平安留言平台可以錄音留言，家人撥號就能聽到；簡訊、通訊軟體也比打電話容易傳出去。"}}, {"id": "redial", "t": "一直重撥，打通為止", "grade": "mid", "pts": 8, "dmg": 8, "fb": {"b": "mid", "bt": "線路會更塞", "h": "大家都在打電話", "p": "每個人都一直重撥，線路就更塞，真正需要求救的電話也打不進去。改用留言或文字訊息。"}}, {"id": "back", "t": "回家裡用市內電話打打看", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "不要回去", "h": "餘震隨時可能來", "p": "建築物已經有裂縫，回去等於把自己放回危險裡。在安全的地方用留言或文字訊息報平安。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話一直打不通", "p": "用 1991 報平安留言平台，或傳文字訊息。"}}}];
-SCN.quick=[{"q": "睡覺時遇到地震，怎麼做比較好？", "ok": "留在床上，轉身趴下，用枕頭護住頭頸", "w": ["馬上跳下床往外跑", "躲到衣櫃旁邊"], "why": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。", "kc": {"t": "在床上就趴下", "s": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。"}}, {"q": "在戶外遇到地震？", "ok": "遠離建築物，蹲低，用隨身物品護住頭頸", "w": ["跑進最近的建築物裡躲", "站在招牌底下"], "why": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。", "kc": {"t": "戶外蹲低護頭", "s": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。"}}, {"q": "開車時遇到地震？", "ok": "慢慢減速、打警示燈，靠路邊空曠處停車", "w": ["加速開過去", "馬上急煞停在原地"], "why": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。", "kc": {"t": "開車靠邊停", "s": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。"}}, {"q": "地震後要疏散，可以搭電梯嗎？", "ok": "不行，要走樓梯", "w": ["可以，比較快", "人少的時候可以"], "why": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。", "kc": {"t": "不搭電梯", "s": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。"}}, {"q": "被困在倒塌的地方，怎麼讓外面的人知道？", "ok": "敲擊管線或牆壁、吹哨子製造聲音", "w": ["一直大聲喊叫", "安靜等著就好"], "why": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。", "kc": {"t": "受困製造聲音", "s": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。"}}, {"q": "緊急避難包裡應該放什麼？", "ok": "飲用水、手電筒、常用藥品、證件影本", "w": ["大量現金和首飾", "筆電和充電器就好"], "why": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。", "kc": {"t": "準備避難包", "s": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。"}}, {"q": "平常可以怎麼減少地震時的傷害？", "ok": "把高的櫃子、書架固定在牆上", "w": ["把重的東西放在櫃子頂端", "床頭放玻璃擺飾"], "why": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。", "kc": {"t": "固定家具", "s": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。"}}, {"q": "地震後聞到瓦斯味？", "ok": "不碰開關，關瓦斯、開窗，到戶外再報案", "w": ["開燈檢查哪裡漏氣", "打開抽油煙機排氣"], "why": "任何開關都可能產生火花。關掉瓦斯開關、輕輕開窗，人到戶外再打電話。", "kc": {"t": "有瓦斯味不碰開關", "s": "任何開關都可能產生火花。關掉瓦斯開關、輕輕開窗，人到戶外再打電話。"}}];
-var CHS=['搖晃','搖晃停止','疏散','報平安'],CLKS=['21:05','21:06','21:10','21:25'];
+var DEC=[{"id": "d1", "q": "整棟樓突然劇烈搖晃，櫃子裡的碗盤嘩啦啦地掉下來，燈在頭上晃。", "time": 8, "kc": {"t": "地震來了：趴下、掩護、穩住", "s": "搖晃時最重要的是保護頭頸：趴下，躲到堅固的桌子底下，一手抓住桌腳，直到搖晃停止。不要急著往外跑。"}, "best": "趴下，躲到餐桌底下，一手抓住桌腳", "opts": [{"id": "drop", "t": "趴下，躲到餐桌底下，一手護住頭頸、一手抓住桌腳", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "趴下、掩護、穩住", "p": "大部分的受傷，是被掉落的東西砸到，或在搖晃中跌倒。躲在堅固的桌子底下、抓住桌腳，讓桌子跟著你一起晃。"}}, {"id": "run", "t": "衝出門，往樓下跑", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "搖晃時移動最容易受傷", "p": "搖晃中跑樓梯很容易跌倒，門外的東西也可能掉下來砸到你。先就地保護自己，搖晃停了再判斷要不要離開。"}}, {"id": "door", "t": "跑到門框下面站著", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "這是舊觀念", "h": "現在的門框不比其他地方堅固", "p": "門框下沒有東西能擋住掉下來的物品，門還可能被搖得甩來甩去夾傷手。趴下、躲在桌子底下比較安全。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "你被搖得站不穩", "p": "搖晃時先趴下、找掩護、穩住。"}}}, {"id": "d2", "q": "搖晃停了。地上都是碎玻璃。湯鍋翻倒把爐火澆熄了，廚房飄來很濃的瓦斯味，還聽得到「嘶——」的漏氣聲。", "time": 10, "kc": {"t": "地震後大量瓦斯外洩：不要止洩，直接離開", "s": "搖晃停止後先穿鞋保護雙腳。瓦斯味很濃、聽得到漏氣聲，代表大量外洩，不要走進去關瓦斯（人走動時衣服摩擦的靜電都可能引爆），任何開關都不碰，帶著避難包直接離開，到外面再報案。只有味道很淡、剛開始漏的時候，才考慮小心去關瓦斯、開窗。"}, "best": "先穿上鞋子，什麼開關都不碰，背起避難包直接離開", "opts": [{"id": "leave", "t": "先穿上鞋子，什麼開關都不碰，背起門邊的避難包直接離開", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "大量外洩，人先走", "p": "地上都是碎玻璃，先穿鞋。瓦斯這麼濃、又不知道漏了多少，留在屋裡多待一秒都危險。不碰開關、直接離開，到外面再報案，交給消防隊和瓦斯公司。"}}, {"id": "valve", "t": "走進廚房關掉爐子和瓦斯總開關，再打開窗戶", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "大量外洩時不要去止洩", "p": "瓦斯已經很濃的時候，人走進去、轉開關、身上衣服摩擦，產生的靜電火花都可能引爆。過去很多氣爆，就是有人想進去關瓦斯時發生的。"}}, {"id": "light", "t": "先把燈打開，看清楚再說", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "有瓦斯味不能碰開關", "h": "開關的火花可能引爆瓦斯", "p": "聞到瓦斯味時，開燈、按開關都可能產生火花。什麼開關都不要碰，直接離開。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "瓦斯還在一直漏", "p": "先穿鞋，瓦斯味很濃就什麼都不碰，直接離開。"}}}, {"id": "d3", "q": "你們到了樓梯間，牆上有好幾道裂縫，大樓廣播請住戶到戶外空曠處。", "time": 10, "kc": {"t": "疏散：走樓梯、帶避難包、到空曠處", "s": "地震後疏散要走樓梯，不要搭電梯（可能停電或受損卡住）。帶上緊急避難包，到遠離建築物的空曠處，不要在騎樓、外牆、招牌底下停留，小心餘震。"}, "best": "走樓梯下樓，到遠離建築物的空曠處", "opts": [{"id": "stairs", "t": "走樓梯下樓，到遠離建築物的空曠處", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "走樓梯、到空曠處", "p": "電梯可能因為停電或損壞把你困住；騎樓和外牆附近也可能有掉落物。到空曠的地方，才能避開餘震時掉下來的東西。"}}, {"id": "elev", "t": "搭電梯下樓比較快", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "餘震或停電會把你困在電梯裡", "p": "地震後電梯可能已經受損，再遇到餘震或停電，就會被困在電梯裡。疏散一律走樓梯。"}}, {"id": "arcade", "t": "到樓下騎樓，靠著大樓外牆等", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不夠安全", "h": "外牆、招牌、玻璃可能掉下來", "p": "騎樓上方有招牌、冷氣、玻璃，餘震時最容易掉落。要到遠離建築物的空曠處。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "廣播一直在催", "p": "走樓梯、帶避難包，到遠離建築物的空曠處。"}}}, {"id": "d4", "q": "到了公園。你想打電話給家人報平安，但電話一直打不通。", "time": 10, "kc": {"t": "報平安：用 1991 留言或文字訊息", "s": "災害發生後電話線路很塞，一直重撥只會讓救災電話更難打進來。可以用 1991 報平安留言平台，或用簡訊、通訊軟體留言報平安。"}, "best": "用 1991 報平安留言平台，或傳簡訊、通訊軟體報平安", "opts": [{"id": "msg", "t": "用 1991 報平安留言平台留言，或傳簡訊、通訊軟體報平安", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "把線路留給救災電話", "p": "1991 報平安留言平台可以錄音留言，家人撥號就能聽到；簡訊、通訊軟體也比打電話容易傳出去。"}}, {"id": "redial", "t": "一直重撥，打通為止", "grade": "mid", "pts": 8, "dmg": 8, "fb": {"b": "mid", "bt": "線路會更塞", "h": "大家都在打電話", "p": "每個人都一直重撥，線路就更塞，真正需要求救的電話也打不進去。改用留言或文字訊息。"}}, {"id": "back", "t": "回家裡用市內電話打打看", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "不要回去", "h": "餘震隨時可能來", "p": "建築物已經有裂縫，回去等於把自己放回危險裡。在安全的地方用留言或文字訊息報平安。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話一直打不通", "p": "用 1991 報平安留言平台，或傳文字訊息。"}}}];
+SCN.quick=[{"q": "睡覺時遇到地震，怎麼做比較好？", "ok": "留在床上，轉身趴下，用枕頭護住頭頸", "w": ["馬上跳下床往外跑", "躲到衣櫃旁邊"], "why": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。", "kc": {"t": "在床上就趴下", "s": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。"}}, {"q": "在戶外遇到地震？", "ok": "遠離建築物，蹲低，用隨身物品護住頭頸", "w": ["跑進最近的建築物裡躲", "站在招牌底下"], "why": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。", "kc": {"t": "戶外蹲低護頭", "s": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。"}}, {"q": "開車時遇到地震？", "ok": "慢慢減速、打警示燈，靠路邊空曠處停車", "w": ["加速開過去", "馬上急煞停在原地"], "why": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。", "kc": {"t": "開車靠邊停", "s": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。"}}, {"q": "地震後要疏散，可以搭電梯嗎？", "ok": "不行，要走樓梯", "w": ["可以，比較快", "人少的時候可以"], "why": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。", "kc": {"t": "不搭電梯", "s": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。"}}, {"q": "被困在倒塌的地方，怎麼讓外面的人知道？", "ok": "敲擊管線或牆壁、吹哨子製造聲音", "w": ["一直大聲喊叫", "安靜等著就好"], "why": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。", "kc": {"t": "受困製造聲音", "s": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。"}}, {"q": "緊急避難包裡應該放什麼？", "ok": "飲用水、手電筒、常用藥品、證件影本", "w": ["大量現金和首飾", "筆電和充電器就好"], "why": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。", "kc": {"t": "準備避難包", "s": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。"}}, {"q": "平常可以怎麼減少地震時的傷害？", "ok": "把高的櫃子、書架固定在牆上", "w": ["把重的東西放在櫃子頂端", "床頭放玻璃擺飾"], "why": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。", "kc": {"t": "固定家具", "s": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。"}}, {"q": "地震後聞到瓦斯味？", "ok": "味道很濃、聽得到漏氣聲：什麼都不碰，直接離開，到戶外再報案", "w": ["一定要先進去把瓦斯總開關關掉", "開燈找漏氣的地方"], "why": "地震後瓦斯管線可能破裂。味道很濃就是大量外洩，不要進去止洩，任何開關都不碰，直接離開；只有味道很淡、剛開始漏，才考慮小心關瓦斯、開窗。", "kc": {"t": "地震後瓦斯味很濃：直接離開", "s": "地震後瓦斯管線可能破裂。味道很濃就是大量外洩，不要進去止洩，任何開關都不碰，直接離開；只有味道很淡、剛開始漏，才考慮小心關瓦斯、開窗。"}}];
+var CHS=['搖晃','瓦斯外洩','疏散','報平安'],CLKS=['21:05','21:06','21:10','21:25'];
 DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
 var CAM={};
 function camSetup(){
@@ -1721,7 +1876,7 @@ function dropDishes(){dishes.forEach(function(d,i){after(i*160,function(){tween(
   after(500,function(){tween(picFrame.p,{1:.2,0:-RW/2+.25},.5);tween(picFrame.r,{0:-1.4},.5);tween(picFrameP.p,{1:.2,0:-RW/2+.26},.5);tween(picFrameP.r,{0:-1.4},.5,function(){thud(.4)})})}
 SCN.start=function(){
   phase='cut';controls=false;bars(true);showSkip(true);
-  setCam(CAM.sit);fadeTo(0,1600);cap('晚上 21:05。你一個人在家吃晚餐，爐子上還小火煮著湯。');
+  setCam(CAM.sit);fadeTo(0,1600);cap('晚上 21:05。你一個人在家吃晚餐，爐子上還小火煮著一鍋湯。');
   after(2600,function(){shakeOn(.15,.6);cap('桌上的碗開始輕輕地跳。')});
   after(4000,function(){shakeOn(.75,.5);QK.flick=1;cap('整棟樓突然劇烈搖晃！');dropDishes()});
   after(6200,function(){showSkip(false);step(1)});
@@ -1734,11 +1889,13 @@ function step(n){
 }
 function closeGas(){knobs.forEach(function(n){tween(n.r,{2:0},.4)});tween(valH.r,{2:-PI/2},.4)}
 var PRE={
-  2:function(go){shakeOn(0,1.2);QK.flick=0;bothOut(.3);cap('搖晃慢慢停了下來。');after(1400,function(){camTo(CAM.stand,1.2);cap('地上都是碎碗盤，廚房飄來一點瓦斯味。')});after(3000,go)},
+  2:function(go){shakeOn(0,1.2);QK.flick=0;bothOut(.3);cap('搖晃慢慢停了下來。');after(1400,function(){camTo(CAM.stand,1.2);loopSnd('leak','highpass',2600,.7,.6,.04);cap('地上都是碎碗盤。湯鍋被搖翻，把爐火澆熄了——廚房飄來很濃的瓦斯味，還聽得到「嘶——」的漏氣聲。')});after(3800,go)},
   3:function(go){
-    if(G.d2&&G.d2.id!=='shoes'){shoes.forEach(function(s){s.vis=false});closeGas()}
-    camTo(CAM.crack,1.0);after(1100,function(){tween(cracks[0],{a:.9},.6);tween(cracks[1],{a:.9},.6);beep(784,.3,.08,0);beep(659,.4,.08,.35);cap('牆上出現了好幾道裂縫。大樓廣播：「請住戶帶著隨身物品，走樓梯到戶外空曠處。」','廣播')});
-    after(3600,go);
+    var g=function(){loopSnd('leak','highpass',2600,.7,0);beep(784,.3,.08,0);beep(659,.4,.08,.35);cap('樓梯間的牆上有好幾道裂縫。大樓廣播：「請住戶走樓梯，到戶外空曠處。」','廣播');after(2800,go)};
+    if(G.d2&&G.d2.id==='leave'){g();return}
+    cap('你趕緊穿上鞋子，背起避難包，開門出去。');fadeTo(1,400);
+    after(500,function(){shoes.forEach(function(s){s.vis=false});bag.vis=false;HALL.door.r=[0,1.3,0];setCam(CAM.hall);fadeTo(0,500)});
+    after(1600,g);
   },
   4:function(go){
     fadeTo(1,500);after(600,function(){setCam(CAM.park);NB.forEach(function(b){b.show(true)});bag.vis=false;fadeTo(0,700);cap('附近的公園裡，聚集了很多鄰居。')});
@@ -1770,49 +1927,47 @@ var PLAY={
   _:function(done){cap('你抓著椅子，被搖得站不穩。');after(2600,done)}
  },
  d2:{
-  shoes:function(done){
+  leave:function(done){
     camTo(CAM.shoes,1.2);
     after(1300,function(){var a=w2c([-.28,.1,RD/2-.4]);hIn(HR,{p:[a[0],a[1]+.05,a[2]],r:[.9,-.2,0],curl:.7,abs:true},.4)});
     after(1900,function(){shoes.forEach(function(s){s.vis=false});hOut(HR,.3);cap('你先穿上鞋子。')});
-    after(2700,function(){camTo(CAM.stove,1.4)});
-    after(4200,function(){var k=w2c(knobs[0].p);hIn(HR,{p:[k[0],k[1]+.02,k[2]+.07],r:[.9,0,0],curl:.75,thumb:.6,abs:true},.4)});
-    after(4800,function(){closeGas();cap('關掉爐火，再把牆上的瓦斯總開關關上。')});
-    after(5600,function(){hOut(HR,.3);camTo(CAM.win,1.2)});
-    after(7000,function(){tween(winPane.p,{2:.15},1);cap('你輕輕推開窗戶。電燈開關一個都沒碰。')});
-    after(8400,done);
+    after(2700,function(){camTo(CAM.door,1.0)});
+    after(3800,function(){var a=w2c([.25,.4,RD/2-.25]);hIn(HR,{p:[a[0],a[1],a[2]],r:[.6,-.2,0],curl:.85,abs:true},.35)});
+    after(4300,function(){bag.vis=false;hOut(HR,.3);cap('背起門邊的避難包。瓦斯這麼濃，什麼開關都不碰，直接開門出去。');tween(HALL.door.r,{1:1.3},.6)});
+    after(5600,function(){fadeTo(1,300)});after(5900,function(){setCam(CAM.hall);fadeTo(0,400)});
+    after(6800,done);
   },
-  bare:function(done){
-    cap('你光著腳往廚房衝——');camTo(CAM.stove,1.0);
-    after(700,function(){ST.dmg=.6;tween(ST,{dmg:0},.8);thud(.4);cap('「啊！」碎玻璃扎進了腳底。')});
-    after(2400,function(){closeGas();cap('你忍著痛關掉爐火和瓦斯，腳底一直在流血。')});
-    after(4200,done);
+  valve:function(done){
+    cap('你踩過碎玻璃，走進廚房。');camTo(CAM.stove,1.2);
+    after(1400,function(){var k=w2c(knobs[0].p);hIn(HR,{p:[k[0],k[1]+.02,k[2]+.07],r:[.9,0,0],curl:.75,thumb:.6,abs:true},.4)});
+    after(2000,function(){closeGas();cap('你把爐子和瓦斯總開關都關上了。')});
+    after(2800,function(){hOut(HR,.3);ST.dmg=.5;tween(ST,{dmg:0},.8);cap('但在這麼濃的瓦斯裡走動、轉開關，衣服摩擦的一點靜電火花就可能引爆。你是在賭運氣。')});
+    after(5600,done);
   },
   light:function(done){
     camTo(CAM.sw,.8);
     after(900,function(){var a=w2c([SWP.x,SWP.y,SWP.z-.02]);hIn(HR,{p:[a[0],a[1]-.02,a[2]+.08],r:[1.3,0,0],curl:.9,thumb:.5,fo:[-.9,0,0,0],abs:true},.4)});
     after(1500,function(){sparkBurst([SWP.x,SWP.y,SWP.z-.03],8,.4,0);try{noiseHit(3000,1.2,.35,.05,'bandpass',.3)}catch(e){}hOut(HR,.3);cap('「啪」，開關閃了一下火花。')});
-    after(3000,function(){cap('幸好瓦斯還不多。你嚇出一身冷汗，趕緊去關瓦斯、開窗。');closeGas();tween(winPane.p,{2:.15},1)});
-    after(4800,done);
+    after(3000,function(){cap('幸好沒有引爆。你嚇出一身冷汗，什麼都不敢再碰。')});
+    after(4600,done);
   },
-  _:function(done){cap('爐子還在燒，瓦斯味越來越重。');after(2400,function(){closeGas();done()})}
+  _:function(done){cap('你站在原地，瓦斯味越來越重。');after(2400,done)}
  },
  d3:{
   stairs:function(done){
-    camTo(CAM.door,1.2);after(1300,function(){var a=w2c([.25,.4,RD/2-.25]);hIn(HR,{p:[a[0],a[1],a[2]],r:[.6,-.2,0],curl:.85,abs:true},.35)});
-    after(1800,function(){bag.vis=false;hOut(HR,.3);cap('你背起門邊的緊急避難包，打開大門。');tween(HALL.door.r,{1:1.3},.6)});
-    after(2800,function(){fadeTo(1,300)});after(3100,function(){setCam(CAM.hall);fadeTo(0,400);cap('電梯不碰，跟著綠色的出口標示，走樓梯下樓。')});
-    after(5000,done);
+    cap('電梯不碰，跟著綠色的出口標示，走樓梯下樓。');camTo(lookAt([.0,1.6,RD/2+.9],[-1.2,1.0,RD/2+2.0]),1.4);
+    after(2400,done);
   },
   elev:function(done){
-    camTo(CAM.door,1.0);after(1100,function(){tween(HALL.door.r,{1:1.3},.5)});after(1700,function(){fadeTo(1,300)});
-    after(2000,function(){setCam(lookAt([.6,1.6,RD/2+1.5],[.6,1.2,RD/2+2.44]));fadeTo(0,300);cap('你按了電梯，走了進去。')});
+    fadeTo(1,300);
+    after(400,function(){setCam(lookAt([.6,1.6,RD/2+1.5],[.6,1.2,RD/2+2.44]));fadeTo(0,300);cap('你按了電梯，走了進去。')});
     after(3200,function(){fadeTo(.85,300);shakeOn(.6,.2);cap('電梯下到一半，餘震又來了。「喀」一聲，電梯停住，燈也熄了。')});
     after(5200,function(){shakeOn(0,.6);cap('你被困在電梯裡將近一個小時，才被消防隊救出來。');ST.dmg=.3;tween(ST,{dmg:0},1)});
     after(7000,function(){fadeTo(0,500);done()});
   },
   arcade:function(done){
-    camTo(CAM.door,1.0);after(1100,function(){tween(HALL.door.r,{1:1.3},.5)});after(1700,function(){fadeTo(1,300)});
-    after(2100,function(){setCam(CAM.park);fadeTo(.4,400);cap('你走樓梯到了樓下，站在騎樓，靠著大樓外牆。')});
+    fadeTo(1,300);
+    after(500,function(){setCam(CAM.park);fadeTo(.4,400);cap('你走樓梯到了樓下，站在騎樓，靠著大樓外牆。')});
     after(3600,function(){shakeOn(.5,.2);bang();cap('餘震又來了，頭頂上的招牌「哐」一聲掉下來，砸在你旁邊。');ST.dmg=.5;tween(ST,{dmg:0},.8)});
     after(5400,function(){shakeOn(0,.6);fadeTo(0,500);cap('你嚇得往公園跑。');done()});
   },
@@ -1828,9 +1983,9 @@ var PLAY={
 SCN.quickCam=function(){bothOut(.3);setCam(CAM.park);NB.forEach(function(b){b.show(true)})};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
-  return [g===DEC.length?'21:40，搖晃平息。你毫髮無傷，家裡的火源也都關好了。':g>=2?'21:40，搖晃平息。你受了一點皮肉傷，幸好沒有大礙。':'21:40，搖晃平息。這一晚你受了傷，也好幾次差點陷入更大的危險。',
+  return [g===DEC.length?'21:40，搖晃平息。你毫髮無傷。消防隊和瓦斯公司人員進去關閉瓦斯、確認沒有再外洩。':g>=2?'21:40，搖晃平息。你受了一點皮肉傷，幸好沒有大礙。':'21:40，搖晃平息。這一晚你受了傷，也好幾次差點陷入更大的危險。',
     '這次地震規模不小，大樓之後要請結構技師檢查，確認安全才能回家。',
-    g===DEC.length?'趴下掩護穩住、先穿鞋關火、走樓梯到空曠處、用留言報平安，你每一步都做對了。':'下一次記得：搖晃時先保護頭頸；停了先穿鞋、關火；疏散走樓梯；報平安用留言。'];
+    g===DEC.length?'趴下掩護穩住、穿鞋後遇到大量瓦斯外洩直接離開、走樓梯到空曠處、用留言報平安，你每一步都做對了。':'下一次記得：搖晃時先保護頭頸；停了先穿鞋；瓦斯味很濃就什麼都不碰、直接離開；疏散走樓梯；報平安用留言。'];
 };
 function sceneLights(){
   var lk=QK.flick?(Math.random()<.15?.2:1):1,l=lk*(1-QK.dark);
@@ -1852,6 +2007,8 @@ function sceneSprites(){
 }
 function sceneTick(dt){fxTick(dt);ST.shake=Math.max(ST.shake*.9,QK.sh*(.7+.3*Math.sin(tNow*7)))}
 function titleCam(){var c=CAM.sit;cam.x=c.x+Math.sin(tNow*.2)*.08;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch}
+
+SCN.flow=[{"t": "趴下掩護", "s": "躲桌下，抓住桌腳"}, {"t": "穿鞋離開", "s": "瓦斯很濃，不碰開關直接走"}, {"t": "樓梯疏散", "s": "不搭電梯，到空曠處"}, {"t": "報平安", "s": "1991 或文字訊息"}];
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -1918,7 +2075,7 @@ setInterval(updStage,160);
 function startDecision(d,done){
   cur=d;curDone=done;phase='decide';controls=true;TS=1;showSkip(false);bars(false);show('hint',false);show('prompt',false);show('useBtn',false);
   el('decQ').textContent=d.q;
-  var opts=el('opts');opts.innerHTML='';
+  var opts=el('opts');opts.innerHTML='';opts.className='';
   shuffle(d.opts).forEach(function(o,i){
     var b=document.createElement('button');b.type='button';b.className='card';
     b.innerHTML='<span class="oi">'+optIcon(o.id)+'</span><span class="t"></span><span class="k">'+'ABC'[i]+'</span>';b.querySelector('.t').textContent=o.t;
@@ -1943,7 +2100,8 @@ function pickOption(d,o,timedOut){
   var bonus=(o.grade==='good')?Math.round(3*left):0;
   var pts=o.pts+bonus;
   SC.score=Math.min(100,SC.score+pts);
-  SC.log.push({d:d,o:o,pts:pts,timeUsed:decideLimit?decideLimit*(timedOut?1:(1-left))/1000:null});
+  SC.log.push({d:d,o:o,pts:pts,base:o.pts,max:maxPts(d),left:decideLimit&&S.timer?(timedOut?0:left):null,timeUsed:decideLimit&&S.timer?decideLimit*(timedOut?1:(1-left))/1000:null});
+  ptsFloat(o,pts,timedOut);
   SC.cards.push({t:d.kc.t,s:d.kc.s,learned:o.grade==='good'});
   G[d.id]=o;
   if(o.dmg)hurt(o.dmg);
@@ -1957,17 +2115,89 @@ function hurt(n){
 }
 function showFeedback(d,o){
   phase='fb';cap('');
-  var f=o.fb;
-  el('fbB').className='badge '+f.b;el('fbB').innerHTML=ICON[f.b];
-  el('fbT').textContent=d.quick?f.bt:(f.b==='ok'?'做對了！':f.bt);
-  el('fbH').textContent=f.h;el('fbP').textContent=f.p;
-  el('fbKt').textContent=d.kc.t;el('fbKs').textContent=d.kc.s;
+  var f=o.fb,g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad',h;
+  if(d.quick){
+    h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.bt)+'</h3><p>'+esc(d.q.replace(/^現場追問 \d+／\d+　/,''))+'</p></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
+    h+='<p class="fwhy">'+esc(f.p)+'</p>';
+  }else{
+    var L=SC.log[SC.log.length-1],ix=DEC.indexOf(d);
+    h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
+    h+='<p class="fwhy">'+esc(f.p)+'</p>';
+    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
+    h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
+    if(hasFlow())h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(ix,g)+'</div>';
+  }
   var lab;
-  if(d.quick)lab=d.qlast?'查看成績單 →':'下一題 →';
-  else lab=SC.log.length>=DEC.length?((SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單'):'繼續下一關';
-  goLab(lab.replace(/ →$/,''));
-  chime(o.grade==='good');show('fb',true);
-  el('fbGo').onclick=function(){show('fb',false);curDone()};
+  if(d.quick)lab=d.qlast?'查看成績單':'下一題';
+  else lab=SC.log.length>=DEC.length?(hasFlow()?'進入流程排序':(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單'):'繼續下一關';
+  fbOpen(h,lab,function(){curDone()});
+  chime(o.grade==='good');
+}
+/* ================= 精緻版：詳解卡、流程圖解、得分浮字、流程排序 ================= */
+var MK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+var LK={ty:0,tp:0,act:0};
+function maxPts(d){return Math.max.apply(null,d.opts.map(function(o){return o.pts||0}))}
+function hasFlow(){return !!(SCN.flow&&SCN.flow.length>2)}
+function kcBox(kc){return '<div class="kc"><span class="bulb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><div class="kct"><small>知識補充</small><div>'+esc(kc.t)+'</div><span>'+esc(kc.s)+'</span></div></div>'}
+function fbOpen(h,lab,go){
+  var fb=el('fb');fb.className='v2';fb.innerHTML=h+'<button class="go" id="fbGo" type="button"></button>';goLab(lab);
+  [].forEach.call(fb.querySelectorAll('.ftab button'),function(b){b.addEventListener('click',function(){
+    [].forEach.call(fb.querySelectorAll('.ftab button'),function(x){x.classList.toggle('on',x===b)});
+    [].forEach.call(fb.querySelectorAll('.fpn'),function(p){p.hidden=p.dataset.p!==b.dataset.p})})});
+  show('fb',true);fb.scrollTop=0;
+  el('fbGo').onclick=function(){show('fb',false);go()};
+}
+/* 正確流程圖：hi＝目前這一步（-1 不標），g＝這一步做得如何 */
+function flowSvg(hi,g){
+  var F=SCN.flow||[],rh=40,H=F.length*rh+26,h='<svg viewBox="0 0 320 '+H+'" role="img" aria-label="正確流程：'+esc(F.map(function(f){return f.t}).join('、'))+'">';
+  h+='<text x="6" y="14" class="t3">正確流程'+(SV_FLOW()?'（求生）':'（急救）')+'</text>';
+  F.forEach(function(f,i){var y=22+i*rh,on=i===hi;
+    if(i<F.length-1)h+='<path d="M22 '+(y+30)+'v'+(rh-30)+'" class="fln"/>';
+    h+='<g class="fs'+(on?' on '+(g||'good'):i<hi?' done':'')+'"><rect x="2" y="'+y+'" width="316" height="'+(rh-8)+'" rx="9"/><circle cx="22" cy="'+(y+16)+'" r="10"/><text x="22" y="'+(y+20)+'" class="no" text-anchor="middle">'+(i+1)+'</text>'+
+      '<text x="42" y="'+(y+14)+'" class="t2">'+esc(f.t)+'</text><text x="42" y="'+(y+27)+'" class="t3">'+esc(f.s)+'</text>'+(on?'<text x="310" y="'+(y+20)+'" class="tag" text-anchor="end">這一步</text>':'')+'</g>';
+  });
+  return h+'</svg>';
+}
+function SV_FLOW(){return SCN.kind==='survive'}
+function ptsFloat(o,pts,to){
+  var d=el('ptsF');if(!d)return;var g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad';
+  d.className='on '+g;d.textContent=to?'時間到':g==='good'?'+'+pts:g==='mid'?'+'+pts+'　還可以更好':(SCN.kind==='survive'?'危險':'不正確');
+  clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){d.className=''},1500);
+}
+/* 流程排序：把正確步驟依序點出來 */
+function runOrder(next){
+  var F=SCN.flow,N=F.length,seq=[],fin=false,idx=F.map(function(_,i){return i});
+  do{idx=shuffle(idx)}while(idx.every(function(v,i){return v===i}));
+  cur={id:'ord',ord:true,q:'流程排序',opts:[]};curDone=null;decideEnd=0;phase='decide';controls=true;TS=1;
+  show('phone',false);show('fb',false);show('hint',false);show('prompt',false);show('useBtn',false);
+  el('decQ').textContent='流程排序：照正確順序，依序點出這 '+N+' 個步驟（點錯可以再點一次取消）';
+  el('tbar').style.visibility='hidden';el('decT').textContent='';
+  var opts=el('opts');opts.innerHTML='';opts.className='k-seq';
+  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''})}
+  idx.forEach(function(i){
+    var b=document.createElement('button');b.type='button';b.className='card sq';b.dataset.i=i;
+    b.innerHTML='<span class="no"></span><span class="t"></span><small></small>';b.querySelector('.t').textContent=F[i].t;b.querySelector('small').textContent=F[i].s;
+    b.addEventListener('click',function(){if(fin)return;var k=seq.indexOf(i);if(k>=0)seq.splice(k);else seq.push(i);tickSnd();paint();if(seq.length===N){fin=true;after(450,function(){done(seq)})}});
+    opts.appendChild(b);
+  });
+  var r=document.createElement('button');r.type='button';r.className='sqr';r.textContent='重新排列';r.addEventListener('click',function(){if(!fin){seq=[];paint()}});opts.appendChild(r);
+  show('dec',true);
+  function done(sq){
+    if(phase!=='decide')return;
+    phase='cut';controls=false;show('dec',false);
+    var ok=sq.filter(function(v,k){return v===k}).length;SC.ord={ok:ok,n:N,seq:sq.slice()};
+    var lv=ok===N?'good':ok>=Math.ceil(N/2)?'mid':'bad',b=lv==='good'?'ok':lv;
+    var pf=el('ptsF');if(pf){pf.className='on '+lv;pf.textContent='排對 '+ok+' / '+N;clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){pf.className=''},1500)}
+    var h='<div class="fbh"><span class="badge '+b+'">'+ICON[b]+'</span><div><h3>'+(lv==='good'?'順序完全正確':lv==='mid'?'大致記住了':'順序要再記熟')+'</h3><p>流程排序</p></div><b class="fpt">'+ok+'<small>/'+N+'</small></b></div><div class="fst cmp">';
+    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+MK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
+    h+='</div><p class="fwhy">'+(lv==='good'?'流程都記住了。真的遇到時，照這個順序一步一步做。':'順序很重要：前一步沒做好，後面做得再多也可能白費。看一下正確流程。')+'</p>';
+    h+='<div class="dgp">'+flowSvg(-1)+'</div>';
+    fbOpen(h,(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單',next);
+    phase='fb';chime(lv==='good');
+  }
+  window.__ord=done;
 }
 function playOption(d,o,done){var f=PLAY[d.id]&&(PLAY[d.id][o.id]||PLAY[d.id]._);if(f)f(done,o);else after(300,done)}
 /* 沒有自由走動：互動與教學的介面先關掉 */
@@ -2005,16 +2235,18 @@ function resetScene(){
   if(SCN.reset)SCN.reset();
 }
 function newGame(){
-  SC={score:0,log:[],cards:[]};QZ=[];dayInit();resetScene();resetG();setSafety(100);setClock(SCN.clock0);setChap('劇情時間');STAGE=-1;TS=1;paused=false;
+  SC={score:0,log:[],cards:[],ord:null};QZ=[];el('fb').className='';dayInit();resetScene();resetG();setSafety(100);setClock(SCN.clock0);setChap('劇情時間');STAGE=-1;TS=1;paused=false;
   SCN.start();
 }
 function toQuick(){
-  if(!SCN.quick||!SCN.quick.length){endScene();return}
   phase='cut';controls=false;restHands();
-  chap(DEC.length+1,'現場追問',SCN.clockQ||'',function(){
-    if(SCN.quickCam)SCN.quickCam();
-    runQuick(endScene);
-  });
+  var n=DEC.length+1;
+  function quick(){
+    if(!SCN.quick||!SCN.quick.length){endScene();return}
+    chap(n,'現場追問',SCN.clockQ||'',function(){if(SCN.quickCam)SCN.quickCam();runQuick(endScene)});
+  }
+  if(!hasFlow()){quick();return}
+  chap(n++,'流程排序','',function(){if(SCN.quickCam)SCN.quickCam();runOrder(quick)});
 }
 function endScene(){
   phase='cut';controls=false;fadeTo(1,1400);bars(false);cap('');showSkip(false);
@@ -2091,8 +2323,7 @@ function dayInit(){
   box.innerHTML=h;box.hidden=false;
 }
 function dayEnd(rk,qok,qn){
-  var i=dayIdx();if(i<0){daySave({r:rk.r,s:SC.score,q:qn?qok+'/'+qn:''});return ''}
-  daySave({r:rk.r,s:SC.score,q:qn?qok+'/'+qn:''});
+  var sv={r:rk.r,s:rk.T!=null?rk.T:SC.score,q:qn?qok+'/'+qn:''},i=dayIdx();daySave(sv);if(i<0)return '';
   var d=dayGet(),done=DAY_ORDER.filter(function(x){return d[x[0]]}).length;
   var h='<div class="story"><b>幸福里 7 號樓的一晚　'+done+' / 4 章完成</b><br>';
   if(i<3)h+='接下來：'+DAY_ORDER[i+1][2]+'　'+DAY_ORDER[i+1][1]+'（'+DAY_ORDER[i+1][3]+'）';
@@ -2101,34 +2332,53 @@ function dayEnd(rk,qok,qn){
   return h+'</div>';
 }
 
-/* ================= 成績單 ================= */
-function calcRank(){
-  var N=DEC.length,good=SC.log.filter(function(l){return l.o.grade==='good'}).length,score=SC.score,sf=sfNow,r;
-  if(good===N&&score>=92)r='S';else if(good===N||(good===N-1&&sf>=60))r='A';else if(good>=Math.ceil(N/2))r='B';else r='C';
-  return {r:r,good:good,n:N};
-}
+/* ================= 成績單（精緻版：細項評分、時間軸、評等標準） ================= */
 var SV=SCN.kind==='survive';
 var RANK=SV?{S:{t:'教科書等級的應變',c:'#f2c14e'},A:{t:'冷靜判斷，全身而退',c:'#74ab90'},B:{t:'有驚無險，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}}:{S:{t:'教科書等級的急救',c:'#f2c14e'},A:{t:'冷靜可靠的第一反應者',c:'#74ab90'},B:{t:'有幫上忙，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}};
 var HAND_CREDIT='雙手 3D 模型：This work is based on "Free Pack - VR Hands (Rigged)" (https://sketchfab.com/3d-models/free-pack-vr-hands-rigged-b3b8309e59c748e3956531c8f57dd233) by PolyOne Studio (https://sketchfab.com/polyone) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)';
+/* 總分＝判斷 60%＋安全值（傷者狀況）20%＋流程排序 10%＋反應速度 10%；沒計時或沒有排序，就依比例分配 */
+function calcRank(){
+  var N=DEC.length,log=SC.log||[],good=log.filter(function(l){return l.o.grade==='good'}).length,got=0,max=0;
+  log.forEach(function(l){got+=l.base!=null?l.base:l.pts;max+=l.max!=null?l.max:22});
+  max=Math.max(max,N*22);
+  var J=Math.round(got/max*100),HS=Math.max(0,Math.round(sfNow));
+  var lefts=log.filter(function(l){return l.left!=null}).map(function(l){return clamp(l.left/.5,0,1)});
+  var SP=lefts.length?Math.round(lefts.reduce(function(a,b){return a+b},0)/lefts.length*100):null;
+  var OR=SC.ord?Math.round(SC.ord.ok/SC.ord.n*100):null;
+  var parts=[[J,.6],[HS,.2],[OR,.1],[SP,.1]].filter(function(x){return x[0]!=null}),wt=parts.reduce(function(a,x){return a+x[1]},0);
+  var T=Math.round(parts.reduce(function(a,x){return a+x[0]*x[1]},0)/wt);
+  var r;if(good===N&&T>=92)r='S';else if(J>=85&&T>=78)r='A';else if(J>=55)r='B';else r='C';
+  return {r:r,good:good,n:N,J:J,HS:HS,SP:SP,OR:OR,T:T};
+}
+function dmBar(lab,v,note){var c=v==null?'':v>=85?'g':v>=60?'y':'r';return '<div class="dm"><div class="dh"><b>'+lab+'</b><em>'+(v==null?'--':v)+'</em></div><div class="db"><i class="'+c+'" style="width:'+(v==null?0:v)+'%"></i></div><small>'+note+'</small></div>'}
 function showEnd(){
   audioFadeOut();phase='end';controls=false;['dec','fb','phone','obj','prompt','useBtn'].forEach(function(i){show(i,false)});
-  var rk=calcRank(),R=RANK[rk.r];
+  var rk=calcRank(),R=RANK[rk.r],SAFE=SV?'安全值':'傷者狀況';
   var times=SC.log.filter(function(l){return l.timeUsed!=null}).map(function(l){return l.timeUsed});
   var avg=times.length?times.reduce(function(a,b){return a+b},0)/times.length:null;
-  var qok=QZ.filter(function(x){return x.ok}).length;
+  var qok=QZ.filter(function(x){return x.ok}).length,QP=QZ.length?Math.round(qok/QZ.length*100):null;
   var h='<div class="mark"><i></i>成績單　'+(SV?'SURVIVAL REPORT':'FIRST AID REPORT')+'</div>';
-  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　做對 '+rk.good+' / '+rk.n+'　·　得分 '+SC.score+' / 100</p></div></div>';
-  h+='<div class="stats"><div><b>'+sfNow+'</b><span>'+(SV?'安全值':'傷者狀況')+'</span></div><div><b>'+rk.good+'/'+rk.n+'</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
+  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　總分 '+rk.T+' / 100　·　做對 '+rk.good+' / '+rk.n+'</p></div></div>';
+  h+='<div class="stats4"><div><b>'+Math.round(sfNow)+'</b><span>'+SAFE+'</span></div><div><b>'+rk.good+'<small>/'+rk.n+'</small></b><span>關鍵決定</span></div><div><b>'+(SC.ord?SC.ord.ok+'<small>/'+SC.ord.n+'</small>':'--')+'</b><span>流程排序</span></div><div><b>'+(avg!=null?avg.toFixed(1)+'<small>s</small>':'--')+'</b><span>平均反應</span></div></div>';
   h+='<div class="story">'+SC.epilogue.map(esc).join('<br>')+'</div>';
-  h+='<div class="sec">逐題回顧</div><div class="rv">';
-  SC.log.forEach(function(l){
-    var cls=l.o.grade==='good'?'ok':l.o.grade==='mid'?'mid':'bad',mk=cls==='ok'?'✓':cls==='mid'?'△':'✕';
-    h+='<div class="'+cls+'"><div class="h"><span class="m">'+mk+'</span>'+esc(l.d.ch)+'<em>+'+l.pts+'</em></div>';
-    h+='<p>你的選擇：<b>'+esc(l.o.t.replace(/^「|」$/g,''))+'</b></p>';
-    if(l.o.grade!=='good')h+='<p>比較好的做法：<b>'+esc(l.d.best)+'</b></p>';
-    h+='</div>';
+  h+='<div class="sec">能力分析</div><div class="dms">'+
+    dmBar('判斷正確',rk.J,'每個決定的得分，佔總分 60%')+
+    dmBar(SAFE,rk.HS,'選錯會扣，佔總分 20%')+
+    (rk.OR!=null?dmBar('流程記憶',rk.OR,'排對的步驟比例，佔總分 10%'):'')+
+    dmBar('反應速度',rk.SP,rk.SP==null?'這次沒有開倒數計時，不計分':'還剩一半以上時間就做決定拿滿分，佔總分 10%')+
+    (QP!=null?dmBar('現場追問',QP,'答對 '+qok+' / '+QZ.length+' 題（不計入總分）'):'')+'</div>';
+  h+='<div class="sec">'+(SV?'這一次的時間軸':'處置時間軸')+'</div><div class="tl">';
+  SC.log.forEach(function(l,i){
+    var g=l.o.grade==='good'?'good':l.o.grade==='mid'?'mid':'bad',ix=DEC.indexOf(l.d),ck=(typeof CLKS!=='undefined'&&CLKS[ix])?CLKS[ix]:'#'+(i+1);
+    h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
+    h+='<p><i class="'+g+'">'+MK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
+    if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
+    h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
+  if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
+    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+MK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
   h+='</div>';
+  h+='<div class="sec">評等標準</div><div class="crit"><p><b>S</b>每個決定都對、總分 92 以上</p><p><b>A</b>判斷正確 85 以上、總分 78 以上</p><p><b>B</b>判斷正確 55 以上</p><p><b>C</b>其他</p></div>';
   if(QZ.length){
     h+='<div class="sec">現場追問　'+qok+' / '+QZ.length+' 題答對</div><div class="rv">';
     QZ.forEach(function(x){
@@ -2150,11 +2400,12 @@ function showEnd(){
   h+='<p class="src">'+esc(HAND_CREDIT)+'</p>';
   el('endBox').innerHTML=h;el('end').scrollTop=0;
   show('end',true);fadeTo(0,900);chime(rk.r==='S'||rk.r==='A');
+  try{[].forEach.call(el('endBox').querySelectorAll('.db i'),function(b){var w=b.style.width;b.style.width='0';setTimeout(function(){b.style.width=w},120)})}catch(e){}
   el('again').onclick=function(){fadeTo(1,500);after(600,function(){show('end',false);newGame()})};
   el('endExit').onclick=exitGame;
   if(el('nextCh'))el('nextCh').onclick=function(){toParent({iw:'next',id:DAY_ORDER[dayIdx()+1][0]})};
   el('share').onclick=function(){
-    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/'+rk.n+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
+    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（總分 '+rk.T+'，關鍵決定做對 '+rk.good+'/'+rk.n+(SC.ord?'，流程排序 '+SC.ord.ok+'/'+SC.ord.n:'')+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
     var p=el('shareTx');p.textContent=tx;
     try{navigator.clipboard.writeText(tx).then(function(){el('share').textContent='已複製'},function(){p.style.display='block'})}catch(e){p.style.display='block'}
   };
@@ -2219,7 +2470,7 @@ canvas.addEventListener('pointermove',function(e){
   }
   if(!look||e.pointerId!==look.id||!controls||paused)return;
   var mx=e.clientX-look.x,my=e.clientY-look.y;look.x=e.clientX;look.y=e.clientY;
-  cam.yaw=clamp(cam.yaw+mx*.0055,-6.4,6.4);cam.pitch=clamp(cam.pitch+my*.0045,-1.1,1.1);
+  LK.ty=clamp(LK.ty+mx*.0055,-6.4,6.4);LK.tp=clamp(LK.tp+my*.0045,-1.1,1.1);LK.act=1;
 });
 function tapPick(x,y){
   if(phase!=='explore'||!IAV.length)return;
@@ -2265,6 +2516,7 @@ function frame(now){
     var sec=Math.ceil(left/1000);if(left>0&&sec<=3&&sec!==window.__lastSec){window.__lastSec=sec;tickWarn()}
     if(left<=0&&cur)pickOption(cur,cur.timeout,true);
   }
+  if(controls&&phase==='decide'&&LK.act){var kk=Math.min(1,dt*14);cam.yaw+=(LK.ty-cam.yaw)*kk;cam.pitch+=(LK.tp-cam.pitch)*kk;if(Math.abs(LK.ty-cam.yaw)+Math.abs(LK.tp-cam.pitch)<.002)LK.act=0}else{LK.ty=cam.yaw;LK.tp=cam.pitch;LK.act=0}
   if(phase==='title')titleCam();
   audioLevels();
   render();
@@ -2285,8 +2537,8 @@ dayInit();resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
 requestAnimationFrame(frame);
 window.__vtA=function(){return vt};window.__fin=function(){finale()};window.__g={HR:HR,HL:HL,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,SCN:SCN,
   get G(){return G},get phase(){return phase},get SC(){return SC},get QZ(){return QZ},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},get paused(){return paused},
-  setTS:function(v){TS=v},pick:function(id){var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
-  pickGood:function(){var o=cur.opts.filter(function(q){return q.grade==='good'})[0];pickOption(cur,o)},fbGo:function(){el('fbGo').click()},
+  setTS:function(v){TS=v},pick:function(id){if(cur.ord){window.__ord(SCN.flow.map(function(_,i){return i}).reverse());return}var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
+  ordGood:function(){window.__ord(SCN.flow.map(function(_,i){return i}))},pickGood:function(){if(cur.ord){window.__ord(SCN.flow.map(function(_,i){return i}));return}var o=cur.opts.filter(function(q){return q.grade==='good'})[0];pickOption(cur,o)},fbGo:function(){el('fbGo').click()},
   tp:function(x,z,yaw,pitch){cam.x=x;cam.z=z;if(yaw!=null)cam.yaw=yaw;if(pitch!=null)cam.pitch=pitch},setPause:setPause,newGame:newGame,setSafety:setSafety,noTimer:function(){S.timer=false},endNow:function(){if(!SC)SC={score:0,log:[],cards:[]};SC.epilogue=SCN.epilogue();showEnd()}};window.__vt=function(){return vt};
 })();
 </script>

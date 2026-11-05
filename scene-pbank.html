@@ -5,6 +5,143 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <style>[hidden]{display:none!important}html,body{margin:0}img{max-width:100%}.prev{margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--ember);background:#ffffff0d;border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.6;color:var(--ink2)}.prev b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px}.prev span{display:block}.prev .tr{margin-top:4px;color:var(--ember)}
+
+/* ===== 精緻版 ===== */
+.v2tag{font-style:normal;margin-left:6px;padding:1px 10px;border-radius:99px;background:#f2c14e;color:#1a1204;font-family:var(--font);font-size:12px;letter-spacing:.12em}
+.bi.smk>b{background:#9aa3a8;color:#0b1017}
+.bi .kbd{display:inline-block;margin:0 4px;padding:0 10px;border-radius:99px;background:#f4f6f8;color:#0b1017;font-size:15px}
+#smkOv{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity .35s;background:linear-gradient(180deg,rgba(40,34,30,.92) 0,rgba(52,44,38,.78) 55%,rgba(30,26,24,.55) 100%)}
+/* 煙層量表 */
+#smk{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 132px);width:40px;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none}
+#smk[hidden]{display:none}
+#smk small{font-size:11px;letter-spacing:.12em;color:var(--ink2);text-shadow:0 1px 6px #000}
+#smk .sg{position:relative;width:14px;height:120px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid var(--gline);overflow:hidden}
+#smk .sg i{position:absolute;left:0;right:0;top:0;height:8%;background:linear-gradient(180deg,#3a332d,#6b625a);transition:height .4s}
+#smk .sg b{position:absolute;left:50%;width:10px;height:10px;margin:0 0 -5px -5px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #0b1017,0 0 10px #fff;transition:bottom .25s}
+#smk em{font-style:normal;font-family:var(--num);font-size:14px;color:var(--ink2);text-shadow:0 1px 6px #000}
+#smk.in .sg{border-color:#ff7d70;box-shadow:0 0 14px -2px #ff7d70}
+#smk.in .sg b{background:#ff7d70}
+/* 低姿勢按鈕 */
+#crBtn{position:absolute;right:max(10px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 330px);width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:1.5px solid rgba(255,255,255,.6);background:rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background .2s,transform .12s}
+#crBtn[hidden]{display:none}
+#crBtn svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#crBtn span{font-size:11.5px;font-weight:700}
+#crBtn[aria-pressed=true]{background:#f2c14e;border-color:#f2c14e;color:#1a1204}#crBtn[aria-pressed=true] svg{stroke:#1a1204}
+#crBtn.nudge{animation:nud 1s ease-in-out infinite}
+@keyframes nud{0%,100%{box-shadow:0 0 0 0 #f2c14e88}50%{box-shadow:0 0 0 12px #f2c14e00;transform:scale(1.06)}}
+.nt #crBtn{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);right:auto;left:max(18px,env(safe-area-inset-left,0px))}
+/* 得分浮字 */
+#ptsF{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 196px);transform:translate(-50%,8px);padding:6px 16px;border-radius:99px;font-family:var(--num);font-weight:700;font-size:20px;letter-spacing:.06em;opacity:0;pointer-events:none;transition:opacity .25s,transform .45s cubic-bezier(.2,1.4,.4,1)}
+#ptsF.on{opacity:1;transform:translate(-50%,0)}
+#ptsF.good{background:#2fa66a;color:#fff}#ptsF.mid{background:#d6a331;color:#1a1204}#ptsF.bad{background:#d9483b;color:#fff}
+/* 門上的熱點 */
+#hot{position:absolute;inset:0;pointer-events:none}
+#hot[hidden]{display:none}
+.hs{position:absolute;left:0;top:0;pointer-events:auto;display:flex;align-items:center;gap:8px;margin:-22px 0 0 -22px;padding:0 14px 0 0;height:44px;border-radius:22px;border:0;background:none;will-change:transform}
+.hs i{position:relative;flex:none;width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:rgba(255,255,255,.18);box-shadow:0 0 18px -2px #fff}
+.hs i::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid #ffffffaa;animation:ring 1.6s ease-out infinite}
+@keyframes ring{from{transform:scale(.7);opacity:1}to{transform:scale(1.35);opacity:0}}
+.hs span{padding:5px 12px;border-radius:99px;background:var(--glass2);border:1px solid var(--gline);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:15px;font-weight:700;white-space:nowrap}
+.hs:active i{background:#f2c14e}
+/* 排序題 */
+#opts.k-seq{grid-template-columns:1fr 1fr}
+.card.sq{min-height:70px;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;position:relative}
+.card.sq .no{position:absolute;right:10px;top:8px;font-size:22px;font-weight:900;color:#f2c14e}
+.card.sq .t{font-size:15.5px}
+.card.sq.on{border-color:#f2c14e;background:rgba(242,193,78,.16)}
+.sqr{grid-column:1/-1;justify-self:center;min-height:36px;padding:0 18px;border-radius:99px;border:1px solid var(--gline);background:var(--glass);font-size:13.5px;color:var(--ink2)}
+/* 揮手電筒 */
+#wave{position:fixed;inset:0;z-index:4;display:flex;align-items:flex-end;justify-content:center;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 150px);touch-action:none}
+#wave[hidden]{display:none}
+.wv{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 22px;border-radius:18px;background:var(--glass);border:1px solid var(--gline);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:none}
+.wv b{font-size:17px}
+.wv span{display:flex;gap:8px}.wv span i{width:14px;height:14px;border-radius:50%;border:2px solid #fff}.wv span i.on{background:#f2c14e;border-color:#f2c14e}
+.wv small{font-size:12.5px;color:var(--ink2)}
+/* 章末詳解卡 */
+#fb.v2 .fbh{position:relative;padding-right:64px}
+#fb.v2 .fpt{position:absolute;right:2px;top:6px;font-family:var(--num);font-size:30px;line-height:1}
+#fb.v2 .fpt small{font-size:15px;color:var(--ink2)}
+.fst{display:grid;gap:6px;margin:4px 0 10px}
+.fst>div{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.fst i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+.fst i svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fst .good i{background:#2fa66a}.fst .mid i{background:#d6a331}.fst .bad i{background:#d9483b}
+.fst>div>div{flex:1;min-width:0}
+.fst small{display:block;font-size:12px;color:var(--ink2);letter-spacing:.06em}
+.fst b{display:block;font-size:14.5px;line-height:1.45}
+.fst span{display:block;font-size:13px;color:#f2c14e;line-height:1.45;margin-top:2px}
+.fst em{flex:none;font-style:normal;font-family:var(--num);font-size:17px;color:var(--ink)}
+.fwhy{margin:0 0 10px!important;font-size:14.5px!important;line-height:1.6;color:var(--ink)!important}
+.ftab{display:flex;gap:6px;margin:0 0 8px}
+.ftab button{flex:1;min-height:36px;border-radius:10px;border:1px solid var(--gline);background:none;font-size:13.5px;font-weight:700;color:var(--ink2)}
+.ftab button.on{background:rgba(255,255,255,.12);color:var(--ink);border-color:rgba(255,255,255,.4)}
+.fpn[hidden]{display:none}
+.dgp{margin:0 0 12px;padding:8px;border-radius:12px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1)}
+.dgp svg{display:block;width:100%;height:auto;font-family:var(--font)}
+.dgp text{fill:#e9ecec;font-size:11.5px;font-weight:700}
+.dgp .t1{fill:#ffb27a;font-size:11px}.dgp .t2{fill:#fff;font-size:12.5px}.dgp .t3{fill:#b0b8ba;font-size:11px;font-weight:500}
+.dgp .door{fill:#8e6d49}.dgp .ln{stroke:#ffffff55;stroke-width:1.5}.dgp .knob{fill:#c9c2b0}
+.dgp .pt.hot circle{fill:#ff5a3c}.dgp .pt.cool circle{stroke:#7fb2ff;stroke-width:2.5}.dgp .pt.warm circle{fill:#d6a331}
+.dgp .pt.hot text{fill:#ffb27a}.dgp .pt.cool text{fill:#9cc4ff}.dgp .pt.warm text{fill:#f2c14e}
+.dgp .box rect{fill:rgba(255,255,255,.07);stroke:rgba(255,255,255,.3)}
+.dgp .box text{text-anchor:middle}.dgp .box .n{fill:#f2c14e;font-size:16px;font-family:var(--num)}.dgp .box .s{fill:#b0b8ba;font-size:10px;font-weight:500}
+.dgp .ar{stroke:#f2c14e;stroke-width:2.5;fill:none}
+.dgp .room{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.35)}
+.dgp .win{fill:#7fb2ff55;stroke:#9cc4ff}
+.dgp .door.open{fill:none;stroke:#ff7d70;stroke-dasharray:3 3}
+.dgp .flow{fill:none;stroke:#9cc4ff;stroke-width:2.5;stroke-linecap:round}
+.dgp .hotflow{fill:none;stroke:#ff7a2e;stroke-width:4;stroke-linecap:round}
+.dgp .ok{fill:#5fd39a}.dgp .bad{fill:#ff7d70}
+.dgp .me{fill:#f4f6f8}.dgp .me2{fill:none;stroke:#f4f6f8;stroke-width:3;stroke-linecap:round}
+.dgp .beam{fill:#fff3c4;opacity:.45}
+/* 成績單 */
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.stats4 div{padding:10px 6px;border-radius:12px;background:#ffffff0a;border:1px solid var(--line);text-align:center}
+.stats4 b{display:block;font-family:var(--num);font-size:26px;line-height:1.1}.stats4 b small{font-size:14px;color:var(--ink2);margin-left:1px}
+.stats4 span{font-size:11.5px;color:var(--ink2);letter-spacing:.04em}
+.dms{display:grid;gap:12px;padding:14px;border-radius:14px;background:#ffffff08;border:1px solid var(--line)}
+.dh{display:flex;align-items:baseline;justify-content:space-between}.dh b{font-size:15px}.dh em{font-style:normal;font-family:var(--num);font-size:22px}
+.db{height:8px;border-radius:4px;background:#ffffff14;overflow:hidden;margin:4px 0 3px}
+.db i{display:block;height:100%;border-radius:4px;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.db i.g{background:#2fa66a}.db i.y{background:#d6a331}.db i.r{background:#d9483b}
+.dm small{font-size:12px;color:var(--muted)}
+.tl{position:relative;display:grid;gap:10px;padding-left:4px}
+.tl::before{content:"";position:absolute;left:30px;top:6px;bottom:6px;width:2px;background:#ffffff1c}
+.tli{position:relative;display:flex;gap:12px;align-items:flex-start}
+.tli .tc{flex:none;width:52px;padding:3px 0;border-radius:99px;background:#1b2126;border:1px solid var(--line);font-family:var(--num);font-size:14px;text-align:center;position:relative;z-index:1}
+.tli.good .tc{border-color:#2fa66a}.tli.mid .tc{border-color:#d6a331}.tli.bad .tc{border-color:#d9483b}
+.tli>div{flex:1;min-width:0;padding:10px 12px;border-radius:12px;background:#ffffff09;border:1px solid var(--line)}
+.tli b{display:flex;justify-content:space-between;font-size:15px;margin-bottom:4px}.tli b em{font-style:normal;font-family:var(--num);font-size:16px;color:var(--ink2)}
+.tli p{margin:2px 0;display:flex;gap:6px;align-items:flex-start;font-size:13.5px;color:var(--ink2);line-height:1.5}
+.tli p i{flex:none;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;margin-top:2px}
+.tli p i svg{width:10px;height:10px;fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round}
+.tli p i.good{background:#2fa66a}.tli p i.mid{background:#d6a331}.tli p i.bad{background:#d9483b}
+.tli p.fix{padding-left:22px;color:#f2c14e}
+.tli details{margin-top:6px}.tli summary{cursor:pointer;font-size:13px;color:var(--ink);font-weight:700;list-style:none;padding:4px 0}
+.tli summary::before{content:"▸ ";color:#f2c14e}.tli details[open] summary::before{content:"▾ "}
+.tli .kcx{margin:4px 0 0;font-size:13px;color:var(--ink2);line-height:1.6}.tli .kcx b{display:block;color:var(--ink);font-size:14px}
+.tli.fin>div{background:none;border-style:dashed}
+.crit{display:grid;gap:4px;padding:12px 14px;border-radius:12px;background:#ffffff08;border:1px solid var(--line)}
+.crit p{margin:0;font-size:13.5px;color:var(--ink2)}.crit b{display:inline-block;width:22px;font-family:var(--num);font-size:16px;color:var(--ink)}
+@media (max-width:420px){.stats4 b{font-size:22px}.stats4 span{font-size:10.5px}}
+@media (min-aspect-ratio:1/1) and (min-width:700px){#dock>#fb.v2{max-height:calc(100% - 120px)}}
+.v2new{margin:-6px 0 14px;padding:10px 14px;border-radius:12px;background:#f2c14e14;border:1px solid #f2c14e44;font-size:13.5px;line-height:1.6;color:var(--ink2)}.v2new b{color:#f2c14e}
+@media (min-width:900px){#end .box .tl,#end .box .dms{max-width:none}}
+.dgp .fs rect{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.18)}
+.dgp .fs circle{fill:#2a3238;stroke:rgba(255,255,255,.35)}
+.dgp .fs .no{fill:#fff;font-size:12px;font-family:var(--num)}
+.dgp .fs.done circle{fill:#3b464d}
+.dgp .fs.on rect{stroke-width:2}
+.dgp .fs.on.good rect{stroke:#2fa66a;fill:#2fa66a26}.dgp .fs.on.good circle{fill:#2fa66a;stroke:none}
+.dgp .fs.on.mid rect{stroke:#d6a331;fill:#d6a33126}.dgp .fs.on.mid circle{fill:#d6a331;stroke:none}
+.dgp .fs.on.bad rect{stroke:#d9483b;fill:#d9483b26}.dgp .fs.on.bad circle{fill:#d9483b;stroke:none}
+.dgp .fs .tag{fill:#f2c14e;font-size:11px}
+.dgp .fln{stroke:rgba(255,255,255,.25);stroke-width:2}
+#fb.v2 .kc{margin-bottom:12px}
+.card.sq small{font-size:12.5px;color:var(--ink2);line-height:1.4;padding-right:24px}
+.card.sq .t{padding-right:24px}
+.fst.cmp{gap:4px}.fst.cmp>div{padding:6px 10px;align-items:center}.fst.cmp small{display:inline;margin-right:8px}.fst.cmp b{display:inline;font-size:14px}.fst.cmp span{font-size:12.5px}
+.tli p.kcx{display:block}
 </style>
 <title>IRON WILL 行動電源冒煙起火｜求生現場</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -366,7 +503,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 
 <div id="hud" hidden>
   <div class="top pad">
-    <div id="stg"><span class="sn" id="stgN">1</span><div class="st"><b id="stgT">劇情開場</b><small id="stgS">深夜，桌上的行動電源正在充電…</small></div></div>
+    <div id="stg"><span class="sn" id="stgN">1</span><div class="st"><b id="stgT">劇情開場</b><small id="stgS">深夜，牆邊鐵桌上的行動電源正在充電…</small></div></div>
     <div class="right">
       <button class="ibtn" id="btnPause" type="button" aria-label="暫停">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>
@@ -387,6 +524,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div id="hint" class="pad" hidden></div>
   <button id="useBtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4a1.5 1.5 0 0 1 3 0v6M14 10V5.5a1.5 1.5 0 0 1 3 0V14c0 4-2 7-6 7-3 0-4.5-1.6-6.5-5L3 13.2a1.5 1.5 0 0 1 2.6-1.4L8 14"/></svg><span id="useT">互動</span></button>
   <button id="skip" type="button" hidden>略過 ▸▸</button>
+  <div id="ptsF"></div>
   <div id="dock" class="pad">
     <div id="dec" hidden>
       <div id="qbar"><span class="qi"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.8.4-1.1.9-1.1 1.7M12 17h.01"/></svg></span><span id="decQ"></span><b id="decT">8</b><div class="tbar" id="tbar"><i id="tfill"></i></div></div>
@@ -433,7 +571,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　求生現場</div>
     <h1>行動電源冒煙起火</h1>
-    <p class="lead">深夜 23:40，桌上充電中的行動電源突然冒煙。斷電、滅火、撤離、報案，你會怎麼做？</p>
+    <p class="lead">深夜 23:40，牆邊鐵桌上充電中的行動電源突然冒煙。斷電、撤離、報案、跟消防隊交接，你會怎麼做？</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -451,8 +589,8 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 <div id="brief" class="sheet" hidden><div class="box pad">
   <div class="mark"><i></i>情境提要</div>
   <h2>行動電源冒煙起火</h2>
-  <div class="bi now"><b>現在</b><p>深夜 23:40，家裡的餐桌。你的行動電源接著延長線在充電，手機也接在上面。家人已經在房間睡了。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>行動電源冒煙時的第一步</li><li>它噴火了，怎麼滅</li><li>滅火之後</li><li>打 119</li></ol><small>共 4 個限時決定，選錯會扣「安全值」；最後還有 6 題現場追問。</small></div>
+  <div class="bi now"><b>現在</b><p>深夜 23:40，家裡的客廳。你的行動電源放在牆邊的鐵桌上，接著延長線充電，旁邊沒有放其他東西。家人已經在房間睡了。</p></div>
+  <div class="bi"><b>你要做</b><ol><li>行動電源冒煙時的第一步</li><li>它爆裂起火了</li><li>到了門外，打 119</li><li>消防隊到場</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -980,30 +1118,108 @@ function mkBody(o){
     shoulder:function(sd){var m=matOf(n),x=sd*.18*k,y=.95*k;return [m[0]*x+m[4]*y+m[12],m[1]*x+m[5]*y+m[13],m[2]*x+m[6]*y+m[14]]},
     show:function(v){parts.forEach(function(q){q.vis=v})}};
 }
-/* ---- 行動電源情境的道具 ---- */
-var PBP={x:TB.x-.12,y:TB.y,z:TB.z+.06};
+/* 消防員：深色消防衣＋反光條＋頭盔（從背後、側面入鏡） */
+function mkFF(o){
+  var b=mkBody({p:o.p,ry:o.ry||0,k:o.k||1.12,shirt:0x2a2e35,pants:0x2a2e35,skin:0xd2a184,face:o.face}),k=b.k,n=b.node,h=b.head;
+  function A(par,g,s,p,c,ex){var q=O(Object.assign({g:g,parent:par,dyn:true,s:[s[0]*k,s[1]*k,s[2]*k],p:[p[0]*k,p[1]*k,p[2]*k],col:hex(c)},ex||{}));b.parts.push(q);return q}
+  /* 反光條：胸口、腰、褲管 */
+  A(n,'cyl',[.385,.045,.235],[0,.86,0],0xd8d23a,{em:[.25,.24,.05],spec:.8});
+  A(n,'cyl',[.37,.04,.23],[0,.64,0],0xc9cfd2,{em:[.2,.2,.2],spec:1});
+  [-1,1].forEach(function(sd){A(n,'cyl',[.14,.035,.14],[sd*.085,.2,0],0xd8d23a,{em:[.25,.24,.05],spec:.8})});
+  /* 頭盔：圓頂＋帽緣＋後簷 */
+  A(h,'sph',[.26,.2,.28],[0,.17,0],o.helmet||0xd9b23a,{spec:.8});
+  A(h,'cyl',[.31,.02,.33],[0,.1,-.01],o.helmet||0xd9b23a,{spec:.8});
+  A(h,'box',[.24,.1,.06],[0,.06,-.14],o.helmet||0xd9b23a,{spec:.7,r:[.4,0,0]});
+  A(h,'box',[.2,.025,.02],[0,.16,.13],0xc9cfd2,{em:[.2,.2,.2],spec:1});
+  /* 空氣呼吸器背架 */
+  A(n,'cyl',[.14,.5,.14],[0,.8,-.17],0x9aa2a8,{spec:.9});
+  return b;
+}
+/* ---- 求生現場共用：鏡頭座標、細圓柱、火焰、煙、火花、水花 ---- */
+function c2w(v){var sy=Math.sin(cam.yaw),cy=Math.cos(cam.yaw),sp=Math.sin(cam.pitch),cp=Math.cos(cam.pitch),F=[-sy*cp,sp,-cy*cp],R=[cy,0,-sy],U=[R[1]*F[2]-R[2]*F[1],R[2]*F[0]-R[0]*F[2],R[0]*F[1]-R[1]*F[0]];
+  return [cam.x+R[0]*v[0]+U[0]*v[1]-F[0]*v[2],cam.y+R[1]*v[0]+U[1]*v[1]-F[1]*v[2],cam.z+R[2]*v[0]+U[2]*v[1]-F[2]*v[2]]}
+function setCyl(o,a,b){var d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(d[0],d[1],d[2])||1e-4;o.p=[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];o.s[1]=L;o.r=[Math.acos(clamp(d[1]/L,-1,1)),Math.atan2(d[0],d[2]),0]}
+var FIRES=[],SMOKES=[],SPK=[];for(var _si=0;_si<50;_si++)SPK.push({on:false});
+/* 火：p 位置、w 寬、h 高、v 0~1 */
+function mkFire(p,o){o=o||{};var f={p:p.slice(),v:0,w:o.w||1,h:o.h||1,smoke:o.smoke==null?.7:o.smoke,dark:o.dark!==false,light:o.light==null?1:o.light};FIRES.push(f);return f}
+/* 煙柱或煙團：p 位置、v 濃度、r 擴散半徑、rise 上升高度、c 顏色 */
+function mkSmoke(p,o){o=o||{};var s={p:p.slice(),v:0,r:o.r||.1,rise:o.rise||1.4,c:o.c||[.3,.28,.26],a:o.a||.4,sz:o.sz||1,speed:o.speed||.22,n:o.n||12};SMOKES.push(s);return s}
+function sparkBurst(p,n,pw,floor){for(var i=0;i<SPK.length&&n>0;i++){var s=SPK[i];if(s.on)continue;n--;s.on=true;s.x=p[0];s.y=p[1];s.z=p[2];s.fl=floor==null?0:floor;var a=Math.random()*PI*2,v=(pw||1)*rnd(.4,1.3);s.vx=Math.cos(a)*v*.5;s.vz=Math.sin(a)*v*.5;s.vy=rnd(.6,2)*(pw||1);s.age=0;s.life=rnd(.4,.9)}}
+function fxTick(dt){
+  for(var i=0;i<SPK.length;i++){var s=SPK[i];if(!s.on)continue;s.age+=dt;s.vy-=dt*4;s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;if(s.y<s.fl+.01){s.y=s.fl+.01;s.vy*=-.3;s.vx*=.6;s.vz*=.6}if(s.age>s.life)s.on=false}
+  FIRES.forEach(function(f){if(f.v>.35&&Math.random()<dt*5*f.v)sparkBurst([f.p[0],f.p[1]+.05,f.p[2]],1,.6*f.h,f.p[1])});
+}
+function fireLights(){var out=[];FIRES.forEach(function(f){if(f.v>.01&&f.light){var k=f.v*(.82+.18*Math.sin(tNow*23+f.p[0])+.08*Math.sin(tNow*41));out.push([[f.p[0],f.p[1]+.3*f.h,f.p[2]],[2.3*k*f.light,.95*k*f.light,.28*k*f.light],2.6+1.6*f.w])}});return out}
+/* 加色疊加：火焰、火花 */
+function fxAdd(){
+  FIRES.forEach(function(f){if(f.v<.01)return;var at=f.p;
+    for(var i=0;i<8;i++){var t=((tNow*1.7+i/8+at[0])%1),fx=at[0]+Math.sin(i*2.4+tNow*6)*.05*f.w*(1-t),fz=at[2]+Math.cos(i*1.9+tNow*5)*.05*f.w*(1-t),sz=(.13+.08*Math.sin(i))*f.v*f.w*(1-t*.55);
+      drawSprite(TX.flame||TX.glow,[fx,at[1]+t*.32*f.v*f.h,fz],sz,sz*1.7*f.h,0,[1,.74,.4,.8*(1-t)])}
+    for(var j=0;j<3;j++){var ph=Math.sin(tNow*(9+j*3)+j*2)*.5+.5;drawSprite(TX.flame||TX.glow,[at[0]+(j-1)*.06*f.w,at[1]+(.16+.05*ph)*f.h*f.v,at[2]+Math.sin(j*2.1)*.04*f.w],.26*f.w*f.v,(.42+.12*ph)*f.h*f.v,0,[1,.7,.35,.85])}
+    drawSprite(TX.glow,[at[0],at[1]+.08*f.h,at[2]],.45*f.v*f.w,.35*f.v*f.h,0,[1,.55,.2,.4])});
+  for(var i=0;i<SPK.length;i++){var s=SPK[i];if(!s.on)continue;drawSprite(TX.glow,[s.x,s.y,s.z],.025,.025,0,[1,.8,.4,1-s.age/s.life])}
+}
+/* 一般混色：煙 */
+function fxSmoke(){
+  FIRES.forEach(function(f){if(f.v<.05||!f.smoke)return;var at=f.p,sm=f.smoke*f.v;
+    for(var i=0;i<12;i++){var t=((tNow*.24+i/12)%1),x=at[0]+Math.sin(i*2.3+t*3)*.08*(1+t*2)*f.w,z=at[2]+Math.cos(i*1.7+t*2)*.08*(1+t*2)*f.w;
+      drawSprite(TX.smoke,[x,at[1]+.1*f.h+t*1.5,z],(.14+t*.8)*f.w,(.14+t*.8)*f.w,i,f.dark?[.16,.14,.13,(1-t)*.5*sm]:[.85,.85,.85,(1-t)*.4*sm])}});
+  SMOKES.forEach(function(s){if(s.v<.01)return;for(var i=0;i<s.n;i++){var t=((tNow*s.speed+i/s.n)%1),x=s.p[0]+Math.sin(i*2.3+t*3)*s.r*(1+t*2),z=s.p[2]+Math.cos(i*1.7+t*2)*s.r*(1+t*2);
+      drawSprite(TX.smoke,[x,s.p[1]+t*s.rise,z],(.3+t*1.1)*s.sz,(.3+t*1.1)*s.sz,i,[s.c[0],s.c[1],s.c[2],(1-t*.6)*s.a*s.v])}});
+}
+/* 水流（像瀑布或倒水）：a→b 一串發亮的點 */
+function fxStream(a,b,n,sz,tint,spd){for(var i=0;i<n;i++){var t=((tNow*(spd||2)+i/n)%1);drawSprite(TX.glow,[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t],sz,sz,0,tint)}}
+var loopG={};
+function loopSnd(name,type,freq,q,v,k){try{if(AC){if(!loopG[name]){var n=loopNoise(whiteBuf,type,freq,q);loopG[name]=AC.createGain();loopG[name].gain.value=0;n.connect(loopG[name]);out(loopG[name],.15)}loopG[name].gain.setTargetAtTime(v*(k||.08),AC.currentTime,.2)}}catch(e){}}
+function loopsOff(){for(var k in loopG){try{loopG[k].gain.value=0}catch(e){}}}
+function fxReset(){FIRES.forEach(function(f){f.v=0});SMOKES.forEach(function(s){s.v=0});SPK.forEach(function(s){s.on=false});loopsOff()}
+/* 前門與門外走廊（家裡的場景共用） */
+function mkHall(){
+  var hl={};
+  hl.door=O({g:null,p:[-.6,0,RD/2+.02],dyn:true});
+  O({g:'box',parent:hl.door,dyn:true,p:[.5,1.04,0],s:[.98,2.06,.05],col:hex(0x7b5a40),tex:TX.wood,rep:[1,2],spec:.3});
+  O({g:'cyl',parent:hl.door,dyn:true,p:[.88,1.0,-.05],s:[.04,.08,.04],r:[PI/2,0,0],col:hex(0xc9c2b0),spec:.9});
+  O({g:'cyl',parent:hl.door,dyn:true,p:[.88,1.0,.05],s:[.04,.08,.04],r:[PI/2,0,0],col:hex(0xc9c2b0),spec:.9});
+  Q(3.2,2.4,-.1,0,RD/2+1.3,-PI/2,0,0x8a8680,{tex:TX.tileF,rep:[3,2]});
+  B(3.2,2.6,.1,-.1,1.3,RD/2+2.5,0xcfcac0,{tex:TX.wall,rep:[2,1]});
+  B(.1,2.6,2.4,-1.7,1.3,RD/2+1.3,0xcfcac0,{tex:TX.wall,rep:[1,1]});
+  Q(3.2,2.4,-.1,2.6,RD/2+1.3,PI/2,0,0xd8d4cc,{});
+  B(.95,2.05,.06,1.3,1.03,RD/2+2.44,0x5a4a3c,{tex:TX.wood,rep:[1,2]});
+  hl.lamp=[-.1,2.4,RD/2+1.2];
+  if(typeof frontDoor!=='undefined')frontDoor.vis=false;
+  return hl;
+}
+/* ---- 行動電源情境的道具：牆邊的鐵桌 ---- */
+var MT={x:-1.76,z:.45,y:.74};
+TX.steelD=(function(){var c=cv(256,256),x=c.getContext('2d');x.fillStyle='#7d8287';x.fillRect(0,0,256,256);
+  for(var i=0;i<1400;i++){x.fillStyle='rgba('+(Math.random()<.5?'255,255,255':'0,0,0')+','+(Math.random()*.07)+')';x.fillRect(Math.random()*256,Math.random()*256,Math.random()*80,1)}
+  return texFrom(c,{mip:true,repeat:true})})();
+B(.56,.03,.82,MT.x,MT.y-.015,MT.z,0xa9aeb3,{tex:TX.steelD,rep:[1,1],spec:.9});
+B(.56,.06,.02,MT.x,MT.y-.05,MT.z-.4,0x8d9297,{tex:TX.steelD,spec:.8});B(.56,.06,.02,MT.x,MT.y-.05,MT.z+.4,0x8d9297,{tex:TX.steelD,spec:.8});
+[[-.25,-.38],[.25,-.38],[-.25,.38],[.25,.38]].forEach(function(l){B(.035,MT.y-.03,.035,MT.x+l[0],(MT.y-.03)/2,MT.z+l[1],0x6e7378,{spec:.8})});
+B(.5,.02,.76,MT.x,.18,MT.z,0x8d9297,{tex:TX.steelD,spec:.7});
+/* 牆上的插座 */
+B(.012,.11,.07,-RW/2+.006,.32,MT.z-.25,0xf2f0ea,{spec:.4});
+var PBP={x:MT.x+.06,y:MT.y,z:MT.z+.1};
 var pbN=O({g:null,p:[PBP.x,PBP.y,PBP.z],r:[0,.25,0],dyn:true});
 function pbPart(g,s,p,c,ex){return O(Object.assign({g:g,parent:pbN,dyn:true,s:s,p:p,col:hex(c)},ex||{}))}
 var pbBody=pbPart('box',[.075,.024,.145],[0,.013,0],0x2c3036,{spec:.45});
 var pbTop=pbPart('box',[.068,.004,.13],[0,.026,0],0x3a3f46,{spec:.6});
 var pbLed=pbPart('box',[.02,.004,.006],[0,.02,.074],0x7fd6ff,{unlit:1,em:[.4,.8,1]});
 var pbBulge=pbPart('sph',[.07,.03,.13],[0,.022,0],0x30343a,{spec:.5});pbBulge.vis=false;
-var pbBurnt=pbPart('box',[.078,.022,.148],[0,.012,0],0x121212,{spec:.1});pbBurnt.vis=false;
-/* 手機（接在行動電源上） */
-var phoneT=B(.075,.008,.155,TB.x-.36,TB.y+.005,TB.z+.1,0x15181c,{spec:.7});
-var phoneS=B(.068,.002,.145,TB.x-.36,TB.y+.0095,TB.z+.1,0x1d2a38,{spec:.9,em:[.03,.05,.08]});
-/* 延長線（桌上）與插頭 */
-var STRIP={x:TB.x+.22,z:TB.z-.08};
-B(.34,.035,.065,STRIP.x,TB.y+.018,STRIP.z,0xeeeeea,{spec:.4});
-B(.025,.012,.03,STRIP.x+.14,TB.y+.04,STRIP.z,0xd23a2e,{em:[.35,.05,.03]});
-var plug=B(.035,.03,.04,STRIP.x-.08,TB.y+.05,STRIP.z,0xe6e6e2,{spec:.4,dyn:true});
-/* 線：做成可以更新兩端的細圓柱 */
-var cables=[Cy(.007,.1,.007,0,0,0,0x1e1f22,{dyn:true}),Cy(.007,.1,.007,0,0,0,0x1e1f22,{dyn:true}),Cy(.007,.1,.007,0,0,0,0xf0f0ec,{dyn:true})];
-/* 桌上的信件、桌巾 */
-var mail=B(.22,.012,.29,TB.x+.12,TB.y+.006,TB.z+.26,0xf1ede2,{tex:TX.fabric,rep:[1,1],dyn:true});
-var scorch=Q(.3,.3,PBP.x,TB.y+.003,PBP.z,-PI/2,0,0x0a0a0a,{tex:TX.blob,blend:'alpha',a:0,dyn:true});
-var waterPool=Q(.8,.6,PBP.x+.05,TB.y+.004,PBP.z+.05,-PI/2,0,0x6d8597,{a:0,blend:'alpha',spec:1,dyn:true});
-var floorPool=Q(1.0,.7,PBP.x,.004,PBP.z+.55,-PI/2,0,0x6d8597,{a:0,blend:'alpha',spec:1,dyn:true});
+var pbBurnt=pbPart('box',[.08,.02,.15],[0,.011,0],0x121212,{spec:.1});pbBurnt.vis=false;
+var pbShard=[];for(var _i=0;_i<5;_i++){var _q=O({g:'box',dyn:true,s:[.02+_i*.004,.006,.03],p:[PBP.x+Math.sin(_i*2.3)*.14,MT.y+.004,PBP.z+Math.cos(_i*1.7)*.18],r:[0,_i,0],col:hex(0x111111),spec:.1});_q.vis=false;pbShard.push(_q)}
+/* 延長線（鐵桌上）與插頭 */
+var STRIP={x:MT.x-.1,z:MT.z-.25};
+B(.065,.035,.3,STRIP.x,MT.y+.018,STRIP.z,0xeeeeea,{spec:.4});
+B(.03,.012,.025,STRIP.x,MT.y+.04,STRIP.z-.12,0xd23a2e,{em:[.35,.05,.03]});
+var plug=B(.04,.03,.035,STRIP.x,MT.y+.05,STRIP.z+.06,0xe6e6e2,{spec:.4,dyn:true});
+var cables=[Cy(.007,.1,.007,0,0,0,0x1e1f22,{dyn:true}),Cy(.008,.1,.008,0,0,0,0xf0f0ec,{dyn:true})];
+var scorch=Q(.42,.5,PBP.x,MT.y+.002,PBP.z,-PI/2,0,0x0a0a0a,{tex:TX.blob,blend:'alpha',a:0,dyn:true});
+var steamPool=Q(.5,.6,PBP.x,MT.y+.003,PBP.z,-PI/2,0,0x6d8597,{a:0,blend:'alpha',spec:1,dyn:true});
+var floorPool=Q(1.0,.8,PBP.x+.45,.004,PBP.z+.1,-PI/2,0,0x6d8597,{a:0,blend:'alpha',spec:1,dyn:true});
+/* 地板上被火花燙到的小黑點 */
+var burnDots=[];for(_i=0;_i<8;_i++){var _d=Q(.05,.05,MT.x+.35+Math.sin(_i*2.1)*.4,.003,MT.z+Math.cos(_i*1.3)*.6,-PI/2,0,0x0a0a0a,{tex:TX.blob,blend:'alpha',a:0,dyn:true});burnDots.push(_d)}
 /* 水盆（拿在手上） */
 var basin=O({g:null,p:[0,0,0],dyn:true});
 O({g:'fr',parent:basin,dyn:true,p:[0,0,0],s:[.34,.13,.34],col:hex(0x3f7fb8),spec:.5,r:[PI,0,0]});
@@ -1016,17 +1232,12 @@ O({g:'sph',parent:extN,dyn:true,p:[0,.46,0],s:[.13,.07,.13],col:hex(0xc42d22),sp
 O({g:'box',parent:extN,dyn:true,p:[0,.52,0],s:[.03,.06,.03],col:hex(0x2a2a2a)});
 O({g:'box',parent:extN,dyn:true,p:[.03,.55,0],s:[.09,.012,.025],col:hex(0x2a2a2a)});
 O({g:'cyl',parent:extN,dyn:true,p:[-.07,.4,0],s:[.02,.25,.02],col:hex(0x1a1a1a),r:[0,0,.35]});
-/* 垃圾桶 */
-var BIN={x:TB.x+.95,z:TB.z+.35};
-Cy(.28,.36,.28,BIN.x,.18,BIN.z,0x8a9096,{spec:.4});
-/* 窗戶可以拉開的那一片 */
-var winPane=B(.03,1.24,.7,RW/2-.06,1.5,.85,0xbcd3ea,{a:.18,blend:'alpha',spec:1,dyn:true});
-/* 大門（往內開） */
-var doorN=O({g:null,p:[-.6,0,RD/2+.02],dyn:true});
-O({g:'box',parent:doorN,dyn:true,p:[.5,1.04,0],s:[.98,2.06,.05],col:hex(0x7b5a40),tex:TX.wood,rep:[1,2],spec:.3});
-O({g:'cyl',parent:doorN,dyn:true,p:[.88,1.0,-.05],s:[.04,.08,.04],r:[PI/2,0,0],col:hex(0xc9c2b0),spec:.9});
 var jacket=B(.34,.05,.28,0,0,0,0x3a4250,{tex:TX.fabric,rep:[2,2],dyn:true});jacket.vis=false;
-frontDoor.vis=false;
+/* 門與門外走廊、爸爸、消防員 */
+var HALL=mkHall();
+var hallLamp=HALL.lamp;
+var DAD=mkBody({p:[0,0,0],ry:0,k:1.14,shirt:0x5c6670,pants:0x3a3a40,skin:0xcf9f84});DAD.show(false);
+var FF=mkFF({p:[0,0,0],ry:0});FF.show(false);
 
 var objsOpaque=[],objsTrans=[];
 objsOpaque=objs.filter(function(o){return o.g&&o.blend==='none'});objsTrans=objs.filter(function(o){return o.g&&o.blend!=='none'});
@@ -1428,7 +1639,7 @@ function hIn(H,name,dur,done){H.follow=null;
   hTo(H,typeof name==='string'?HPOSE[name]:name,dur==null?.6:dur,done);
 }
 function hOut(H,dur,done){H.follow=null;
-  hTo(H,HPOSE.off,dur==null?.45:dur,function(){H.vis=false;H.hold='';H.tr=0;if(H!==HF){H.elbow=[H.mirror?-.32:.32,-1.05,.3]}if(done)done()});
+  if(H!==HF&&H.elbow)tween(H.elbow,{0:H.mirror?-.32:.32,1:-1.05,2:.3},dur==null?.45:dur);hTo(H,HPOSE.off,dur==null?.45:dur,function(){H.vis=false;H.hold='';H.tr=0;if(H!==HF){H.elbow=[H.mirror?-.32:.32,-1.05,.3]}if(done)done()});
 }
 function handsReset(){HLIST.forEach(function(H){H.vis=false;H.follow=null;H.hold='';H.tr=0;H.curl=.3;H.thumb=.2;H.hook=0;H.spread=0;H.thAbd=0;if(H.fo)H.fo=[0,0,0,0];H.elbow=H===HF?[.12,-.3,-2.4]:[H.mirror?-.32:.32,-1.05,.3]})}
 /* 兩手同時 */
@@ -1635,67 +1846,65 @@ function chapterCard(s,h,p,done){
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
 
-/* ================= 求生現場：行動電源冒煙起火 ================= */
+/* ================= 求生現場：行動電源冒煙起火（不積極滅火、撤離、交接） ================= */
 var SCN={
-  id:'pbank',kind:'survive',title:'行動電源冒煙起火',eye:1.2,clock0:'23:40',clockQ:'23:58',stage1:'深夜，桌上的行動電源正在充電…',
-  src:'內容整理自台北市政府消防局鋰電池安全宣導（2026）、經濟部標準檢驗局與一般火災報案教學。各單位對鋰電池滅火方式說法不一，數字與步驟仍待對照官方原文。',
+  id:'pbank',kind:'survive',title:'行動電源冒煙起火',eye:1.2,clock0:'23:40',clockQ:'23:58',stage1:'深夜，牆邊鐵桌上的行動電源正在充電…',
+  src:'內容整理自消防單位鋰電池火災宣導：鋰電池熱失控會反覆爆裂、噴濺火花，起火後不要靠近撲滅，人先撤離、關門、報案，交給消防人員處理；充電時放在不會燒的硬桌面、旁邊不放可燃物。細節仍待對照官方原文。',
   env:{fog:[.05,.045,.045],fogD:.014,sky:[.4,.4,.46],gnd:[.24,.22,.2],dirD:[-.4,-.8,-.2],dirC:[.06,.06,.08],ao:1},
   who:{f:'爸爸'},
-  icons:{unplug:'hand',grab:'x',cover:'x',water:'water',powder:'ext',towel:'x',leave:'run',trash:'x',check:'x',addr:'phone',story:'phone',hang:'x'},
+  icons:{unplug:'hand',grab:'x',cover:'x',leave:'run',water:'water',ext:'ext',addr:'phone',story:'phone',hang:'x',brief:'phone',vague:'phone',back:'x'},
   hurtSnd:function(){thud(.5)}
 };
-var DEC=[{"id": "d1", "q": "桌上的行動電源一邊充電，一邊發出「嘶嘶」聲，外殼鼓了起來，開始冒白煙。你要怎麼做？", "time": 10, "kc": {"t": "冒煙、膨脹：先斷電，不要用手拿", "s": "行動電源膨脹、冒煙、有異味或摸起來異常發燙，代表電池可能正在失控。在安全的情況下先拔掉電源，不要用手去拿它、不要拿東西蓋住；人往後退，叫醒家人準備應變。"}, "best": "在安全的情況下拔掉延長線上的插頭，不要碰行動電源，人退開、叫醒家人", "opts": [{"id": "unplug", "t": "拔掉延長線上的插頭，不碰行動電源，人往後退，大聲叫醒家人", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先斷電、人退開", "p": "電池正在失控時，先切斷充電讓它不要繼續發熱；不要用手拿，它隨時可能噴火。退開並叫醒家人，準備下一步。"}}, {"id": "grab", "t": "趕快用手把它拿起來，丟到陽台外面", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "失控的電池隨時會噴火", "p": "電池內部溫度可能已經好幾百度，拿在手上可能直接燙傷，甚至在手裡噴火、爆開。丟出去也可能砸傷人、引燃別的東西。"}}, {"id": "cover", "t": "拿椅背上的外套把它蓋住，把煙悶住", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "火上加油", "h": "布料會變成燃料", "p": "電池起火不需要外面的空氣也能燒，蓋住悶不熄，反而讓外套、布料一起燒起來，熱也散不掉。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "它越來越燙，煙越來越多", "p": "看到膨脹、冒煙，先在安全的情況下斷電，人退開。"}}}, {"id": "d2", "q": "「啪」一聲，它噴出火花，桌上燒起一團火。你要怎麼滅火？", "time": 10, "kc": {"t": "手機、行動電源起火：用大量的水降溫", "s": "手機、行動電源這類可以充電的鋰離子電池，水是很好的滅火和冷卻材料：用大量的水持續澆，直到不再冒煙。電池可能復燃，滅掉之後還要繼續觀察。（不能充電的鋰金屬電池遇水會反應，要用金屬火災專用的滅火器材。）"}, "best": "裝一大盆水整盆倒下去，持續澆到不再冒煙", "opts": [{"id": "water", "t": "衝去廚房裝一大盆水，整盆倒下去，持續澆到完全不冒煙", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "大量的水能滅火也能降溫", "p": "鋰離子電池起火，最大的問題是電池內部一直發熱。大量的水可以同時滅火、降溫，要澆到完全不冒煙為止。"}}, {"id": "powder", "t": "拿家裡的乾粉滅火器噴它", "grade": "mid", "pts": 8, "dmg": 10, "fb": {"b": "mid", "bt": "只做了一半", "h": "火焰壓得住，電池卻沒降溫", "p": "乾粉能把火焰暫時壓下去，但沒辦法讓電池降溫，很容易又燒起來。噴完還是要用大量的水持續降溫。"}}, {"id": "towel", "t": "拿毛巾把它包起來，丟進垃圾桶", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "一碰就可能燙傷，垃圾桶也會燒起來", "p": "起火的電池非常燙，隔著毛巾也會燙傷手；丟進垃圾桶，等於把火種丟進一堆紙和塑膠裡。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "火越燒越大", "p": "手機、行動電源起火，就用大量的水澆、持續降溫。"}}}, {"id": "d3", "q": "火熄了，桌上還在冒一點煙，整個屋子都是刺鼻的焦味。接下來？", "time": 10, "kc": {"t": "滅火後：別碰、通風、人先出去", "s": "鋰電池燒過的煙有毒，要開窗通風、人先離開到戶外；燒過的電池可能再次起火，不要用手拿、不要丟進垃圾桶，打 119 請消防人員確認。"}, "best": "打開窗戶通風，帶家人先到門外，打 119 請消防隊來確認", "opts": [{"id": "leave", "t": "打開窗戶通風，帶家人先到門外，打 119 請消防隊來確認", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "煙有毒，電池還可能復燃", "p": "燒過的鋰電池會冒出有毒的煙，也可能隔一段時間又起火。人先離開、讓消防人員來確認，最安全。"}}, {"id": "trash", "t": "火熄了就好，把它丟進垃圾桶，回去睡覺", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "可能半夜再燒起來", "h": "燒過的電池可能復燃", "p": "電池裡還有沒燒完的電芯，可能隔幾分鐘、甚至幾小時後又起火。丟進垃圾桶、人去睡覺，是最危險的組合。"}}, {"id": "check", "t": "用手把燒焦的行動電源撿起來，看看還能不能用", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不要碰", "h": "還很燙，也可能再噴火", "p": "燒過的電池外表看起來熄了，裡面可能還在發熱，隨時會再噴火；這顆電池也絕對不能再用。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "屋裡的煙越來越嗆", "p": "滅火後先開窗通風，人到戶外，打 119 請消防人員確認。"}}}, {"id": "d4", "q": "你們到了門外，你撥打 119。", "time": 12, "phone": true, "phL": "119", "say": [["d", "119 你好，請問哪裡發生什麼事？"]], "kc": {"t": "打 119：先講地址，再講狀況", "s": "報案時先說清楚地址（縣市、區、路名、門牌、樓層），再說發生什麼事、火熄了沒、有沒有人受困或受傷。不要急著掛電話，照執勤員的指示做。"}, "best": "先說地址，再說行動電源起火、已經澆熄、人都在門外、沒有人受傷", "opts": [{"id": "addr", "t": "「新北市板橋區幸福路 7 號 5 樓。家裡行動電源起火，已經用水澆熄了，人都在門外，沒有人受傷。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "地址第一句就講", "p": "執勤員最需要的是地址，有了地址就能先派車；接著講狀況、火熄了沒、有沒有人受傷，讓消防隊帶對裝備。"}}, {"id": "story", "t": "「我剛剛在充電，突然聽到嘶嘶聲，然後它就鼓起來……」從頭開始講", "grade": "mid", "pts": 8, "dmg": 5, "fb": {"b": "mid", "bt": "太慢了", "h": "先講地址，經過之後再說", "p": "從頭講經過，執勤員要等很久才知道車子該開去哪裡。先講地址，再簡單說現在的狀況。"}}, {"id": "hang", "t": "「行動電源燒起來了，你們快來！」說完就掛掉", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "bad", "bt": "沒有地址", "h": "消防隊不知道要去哪裡", "p": "沒有講地址就掛電話，執勤員還得回撥確認，浪費時間。講完要等執勤員問完、說可以了再掛。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話那頭在等你說話", "p": "先講地址，再講發生什麼事。"}}}];
-SCN.quick=[{"q": "行動電源出現哪種情況，要立刻停止使用？", "ok": "膨脹、變形、漏液、生鏽、有異味或異常發燙", "w": ["電量掉得比以前快", "外殼有一點刮痕"], "why": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。", "kc": {"t": "六大異常要停用", "s": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。"}}, {"q": "行動電源最好在什麼情況下充電？", "ok": "有人看得到的時候，放在硬的桌面上", "w": ["睡覺時放在枕頭旁邊", "包在棉被裡比較安靜"], "why": "避免睡覺或長時間沒人看著時充電；放在不會燒的硬桌面上，遠離床、沙發、紙張這些容易燒的東西。", "kc": {"t": "充電要有人看著", "s": "避免睡覺或長時間沒人看著時充電；放在不會燒的硬桌面上，遠離床、沙發、紙張這些容易燒的東西。"}}, {"q": "膨脹的行動電源要怎麼處理？", "ok": "停止使用，正負極貼上絕緣膠帶，拿去回收", "w": ["用力壓平，再繼續用", "丟進一般垃圾車"], "why": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。", "kc": {"t": "膨脹電池要回收", "s": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。"}}, {"q": "行動電源充飽電之後？", "ok": "盡快拔掉電源", "w": ["一直插著，讓它保持滿電", "插著沒關係，反正會自動斷電"], "why": "避免長時間過度充電，充飽後盡快拔掉電源。", "kc": {"t": "充飽就拔", "s": "避免長時間過度充電，充飽後盡快拔掉電源。"}}, {"q": "邊充電邊玩手機好嗎？", "ok": "最好不要，電池會更熱", "w": ["沒有影響", "反而充比較快"], "why": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。", "kc": {"t": "充電時別使用", "s": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。"}}, {"q": "手機、行動電源這類鋰電池起火，可以用水嗎？", "ok": "可以，用大量的水持續降溫", "w": ["絕對不能用水", "用棉被蓋住最好"], "why": "可以充電的鋰離子電池起火，水是很好的滅火和冷卻材料；不能充電的鋰金屬電池例外。", "kc": {"t": "鋰離子電池可用水", "s": "可以充電的鋰離子電池起火，水是很好的滅火和冷卻材料；不能充電的鋰金屬電池例外。"}}, {"q": "鋰電池燒起來的煙？", "ok": "有毒，要離開、開窗通風", "w": ["跟燒紙的煙一樣，沒關係", "捂住鼻子就可以待著"], "why": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。", "kc": {"t": "電池煙有毒", "s": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。"}}, {"q": "買行動電源要先看什麼？", "ok": "有沒有經濟部標準檢驗局的「商品安全標章」", "w": ["容量越大越好", "越便宜越划算"], "why": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。", "kc": {"t": "認明安全標章", "s": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。"}}];
-var CHS=['冒煙','起火','滅火之後','報案'],CLKS=['23:40','23:41','23:43','23:45'];
+var DEC=[{"id": "d1", "q": "牆邊鐵桌上的行動電源一邊充電，一邊發出「嘶嘶」聲，外殼鼓了起來，開始冒白煙。你要怎麼做？", "time": 10, "kc": {"t": "冒煙、膨脹：先斷電，不要用手拿", "s": "行動電源膨脹、冒煙、有異味或摸起來異常發燙，代表電池可能正在熱失控。在不用靠近它的情況下先拔掉電源；不要用手拿、不要拿東西蓋住。人往後退，叫醒家人準備離開。"}, "best": "在安全的情況下拔掉延長線上的插頭，不要碰行動電源，人退開、叫醒家人", "opts": [{"id": "unplug", "t": "插頭拿得到：拔掉延長線上的插頭，不碰行動電源，人往後退，大聲叫醒家人", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先斷電、人退開", "p": "電池正在失控時，先切斷充電讓它不要繼續發熱；不要用手拿，它隨時可能噴火。退開並叫醒家人，準備下一步。"}}, {"id": "grab", "t": "趕快用手把它拿起來，丟到陽台外面", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "失控的電池隨時會噴火", "p": "電池內部溫度可能已經好幾百度，拿在手上可能直接燙傷，甚至在手裡噴火、爆開。丟出去也可能砸傷人、引燃別的東西。"}}, {"id": "cover", "t": "拿椅背上的外套把它蓋住，把煙悶住", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "火上加油", "h": "布料會變成燃料", "p": "電池起火不需要外面的空氣也能燒，蓋住悶不熄，反而讓外套、布料一起燒起來，熱也散不掉。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "它越來越燙，煙越來越多", "p": "看到膨脹、冒煙，先在安全的情況下斷電，人退開。"}}}, {"id": "d2", "q": "「啪」一聲，它爆出一大串火花，噴得滿地都是，鐵桌上燒起一團火。每隔幾秒又爆一次。你要怎麼做？", "time": 10, "kc": {"t": "鋰電池起火：不要靠近滅火，人先撤離", "s": "鋰電池熱失控時會一顆一顆電芯接著爆裂、噴出火花和火舌，不是單純燃燒。這時候靠近倒水或噴滅火器，很容易被噴濺燙傷，而且電池還是會繼續燒。人先離開、把門關上，報案交給消防人員處理。"}, "best": "不要靠近滅火：叫家人一起離開，出門時把大門帶上", "opts": [{"id": "leave", "t": "不要靠近：叫爸爸一起離開，出門時把大門帶上", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "人先離開，門把火關在裡面", "p": "鋰電池起火會反覆爆裂、噴火花，靠近非常危險。人先撤離，隨手關門可以把煙和火擋在屋裡，接著到安全的地方報案。"}}, {"id": "water", "t": "衝去廚房裝一大盆水，靠近整盆倒下去", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "靠近就會被噴濺，倒水也燒不完", "p": "電池內部還在一直發熱，一盆水澆下去火可能暫時變小，但很快又會爆開、繼續燒。你站在旁邊倒水，正好被噴出來的火花和火舌打到。"}}, {"id": "ext", "t": "拿門邊的滅火器，走到旁邊對著它噴", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "壓得住火焰，壓不住電池", "p": "乾粉能把火焰暫時壓下去，但電池裡面還在反應，幾秒後又會爆開。為了噴它而靠近，就是讓自己暴露在爆裂和有毒的煙裡。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "它又爆了一次", "p": "鋰電池起火會一直爆，不要靠近，人先離開、關門、報案。"}}}, {"id": "d3", "q": "你們到了門外的走廊，你撥打 119。", "time": 12, "phone": true, "phL": "119", "say": [["d", "119 你好，請問哪裡發生什麼事？"]], "kc": {"t": "打 119：先講地址，再講狀況", "s": "報案時先說清楚地址（縣市、區、路名、門牌、樓層），再說什麼東西起火、火還在不在燒、人都出來了沒、有沒有人受傷。不要急著掛電話，照執勤員的指示做。"}, "best": "先說地址，再說行動電源在鐵桌上起火、一直爆、人都在門外、門關著", "opts": [{"id": "addr", "t": "「新北市板橋區幸福路 7 號 5 樓。家裡的行動電源起火，在鐵桌上一直爆，人都出來了，門關著，沒有人受傷。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "地址第一，再講重點", "p": "執勤員最需要的是地址，才能派車；接著說什麼在燒、人都出來了沒，消防隊出發時就知道要準備什麼。"}}, {"id": "story", "t": "「我剛剛在充電，突然聽到嘶嘶聲，然後它就鼓起來……」從頭開始講", "grade": "mid", "pts": 8, "dmg": 5, "fb": {"b": "mid", "bt": "太慢了", "h": "先講地址", "p": "從頭講故事會拖到派車時間。先講地址，再用一兩句話說重點。"}}, {"id": "hang", "t": "「行動電源燒起來了，你們快來！」說完就掛掉", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "bad", "bt": "沒有地址", "h": "消防隊不知道要去哪裡", "p": "沒講地址就掛電話，執勤員還得回撥問你，浪費寶貴的時間。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話那頭在等你說話", "p": "先講地址，再講發生什麼事。"}}}, {"id": "d4", "q": "消防員到了，問你：「裡面什麼東西燒起來？有沒有人還在裡面？」你要怎麼回答？", "time": 12, "kc": {"t": "跟消防隊交接：什麼在燒、在哪裡、人在不在", "s": "消防人員到場時，主動說清楚：什麼東西起火、在哪個位置、旁邊有沒有容易燒的東西、所有人是不是都出來了、門窗有沒有關。說完就留在安全的地方，不要自己再回去開門。"}, "best": "說清楚：客廳牆邊鐵桌上的行動電源起火、旁邊沒有東西、家人都出來了、大門關著", "opts": [{"id": "brief", "t": "「5 樓客廳牆邊的鐵桌上，行動電源起火，一直在爆。旁邊沒有東西會燒，家人都出來了，大門關著。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "位置、起火物、人員，一次講清楚", "p": "消防人員最需要知道：燒什麼、在哪裡、有沒有人受困。你一次講清楚，他們就能直接判斷怎麼進去、要不要搜救。"}}, {"id": "vague", "t": "「裡面燒起來了，你們快點進去！」", "grade": "mid", "pts": 8, "dmg": 5, "fb": {"b": "mid", "bt": "資訊不夠", "h": "消防員還要再問一次", "p": "沒說是什麼東西、在哪裡、人有沒有出來，消防員還得一個一個問，延誤處置。"}}, {"id": "back", "t": "「我先進去幫你們開門看看！」自己衝回去開門", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "屋裡都是有毒的煙", "p": "鋰電池燃燒的煙有毒，門一開，濃煙和火就會衝出來。已經離開了就不要再回去，交給消防人員。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "消防員在等你回答", "p": "主動告訴消防員：什麼在燒、在哪裡、人都出來了沒。"}}}];
+SCN.quick=[{"q": "行動電源出現哪種情況，要立刻停止使用？", "ok": "膨脹、變形、漏液、生鏽、有異味或異常發燙", "w": ["電量掉得比以前快", "外殼有一點刮痕"], "why": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。", "kc": {"t": "六大異常要停用", "s": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。"}}, {"q": "行動電源最好在什麼情況下充電？", "ok": "有人看得到的時候，放在不會燒的硬桌面（例如鐵桌）上，旁邊不放東西", "w": ["睡覺時放在枕頭旁邊", "包在棉被裡比較安靜"], "why": "避免睡覺或長時間沒人看著時充電；放在不會燒的硬桌面上，遠離床、沙發、紙張這些容易燒的東西。萬一起火，旁邊沒有東西可以燒，損失就小很多。", "kc": {"t": "充電放在不會燒的地方", "s": "避免睡覺或長時間沒人看著時充電；放在不會燒的硬桌面上，遠離床、沙發、紙張這些容易燒的東西。萬一起火，旁邊沒有東西可以燒，損失就小很多。"}}, {"q": "膨脹的行動電源要怎麼處理？", "ok": "停止使用，正負極貼上絕緣膠帶，拿去回收", "w": ["用力壓平，再繼續用", "丟進一般垃圾車"], "why": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。", "kc": {"t": "膨脹電池要回收", "s": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。"}}, {"q": "行動電源充飽電之後？", "ok": "盡快拔掉電源", "w": ["一直插著，讓它保持滿電", "插著沒關係，反正會自動斷電"], "why": "避免長時間過度充電，充飽後盡快拔掉電源。", "kc": {"t": "充飽就拔", "s": "避免長時間過度充電，充飽後盡快拔掉電源。"}}, {"q": "邊充電邊玩手機好嗎？", "ok": "最好不要，電池會更熱", "w": ["沒有影響", "反而充比較快"], "why": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。", "kc": {"t": "充電時別使用", "s": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。"}}, {"q": "行動電源起火、一直劈啪爆開，該怎麼做？", "ok": "不要靠近滅火，人先離開、關門、報案", "w": ["用水澆到它熄滅為止", "拿毛巾包起來丟出去"], "why": "鋰電池熱失控會反覆爆裂、噴濺火花，靠近撲滅很容易受傷，倒水也很難讓它停下來。人先撤離、關門、報案，交給消防人員。", "kc": {"t": "鋰電池起火先撤離", "s": "鋰電池熱失控會反覆爆裂、噴濺火花，靠近撲滅很容易受傷，倒水也很難讓它停下來。人先撤離、關門、報案，交給消防人員。"}}, {"q": "鋰電池燒起來的煙？", "ok": "有毒，要離開、開窗通風", "w": ["跟燒紙的煙一樣，沒關係", "捂住鼻子就可以待著"], "why": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。", "kc": {"t": "電池煙有毒", "s": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。"}}, {"q": "買行動電源要先看什麼？", "ok": "有沒有經濟部標準檢驗局的「商品安全標章」", "w": ["容量越大越好", "越便宜越划算"], "why": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。", "kc": {"t": "認明安全標章", "s": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。"}}, {"q": "離開起火的家之後，要做什麼？", "ok": "在安全的地方等消防隊，告訴他們起火物、位置、人都出來了沒", "w": ["回去拿貴重物品", "回去開門看火熄了沒"], "why": "離開之後就不要再回去。消防人員到場時，主動說清楚什麼在燒、在哪裡、有沒有人還在裡面。", "kc": {"t": "出來了就不要再回去", "s": "離開之後就不要再回去。消防人員到場時，主動說清楚什麼在燒、在哪裡、有沒有人還在裡面。"}}];
+var CHS=['冒煙','爆裂起火','報案','消防隊到場'],CLKS=['23:40','23:41','23:42','23:49'];
 DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
 /* ---- 鏡頭 ---- */
 var CAM={};
 function camSetup(){
-  CAM.sit=lookAt([TB.x-.36,1.2,TB.z+.78],[PBP.x-.04,TB.y,PBP.z]);
-  CAM.back=lookAt([TB.x-.85,1.6,TB.z+1.3],[PBP.x,TB.y+.05,PBP.z]);
+  CAM.sit=lookAt([-.3,1.22,1.4],[PBP.x+.05,MT.y+.05,PBP.z]);
+  CAM.near=lookAt([-1.2,1.42,.95],[PBP.x,MT.y+.02,PBP.z]);
+  CAM.back=lookAt([-.2,1.6,1.75],[PBP.x,MT.y+.1,PBP.z]);
   CAM.kitchen=lookAt([SINKX+.15,1.6,-1.2],[SINKX,CTOP,SK.z]);
-  CAM.pour=lookAt([PBP.x-.15,1.45,PBP.z+.62],[PBP.x,TB.y,PBP.z]);
-  CAM.win=lookAt([RW/2-.75,1.6,.9],[RW/2,1.4,.85]);
-  CAM.door=lookAt([-.05,1.6,RD/2+.55],[PBP.x,1.0,PBP.z]);
-  CAM.bin=lookAt([BIN.x-.6,1.5,BIN.z+.8],[BIN.x,.3,BIN.z]);
+  CAM.pour=lookAt([PBP.x+.85,1.5,PBP.z+.5],[PBP.x,MT.y,PBP.z]);
+  CAM.ext=lookAt([.55,1.5,RD/2-.85],[EXT.x,.4,EXT.z]);
+  CAM.door=lookAt([-.1,1.6,RD/2-.35],[PBP.x,1.0,PBP.z]);
+  CAM.hall=lookAt([.55,1.6,RD/2+1.75],[-.2,1.25,RD/2+.1]);
+  CAM.hall2=lookAt([-.3,1.6,RD/2+.75],[.9,1.4,RD/2+2.2]);
 }
 camSetup();
-/* 鏡頭座標 → 世界座標 */
-function c2w(v){var sy=Math.sin(cam.yaw),cy=Math.cos(cam.yaw),sp=Math.sin(cam.pitch),cp=Math.cos(cam.pitch),F=[-sy*cp,sp,-cy*cp],R=[cy,0,-sy],U=[R[1]*F[2]-R[2]*F[1],R[2]*F[0]-R[0]*F[2],R[0]*F[1]-R[1]*F[0]];
-  return [cam.x+R[0]*v[0]+U[0]*v[1]-F[0]*v[2],cam.y+R[1]*v[0]+U[1]*v[1]-F[1]*v[2],cam.z+R[2]*v[0]+U[2]*v[1]-F[2]*v[2]]}
-function setCyl(o,a,b){var d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(d[0],d[1],d[2])||1e-4;o.p=[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];o.s[1]=L;o.r=[Math.acos(clamp(d[1]/L,-1,1)),Math.atan2(d[0],d[2]),0]}
-/* ---- 火、煙、火花、蒸氣 ---- */
-var FX={smoke:0,fire:0,spark:0,steam:0,powder:0,pour:0,at:[PBP.x,TB.y+.03,PBP.z],binFire:0,haze:0};
-var SPK=[];for(var si=0;si<40;si++)SPK.push({on:false});
-function sparkBurst(n,pw){for(var i=0;i<SPK.length&&n>0;i++){var s=SPK[i];if(s.on)continue;n--;s.on=true;s.x=FX.at[0];s.y=FX.at[1]+.02;s.z=FX.at[2];var a=Math.random()*PI*2,v=(pw||1)*rnd(.4,1.3);s.vx=Math.cos(a)*v*.5;s.vz=Math.sin(a)*v*.5;s.vy=rnd(.8,2.2)*(pw||1);s.age=0;s.life=rnd(.4,.9)}}
-var hissG=null;
-function hiss(v){try{if(AC){if(!hissG){var n=loopNoise(whiteBuf,'highpass',3200,.8);hissG=AC.createGain();hissG.gain.value=0;n.connect(hissG);out(hissG,.1)}hissG.gain.setTargetAtTime(v*.05,AC.currentTime,.15)}}catch(e){}}
-var roarG=null;
-function roar(v){try{if(AC){if(!roarG){var n=loopNoise(whiteBuf,'lowpass',500,.5);roarG=AC.createGain();roarG.gain.value=0;n.connect(roarG);out(roarG,.2)}roarG.gain.setTargetAtTime(v*.09,AC.currentTime,.25)}}catch(e){}}
+/* ---- 火、煙、爆裂 ---- */
+var AT=[PBP.x,MT.y+.03,PBP.z];
+var FPB=mkFire(AT,{w:.75,h:1.1,smoke:.9});
+var SMW=mkSmoke([AT[0],AT[1]+.02,AT[2]],{c:[.92,.92,.92],r:.035,rise:1.2,a:.38,sz:.35,speed:.3,n:10});
+var SMR=mkSmoke([PBP.x+.5,1.9,PBP.z+.3],{c:[.3,.28,.27],r:.6,rise:.5,a:.28,sz:2.2,speed:.08,n:8});
+var PBX={boom:0,nb:3,flash:0,hall:0,lamp:1,steam:0,pour:0,powder:0,n:0};
 function pop(){thud(.9);try{noiseHit(1800,.7,.25,.08,'bandpass',.8)}catch(e){}}
-/* ---- 線材 ---- */
-var PLUG={in:1};
-function cableTick(){
-  var pb=[pbN.p[0]+.03,TB.y+.012,pbN.p[2]-.06],ph=[phoneT.p[0]+.02,TB.y+.006,phoneT.p[2]-.075];
-  if(pbBurnt.vis||Math.abs(pbN.p[0]-PBP.x)>.3){cables[0].vis=cables[1].vis=false;cables[2].vis=false;return}
-  cables[0].vis=cables[1].vis=cables[2].vis=true;
-  setCyl(cables[0],pb,[ph[0]+.05,TB.y+.005,ph[2]-.04]);setCyl(cables[1],[ph[0]+.05,TB.y+.005,ph[2]-.04],ph);
-  var pl=[plug.p[0]-.02,plug.p[1]-.01,plug.p[2]];setCyl(cables[2],[pb[0]+.01,pb[1],pb[2]-.01],pl);
+/* 一次爆裂：閃光、火舌往旁邊噴、火花散到地上 */
+function boom(pw,hurt){
+  pw=pw||1.4;pop();PBX.flash=1;tween(PBX,{flash:0},.45);PBX.n++;
+  FPB.v=Math.max(FPB.v,.9);FPB.h=1.9;FPB.w=1.05;tween(FPB,{h:1.1,w:.75},.7);
+  sparkBurst([AT[0],AT[1]+.04,AT[2]],34,pw,0);
+  burnDots.forEach(function(d,i){if(i<PBX.n*2)d.a=Math.min(.55,d.a+.3)});
+  ST.shake=.18*pw;tween(ST,{shake:0},.35);scorch.a=Math.min(.85,scorch.a+.15);
+  if(hurt){ST.dmg=.8;tween(ST,{dmg:0},1)}
 }
-/* ---- 開場 ---- */
+function ignite(){boom(1.8);FPB.v=.95;SMW.v=0;SMR.v=.6;loopSnd('roar','lowpass',520,.5,1,.1);loopSnd('hiss','highpass',3200,.8,.25,.05);pbTop.col=[.15,.12,.1];pbBulge.vis=false;PBX.boom=1;PBX.nb=rnd(2.4,3.6)}
 SCN.reset=function(){
-  for(var k in FX)if(typeof FX[k]==='number')FX[k]=0;FX.at=[PBP.x,TB.y+.03,PBP.z];SPK.forEach(function(s){s.on=false});
-  pbN.p=[PBP.x,PBP.y,PBP.z];pbN.r=[0,.25,0];pbN.s=[1,1,1];pbBody.vis=pbTop.vis=pbLed.vis=true;pbBulge.vis=false;pbBurnt.vis=false;
-  plug.p=[STRIP.x-.08,TB.y+.05,STRIP.z];PLUG.in=1;scorch.a=0;waterPool.a=0;floorPool.a=0;mail.vis=true;mail.col=hex(0xf1ede2);
-  basin.p=[SINKX,CTOP+.07,SK.z];basin.r=[0,0,0];basinW.vis=true;extN.p=[EXT.x,0,EXT.z];extN.r=[0,0,0];
-  winPane.p=[RW/2-.06,1.5,.85];doorN.r=[0,0,0];hiss(0);roar(0);jacket.vis=false;jacket.col=hex(0x3a4250);
+  fxReset();FPB.p=AT.slice();FPB.h=1.1;FPB.w=.75;
+  for(var k in PBX)PBX[k]=0;PBX.nb=3;PBX.lamp=1;
+  pbN.p=[PBP.x,PBP.y,PBP.z];pbN.r=[0,.25,0];pbN.s=[1,1,1];pbBody.vis=pbTop.vis=pbLed.vis=true;pbBulge.vis=false;pbBurnt.vis=false;pbTop.col=hex(0x3a3f46);pbLed.col=hex(0x7fd6ff);
+  pbShard.forEach(function(q){q.vis=false});burnDots.forEach(function(d){d.a=0});
+  plug.p=[STRIP.x,MT.y+.05,STRIP.z+.06];PLUG.in=1;scorch.a=0;steamPool.a=0;floorPool.a=0;
+  basin.p=[SINKX,CTOP+.07,SK.z];basin.r=[0,0,0];basinW.vis=true;BAS.on=0;BAS.tilt=0;extN.p=[EXT.x,0,EXT.z];extN.r=[0,0,0];
+  HALL.door.r=[0,0,0];jacket.vis=false;jacket.col=hex(0x3a4250);DAD.show(false);FF.show(false);resetBody(DAD);
 };
 SCN.start=function(){
   phase='cut';controls=false;bars(true);showSkip(true);
-  setCam(CAM.sit);fadeTo(0,1600);cap('深夜 23:40。你坐在餐桌前滑手機，行動電源接著延長線在充電。');
-  after(3200,function(){cap('「嘶——」桌上傳來細細的聲音。');hiss(.5);FX.smoke=.15});
-  after(5200,function(){cap('行動電源鼓了起來，摸起來燙手，開始冒出白煙。');pbBulge.vis=true;tween(pbN.s,{1:1.35},2);tween(FX,{smoke:.5},2);pbLed.col=[1,.2,.1];hiss(1)});
-  after(8400,function(){showSkip(false);step(1)});
+  setCam(CAM.sit);fadeTo(0,1600);cap('深夜 23:40。你坐在餐桌前滑手機。行動電源放在牆邊的鐵桌上，接著延長線充電。');
+  after(3400,function(){cap('「嘶——」鐵桌那邊傳來細細的聲音。');loopSnd('hiss','highpass',3200,.8,.5,.05);SMW.v=.35});
+  after(5600,function(){cap('行動電源鼓了起來，開始冒出白煙。');pbBulge.vis=true;tween(pbN.s,{1:1.35},2);tween(SMW,{v:1},2);pbLed.col=[1,.2,.1];loopSnd('hiss','highpass',3200,.8,1,.05)});
+  after(8600,function(){showSkip(false);step(1)});
 };
 function step(n){
   if(n>DEC.length){toQuick();return}
@@ -1703,179 +1912,176 @@ function step(n){
   var go=function(){chap(n,CHS[n-1],CLKS[n-1],function(){startDecision(DEC[n-1],function(){after(200,function(){step(n+1)})})})};
   if(PRE[n])PRE[n](go);else go();
 }
-function ignite(){pop();FX.fire=.9;FX.spark=1;sparkBurst(26,1.2);ST.shake=.35;tween(ST,{shake:0},.5);roar(1);hiss(.3);scorch.a=.6;FX.smoke=.9;pbTop.col=[.15,.12,.1]}
-function extinguish(){tween(FX,{fire:0,spark:0},.6);roar(0);hiss(0);FX.steam=1;tween(FX,{steam:0},5);tween(FX,{smoke:.25},2);pbBody.vis=pbTop.vis=pbLed.vis=pbBulge.vis=false;pbBurnt.vis=true;pbN.s=[1,1,1]}
-var PRE={
-  2:function(go){
-    if(PLUG.in){unplugAnim(.01)}
-    if(!(G.d1&&G.d1.id==='unplug')&&cam.y<1.4)camTo(CAM.back,.8);
-    else if(cam.y<1.4)camTo(CAM.back,.8);
-    after(1000,function(){ignite();cap('「啪！」它噴出一串火花，桌上燒起一團火。')});
-    after(2800,go);
-  },
-  3:function(go){
-    if(!(G.d2&&G.d2.id==='water')){
-      cap('你衝去廚房裝了一大盆水，整盆倒下去。');fadeTo(1,400);
-      after(500,function(){var bin=FX.binFire;extinguish();if(!bin){waterPool.a=.35;floorPool.a=.25}setCam(bin?CAM.bin:CAM.back);fadeTo(0,600)});
-      after(2200,go);return;
-    }
-    cap('火熄了。');after(1400,go);
-  }
-};
-function unplugAnim(dur){
-  PLUG.in=0;tween(plug.p,{0:STRIP.x-.2,1:TB.y+.03,2:STRIP.z+.1},dur||.4);pbLed.vis=false;
+var PLUG={in:1};
+function unplugAnim(dur){PLUG.in=0;tween(plug.p,{0:STRIP.x+.12,1:MT.y+.035,2:STRIP.z+.2},dur||.4);pbLed.vis=false}
+function cableTick(){
+  if(pbBurnt.vis){cables[0].vis=cables[1].vis=false;return}
+  cables[0].vis=cables[1].vis=true;
+  var pb=[pbN.p[0]-.03,MT.y+.012,pbN.p[2]-.07],pl=[plug.p[0],plug.p[1]-.012,plug.p[2]+.02];
+  setCyl(cables[0],pb,pl);setCyl(cables[1],[STRIP.x+.02,MT.y+.01,STRIP.z-.15],[-RW/2+.02,.32,MT.z-.25]);
+}
+/* 全身離開、關門 */
+function goOut(txt,done){
+  cap(txt);fadeTo(1,450);
+  after(500,function(){bothOut(.01);BAS.on=0;basin.p=[PBP.x+.5,0,PBP.z+.35];setCam(CAM.hall);HALL.door.r=[0,1.25,0];PBX.hall=1;
+    DAD.node.p=[-1.05,0,RD/2+1.35];DAD.node.r=[0,1.9,0];DAD.show(true);fadeTo(0,500)});
+  after(1300,function(){tween(HALL.door.r,{1:0},.55,function(){thud(1)});loopSnd('roar','lowpass',520,.5,.25,.1);loopSnd('hiss','highpass',3200,.8,0)});
+  after(2400,function(){pop();cap('門後又傳來「啪」的一聲。')});
+  after(3600,done);
 }
 /* 你的手拿著水盆 */
 var BAS={on:0,tilt:0};
-function basinTick(){
-  if(!BAS.on)return;
-  var c=c2w([0,-.24-BAS.tilt*.05,-.46+BAS.tilt*.06]);basin.p=c;basin.r=[-BAS.tilt*1.1,cam.yaw,0];
-}
+function basinTick(){if(!BAS.on)return;var c=c2w([0,-.24-BAS.tilt*.05,-.46+BAS.tilt*.06]);basin.p=c;basin.r=[-BAS.tilt*1.1,cam.yaw,0]}
 function holdBasin(on){BAS.on=on?1:0;if(on){hIn(HR,{p:[.17,-.25,-.44],r:[.2,-.9,.2],curl:.55,thumb:.4,abs:true},.3);hIn(HL,{p:[-.17,-.25,-.44],r:[.2,.9,-.2],curl:.55,thumb:.4,abs:true},.3)}}
-function pourAnim(t){
-  tween(BAS,{tilt:1},.6);tween(HR.p,{1:-.2},.6);tween(HL.p,{1:-.2},.6);
-  after(500,function(){FX.pour=1;thud(.4)});
-  after(500+t*1000,function(){FX.pour=0;basinW.vis=false;tween(BAS,{tilt:0},.5)});
-}
+var PRE={
+  2:function(go){
+    if(PLUG.in)unplugAnim(.01);
+    camTo(CAM.back,.8);
+    after(1000,function(){ignite();cap('「啪！」它爆出一大串火花，噴得滿地都是，鐵桌上燒起一團火。')});
+    after(3000,function(){cap('隔幾秒，又「啪」一聲爆開一次。')});
+    after(4200,go);
+  },
+  3:function(go){
+    var g=function(){cap('你和爸爸站在門外的走廊，拿出手機。');hIn(HR,'phone',.4);HR.hold='phone';dial119();after(1300,go)};
+    if(G.d2&&G.d2.id==='leave'){after(300,g);return}
+    goOut('你拉著爸爸往外跑，出門時把大門帶上。',g);
+  },
+  4:function(go){
+    HR.hold='';hOut(HR,.3);fadeTo(1,500);
+    after(600,function(){setClock('23:49');setCam(CAM.hall2);DAD.node.p=[-1.0,0,RD/2+1.5];DAD.node.r=[0,1.2,0];
+      FF.node.p=[.7,0,RD/2+1.9];FF.node.r=[0,-2.2,0];FF.show(true);fadeTo(0,700);loopSnd('roar','lowpass',520,.5,0)});
+    after(1700,function(){cap('樓梯間傳來腳步聲。消防員到了。');thud(.3)});
+    after(3300,function(){cap('「裡面什麼東西燒起來？有沒有人還在裡面？」','消防員')});
+    after(4700,go);
+  }
+};
 /* ---- 每個選項的動作 ---- */
 var PLAY={
  d1:{
   unplug:function(done){
-    var a=w2c(plug.p);
-    hIn(HR,{p:[a[0]+.01,a[1]+.05,a[2]+.04],r:[.6,-.3,0],curl:.6,thumb:.55,abs:true},.45);
-    after(600,function(){hTo(HR,{curl:.85,thumb:.75},.15);unplugAnim(.3);var b=w2c([STRIP.x-.2,TB.y+.06,STRIP.z+.1]);hTo(HR,{p:[b[0],b[1]+.03,b[2]+.04],abs:true},.3)});
-    after(1300,function(){hOut(HR,.3);cap('你拔掉插頭，連人帶椅子往後退。');camTo(CAM.back,1.0)});
-    after(2600,function(){cap('「爸！起來！行動電源在冒煙！」','你')});
-    after(4000,function(){cap('「什麼？」房間的燈亮了。','爸爸')});
-    after(5000,done);
+    camTo(CAM.near,.9);
+    after(1000,function(){var a=w2c(plug.p);hIn(HR,{p:[a[0]+.01,a[1]+.05,a[2]+.04],r:[.6,-.3,0],curl:.6,thumb:.55,abs:true},.45)});
+    after(1600,function(){hTo(HR,{curl:.85,thumb:.75},.15);unplugAnim(.3);var b=w2c([STRIP.x+.12,MT.y+.06,STRIP.z+.2]);hTo(HR,{p:[b[0],b[1]+.03,b[2]+.04],abs:true},.3)});
+    after(2300,function(){hOut(HR,.3);cap('你伸長手拔掉插頭，沒有碰到行動電源，馬上往後退。');camTo(CAM.back,1.0)});
+    after(3600,function(){cap('「爸！起來！行動電源在冒煙！」','你')});
+    after(5000,function(){cap('「什麼？」房間的燈亮了。','爸爸')});
+    after(6000,done);
   },
   grab:function(done){
-    var a=w2c([pbN.p[0],TB.y+.03,pbN.p[2]]);
-    hIn(HR,{p:[a[0],a[1]+.04,a[2]+.02],r:[.7,-.2,0],curl:.5,thumb:.5,abs:true},.45);
-    after(700,function(){hTo(HR,{curl:.8,thumb:.7},.12);ST.dmg=.6;tween(ST,{dmg:0},.8);cap('好燙！');pop()});
-    after(1100,function(){hTo(HR,{p:[a[0]+.1,a[1]+.2,a[2]+.1],curl:.2,thumb:.2,abs:true},.2);cap('燙得你手一甩，它掉回桌上，手掌已經紅了一片。')});
-    after(2300,function(){hOut(HR,.3);unplugAnim(.01);camTo(CAM.back,1.0)});
-    after(3800,done);
+    camTo(CAM.near,.8);
+    after(900,function(){var a=w2c([pbN.p[0],MT.y+.03,pbN.p[2]]);hIn(HR,{p:[a[0],a[1]+.04,a[2]+.02],r:[.7,-.2,0],curl:.5,thumb:.5,abs:true},.45)});
+    after(1600,function(){hTo(HR,{curl:.8,thumb:.7},.12);ST.dmg=.6;tween(ST,{dmg:0},.8);cap('好燙！');pop()});
+    after(2000,function(){var a=w2c([pbN.p[0],MT.y+.03,pbN.p[2]]);hTo(HR,{p:[a[0]+.1,a[1]+.2,a[2]+.1],curl:.2,thumb:.2,abs:true},.2);cap('燙得你手一甩，它掉回桌上，手掌已經紅了一片。')});
+    after(3200,function(){hOut(HR,.3);unplugAnim(.01);camTo(CAM.back,1.0)});
+    after(4600,done);
   },
   cover:function(done){
-    cap('你抓起椅背上的外套，蓋在行動電源上。');
-    after(700,function(){jacket.vis=true;jacket.p=[pbN.p[0],TB.y+.045,pbN.p[2]]});
-    after(1200,function(){FX.smoke=.8;cap('外套底下冒出更濃的煙，布料開始焦黑。');jacket.col=[.12,.1,.09]});
-    after(2500,function(){jacket.vis=false});
-    after(2600,function(){unplugAnim(.01);camTo(CAM.back,1.0)});
-    after(3800,done);
+    camTo(CAM.near,.8);cap('你抓起椅背上的外套，走過去蓋在行動電源上。');
+    after(1100,function(){jacket.vis=true;jacket.p=[pbN.p[0],MT.y+.045,pbN.p[2]]});
+    after(1700,function(){SMW.v=1;SMW.c=[.5,.48,.46];cap('外套底下冒出更濃的煙，布料開始焦黑。');jacket.col=[.12,.1,.09]});
+    after(3000,function(){jacket.vis=false;SMW.c=[.92,.92,.92]});
+    after(3100,function(){unplugAnim(.01);camTo(CAM.back,1.0)});
+    after(4300,done);
   },
-  _:function(done){cap('你愣在椅子上，煙越來越濃。');tween(FX,{smoke:.8},2);after(2600,function(){unplugAnim(.01);done()})}
+  _:function(done){cap('你愣在椅子上，煙越來越濃。');tween(SMW,{v:1},1);SMR.v=.3;after(2600,function(){unplugAnim(.01);done()})}
  },
  d2:{
+  leave:function(done){
+    cap('「爸！不要過去，我們先出去！」','你');
+    after(1600,function(){camTo(CAM.door,.9);DAD.node.p=[-1.5,0,-.4];DAD.node.r=[0,2.6,0];DAD.show(true);tween(DAD.node.p,{0:-.4,2:RD/2-.4},1.6)});
+    after(2800,function(){goOut('你們走出家門，你順手把大門帶上，把火和煙關在裡面。',done)});
+  },
   water:function(done){
     cap('你衝到廚房，用水盆裝滿水。');camTo(CAM.kitchen,.8);
     after(900,function(){holdBasin(true);basinW.vis=true});
-    after(1900,function(){camTo(CAM.pour,.9)});
-    after(3000,function(){pourAnim(1.6);cap('整盆水倒下去，滋——的一聲，冒出一大團白煙。')});
-    after(3600,function(){extinguish();waterPool.a=.4;tween(floorPool,{a:.3},1)});
-    after(5400,function(){bothOut(.3);BAS.on=0;basin.p=[TB.x-.6,0,TB.z+.4];basin.r=[0,0,0];cap('你又裝了一盆，繼續澆，直到完全不冒煙。')});
-    after(7000,done);
+    after(1900,function(){camTo(CAM.pour,1.0)});
+    after(3100,function(){tween(BAS,{tilt:1},.6);after(500,function(){PBX.pour=1;thud(.4)});after(1600,function(){PBX.pour=0;basinW.vis=false;tween(BAS,{tilt:0},.4)})});
+    after(3700,function(){cap('整盆水倒下去，「滋——」冒出一大團白煙。');PBX.steam=1;tween(PBX,{steam:0},4);FPB.v=.35;steamPool.a=.4;tween(floorPool,{a:.3},1)});
+    after(5200,function(){boom(1.9,true);FPB.v=.95;cap('「啪！」它又爆開，火花噴到你的手臂上。')});
+    after(7000,function(){cap('電池還在燒，水澆下去火也沒有變小。')});
+    after(8600,done);
   },
-  powder:function(done){
-    cap('你跑到門邊，拿起滅火器，拉掉插銷。');camTo(CAM.door,.8);
-    after(1000,function(){extN.p=[0,-5,0];hIn(HR,{p:[.12,-.25,-.4],r:[.3,-.2,0],curl:.85,thumb:.7,abs:true},.3);camTo(CAM.pour,.9)});
-    after(2300,function(){FX.powder=1;cap('白色的乾粉噴出去，火焰被壓下去了。');tween(FX,{fire:.05},.6);roar(0)});
-    after(3900,function(){FX.powder=0;hOut(HR,.3)});
-    after(4600,function(){cap('過沒幾秒，它又「啪」一聲，重新燒了起來。');FX.fire=.7;sparkBurst(14,1);pop();roar(.7)});
-    after(6200,done);
+  ext:function(done){
+    cap('你跑到門邊拿滅火器，拉掉插銷，走到鐵桌前。');camTo(CAM.ext,.8);
+    after(1100,function(){extN.p=[0,-5,0];hIn(HR,{p:[.12,-.25,-.4],r:[.3,-.2,0],curl:.85,thumb:.7,abs:true},.3);camTo(CAM.pour,1.1)});
+    after(2500,function(){PBX.powder=1;cap('白色的乾粉噴出去，火焰被壓下去了。');tween(FPB,{v:.1},.5);loopSnd('roar','lowpass',520,.5,.2,.1)});
+    after(4000,function(){PBX.powder=0;hOut(HR,.3)});
+    after(4700,function(){boom(1.9,true);FPB.v=.95;loopSnd('roar','lowpass',520,.5,1,.1);cap('才過幾秒，它又「啪」地爆開，重新燒起來，火花噴到你身上。')});
+    after(6800,done);
   },
-  towel:function(done){
-    cap('你抓起一條毛巾，想把它包起來丟掉。');
-    after(500,function(){hIn(HR,'rest',.01);HR.hold='towel';var a=w2c([pbN.p[0],TB.y+.05,pbN.p[2]]);hTo(HR,{p:[a[0],a[1]+.05,a[2]],r:[.8,-.2,0],curl:.6,abs:true},.5)});
-    after(1300,function(){pop();sparkBurst(20,1.3);ST.dmg=.7;tween(ST,{dmg:0},.9);cap('它在毛巾裡爆了一下，你燙得把整團丟進垃圾桶——');hOut(HR,.2)});
-    after(2400,function(){camTo(CAM.bin,.8);FX.at=[BIN.x,.38,BIN.z];FX.binFire=1;pbN.p=[BIN.x,.3,BIN.z];roar(1)});
-    after(3900,function(){cap('垃圾桶裡的紙和塑膠，一下子全燒了起來。');FX.fire=1;FX.smoke=1});
-    after(5400,done);
-  },
-  _:function(done){cap('火越燒越大，桌上的信件也燒起來了。');mail.col=[.12,.1,.08];FX.fire=1;tween(FX,{smoke:1},2);after(3000,done)}
+  _:function(done){boom(1.7);cap('你站在原地，它又爆了一次，火花噴到你腳邊的地板。');after(2800,done)}
  },
  d3:{
-  leave:function(done){
-    cap('你打開窗戶讓煙散出去。');camTo(CAM.win,.9);
-    after(1000,function(){var a=w2c([RW/2-.06,1.3,.55]);hIn(HR,{p:[a[0]-.05,a[1],a[2]],r:[1.2,-.2,0],curl:.2,thumb:.2,abs:true},.4)});
-    after(1500,function(){tween(winPane.p,{2:.15},1.0);thud(.2);FX.haze=.3});
-    after(2600,function(){hOut(HR,.3);cap('「爸，我們先出去，打 119 請消防隊來看。」','你')});
-    after(3600,function(){camTo(CAM.door,1.2);tween(doorN.r,{1:1.3},1.0)});
-    after(5200,done);
-  },
-  trash:function(done){
-    cap('你用夾子把它夾進垃圾桶，關燈回去睡覺。');fadeTo(1,800);
-    after(1000,function(){pbN.p=[BIN.x,.3,BIN.z];setClock('02:16');setCam(CAM.bin);FX.at=[BIN.x,.38,BIN.z];FX.smoke=0;FX.haze=0;fadeTo(0,1000)});
-    after(2600,function(){pop();sparkBurst(20,1.1);FX.fire=.9;FX.binFire=1;FX.smoke=.8;roar(1);cap('凌晨 2 點，垃圾桶裡傳出「啪」的一聲——')});
-    after(4600,function(){cap('你被煙霧警報器吵醒，垃圾桶已經燒起來了。你們只好抓了手機往外逃。')});
-    after(6400,function(){tween(FX,{fire:0},1);roar(0);done()});
-  },
-  check:function(done){
-    var a=w2c([pbN.p[0],TB.y+.03,pbN.p[2]]);
-    hIn(HR,{p:[a[0],a[1]+.05,a[2]],r:[.7,-.2,0],curl:.5,thumb:.5,abs:true},.5);
-    after(800,function(){pop();sparkBurst(16,1);ST.dmg=.6;tween(ST,{dmg:0},.8);FX.fire=.4;cap('一碰，它又噴出一小串火花，燙到你的手。');hOut(HR,.2)});
-    after(2200,function(){tween(FX,{fire:0},1.2);cap('你只好再澆一次水。')});
-    after(3600,done);
-  },
-  _:function(done){cap('你站在原地，煙越來越嗆。');tween(FX,{haze:.6},2);after(2600,done)}
- },
- d4:{
-  addr:function(done){cap('「好，消防車已經出動。人都在外面，不要再進去。」','調度員');after(2600,done)},
+  addr:function(done){cap('「好，消防車已經出動。人都在外面，不要再進去，在樓下等消防隊。」','調度員');after(2800,done)},
   story:function(done){cap('「先生，請先告訴我地址！」','調度員');after(2000,function(){cap('你停下來，才把地址講出來。')});after(3600,done)},
   hang:function(done){cap('電話掛斷了。過了一會兒，119 回撥過來問你地址。');after(3000,done)},
   _:function(done){cap('「喂？請問哪裡？」','調度員');after(2600,done)}
+ },
+ d4:{
+  brief:function(done){
+    cap('「好，旁邊沒東西燒，我們進去確認。你們在這裡等。」','消防員');
+    after(2400,function(){fadeTo(1,600)});
+    after(3100,function(){quietRoom();setCam(CAM.back);fadeTo(0,800);cap('行動電源的能量釋放完，鐵桌上沒有其他東西可以燒，火自己熄了。')});
+    after(6200,done);
+  },
+  vague:function(done){
+    cap('「是什麼東西燒起來？在哪個位置？」','消防員');
+    after(2200,function(){cap('你只好再回頭說一次：行動電源、鐵桌、在客廳牆邊。')});
+    after(4000,function(){fadeTo(1,600)});after(4700,function(){quietRoom();setCam(CAM.back);fadeTo(0,800)});
+    after(6600,done);
+  },
+  back:function(done){
+    cap('你衝回去開門——');tween(HALL.door.r,{1:.9},.4);
+    after(700,function(){boom(1.6,true);SMR.v=1;cap('一股濃煙衝出來，你被嗆得往後退。')});
+    after(2200,function(){cap('「不要進去！交給我們！」','消防員');tween(HALL.door.r,{1:0},.4,function(){thud(.8)})});
+    after(3600,function(){fadeTo(1,600)});after(4300,function(){quietRoom();setCam(CAM.back);fadeTo(0,800)});
+    after(6200,done);
+  },
+  _:function(done){cap('你愣在一旁，消防員先進去確認了。');after(1500,function(){fadeTo(1,600)});after(2200,function(){quietRoom();setCam(CAM.back);fadeTo(0,800)});after(4200,done)}
  }
 };
-PRE[4]=(function(old){return function(go){
-  var g=function(){hIn(HR,'phone',.4);HR.hold='phone';dial119();go()};
-  if(!(G.d3&&G.d3.id==='leave')){cap('你打開窗戶，叫醒爸爸，兩個人走到門外。');fadeTo(1,400);after(500,function(){winPane.p[2]=.15;FX.haze=.3;doorN.r=[0,1.3,0];setCam(CAM.door);fadeTo(0,600)});after(2000,g);return}
-  cap('你和爸爸站在門外，拿出手機。');after(1200,g);
-}})(PRE[4]);
-SCN.quickCam=function(){bothOut(.3);setCam(CAM.door)};
+function quietRoom(){
+  PBX.boom=0;PBX.hall=0;FPB.v=0;SMR.v=.25;SMW.v=0;loopsOff();FF.show(false);DAD.show(false);
+  pbBody.vis=pbTop.vis=pbLed.vis=pbBulge.vis=false;pbBurnt.vis=true;pbN.s=[1,1,1];pbShard.forEach(function(q){q.vis=true});scorch.a=.9;
+}
+SCN.quickCam=function(){bothOut(.3);setCam(CAM.back)};
 SCN.epilogue=function(){
-  var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
-  return [g===DEC.length?'00:02，消防車抵達。消防員確認電池已經完全冷卻，屋裡只有桌面燒黑了一塊。':g>=2?'00:02，消防車抵達。桌面和旁邊的東西燒壞了一些，幸好人都沒事。':'00:02，消防車抵達。火勢一度擴大，屋裡被燻黑了一大片，你的手也被燙傷。',
-    '消防員提醒：行動電源不要在睡覺或沒人看著的時候充電，膨脹、發燙就要停用。',
-    g===DEC.length?'斷電、用水降溫、通風撤離、先講地址，你每一步都做對了。':'下一次記得：先斷電別用手拿、用大量的水降溫、人先出去、報案先講地址。'];
+  var g=SC.log.filter(function(l){return l.o.grade==='good'}).length,hurtA=G.d2&&G.d2.id!=='leave';
+  return [g===DEC.length?'23:52，消防員確認：行動電源已經燒完，鐵桌上只留下一片焦黑，屋裡其他東西都沒有燒到。':hurtA?'23:52，火熄了。鐵桌上一片焦黑，你的手臂被噴出的火花燙傷，要去醫院處理。':'23:52，火熄了，屋裡被燻黑了一些，幸好人都沒事。',
+    '還好它是放在不會燒的鐵桌上、旁邊沒有東西，能量釋放完就自己熄了。如果放在床上、沙發上，就會變成一場住宅火災。',
+    g===DEC.length?'斷電後退、不靠近滅火、關門撤離、報案、跟消防隊交接，你每一步都做對了。':'下一次記得：鋰電池起火會一直爆，不要靠近滅火，人先出去、把門關上、報案，再把狀況告訴消防隊。'];
 };
 /* ---- 光線、特效、每幀更新 ---- */
 function sceneLights(){
-  var f=FX.fire*(.8+.2*Math.sin(tNow*23)+.1*Math.sin(tNow*41));
+  var fl=fireLights(),f0=fl[0]||[[AT[0],AT[1]+.3,AT[2]],[0,0,0],1],fb=PBX.flash;
   return [
-    [[TB.x,RH-.7,TB.z],[.55,.48,.38],4.6],
-    [[-.75,1.45,-RD/2+.35],[.45,.42,.36],2.2],
+    [[TB.x,RH-.7,TB.z],[.55*PBX.lamp+.02,.48*PBX.lamp+.02,.38*PBX.lamp+.02],4.6],
+    PBX.hall?[hallLamp,[.75,.66,.52],4.4]:[[-.75,1.45,-RD/2+.35],[.45,.42,.36],2.2],
     [[RW/2+.6,1.6,.5],[.16,.2,.34],4.2],
-    [[FX.at[0],FX.at[1]+.25,FX.at[2]],[2.2*f,.9*f,.25*f],3.2],
-    [[0,2.3,2.0],[.12,.11,.1],3.5]
+    f0,
+    [[AT[0]+.2,AT[1]+.4,AT[2]],[2.2*fb,1.6*fb,.9*fb],4.0]
   ];
 }
 function sceneSprites(){
-  var at=FX.at,i,t;
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
   drawSprite(TX.glow,lampGlow,.9,.5,0,[1,.85,.55,.4]);
-  if(FX.fire>.02){
-    for(i=0;i<7;i++){t=((tNow*1.6+i/7)%1);var fx=at[0]+Math.sin(i*2.4+tNow*6)*.03*(1-t),fz=at[2]+Math.cos(i*1.9+tNow*5)*.03*(1-t),sz=(.12+.1*Math.sin(i))*FX.fire*(1-t*.6)*(FX.binFire?1.8:1);
-      drawSprite(TX.flame||TX.glow,[fx,at[1]+t*.28*FX.fire*(FX.binFire?1.6:1),fz],sz,sz*1.6,0,[1,.75,.4,.75*(1-t)])}
-    drawSprite(TX.glow,[at[0],at[1]+.06,at[2]],.5*FX.fire,.4*FX.fire,0,[1,.55,.2,.5]);
-  }
-  for(i=0;i<SPK.length;i++){var s=SPK[i];if(!s.on)continue;drawSprite(TX.glow,[s.x,s.y,s.z],.025,.025,0,[1,.8,.4,1-s.age/s.life])}
-  if(FX.pour>0){var a=c2w([0,-.17,-.62]),b=[PBP.x,TB.y+.03,PBP.z];
-    for(i=0;i<14;i++){t=((tNow*2.2+i/14)%1);drawSprite(TX.glow,[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t+Math.sin(t*PI)*.05,a[2]+(b[2]-a[2])*t],.07,.07,0,[.7,.85,1,.35])}}
+  if(PBX.hall)drawSprite(TX.glow,hallLamp,.8,.4,0,[1,.85,.6,.45]);
+  fxAdd();
+  if(PBX.flash>.02){var dd=Math.hypot(cam.x-AT[0],cam.z-AT[2]),fk=clamp(dd/1.6,.35,1);drawSprite(TX.glow,[AT[0],AT[1]+.12,AT[2]],1.1*fk*PBX.flash,.9*fk*PBX.flash,0,[1,.85,.55,.75*fk*PBX.flash])}
+  if(PBX.pour>0){var a=c2w([0,-.17,-.62]),b=[PBP.x,MT.y+.03,PBP.z];fxStream([a[0],a[1],a[2]],b,14,.07,[.7,.85,1,.35],2.2)}
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-  var sm=FX.smoke;if(sm>.01){for(i=0;i<14;i++){t=((tNow*.22+i/14)%1);var x=at[0]+Math.sin(i*2.3+t*3)*.08*(1+t*2),z=at[2]+Math.cos(i*1.7+t*2)*.08*(1+t*2);
-      drawSprite(TX.smoke,[x,at[1]+.04+t*1.5,z],.12+t*.8,.12+t*.8,i,FX.fire>.3?[.25,.22,.2,(1-t)*.35*sm]:[.88,.88,.88,(1-t)*.42*sm])}}
-  if(FX.steam>.01){for(i=0;i<10;i++){t=((tNow*.4+i/10)%1);drawSprite(TX.smoke,[at[0]+Math.sin(i*2.1)*.1,at[1]+t*.9,at[2]+Math.cos(i*1.3)*.1],.15+t*.5,.15+t*.5,i,[1,1,1,(1-t)*.35*FX.steam])}}
-  if(FX.powder>0){var p0=c2w([.05,-.18,-.5]);for(i=0;i<16;i++){t=((tNow*1.8+i/16)%1);drawSprite(TX.smoke,[p0[0]+(at[0]-p0[0])*t+Math.sin(i)*.08*t,p0[1]+(at[1]-p0[1])*t+Math.cos(i*2)*.06*t,p0[2]+(at[2]-p0[2])*t],.05+t*.4,.05+t*.4,i,[1,1,1,.4*(1-t*.5)])}}
-  if(FX.haze>.01)drawSprite(TX.smoke,[cam.x+camF[0]*1.2,cam.y+camF[1]*1.2+.3,cam.z+camF[2]*1.2],4,2,0,[.6,.58,.55,FX.haze*.35]);
+  fxSmoke();
+  if(PBX.steam>.01){for(var i=0;i<10;i++){var t=((tNow*.4+i/10)%1);drawSprite(TX.smoke,[AT[0]+Math.sin(i*2.1)*.1,AT[1]+t*.9,AT[2]+Math.cos(i*1.3)*.1],.12+t*.4,.12+t*.4,i,[1,1,1,(1-t)*.2*PBX.steam])}}
+  if(PBX.powder){var p0=c2w([.05,-.18,-.5]);for(var j=0;j<16;j++){var u=((tNow*1.8+j/16)%1);drawSprite(TX.smoke,[p0[0]+(AT[0]-p0[0])*u+Math.sin(j)*.08*u,p0[1]+(AT[1]-p0[1])*u+Math.cos(j*2)*.06*u,p0[2]+(AT[2]-p0[2])*u],.05+u*.4,.05+u*.4,j,[1,1,1,.4*(1-u*.5)])}}
 }
 function sceneTick(dt){
-  cableTick();basinTick();
-  if(FX.fire>.3&&Math.random()<dt*6)sparkBurst(2,.7);
-  for(var i=0;i<SPK.length;i++){var s=SPK[i];if(!s.on)continue;s.age+=dt;s.vy-=dt*4;s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;if(s.y<TB.y+.01&&Math.abs(s.x-TB.x)<.75&&Math.abs(s.z-TB.z)<.45){s.y=TB.y+.01;s.vy*=-.3}if(s.age>s.life)s.on=false}
-  if(pbBulge.vis&&FX.fire<.1&&!pbBurnt.vis)pbN.p[1]=PBP.y+Math.sin(tNow*30)*.0008;
+  cableTick();basinTick();fxTick(dt);
+  if(PBX.boom&&!PBX.hall&&phase!=='end'){PBX.nb-=dt;if(PBX.nb<=0){boom(rnd(1.2,1.8));PBX.nb=rnd(2.2,4.2)}}
+  if(pbBulge.vis&&FPB.v<.1&&!pbBurnt.vis)pbN.p[1]=PBP.y+Math.sin(tNow*30)*.0008;
 }
 function titleCam(){var c=CAM.sit;cam.x=c.x+Math.sin(tNow*.2)*.08;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch+.05}
+
+SCN.flow=[{"t": "斷電退開", "s": "拔插頭，不碰電池"}, {"t": "不靠近滅火", "s": "會一直爆，人先離開"}, {"t": "關門報案", "s": "帶上門，先講地址"}, {"t": "交接消防隊", "s": "起火物、位置、人員"}];
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -1942,7 +2148,7 @@ setInterval(updStage,160);
 function startDecision(d,done){
   cur=d;curDone=done;phase='decide';controls=true;TS=1;showSkip(false);bars(false);show('hint',false);show('prompt',false);show('useBtn',false);
   el('decQ').textContent=d.q;
-  var opts=el('opts');opts.innerHTML='';
+  var opts=el('opts');opts.innerHTML='';opts.className='';
   shuffle(d.opts).forEach(function(o,i){
     var b=document.createElement('button');b.type='button';b.className='card';
     b.innerHTML='<span class="oi">'+optIcon(o.id)+'</span><span class="t"></span><span class="k">'+'ABC'[i]+'</span>';b.querySelector('.t').textContent=o.t;
@@ -1967,7 +2173,8 @@ function pickOption(d,o,timedOut){
   var bonus=(o.grade==='good')?Math.round(3*left):0;
   var pts=o.pts+bonus;
   SC.score=Math.min(100,SC.score+pts);
-  SC.log.push({d:d,o:o,pts:pts,timeUsed:decideLimit?decideLimit*(timedOut?1:(1-left))/1000:null});
+  SC.log.push({d:d,o:o,pts:pts,base:o.pts,max:maxPts(d),left:decideLimit&&S.timer?(timedOut?0:left):null,timeUsed:decideLimit&&S.timer?decideLimit*(timedOut?1:(1-left))/1000:null});
+  ptsFloat(o,pts,timedOut);
   SC.cards.push({t:d.kc.t,s:d.kc.s,learned:o.grade==='good'});
   G[d.id]=o;
   if(o.dmg)hurt(o.dmg);
@@ -1981,17 +2188,89 @@ function hurt(n){
 }
 function showFeedback(d,o){
   phase='fb';cap('');
-  var f=o.fb;
-  el('fbB').className='badge '+f.b;el('fbB').innerHTML=ICON[f.b];
-  el('fbT').textContent=d.quick?f.bt:(f.b==='ok'?'做對了！':f.bt);
-  el('fbH').textContent=f.h;el('fbP').textContent=f.p;
-  el('fbKt').textContent=d.kc.t;el('fbKs').textContent=d.kc.s;
+  var f=o.fb,g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad',h;
+  if(d.quick){
+    h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.bt)+'</h3><p>'+esc(d.q.replace(/^現場追問 \d+／\d+　/,''))+'</p></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
+    h+='<p class="fwhy">'+esc(f.p)+'</p>';
+  }else{
+    var L=SC.log[SC.log.length-1],ix=DEC.indexOf(d);
+    h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
+    h+='<p class="fwhy">'+esc(f.p)+'</p>';
+    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
+    h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
+    if(hasFlow())h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(ix,g)+'</div>';
+  }
   var lab;
-  if(d.quick)lab=d.qlast?'查看成績單 →':'下一題 →';
-  else lab=SC.log.length>=DEC.length?((SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單'):'繼續下一關';
-  goLab(lab.replace(/ →$/,''));
-  chime(o.grade==='good');show('fb',true);
-  el('fbGo').onclick=function(){show('fb',false);curDone()};
+  if(d.quick)lab=d.qlast?'查看成績單':'下一題';
+  else lab=SC.log.length>=DEC.length?(hasFlow()?'進入流程排序':(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單'):'繼續下一關';
+  fbOpen(h,lab,function(){curDone()});
+  chime(o.grade==='good');
+}
+/* ================= 精緻版：詳解卡、流程圖解、得分浮字、流程排序 ================= */
+var MK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+var LK={ty:0,tp:0,act:0};
+function maxPts(d){return Math.max.apply(null,d.opts.map(function(o){return o.pts||0}))}
+function hasFlow(){return !!(SCN.flow&&SCN.flow.length>2)}
+function kcBox(kc){return '<div class="kc"><span class="bulb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><div class="kct"><small>知識補充</small><div>'+esc(kc.t)+'</div><span>'+esc(kc.s)+'</span></div></div>'}
+function fbOpen(h,lab,go){
+  var fb=el('fb');fb.className='v2';fb.innerHTML=h+'<button class="go" id="fbGo" type="button"></button>';goLab(lab);
+  [].forEach.call(fb.querySelectorAll('.ftab button'),function(b){b.addEventListener('click',function(){
+    [].forEach.call(fb.querySelectorAll('.ftab button'),function(x){x.classList.toggle('on',x===b)});
+    [].forEach.call(fb.querySelectorAll('.fpn'),function(p){p.hidden=p.dataset.p!==b.dataset.p})})});
+  show('fb',true);fb.scrollTop=0;
+  el('fbGo').onclick=function(){show('fb',false);go()};
+}
+/* 正確流程圖：hi＝目前這一步（-1 不標），g＝這一步做得如何 */
+function flowSvg(hi,g){
+  var F=SCN.flow||[],rh=40,H=F.length*rh+26,h='<svg viewBox="0 0 320 '+H+'" role="img" aria-label="正確流程：'+esc(F.map(function(f){return f.t}).join('、'))+'">';
+  h+='<text x="6" y="14" class="t3">正確流程'+(SV_FLOW()?'（求生）':'（急救）')+'</text>';
+  F.forEach(function(f,i){var y=22+i*rh,on=i===hi;
+    if(i<F.length-1)h+='<path d="M22 '+(y+30)+'v'+(rh-30)+'" class="fln"/>';
+    h+='<g class="fs'+(on?' on '+(g||'good'):i<hi?' done':'')+'"><rect x="2" y="'+y+'" width="316" height="'+(rh-8)+'" rx="9"/><circle cx="22" cy="'+(y+16)+'" r="10"/><text x="22" y="'+(y+20)+'" class="no" text-anchor="middle">'+(i+1)+'</text>'+
+      '<text x="42" y="'+(y+14)+'" class="t2">'+esc(f.t)+'</text><text x="42" y="'+(y+27)+'" class="t3">'+esc(f.s)+'</text>'+(on?'<text x="310" y="'+(y+20)+'" class="tag" text-anchor="end">這一步</text>':'')+'</g>';
+  });
+  return h+'</svg>';
+}
+function SV_FLOW(){return SCN.kind==='survive'}
+function ptsFloat(o,pts,to){
+  var d=el('ptsF');if(!d)return;var g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad';
+  d.className='on '+g;d.textContent=to?'時間到':g==='good'?'+'+pts:g==='mid'?'+'+pts+'　還可以更好':(SCN.kind==='survive'?'危險':'不正確');
+  clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){d.className=''},1500);
+}
+/* 流程排序：把正確步驟依序點出來 */
+function runOrder(next){
+  var F=SCN.flow,N=F.length,seq=[],fin=false,idx=F.map(function(_,i){return i});
+  do{idx=shuffle(idx)}while(idx.every(function(v,i){return v===i}));
+  cur={id:'ord',ord:true,q:'流程排序',opts:[]};curDone=null;decideEnd=0;phase='decide';controls=true;TS=1;
+  show('phone',false);show('fb',false);show('hint',false);show('prompt',false);show('useBtn',false);
+  el('decQ').textContent='流程排序：照正確順序，依序點出這 '+N+' 個步驟（點錯可以再點一次取消）';
+  el('tbar').style.visibility='hidden';el('decT').textContent='';
+  var opts=el('opts');opts.innerHTML='';opts.className='k-seq';
+  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''})}
+  idx.forEach(function(i){
+    var b=document.createElement('button');b.type='button';b.className='card sq';b.dataset.i=i;
+    b.innerHTML='<span class="no"></span><span class="t"></span><small></small>';b.querySelector('.t').textContent=F[i].t;b.querySelector('small').textContent=F[i].s;
+    b.addEventListener('click',function(){if(fin)return;var k=seq.indexOf(i);if(k>=0)seq.splice(k);else seq.push(i);tickSnd();paint();if(seq.length===N){fin=true;after(450,function(){done(seq)})}});
+    opts.appendChild(b);
+  });
+  var r=document.createElement('button');r.type='button';r.className='sqr';r.textContent='重新排列';r.addEventListener('click',function(){if(!fin){seq=[];paint()}});opts.appendChild(r);
+  show('dec',true);
+  function done(sq){
+    if(phase!=='decide')return;
+    phase='cut';controls=false;show('dec',false);
+    var ok=sq.filter(function(v,k){return v===k}).length;SC.ord={ok:ok,n:N,seq:sq.slice()};
+    var lv=ok===N?'good':ok>=Math.ceil(N/2)?'mid':'bad',b=lv==='good'?'ok':lv;
+    var pf=el('ptsF');if(pf){pf.className='on '+lv;pf.textContent='排對 '+ok+' / '+N;clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){pf.className=''},1500)}
+    var h='<div class="fbh"><span class="badge '+b+'">'+ICON[b]+'</span><div><h3>'+(lv==='good'?'順序完全正確':lv==='mid'?'大致記住了':'順序要再記熟')+'</h3><p>流程排序</p></div><b class="fpt">'+ok+'<small>/'+N+'</small></b></div><div class="fst cmp">';
+    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+MK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
+    h+='</div><p class="fwhy">'+(lv==='good'?'流程都記住了。真的遇到時，照這個順序一步一步做。':'順序很重要：前一步沒做好，後面做得再多也可能白費。看一下正確流程。')+'</p>';
+    h+='<div class="dgp">'+flowSvg(-1)+'</div>';
+    fbOpen(h,(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單',next);
+    phase='fb';chime(lv==='good');
+  }
+  window.__ord=done;
 }
 function playOption(d,o,done){var f=PLAY[d.id]&&(PLAY[d.id][o.id]||PLAY[d.id]._);if(f)f(done,o);else after(300,done)}
 /* 沒有自由走動：互動與教學的介面先關掉 */
@@ -2029,16 +2308,18 @@ function resetScene(){
   if(SCN.reset)SCN.reset();
 }
 function newGame(){
-  SC={score:0,log:[],cards:[]};QZ=[];dayInit();resetScene();resetG();setSafety(100);setClock(SCN.clock0);setChap('劇情時間');STAGE=-1;TS=1;paused=false;
+  SC={score:0,log:[],cards:[],ord:null};QZ=[];el('fb').className='';dayInit();resetScene();resetG();setSafety(100);setClock(SCN.clock0);setChap('劇情時間');STAGE=-1;TS=1;paused=false;
   SCN.start();
 }
 function toQuick(){
-  if(!SCN.quick||!SCN.quick.length){endScene();return}
   phase='cut';controls=false;restHands();
-  chap(DEC.length+1,'現場追問',SCN.clockQ||'',function(){
-    if(SCN.quickCam)SCN.quickCam();
-    runQuick(endScene);
-  });
+  var n=DEC.length+1;
+  function quick(){
+    if(!SCN.quick||!SCN.quick.length){endScene();return}
+    chap(n,'現場追問',SCN.clockQ||'',function(){if(SCN.quickCam)SCN.quickCam();runQuick(endScene)});
+  }
+  if(!hasFlow()){quick();return}
+  chap(n++,'流程排序','',function(){if(SCN.quickCam)SCN.quickCam();runOrder(quick)});
 }
 function endScene(){
   phase='cut';controls=false;fadeTo(1,1400);bars(false);cap('');showSkip(false);
@@ -2115,8 +2396,7 @@ function dayInit(){
   box.innerHTML=h;box.hidden=false;
 }
 function dayEnd(rk,qok,qn){
-  var i=dayIdx();if(i<0){daySave({r:rk.r,s:SC.score,q:qn?qok+'/'+qn:''});return ''}
-  daySave({r:rk.r,s:SC.score,q:qn?qok+'/'+qn:''});
+  var sv={r:rk.r,s:rk.T!=null?rk.T:SC.score,q:qn?qok+'/'+qn:''},i=dayIdx();daySave(sv);if(i<0)return '';
   var d=dayGet(),done=DAY_ORDER.filter(function(x){return d[x[0]]}).length;
   var h='<div class="story"><b>幸福里 7 號樓的一晚　'+done+' / 4 章完成</b><br>';
   if(i<3)h+='接下來：'+DAY_ORDER[i+1][2]+'　'+DAY_ORDER[i+1][1]+'（'+DAY_ORDER[i+1][3]+'）';
@@ -2125,34 +2405,53 @@ function dayEnd(rk,qok,qn){
   return h+'</div>';
 }
 
-/* ================= 成績單 ================= */
-function calcRank(){
-  var N=DEC.length,good=SC.log.filter(function(l){return l.o.grade==='good'}).length,score=SC.score,sf=sfNow,r;
-  if(good===N&&score>=92)r='S';else if(good===N||(good===N-1&&sf>=60))r='A';else if(good>=Math.ceil(N/2))r='B';else r='C';
-  return {r:r,good:good,n:N};
-}
+/* ================= 成績單（精緻版：細項評分、時間軸、評等標準） ================= */
 var SV=SCN.kind==='survive';
 var RANK=SV?{S:{t:'教科書等級的應變',c:'#f2c14e'},A:{t:'冷靜判斷，全身而退',c:'#74ab90'},B:{t:'有驚無險，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}}:{S:{t:'教科書等級的急救',c:'#f2c14e'},A:{t:'冷靜可靠的第一反應者',c:'#74ab90'},B:{t:'有幫上忙，還能更好',c:'#e3b64e'},C:{t:'值得再練一次',c:'#e2564a'}};
 var HAND_CREDIT='雙手 3D 模型：This work is based on "Free Pack - VR Hands (Rigged)" (https://sketchfab.com/3d-models/free-pack-vr-hands-rigged-b3b8309e59c748e3956531c8f57dd233) by PolyOne Studio (https://sketchfab.com/polyone) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)';
+/* 總分＝判斷 60%＋安全值（傷者狀況）20%＋流程排序 10%＋反應速度 10%；沒計時或沒有排序，就依比例分配 */
+function calcRank(){
+  var N=DEC.length,log=SC.log||[],good=log.filter(function(l){return l.o.grade==='good'}).length,got=0,max=0;
+  log.forEach(function(l){got+=l.base!=null?l.base:l.pts;max+=l.max!=null?l.max:22});
+  max=Math.max(max,N*22);
+  var J=Math.round(got/max*100),HS=Math.max(0,Math.round(sfNow));
+  var lefts=log.filter(function(l){return l.left!=null}).map(function(l){return clamp(l.left/.5,0,1)});
+  var SP=lefts.length?Math.round(lefts.reduce(function(a,b){return a+b},0)/lefts.length*100):null;
+  var OR=SC.ord?Math.round(SC.ord.ok/SC.ord.n*100):null;
+  var parts=[[J,.6],[HS,.2],[OR,.1],[SP,.1]].filter(function(x){return x[0]!=null}),wt=parts.reduce(function(a,x){return a+x[1]},0);
+  var T=Math.round(parts.reduce(function(a,x){return a+x[0]*x[1]},0)/wt);
+  var r;if(good===N&&T>=92)r='S';else if(J>=85&&T>=78)r='A';else if(J>=55)r='B';else r='C';
+  return {r:r,good:good,n:N,J:J,HS:HS,SP:SP,OR:OR,T:T};
+}
+function dmBar(lab,v,note){var c=v==null?'':v>=85?'g':v>=60?'y':'r';return '<div class="dm"><div class="dh"><b>'+lab+'</b><em>'+(v==null?'--':v)+'</em></div><div class="db"><i class="'+c+'" style="width:'+(v==null?0:v)+'%"></i></div><small>'+note+'</small></div>'}
 function showEnd(){
   audioFadeOut();phase='end';controls=false;['dec','fb','phone','obj','prompt','useBtn'].forEach(function(i){show(i,false)});
-  var rk=calcRank(),R=RANK[rk.r];
+  var rk=calcRank(),R=RANK[rk.r],SAFE=SV?'安全值':'傷者狀況';
   var times=SC.log.filter(function(l){return l.timeUsed!=null}).map(function(l){return l.timeUsed});
   var avg=times.length?times.reduce(function(a,b){return a+b},0)/times.length:null;
-  var qok=QZ.filter(function(x){return x.ok}).length;
+  var qok=QZ.filter(function(x){return x.ok}).length,QP=QZ.length?Math.round(qok/QZ.length*100):null;
   var h='<div class="mark"><i></i>成績單　'+(SV?'SURVIVAL REPORT':'FIRST AID REPORT')+'</div>';
-  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　做對 '+rk.good+' / '+rk.n+'　·　得分 '+SC.score+' / 100</p></div></div>';
-  h+='<div class="stats"><div><b>'+sfNow+'</b><span>'+(SV?'安全值':'傷者狀況')+'</span></div><div><b>'+rk.good+'/'+rk.n+'</b><span>關鍵決定</span></div><div><b>'+(QZ.length?qok+'/'+QZ.length:'--')+'</b><span>現場追問</span></div></div>';
+  h+='<div class="rk"><div class="L" style="color:'+R.c+';border-color:'+R.c+'">'+rk.r+'</div><div><h2>'+R.t+'</h2><p>'+esc(SCN.title)+'　·　總分 '+rk.T+' / 100　·　做對 '+rk.good+' / '+rk.n+'</p></div></div>';
+  h+='<div class="stats4"><div><b>'+Math.round(sfNow)+'</b><span>'+SAFE+'</span></div><div><b>'+rk.good+'<small>/'+rk.n+'</small></b><span>關鍵決定</span></div><div><b>'+(SC.ord?SC.ord.ok+'<small>/'+SC.ord.n+'</small>':'--')+'</b><span>流程排序</span></div><div><b>'+(avg!=null?avg.toFixed(1)+'<small>s</small>':'--')+'</b><span>平均反應</span></div></div>';
   h+='<div class="story">'+SC.epilogue.map(esc).join('<br>')+'</div>';
-  h+='<div class="sec">逐題回顧</div><div class="rv">';
-  SC.log.forEach(function(l){
-    var cls=l.o.grade==='good'?'ok':l.o.grade==='mid'?'mid':'bad',mk=cls==='ok'?'✓':cls==='mid'?'△':'✕';
-    h+='<div class="'+cls+'"><div class="h"><span class="m">'+mk+'</span>'+esc(l.d.ch)+'<em>+'+l.pts+'</em></div>';
-    h+='<p>你的選擇：<b>'+esc(l.o.t.replace(/^「|」$/g,''))+'</b></p>';
-    if(l.o.grade!=='good')h+='<p>比較好的做法：<b>'+esc(l.d.best)+'</b></p>';
-    h+='</div>';
+  h+='<div class="sec">能力分析</div><div class="dms">'+
+    dmBar('判斷正確',rk.J,'每個決定的得分，佔總分 60%')+
+    dmBar(SAFE,rk.HS,'選錯會扣，佔總分 20%')+
+    (rk.OR!=null?dmBar('流程記憶',rk.OR,'排對的步驟比例，佔總分 10%'):'')+
+    dmBar('反應速度',rk.SP,rk.SP==null?'這次沒有開倒數計時，不計分':'還剩一半以上時間就做決定拿滿分，佔總分 10%')+
+    (QP!=null?dmBar('現場追問',QP,'答對 '+qok+' / '+QZ.length+' 題（不計入總分）'):'')+'</div>';
+  h+='<div class="sec">'+(SV?'這一次的時間軸':'處置時間軸')+'</div><div class="tl">';
+  SC.log.forEach(function(l,i){
+    var g=l.o.grade==='good'?'good':l.o.grade==='mid'?'mid':'bad',ix=DEC.indexOf(l.d),ck=(typeof CLKS!=='undefined'&&CLKS[ix])?CLKS[ix]:'#'+(i+1);
+    h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
+    h+='<p><i class="'+g+'">'+MK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
+    if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
+    h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
+  if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
+    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+MK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
   h+='</div>';
+  h+='<div class="sec">評等標準</div><div class="crit"><p><b>S</b>每個決定都對、總分 92 以上</p><p><b>A</b>判斷正確 85 以上、總分 78 以上</p><p><b>B</b>判斷正確 55 以上</p><p><b>C</b>其他</p></div>';
   if(QZ.length){
     h+='<div class="sec">現場追問　'+qok+' / '+QZ.length+' 題答對</div><div class="rv">';
     QZ.forEach(function(x){
@@ -2174,11 +2473,12 @@ function showEnd(){
   h+='<p class="src">'+esc(HAND_CREDIT)+'</p>';
   el('endBox').innerHTML=h;el('end').scrollTop=0;
   show('end',true);fadeTo(0,900);chime(rk.r==='S'||rk.r==='A');
+  try{[].forEach.call(el('endBox').querySelectorAll('.db i'),function(b){var w=b.style.width;b.style.width='0';setTimeout(function(){b.style.width=w},120)})}catch(e){}
   el('again').onclick=function(){fadeTo(1,500);after(600,function(){show('end',false);newGame()})};
   el('endExit').onclick=exitGame;
   if(el('nextCh'))el('nextCh').onclick=function(){toParent({iw:'next',id:DAY_ORDER[dayIdx()+1][0]})};
   el('share').onclick=function(){
-    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（'+SC.score+' 分，關鍵決定做對 '+rk.good+'/'+rk.n+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
+    var tx='我在 IRON WILL「'+SCN.title+'」拿到 '+rk.r+' 級（總分 '+rk.T+'，關鍵決定做對 '+rk.good+'/'+rk.n+(SC.ord?'，流程排序 '+SC.ord.ok+'/'+SC.ord.n:'')+(QZ.length?'，現場追問 '+qok+'/'+QZ.length:'')+'）。你會怎麼做？';
     var p=el('shareTx');p.textContent=tx;
     try{navigator.clipboard.writeText(tx).then(function(){el('share').textContent='已複製'},function(){p.style.display='block'})}catch(e){p.style.display='block'}
   };
@@ -2243,7 +2543,7 @@ canvas.addEventListener('pointermove',function(e){
   }
   if(!look||e.pointerId!==look.id||!controls||paused)return;
   var mx=e.clientX-look.x,my=e.clientY-look.y;look.x=e.clientX;look.y=e.clientY;
-  cam.yaw=clamp(cam.yaw+mx*.0055,-6.4,6.4);cam.pitch=clamp(cam.pitch+my*.0045,-1.1,1.1);
+  LK.ty=clamp(LK.ty+mx*.0055,-6.4,6.4);LK.tp=clamp(LK.tp+my*.0045,-1.1,1.1);LK.act=1;
 });
 function tapPick(x,y){
   if(phase!=='explore'||!IAV.length)return;
@@ -2289,6 +2589,7 @@ function frame(now){
     var sec=Math.ceil(left/1000);if(left>0&&sec<=3&&sec!==window.__lastSec){window.__lastSec=sec;tickWarn()}
     if(left<=0&&cur)pickOption(cur,cur.timeout,true);
   }
+  if(controls&&phase==='decide'&&LK.act){var kk=Math.min(1,dt*14);cam.yaw+=(LK.ty-cam.yaw)*kk;cam.pitch+=(LK.tp-cam.pitch)*kk;if(Math.abs(LK.ty-cam.yaw)+Math.abs(LK.tp-cam.pitch)<.002)LK.act=0}else{LK.ty=cam.yaw;LK.tp=cam.pitch;LK.act=0}
   if(phase==='title')titleCam();
   audioLevels();
   render();
@@ -2309,8 +2610,8 @@ dayInit();resize();paintToggles();fadeTo(0,1400);toParent({iw:'ready'});
 requestAnimationFrame(frame);
 window.__vtA=function(){return vt};window.__fin=function(){finale()};window.__g={HR:HR,HL:HL,HPOSE:HPOSE,hIn:hIn,hTo:hTo,ST:ST,cam:cam,SCN:SCN,
   get G(){return G},get phase(){return phase},get SC(){return SC},get QZ(){return QZ},get cur(){return cur},get sf(){return sfNow},get usePost(){return usePost},get paused(){return paused},
-  setTS:function(v){TS=v},pick:function(id){var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
-  pickGood:function(){var o=cur.opts.filter(function(q){return q.grade==='good'})[0];pickOption(cur,o)},fbGo:function(){el('fbGo').click()},
+  setTS:function(v){TS=v},pick:function(id){if(cur.ord){window.__ord(SCN.flow.map(function(_,i){return i}).reverse());return}var o=cur.opts.filter(function(q){return q.id===id})[0]||cur.timeout;pickOption(cur,o,id==='timeout')},
+  ordGood:function(){window.__ord(SCN.flow.map(function(_,i){return i}))},pickGood:function(){if(cur.ord){window.__ord(SCN.flow.map(function(_,i){return i}));return}var o=cur.opts.filter(function(q){return q.grade==='good'})[0];pickOption(cur,o)},fbGo:function(){el('fbGo').click()},
   tp:function(x,z,yaw,pitch){cam.x=x;cam.z=z;if(yaw!=null)cam.yaw=yaw;if(pitch!=null)cam.pitch=pitch},setPause:setPause,newGame:newGame,setSafety:setSafety,noTimer:function(){S.timer=false},endNow:function(){if(!SC)SC={score:0,log:[],cards:[]};SC.epilogue=SCN.epilogue();showEnd()}};window.__vt=function(){return vt};
 })();
 </script>
