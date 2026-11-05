@@ -3032,7 +3032,7 @@ function watchCourse(){
     }catch(e){}
   },function(e){console.warn('課程設定同步失敗',e);unsubC=null;setTimeout(function(){try{watchCourse()}catch(x){}},3000);});
 }
-var APP_VERSION='v11.52　2026/11/04';
+var APP_VERSION='v11.55　2026/11/05';
 (function(){
   var root=document.documentElement;
   function apply(t){
@@ -3633,16 +3633,16 @@ function chOnClose(st){
 }
 var GM_CFG={mode:'soon',at:0,end:0,note:''};
 var GM_GAMES=[
- {id:'apt',k:'火災',t:'深夜公寓火災',d:'凌晨 02:13，警報響了，門縫下透著橘紅色的光。第一人稱，可以自己走動、查看、動手。',file:'scene-apartment.html',ready:true},
- {id:'pbank',k:'火災',t:'行動電源冒煙起火',d:'深夜，桌上充電中的行動電源鼓了起來、開始冒煙。斷電、滅火、撤離、報案。',file:'scene-pbank.html',ready:true},
- {id:'gas',k:'瓦斯',t:'瓦斯外洩',d:'下班回家一開門，滿屋子瓦斯味。不碰開關、關瓦斯、開窗、到戶外再報案。',file:'scene-gas.html',ready:true},
- {id:'quake',k:'地震',t:'地震：晚餐時的搖晃',d:'晚上在家吃飯，整棟樓劇烈搖晃。趴下掩護、穩住，搖晃後關火、疏散、報平安。',file:'scene-quake.html',ready:true},
+ {id:'apt',k:'火災',t:'深夜公寓火災',d:'凌晨 02:13，警報響了，門縫下透著橘紅色的光。親手確認門外、和 119 一問一答、會下降的煙層與低姿勢、每章圖解、細項成績單。',file:'scene-apartment.html',ready:true},
+ {id:'pbank',k:'火災',t:'行動電源冒煙起火',d:'深夜，鐵桌上充電中的行動電源冒煙、爆裂起火。斷電退開、不靠近滅火、關門撤離、報案、跟消防隊交接。',file:'scene-pbank.html',ready:true},
+ {id:'gas',k:'瓦斯',t:'瓦斯外洩',d:'在家時瓦斯偵測器響了，聞到一點瓦斯味。剛漏才止洩、不碰開關、開窗、到戶外再報案；大外洩直接離開。',file:'scene-gas.html',ready:true},
+ {id:'quake',k:'地震',t:'地震：晚餐時的搖晃',d:'晚上在家吃飯，整棟樓劇烈搖晃。趴下掩護、穩住，搖晃後瓦斯大外洩就直接離開、走樓梯疏散、報平安。',file:'scene-quake.html',ready:true},
  {id:'cpr',day:3,clock:'18:12',k:'急救',t:'路邊倒下的人',d:'超商門口，有人突然倒地。CPR 與 AED。',file:'scene-cpr.html',ready:true},
  {id:'choke',day:4,clock:'19:08',k:'急救',t:'餐桌上的噎住',d:'家人吃著吃著，突然說不出話。拍背與腹部擠壓。',file:'scene-choke.html',ready:true},
- {id:'pan',k:'火災',t:'廚房油鍋起火',d:'煎魚時鍋裡的油燒了起來。關火蓋鍋蓋、不掀蓋、滅火器、滅不了就逃。',file:'scene-pan.html',ready:true},
+ {id:'pan',k:'火災',t:'廚房油鍋起火',d:'煎魚時鍋裡的油剛燒起來。先蓋鍋蓋再關火、靜置 3 到 5 分鐘、蓋不住用滅火器、通風等冷卻。',file:'scene-pan.html',ready:true},
  {id:'mall',k:'火災',t:'百貨公司的火警',d:'5 樓逛街時警報大響，走道開始有煙。指示燈、防火門、樓梯見煙、出來不回頭。',file:'scene-mall.html',ready:true},
  {id:'co',k:'一氧化碳',t:'浴室熱水器：一氧化碳',d:'洗澡洗到一半頭痛、想吐。停用、通風、離開、從源頭改善熱水器。',file:'scene-co.html',ready:true},
- {id:'flood',k:'淹水',t:'颱風夜的地下停車場',d:'地下二樓開始淹水。人先走、避開配電箱、教鄰居敲車窗四角、上去就不再下去。',file:'scene-flood.html',ready:true},
+ {id:'cord',k:'火災',t:'延長線走火',d:'客廳延長線插滿大電器，插頭冒煙起火。先斷電、用滅火器、燒過的插座不再通電、改正用電習慣。',file:'scene-cord.html',ready:true},
  {id:'bleed',day:2,clock:'18:05',k:'急救',t:'廚房割傷',d:'傷口一直流血，止不住。直接加壓與包紮。',file:'scene-bleed.html',ready:true},
  {id:'burn',day:1,clock:'17:48',k:'急救',t:'熱水燙傷',d:'小孩被熱水燙到了。沖脫泡蓋送。',file:'scene-burn.html',ready:true}
 ];
@@ -3687,7 +3687,7 @@ function gmDay(){try{return JSON.parse(localStorage.getItem('iw-day')||'{}')||{}
 function gmOpen(g){var fr=$('#sceneFrame'),bx=$('#sceneBox');if(!g||!g.file||!fr||!bx)return;bx.classList.remove('ready','slow');clearTimeout(window._gmT);window._gmT=setTimeout(function(){if(!bx.hidden&&!bx.classList.contains('ready'))bx.classList.add('slow')},12000);fr.setAttribute('allow','autoplay; fullscreen');fr.src=(typeof FRONT_URL==='string'?FRONT_URL:'')+g.file+'?v='+Date.now();bx.hidden=false;try{if(bx.requestFullscreen)bx.requestFullscreen().catch(function(){})}catch(err){}}
 var SC_CAT='';
 var SC_CATS={aid:{k:'FIRST AID',t:'急救現場',d:'身邊的人受傷、倒下、噎住的那一刻。四個連續的急救情境，學會第一時間該做什麼。'},
-             surv:{k:'SURVIVAL',t:'求生現場',d:'火災、地震、一氧化碳、淹水。自己就在現場，要先保護自己、再想辦法離開。'}};
+             surv:{k:'SURVIVAL',t:'求生現場',d:'火災、瓦斯、地震、一氧化碳。自己就在現場，要先保護自己、再想辦法離開。'}};
 function paintScene(){
   var box=$('#sceneList');if(!box)return;
   var st=gmState(),h='',D=gmDay();if(PREVIEW&&!st.open)h+='<div class="sc-test">預覽測試：一般學員目前看到的是「'+hmEsc(st.badge||'未開放')+'」，進不來這一頁。</div>';
