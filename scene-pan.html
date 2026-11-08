@@ -142,6 +142,13 @@
 .card.sq .t{padding-right:24px}
 .fst.cmp{gap:4px}.fst.cmp>div{padding:6px 10px;align-items:center}.fst.cmp small{display:inline;margin-right:8px}.fst.cmp b{display:inline;font-size:14px}.fst.cmp span{font-size:12.5px}
 .tli p.kcx{display:block}
+.ordS{display:block;font-size:13px;line-height:1.5;color:var(--ink2);font-weight:500;margin-bottom:4px}
+.ordN{display:block}
+.ordN b{color:#f2c14e}
+#opts.k-seq .ordG{grid-column:1/-1;font-size:12.5px;color:var(--ink2);line-height:1.5;padding:0 2px 2px}
+#opts.k-seq .ordSl{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.ordSl i{font-style:normal;flex:1 1 0;min-width:60px;border:1px dashed rgba(255,255,255,.28);border-radius:8px;padding:5px 6px;font-size:12px;line-height:1.3;color:var(--ink2);text-align:center}
+.ordSl i.on{border-style:solid;border-color:#f2c14e;color:#fff;background:rgba(242,193,78,.12)}
 </style>
 <title>IRON WILL 廚房油鍋起火｜求生現場</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -571,7 +578,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　求生現場</div>
     <h1>廚房油鍋起火</h1>
-    <p class="lead">傍晚 18:20，你在煎魚，鍋裡的油突然燒了起來，火苗剛冒出鍋子邊緣。蓋鍋蓋、靜置、用滅火器、善後，你會怎麼做？</p>
+    <p class="lead">傍晚 18:20，你在煎魚，鍋裡的油突然燒了起來。先喊人、8 到 10 秒內蓋上鍋蓋、靜置；幾個月後火太大的那一次，要用對滅火器。</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -590,7 +597,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="mark"><i></i>情境提要</div>
   <h2>廚房油鍋起火</h2>
   <div class="bi now"><b>現在</b><p>傍晚 18:20，家裡的廚房。你在熱油準備煎魚，轉身去拿盤子，回頭時鍋子已經冒出白煙。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>油鍋剛起火的第一步</li><li>蓋上鍋蓋之後</li><li>鍋蓋蓋不密，火又竄出來</li><li>火熄了之後</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
+  <div class="bi"><b>你要做</b><ol><li>油鍋剛起火的第一步</li><li>蓋上鍋蓋之後</li><li>火太大的時候</li><li>火熄了之後</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -1198,13 +1205,15 @@ O({g:'box',parent:panN,dyn:true,p:[.24,.045,.08],s:[.2,.025,.035],col:hex(0x2a24
 var fish=O({g:'sph',parent:panN,dyn:true,p:[0,.045,0],s:[.16,.025,.07],col:hex(0xb7a58c),spec:.4});
 /* 鍋蓋：平常放在流理台上 */
 var lidN=O({g:null,p:[-.05,CTOP+.012,-RD/2+.45],dyn:true});
-O({g:'fr',parent:lidN,dyn:true,p:[0,.015,0],s:[.33,.03,.33],col:hex(0x9aa0a6),spec:.9,tex:TX.steel,r:[PI,0,0]});
-O({g:'cyl',parent:lidN,dyn:true,p:[0,.04,0],s:[.05,.025,.05],col:hex(0x222222),spec:.4});
+/* 跟鍋子一樣大小的鍋蓋：圓頂＋金屬邊圈＋把手 */
+O({g:'sph',parent:lidN,dyn:true,p:[0,.004,0],s:[.3,.075,.3],col:hex(0xb9c2c8),spec:1.1,a:.85,blend:'alpha'});
+O({g:'cyl',parent:lidN,dyn:true,p:[0,.006,0],s:[.31,.014,.31],col:hex(0x8a9096),spec:1,tex:TX.steel});
+O({g:'cyl',parent:lidN,dyn:true,p:[0,.05,0],s:[.06,.03,.06],col:hex(0x222222),spec:.4});
 var towelR=O({g:'cyl',p:[PANP.x,PANP.y+.06,PANP.z],s:[.37,.035,.37],col:hex(0xe9e4d6),tex:TX.fabric,rep:[3,1],dyn:true});towelR.vis=false;
 /* 盤子 */
 B(.22,.012,.22,-.35,CTOP+.006,-RD/2+.4,0xf4f2ee,{spec:.6});
-/* 住宅用滅火器（冰箱旁邊） */
-var EXT={x:1.15,z:-RD/2+.85};
+/* 住宅用強化液滅火器：放在大門邊 */
+var EXT={x:.65,z:RD/2-.22};
 var extN=O({g:null,p:[EXT.x,0,EXT.z],dyn:true});
 O({g:'cyl',parent:extN,dyn:true,p:[0,.25,0],s:[.13,.42,.13],col:hex(0xc42d22),spec:.6});
 O({g:'sph',parent:extN,dyn:true,p:[0,.46,0],s:[.13,.07,.13],col:hex(0xc42d22),spec:.6});
@@ -1381,6 +1390,9 @@ function tween(obj,to,dur,done,ez){
 function after(ms,fn){var t={t:vt+ms,fn:fn};timers.push(t);return t}
 function clearAll(){tw.length=0;timers.length=0}
 function stepTime(dtms){
+  capClock+=dtms*TS;
+  if(CAPQ.length){if(!capGate()){capFlush()}else if(capClock>=capUntil){var q=CAPQ.shift();capShow(q[0],q[1])}}
+  if(CAPQ.length&&capGate())return;
   vt+=dtms*TS;
   for(var i=tw.length-1;i>=0;i--){var a=tw[i];if(!a)continue;var u=Math.min(1,(vt-a.s)/a.d),e=a.e(u);
     for(var k in a.t)a.o[k]=a.f[k]+(a.t[k]-a.f[k])*e;
@@ -1805,7 +1817,17 @@ function labelTex(txt){
 var controls=false,cur=null,curDone=function(){},decideEnd=0,decideLimit=8000,SC=null,STAGE=-1,baseSmoke=.12;
 function el(id){return $('#'+id)}
 function show(id,v){el(id).hidden=!v}
+var CAPQ=[],capClock=0,capUntil=0;
+function capRead(t){return Math.min(6.5,1.1+String(t).length*.14)*1000}
+function capGate(){return phase==='cut'}
+function capFlush(){if(!CAPQ.length)return;var q=CAPQ[CAPQ.length-1];CAPQ.length=0;capShow(q[0],q[1])}
 function cap(txt,who){
+  if(capGate()&&(CAPQ.length||capClock<capUntil)){CAPQ.push([txt,who]);return}
+  if(!capGate())CAPQ.length=0;
+  capShow(txt,who);
+}
+function capShow(txt,who){
+  capUntil=txt?capClock+capRead(txt):0;
   var p=el('capP');p.classList.remove('on');if(!txt)return;
   setTimeout(function(){el('capW').textContent=who||'';el('capS').textContent=txt;p.classList.add('on')},140);
 }
@@ -1830,21 +1852,23 @@ function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;
 /* ================= 求生現場：廚房油鍋起火 ================= */
 var SCN={
   id:'pan',kind:'survive',title:'廚房油鍋起火',eye:1.6,clock0:'18:20',clockQ:'18:40',stage1:'傍晚，廚房裡正在煎魚…',
-  src:'內容整理自內政部、台北市政府消防局油鍋起火宣導（蓋鍋蓋、關火、不可用水、靜置冷卻）、基隆市消防局說明（2026），以及消防署火災逃生避難原則。鍋蓋只適用剛起火的小火；火已經很大就不要靠近蓋鍋蓋。細節仍待對照官方原文。',
+  src:'內容整理自內政部、台北市政府消防局油鍋起火宣導（蓋鍋蓋、關火、不可用水、靜置冷卻）、基隆市消防局說明（2026），以及消防署火災逃生避難原則。鍋蓋要在起火後約 8 到 10 秒內蓋上、大小要相符（依實驗觀察）；住宅用強化液滅火器可用於油鍋起火，乾粉、二氧化碳滅火器對油鍋起火容易復燃（參考 TVBS 2025 滅火器種類整理）。細節仍待對照官方原文。',
   env:{fog:[.06,.055,.05],fogD:.012,sky:[.52,.5,.5],gnd:[.3,.27,.24],dirD:[-.4,-.8,-.2],dirC:[.08,.08,.1],ao:1},
-  icons:{lid:'hand',water:'x',carry:'x',wait:'wait',peek:'x',move:'x',ext:'ext',water2:'x',close:'ext',vent:'win',sink:'x',wipe:'x'},
+  icons:{lid:'hand',water:'x',carry:'x',wait:'wait',peek:'x',move:'x',ext:'ext',lid2:'x',powder:'x',vent:'win',sink:'x',wipe:'x'},
   hurtSnd:function(){thud(.5)}
 };
-var DEC=[{"id": "d1", "q": "鍋裡的油突然「呼」地燒了起來，火苗剛冒出鍋子邊緣。你要怎麼做？", "time": 10, "kc": {"t": "油鍋剛起火：先蓋鍋蓋，再關火，絕對不能用水", "s": "火還小的時候，拿鍋蓋從身體這一側、沿著鍋緣蓋上，隔絕空氣，再把爐火關掉。千萬不能用水：水碰到熱油會瞬間變成水蒸氣、體積暴增，把著火的油整個噴出來。火如果已經竄得很高，就不要靠近蓋鍋蓋。"}, "best": "拿鍋蓋從身體這一側沿著鍋緣蓋上，再關掉爐火", "opts": [{"id": "lid", "t": "拿鍋蓋從身體這一側、沿著鍋緣蓋上，再關掉爐火", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "蓋上鍋蓋，火就沒有空氣", "p": "趁火還小，鍋蓋從身體這一側、沿著鍋緣斜斜地蓋過去，手和臉不要在鍋子正上方。蓋上之後火沒有空氣就會熄，接著再關爐火。"}}, {"id": "water", "t": "趕快裝一杯水潑下去", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "水遇到熱油會爆開", "p": "油比水輕，水一倒進去就沉到底、瞬間變成水蒸氣，體積暴增，把著火的油整個噴出來，變成一團火球。"}}, {"id": "carry", "t": "端起鍋子衝到水槽", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "端著火走，熱油會灑出來", "p": "鍋子很燙、油在晃，一不小心就灑在身上或地上，火跟著蔓延。不要移動起火的鍋子。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "火越燒越大", "p": "火還小的時候：先蓋鍋蓋，再關火。"}}}, {"id": "d2", "q": "鍋蓋蓋上了，爐火也關了，鍋蓋邊緣還在冒煙。接下來？", "time": 10, "kc": {"t": "蓋上之後：靜置 3 到 5 分鐘，不掀、不移動", "s": "蓋上鍋蓋、關火之後，至少靜置 3 到 5 分鐘，讓油溫降下來，才能移動鍋子或打開鍋蓋。太早掀開，空氣一進去又會燒起來；端著熱油走，也容易灑出來燙傷、引燃別的東西。"}, "best": "鍋蓋不要掀，靜置 3 到 5 分鐘，等油降溫再處理", "opts": [{"id": "wait", "t": "鍋蓋不要掀，靜置 3 到 5 分鐘，等油降溫再處理", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "讓它靜靜冷卻", "p": "油溫還很高，掀開就會再燒起來。靜置 3 到 5 分鐘、等油降溫，才可以移動鍋子或打開鍋蓋。"}}, {"id": "peek", "t": "掀開鍋蓋看看熄了沒", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "會再燒起來", "h": "油還很燙，空氣一進去就復燃", "p": "火熄了，但油溫還在燃點以上。鍋蓋一掀，空氣進去，火又會「呼」地燒起來，臉和手就在正上方。"}}, {"id": "move", "t": "趁火熄了，把鍋子端到水槽放涼", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "太早移動", "h": "熱油一晃就灑出來", "p": "鍋子和油都還很燙，一晃就可能灑出來燙傷，鍋蓋滑開還會復燃。先靜置 3 到 5 分鐘，不要移動。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "鍋蓋邊緣一直冒煙", "p": "蓋上之後就靜置 3 到 5 分鐘，不掀、不移動。"}}}, {"id": "d3", "q": "鍋蓋比鍋子小了一圈，邊緣的縫隙又竄出火苗，越燒越大。家裡有一支住宅用滅火器。", "time": 10, "kc": {"t": "鍋蓋蓋不住：用滅火器，拉、瞄、壓、掃", "s": "鍋蓋蓋不密、火還在燒，改用滅火器：拉掉插銷、瞄準火源底部、壓下把手、左右掃射。站在兩三步外噴，不要貼近，強勁的噴射會把熱油吹得四處噴濺。"}, "best": "拿滅火器，站在兩三步外，拉插銷、瞄準火源底部、壓下把手左右掃", "opts": [{"id": "ext", "t": "拿滅火器，站在兩三步外，拉插銷、瞄準火源底部、壓下把手左右掃", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "拉、瞄、壓、掃", "p": "保持距離，瞄準火源底部，左右掃射，把火壓下去。"}}, {"id": "close", "t": "站近一點，把噴嘴貼著鍋子噴", "grade": "mid", "pts": 8, "dmg": 12, "fb": {"b": "mid", "bt": "太近了", "h": "噴射會把熱油吹散", "p": "滅火器噴出來的力道很強，貼著鍋子噴，會把熱油和火星吹得到處都是。站在兩三步外，瞄準火源底部。"}}, {"id": "water2", "t": "裝一杯水往鍋蓋邊緣潑", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "非常危險", "h": "水遇到熱油會爆開", "p": "水從縫隙流進熱油裡，瞬間變成水蒸氣，把著火的油噴出來，變成一團火球。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "火越燒越大", "p": "鍋蓋蓋不住，就改用滅火器：拉、瞄、壓、掃。"}}}, {"id": "d4", "q": "火熄了。廚房裡都是油煙和滅火器的粉末，鍋子還非常燙。接下來？", "time": 10, "kc": {"t": "火熄了之後：通風、不移動、等冷卻", "s": "打開窗戶讓煙和粉末散出去，人不要一直待在煙裡。鍋子留在爐上不要動，等完全冷卻、摸起來不燙了，再處理油和鍋子。熱油絕對不能直接沖水。"}, "best": "打開窗戶通風，鍋子留在爐上不動，等完全冷卻再處理", "opts": [{"id": "vent", "t": "打開窗戶通風，鍋子留在爐上不動，等完全冷卻再處理", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "通風、等冷卻", "p": "先讓煙和粉末散掉，鍋子不要動。等油完全冷卻再處理，最安全。"}}, {"id": "sink", "t": "戴上隔熱手套，把鍋子端到水槽用水沖一沖降溫", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "熱油遇水會爆開", "p": "油還很燙，一碰到水就會瞬間汽化爆開，滾燙的油和蒸氣會噴到你身上。"}}, {"id": "wipe", "t": "關上門窗，留在廚房把粉末和油漬擦乾淨", "grade": "mid", "pts": 8, "dmg": 10, "fb": {"b": "mid", "bt": "先通風", "h": "煙和粉末會刺激呼吸道", "p": "燒過的油煙和滅火器粉末還在空氣裡，留在密閉的廚房會咳嗽、眼睛刺痛。先開窗通風、人離開，等散了再整理。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "煙一直散不掉", "p": "先開窗通風，鍋子不要動，等冷卻。"}}}];
-SCN.quick=[{"q": "油鍋起火，為什麼不能用水？", "ok": "水碰到熱油會瞬間汽化，把著火的油噴出來", "w": ["水會讓油變得更黏", "水太冷，鍋子會裂開"], "why": "油比水輕，水沉到底瞬間變成水蒸氣、體積暴增，把燃燒的油噴得到處都是。", "kc": {"t": "油鍋不能用水", "s": "油比水輕，水沉到底瞬間變成水蒸氣、體積暴增，把燃燒的油噴得到處都是。"}}, {"q": "鍋蓋要怎麼蓋？", "ok": "從身體這一側，沿著鍋緣斜斜地蓋過去", "w": ["從鍋子正上方直直放下去", "丟過去就好"], "why": "從身體前方沿著鍋緣蓋，手和臉不要在鍋子正上方，避免被火燒到。", "kc": {"t": "沿鍋緣蓋鍋蓋", "s": "從身體前方沿著鍋緣蓋，手和臉不要在鍋子正上方，避免被火燒到。"}}, {"q": "火被鍋蓋悶住之後，什麼時候可以掀開？", "ok": "至少靜置 3 到 5 分鐘，等油降溫再掀", "w": ["火熄了馬上就可以掀", "掀開一條縫看看比較安全"], "why": "蓋上鍋蓋、關火之後，至少靜置 3 到 5 分鐘，讓油溫降下來，才能移動鍋子或打開鍋蓋。", "kc": {"t": "靜置 3 到 5 分鐘", "s": "蓋上鍋蓋、關火之後，至少靜置 3 到 5 分鐘，讓油溫降下來，才能移動鍋子或打開鍋蓋。"}}, {"q": "滅火器的使用口訣是？", "ok": "拉插銷、瞄準火源底部、壓把手、左右掃", "w": ["先搖一搖、對準火焰頂端", "壓把手、拉插銷、往上噴"], "why": "拉、瞄、壓、掃：拉開插銷，瞄準火源底部，壓下把手，左右掃射。", "kc": {"t": "拉瞄壓掃", "s": "拉、瞄、壓、掃：拉開插銷，瞄準火源底部，壓下把手，左右掃射。"}}, {"q": "抽油煙機的濾網為什麼要定期清洗？", "ok": "油垢會被引燃，讓火燒進管道", "w": ["洗了比較好看", "不洗也沒關係"], "why": "濾網和管道裡的油垢是燃料，一旦被引燃，火會沿著管道蔓延。", "kc": {"t": "定期清濾網", "s": "濾網和管道裡的油垢是燃料，一旦被引燃，火會沿著管道蔓延。"}}, {"q": "炒菜、煎東西時，人可以離開爐子去做別的事嗎？", "ok": "不行，開火時人要在旁邊", "w": ["可以，開小火就沒關係", "可以，有抽油煙機就好"], "why": "油溫一下子就可能升到燃點。開火時人不要離開，要離開就先關火。", "kc": {"t": "開火人不離開", "s": "油溫一下子就可能升到燃點。開火時人不要離開，要離開就先關火。"}}, {"q": "火勢大到滅不了時，要怎麼做？", "ok": "往外逃、隨手關門，到安全的地方打 119", "w": ["躲進浴室等救援", "回房間拿貴重物品"], "why": "不要硬拚，往外逃，隨手關門把火和煙擋在裡面，到外面再報案。", "kc": {"t": "滅不了就逃", "s": "不要硬拚，往外逃，隨手關門把火和煙擋在裡面，到外面再報案。"}}, {"q": "油鍋起火時，可以撒麵粉滅火嗎？", "ok": "不行，粉末撒進去可能讓火勢更猛", "w": ["可以，麵粉能吸油", "可以，越多越好"], "why": "麵粉這類粉末沒辦法隔絕空氣也不能降溫，撒進火裡反而可能讓火燒得更旺。", "kc": {"t": "不要撒麵粉", "s": "麵粉這類粉末沒辦法隔絕空氣也不能降溫，撒進火裡反而可能讓火燒得更旺。"}}, {"q": "油鍋的火已經竄得很高、碰到抽油煙機了，還能蓋鍋蓋嗎？", "ok": "不能，火太大靠近會被燒傷；改用滅火器，滅不了就關門離開、打 119", "w": ["可以，鍋蓋大一點就好", "先用濕毛巾整個蓋上去"], "why": "鍋蓋只適合剛起火的小火。火已經很大時，人靠近就會被燒傷、燙傷。改用滅火器從遠處噴，滅不了就離開、隨手關門、到安全的地方打 119。", "kc": {"t": "火太大不要蓋鍋蓋", "s": "鍋蓋只適合剛起火的小火。火已經很大時，人靠近就會被燒傷、燙傷。改用滅火器從遠處噴，滅不了就離開、隨手關門、到安全的地方打 119。"}}];
-var CHS=['起火','蓋上之後','鍋蓋蓋不密','火熄了之後'],CLKS=['18:20','18:21','18:22','18:24'];
+var DEC=[{"id": "d1", "q": "鍋裡的油突然「呼」地燒了起來，火苗剛冒出鍋子邊緣。家人在客廳。你要怎麼做？", "time": 8, "kc": {"t": "油鍋剛起火：先喊人，8 到 10 秒內蓋上大小相符的鍋蓋", "s": "發現起火，先大喊「失火了」讓家人知道。火還小、剛燒起來時，拿跟鍋子一樣大的鍋蓋，從身體這一側沿著鍋緣蓋上，隔絕空氣，再把爐火關掉。依實驗觀察，通常要在起火後 8 到 10 秒內蓋上才有用；鍋蓋太小蓋不密也沒用。絕對不能用水。"}, "best": "大喊「失火了」，拿大小相符的鍋蓋從身體這一側蓋上，再關火", "opts": [{"id": "lid", "t": "大喊「失火了！」，拿跟鍋子一樣大的鍋蓋從身體這一側蓋上，再關火", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先通報，再趁火小蓋上", "p": "先喊一聲讓家人知道，同時趁火還小，在 8 到 10 秒內用大小相符的鍋蓋，從身體這一側沿著鍋緣蓋過去，手和臉不要在鍋子正上方。蓋上後火沒有空氣就會熄，接著再關爐火。"}}, {"id": "water", "t": "趕快裝一杯水潑下去", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "水遇到熱油會爆開", "p": "油比水輕，水一倒進去就沉到底、瞬間變成水蒸氣，體積暴增，把著火的油整個噴出來，變成一團火球。"}}, {"id": "carry", "t": "端起鍋子衝到水槽", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "端著火走，熱油會灑出來", "p": "鍋子很燙、油在晃，一不小心就灑在身上或地上，火跟著蔓延。不要移動起火的鍋子。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "火越燒越大", "p": "先喊人，趁火小在 8 到 10 秒內蓋上大小相符的鍋蓋，再關火。"}}}, {"id": "d2", "q": "鍋蓋蓋上了，爐火也關了，鍋蓋邊緣還在冒煙。接下來？", "time": 10, "kc": {"t": "蓋上之後：靜置 3 到 5 分鐘，不掀、不移動", "s": "蓋上鍋蓋、關火之後，至少靜置 3 到 5 分鐘，讓油溫降下來，才能移動鍋子或打開鍋蓋。太早掀開，空氣一進去又會燒起來；端著熱油走，也容易灑出來燙傷、引燃別的東西。"}, "best": "鍋蓋不要掀，靜置 3 到 5 分鐘，等油降溫再處理", "opts": [{"id": "wait", "t": "鍋蓋不要掀，靜置 3 到 5 分鐘，等油降溫再處理", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "讓它靜靜冷卻", "p": "油溫還很高，掀開就會再燒起來。靜置 3 到 5 分鐘、等油降溫，才可以移動鍋子或打開鍋蓋。"}}, {"id": "peek", "t": "掀開鍋蓋看看熄了沒", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "會再燒起來", "h": "油還很燙，空氣一進去就復燃", "p": "火熄了，但油溫還在燃點以上。鍋蓋一掀，空氣進去，火又會「呼」地燒起來，臉和手就在正上方。"}}, {"id": "move", "t": "趁火熄了，把鍋子端到水槽放涼", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "太早移動", "h": "熱油一晃就灑出來", "p": "鍋子和油都還很燙，一晃就可能灑出來燙傷，鍋蓋滑開還會復燃。先靜置 3 到 5 分鐘，不要移動。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "鍋蓋邊緣一直冒煙", "p": "蓋上之後就靜置 3 到 5 分鐘，不掀、不移動。"}}}, {"id": "d3", "q": "幾個月後，油鍋又起火了，這次已經燒了十幾秒，火竄得很高，快碰到抽油煙機。大門邊有一支住宅用強化液滅火器，陽台有一支以前買的乾粉滅火器。", "time": 10, "kc": {"t": "火太大不能蓋鍋蓋：用住宅用強化液滅火器", "s": "火已經竄高，靠近蓋鍋蓋會被燒傷。先大喊通知家人，拿住宅用強化液滅火器：背對出口、先在安全距離外對準鍋子噴，感覺火勢被壓下來，再一邊噴一邊往前。乾粉、二氧化碳滅火器能暫時壓住火焰，但鍋裡的油溫沒降，很容易復燃。滅不了就關門離開、打 119。"}, "best": "喊家人，拿住宅用強化液滅火器，背對出口、保持距離噴，火勢壓下來再往前", "opts": [{"id": "ext", "t": "大喊通知家人，拿住宅用強化液滅火器，背對出口、保持距離對準鍋子噴，火勢壓下來再往前", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "強化液可以滅油鍋起火", "p": "強化液滅火器噴出的藥劑能冷卻油溫、在油面形成隔絕層，油鍋起火也滅得掉。背對出口、先保持距離，萬一火被吹起來或滅不了，你可以馬上離開。"}}, {"id": "powder", "t": "拿陽台的乾粉滅火器，對著鍋子噴", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "會復燃", "h": "乾粉滅不了油鍋起火", "p": "乾粉能把火焰暫時壓下去，但鍋裡的油還是很燙，粉一散又會燒起來。油鍋起火要用住宅用強化液滅火器。"}}, {"id": "lid2", "t": "拿鍋蓋衝過去硬蓋上去", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "太危險了", "h": "火太大，鍋蓋已經來不及", "p": "火已經竄高，靠近鍋子就會被火舌燒到，手也很難把鍋蓋準確蓋上。鍋蓋只適合剛起火的小火。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "火越燒越大", "p": "火太大就不要蓋鍋蓋，拿住宅用強化液滅火器，保持距離噴。"}}}, {"id": "d4", "q": "火熄了。廚房裡都是油煙，爐台上都是滅火器噴出的藥劑，鍋子還非常燙。接下來？", "time": 10, "kc": {"t": "火熄了之後：通風、不移動、等冷卻", "s": "打開窗戶讓煙和粉末散出去，人不要一直待在煙裡。鍋子留在爐上不要動，等完全冷卻、摸起來不燙了，再處理油和鍋子。熱油絕對不能直接沖水。"}, "best": "打開窗戶通風，鍋子留在爐上不動，等完全冷卻再處理", "opts": [{"id": "vent", "t": "打開窗戶通風，鍋子留在爐上不動，等完全冷卻再處理", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "通風、等冷卻", "p": "先讓煙和粉末散掉，鍋子不要動。等油完全冷卻再處理，最安全。"}}, {"id": "sink", "t": "戴上隔熱手套，把鍋子端到水槽用水沖一沖降溫", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "熱油遇水會爆開", "p": "油還很燙，一碰到水就會瞬間汽化爆開，滾燙的油和蒸氣會噴到你身上。"}}, {"id": "wipe", "t": "關上門窗，留在廚房把藥劑和油漬擦乾淨", "grade": "mid", "pts": 8, "dmg": 10, "fb": {"b": "mid", "bt": "先通風", "h": "煙和藥劑會刺激呼吸道", "p": "燒過的油煙和滅火藥劑還在空氣裡，留在密閉的廚房會咳嗽、眼睛刺痛。先開窗通風、人離開，等散了再整理。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "煙一直散不掉", "p": "先開窗通風，鍋子不要動，等冷卻。"}}}];
+SCN.quick=[{"q": "油鍋起火，為什麼不能用水？", "ok": "水碰到熱油會瞬間汽化，把著火的油噴出來", "w": ["水會讓油變得更黏", "水太冷，鍋子會裂開"], "why": "油比水輕，水沉到底瞬間變成水蒸氣、體積暴增，把燃燒的油噴得到處都是。", "kc": {"t": "油鍋不能用水", "s": "油比水輕，水沉到底瞬間變成水蒸氣、體積暴增，把燃燒的油噴得到處都是。"}}, {"q": "鍋蓋要怎麼蓋？", "ok": "從身體這一側，沿著鍋緣斜斜地蓋過去", "w": ["從鍋子正上方直直放下去", "丟過去就好"], "why": "從身體前方沿著鍋緣蓋，手和臉不要在鍋子正上方，避免被火燒到。", "kc": {"t": "沿鍋緣蓋鍋蓋", "s": "從身體前方沿著鍋緣蓋，手和臉不要在鍋子正上方，避免被火燒到。"}}, {"q": "火被鍋蓋悶住之後，什麼時候可以掀開？", "ok": "至少靜置 3 到 5 分鐘，等油降溫再掀", "w": ["火熄了馬上就可以掀", "掀開一條縫看看比較安全"], "why": "蓋上鍋蓋、關火之後，至少靜置 3 到 5 分鐘，讓油溫降下來，才能移動鍋子或打開鍋蓋。", "kc": {"t": "靜置 3 到 5 分鐘", "s": "蓋上鍋蓋、關火之後，至少靜置 3 到 5 分鐘，讓油溫降下來，才能移動鍋子或打開鍋蓋。"}}, {"q": "滅火器的使用口訣是？", "ok": "拉插銷、瞄準火源底部、壓把手、左右掃", "w": ["先搖一搖、對準火焰頂端", "壓把手、拉插銷、往上噴"], "why": "拉插銷、瞄準火源、壓把手、左右掃。開始前先背對出口、保持安全距離，感覺火勢被壓下來，再一邊噴一邊往前。", "kc": {"t": "拉、瞄、壓、掃", "s": "拉插銷、瞄準火源、壓把手、左右掃。開始前先背對出口、保持安全距離，感覺火勢被壓下來，再一邊噴一邊往前。"}}, {"q": "抽油煙機的濾網為什麼要定期清洗？", "ok": "油垢會被引燃，讓火燒進管道", "w": ["洗了比較好看", "不洗也沒關係"], "why": "濾網和管道裡的油垢是燃料，一旦被引燃，火會沿著管道蔓延。", "kc": {"t": "定期清濾網", "s": "濾網和管道裡的油垢是燃料，一旦被引燃，火會沿著管道蔓延。"}}, {"q": "炒菜、煎東西時，人可以離開爐子去做別的事嗎？", "ok": "不行，開火時人要在旁邊", "w": ["可以，開小火就沒關係", "可以，有抽油煙機就好"], "why": "油溫一下子就可能升到燃點。開火時人不要離開，要離開就先關火。", "kc": {"t": "開火人不離開", "s": "油溫一下子就可能升到燃點。開火時人不要離開，要離開就先關火。"}}, {"q": "火勢大到滅不了時，要怎麼做？", "ok": "往外逃、隨手關門，到安全的地方打 119", "w": ["躲進浴室等救援", "回房間拿貴重物品"], "why": "不要硬拚，往外逃，隨手關門把火和煙擋在裡面，到外面再報案。", "kc": {"t": "滅不了就逃", "s": "不要硬拚，往外逃，隨手關門把火和煙擋在裡面，到外面再報案。"}}, {"q": "油鍋起火時，可以撒麵粉滅火嗎？", "ok": "不行，粉末撒進去可能讓火勢更猛", "w": ["可以，麵粉能吸油", "可以，越多越好"], "why": "麵粉這類粉末沒辦法隔絕空氣也不能降溫，撒進火裡反而可能讓火燒得更旺。", "kc": {"t": "不要撒麵粉", "s": "麵粉這類粉末沒辦法隔絕空氣也不能降溫，撒進火裡反而可能讓火燒得更旺。"}}, {"q": "油鍋的火已經竄得很高、碰到抽油煙機了，還能蓋鍋蓋嗎？", "ok": "不能，火太大靠近會被燒傷；改用住宅用強化液滅火器保持距離噴，滅不了就關門離開、打 119", "w": ["可以，鍋蓋大一點就好", "先用濕毛巾整個蓋上去"], "why": "鍋蓋只適合剛起火 8 到 10 秒內的小火。火已經很大時，人靠近就會被燒傷。改用住宅用強化液滅火器，背對出口、保持距離噴；滅不了就離開、隨手關門、到安全的地方打 119。", "kc": {"t": "火太大不要蓋鍋蓋", "s": "鍋蓋只適合剛起火 8 到 10 秒內的小火。火已經很大時，人靠近就會被燒傷。改用住宅用強化液滅火器，背對出口、保持距離噴；滅不了就離開、隨手關門、到安全的地方打 119。"}}, {"q": "家裡要買滅火器，哪一種可以滅油鍋起火？", "ok": "住宅用強化液滅火器", "w": ["乾粉滅火器", "二氧化碳滅火器"], "why": "住宅用強化液滅火器可以用在普通火災、電器火災和油鍋起火。乾粉、二氧化碳滅火器能暫時壓住火焰，但油溫沒降，油鍋很容易復燃。", "kc": {"t": "家裡選住宅用強化液滅火器", "s": "住宅用強化液滅火器可以用在普通火災、電器火災和油鍋起火。乾粉、二氧化碳滅火器能暫時壓住火焰，但油溫沒降，油鍋很容易復燃。"}}, {"q": "用鍋蓋蓋熄油鍋起火，要注意什麼？", "ok": "起火後大約 8 到 10 秒內蓋上，鍋蓋大小要跟鍋子相符", "w": ["等火小一點再慢慢蓋", "任何大小的鍋蓋都可以"], "why": "依實驗觀察，鍋蓋通常要在起火後 8 到 10 秒內蓋上才有效，而且要跟鍋子大小相符才蓋得密。超過時間、火已經變大，就改用滅火器。", "kc": {"t": "8 到 10 秒、大小相符", "s": "依實驗觀察，鍋蓋通常要在起火後 8 到 10 秒內蓋上才有效，而且要跟鍋子大小相符才蓋得密。超過時間、火已經變大，就改用滅火器。"}}, {"q": "發現家裡起火，不論火大火小，第一件事是？", "ok": "先大喊「失火了」，通知家裡所有人", "w": ["先自己滅火，滅不了再說", "先打 119，家人等一下再叫"], "why": "任何火災，先讓其他人知道「失火了」，大家才有時間反應、逃生或幫忙，接著再滅火、逃生、打 119。", "kc": {"t": "先通報，再應變", "s": "任何火災，先讓其他人知道「失火了」，大家才有時間反應、逃生或幫忙，接著再滅火、逃生、打 119。"}}];
+var CHS=['起火','蓋上之後','火太大的時候','火熄了之後'],CLKS=['18:20','18:21','幾個月後','幾個月後'];
 DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
 var CAM={};
 function camSetup(){
   CAM.stove=lookAt([.62,1.62,-1.22],[.45,CTOP+.05,-RD/2+.38]);
   CAM.back=lookAt([.9,1.62,-.35],[.45,1.1,-RD/2+.35]);
   CAM.hood=lookAt([.7,1.55,-1.0],[.4,1.5,-RD/2+.3]);
-  CAM.ext=lookAt([.75,1.55,-1.3],[EXT.x,.4,EXT.z]);
+  CAM.ext=lookAt([.55,1.55,RD/2-1.1],[EXT.x,.4,EXT.z]);
+  CAM.far=lookAt([.35,1.5,RD/2-.75],[PANP.x,PANP.y+.1,PANP.z]);
+  CAM.mid=lookAt([.45,1.5,-.55],[PANP.x,PANP.y+.1,PANP.z]);
   CAM.door=lookAt([.2,1.6,RD/2-.95],[-.1,1.2,RD/2+.5]);
   CAM.hall=lookAt([-.4,1.6,RD/2+1.4],[-.1,1.2,RD/2]);
   CAM.extA=lookAt([PANP.x+.45,1.55,PANP.z+1.25],[PANP.x,PANP.y,PANP.z]);
@@ -1873,7 +1897,7 @@ function step(n){
   var go=function(){chap(n,CHS[n-1],CLKS[n-1],function(){startDecision(DEC[n-1],function(){after(200,function(){step(n+1)})})})};
   if(PRE[n])PRE[n](go);else go();
 }
-function lidOn(dur){tween(lidN.p,{0:PANP.x,1:PANP.y+.045,2:PANP.z},dur||.5);tween(FPAN,{v:0},.4);loopSnd('roar','lowpass',500,.5,0);}
+function lidOn(dur){tween(lidN.p,{0:PANP.x,1:PANP.y+.05,2:PANP.z},dur||.5);tween(FPAN,{v:0},.4);loopSnd('roar','lowpass',500,.5,0);}
 function knobOff(){knobOn=0;loopSnd('sizzle','highpass',2400,.6,0)}
 var PRE={
   2:function(go){
@@ -1881,28 +1905,42 @@ var PRE={
     go();
   },
   3:function(go){
-    STEAMP.v=0;camTo(CAM.stove,.8);
-    after(1000,function(){FPAN.p=[PANP.x-.12,PANP.y+.06,PANP.z+.1];FPAN.w=.42;FPAN.h=.42;FPAN.v=.7;loopSnd('roar','lowpass',500,.5,.5,.1);cap('鍋蓋比鍋子小了一圈，邊緣的縫隙又竄出火苗，越燒越大。')});
-    after(2800,go);
+    fadeTo(1,700);
+    after(800,function(){setClock('幾個月後');STEAMP.v=0;lidN.p=[-.05,CTOP+.012,-RD/2+.45];panN.p=[PANP.x,PANP.y,PANP.z];FPAN.p=[PANP.x,PANP.y+.04,PANP.z];FPAN.w=1.3;FPAN.h=1.9;FPAN.v=1;knobOn=1;setCam(CAM.back);fadeTo(0,700);
+      loopSnd('roar','lowpass',500,.5,1,.1);cap('幾個月後，你又在煎東西，轉身去接電話——回頭時油鍋已經燒了十幾秒，火竄得很高，快碰到抽油煙機。')});
+    after(3600,function(){cap('大門邊有一支住宅用強化液滅火器，陽台還有一支以前買的乾粉滅火器。')});
+    after(5200,go);
   },
   4:function(go){
-    tween(FPAN,{v:0},.6);loopSnd('roar','lowpass',500,.5,0);SMK.v=.6;SMK.sz=1.6;camTo(CAM.back,1.0);cap('火熄了。廚房裡都是油煙和滅火器噴出來的白色粉末，鍋子還非常燙。');
+    tween(FPAN,{v:0},.6);loopSnd('roar','lowpass',500,.5,0);SMK.v=.6;SMK.sz=1.6;camTo(CAM.back,1.0);cap('火熄了。廚房裡都是油煙，爐台上都是滅火器噴出來的藥劑，鍋子還非常燙。');
     after(2800,go);
   }
 };
-function extAnim(close,done){
-  cap('你跑到冰箱旁，拿起住宅用滅火器，拉掉插銷。');camTo(CAM.ext,.7);
-  after(800,function(){extN.p=[0,-5,0];hIn(HR,{p:[.12,-.24,-.4],r:[.3,-.2,0],curl:.85,thumb:.7,abs:true},.3);hIn(HL,{p:[-.1,-.3,-.35],r:[.3,.2,0],curl:.8,thumb:.6,abs:true},.3)});
-  after(1500,function(){camTo(close?lookAt([PANP.x+.05,1.35,PANP.z+.45],[PANP.x,PANP.y,PANP.z]):CAM.extA,.7)});
-  after(2300,function(){PN.spray=1;loopSnd('spray','bandpass',900,.5,1,.12);cap(close?'你湊得很近，噴嘴幾乎貼著鍋子——':'你站在兩三步外，瞄準火源底部，壓下把手左右掃。')});
-  after(3300,function(){if(close){sparkBurst([PANP.x,PANP.y+.08,PANP.z],22,1.1,CTOP);ST.dmg=.5;tween(ST,{dmg:0},.8);cap('噴得太近，強勁的氣流把熱油和火星吹得四處噴濺。')}tween(FPAN,{v:0},1)});
-  after(4600,function(){PN.spray=0;loopSnd('spray','bandpass',900,.5,0);bothOut(.3);done&&done()});
+function extAnim(kind,done){
+  var pw=kind==='powder';
+  cap(pw?'你跑去陽台拿乾粉滅火器，拉掉插銷。':'你先大喊：「失火了！大家出來！」，跑到大門邊拿起住宅用強化液滅火器，拉掉插銷。');camTo(CAM.ext,.8);
+  after(1000,function(){extN.p=[0,-5,0];hIn(HR,{p:[.12,-.24,-.4],r:[.3,-.2,0],curl:.85,thumb:.7,abs:true},.3);hIn(HL,{p:[-.1,-.3,-.35],r:[.3,.2,0],curl:.8,thumb:.6,abs:true},.3)});
+  after(1800,function(){camTo(CAM.far,.9)});
+  after(2800,function(){PN.spray=pw?2:1;loopSnd('spray','bandpass',900,.5,1,.12);cap(pw?'白色的乾粉噴過去，火焰一下子被壓下去了——':'你背對大門、站在離鍋子遠一點的地方，瞄準鍋子噴。')});
+  after(3800,function(){tween(FPAN,{h:.8,w:.8},1)});
+  if(pw){
+    after(4800,function(){PN.spray=0;loopSnd('spray','bandpass',900,.5,0);tween(FPAN,{v:.1},.6)});
+    after(6000,function(){tween(FPAN,{v:.9,h:1.3,w:1.1},.8);loopSnd('roar','lowpass',500,.5,.8,.1);cap('才幾秒，油鍋又「呼」地燒了起來。鍋裡的油還是太燙，乾粉沒辦法讓它降溫。')});
+    after(7600,function(){cap('你趕緊改拿大門邊的強化液滅火器，保持距離再噴一次。');PN.spray=1;loopSnd('spray','bandpass',900,.5,1,.12)});
+    after(9200,function(){tween(FPAN,{v:0},1)});
+    after(10400,function(){PN.spray=0;loopSnd('spray','bandpass',900,.5,0);bothOut(.3);done&&done()});
+  }else{
+    after(4300,function(){cap('火勢被壓下來了，你一邊噴、一邊往前靠近。');camTo(CAM.mid,1.4)});
+    after(5800,function(){tween(FPAN,{v:0},1)});
+    after(7000,function(){PN.spray=0;loopSnd('spray','bandpass',900,.5,0);bothOut(.3);done&&done()});
+  }
 }
 var PLAY={
  d1:{
   lid:function(done){
     var l=w2c([lidN.p[0],lidN.p[1]+.05,lidN.p[2]]);hIn(HR,{p:[l[0],l[1]+.03,l[2]],r:[.8,-.2,0],curl:.8,thumb:.6,abs:true},.4);
-    after(600,function(){cap('火還小，你拿起鍋蓋，從身體這一側沿著鍋緣斜斜蓋上去。');tween(lidN.p,{0:PANP.x-.12,1:PANP.y+.12,2:PANP.z+.15},.35);var a=w2c([PANP.x-.12,PANP.y+.15,PANP.z+.15]);hTo(HR,{p:[a[0],a[1],a[2]],abs:true},.35)});
+    cap('「失火了！」你先大喊一聲，讓客廳的家人知道。','你');
+    after(600,function(){cap('火還小、剛燒起來，你拿起跟鍋子一樣大的鍋蓋，從身體這一側沿著鍋緣斜斜蓋上去。');tween(lidN.p,{0:PANP.x-.12,1:PANP.y+.12,2:PANP.z+.15},.35);var a=w2c([PANP.x-.12,PANP.y+.15,PANP.z+.15]);hTo(HR,{p:[a[0],a[1],a[2]],abs:true},.35)});
     after(1100,function(){lidOn(.35);var a=w2c([PANP.x,PANP.y+.1,PANP.z]);hTo(HR,{p:[a[0],a[1]+.02,a[2]+.04],abs:true},.35)});
     after(1800,function(){var k=w2c([PANP.x,.8,-RD/2+.625]);hTo(HR,{p:[k[0],k[1]+.02,k[2]+.07],r:[.9,0,0],curl:.75,thumb:.6,abs:true},.4)});
     after(2400,function(){knobOff();cap('蓋好之後，再把爐火關掉。')});
@@ -1946,15 +1984,17 @@ var PLAY={
   _:function(done){cap('鍋蓋邊緣一直冒煙。');after(2400,done)}
  },
  d3:{
-  ext:function(done){extAnim(false,function(){cap('火熄了。');after(900,done)})},
-  close:function(done){extAnim(true,function(){after(600,done)})},
-  water2:function(done){
-    cap('你裝了一杯水，往鍋蓋邊緣潑過去——');
-    after(800,function(){bang();sparkBurst([PANP.x,PANP.y+.1,PANP.z],34,1.6,0);FPAN.v=1;FPAN.w=2.6;FPAN.h=3;ST.flash=.5;tween(ST,{flash:0},.6);ST.shake=.7;tween(ST,{shake:0},.6);ST.dmg=.6;tween(ST,{dmg:0},.8);cap('「轟！」水碰到熱油炸開，一團火球衝上抽油煙機。')});
-    after(2400,function(){tween(FPAN,{w:.7,h:.6},1);cap('你嚇得退後，趕緊拿滅火器從遠處噴熄。')});
-    after(3800,function(){tween(FPAN,{v:0},1);done()});
+  ext:function(done){extAnim('liquid',function(){cap('火熄了。');after(900,done)})},
+  powder:function(done){extAnim('powder',function(){after(600,done)})},
+  lid2:function(done){
+    cap('你抓起鍋蓋，衝過去想蓋——');camTo(CAM.stove,.6);
+    after(900,function(){var l=w2c([PANP.x,PANP.y+.3,PANP.z]);hIn(HR,{p:[l[0],l[1],l[2]+.05],r:[.8,-.2,0],curl:.8,abs:true},.3)});
+    after(1400,function(){sparkBurst([PANP.x,PANP.y+.2,PANP.z],18,1,0);ST.dmg=.7;tween(ST,{dmg:0},1);hOut(HR,.2);cap('火舌一下子捲上你的手臂，你痛得縮回來，鍋蓋掉在地上。')});
+    after(3000,function(){cap('你只好退到大門邊，拿強化液滅火器，保持距離噴熄。');PN.spray=1;camTo(CAM.far,.6)});
+    after(4600,function(){tween(FPAN,{v:0},1)});
+    after(5800,function(){PN.spray=0;bothOut(.3);done()});
   },
-  _:function(done){cap('鍋蓋邊緣的火越燒越大。');FPAN.h=.9;after(2600,function(){tween(FPAN,{v:0},1);done()})}
+  _:function(done){cap('火越燒越大，竄上了抽油煙機。');FPAN.h=2.2;after(1800,function(){cap('你退到大門邊，用強化液滅火器保持距離噴熄。');PN.spray=1});after(3600,function(){tween(FPAN,{v:0},1)});after(4800,function(){PN.spray=0;done()})}
  },
  d4:{
   vent:function(done){
@@ -1983,9 +2023,10 @@ var GX_hall=0;
 SCN.quickCam=function(){bothOut(.3);setCam(CAM.back);SMK.v=.1};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
-  return [g===DEC.length?'18:35，鍋子冷卻了。火只在鍋子裡燒了一下，廚房沒有燒到別的東西。':g>=2?'18:35，火熄了。中間有幾個危險的動作，幸好沒有釀成大火。':'18:35，火熄了。你的手被熱油燙傷，廚房也燻黑了一片，要去醫院處理。',
-    '要記得：鍋蓋只適合剛起火的小火。火已經竄得很高，就不要靠近蓋鍋蓋，改用滅火器，滅不了就關門離開、打 119。',
-    g===DEC.length?'先蓋鍋蓋再關火、靜置 3 到 5 分鐘、蓋不住用滅火器拉瞄壓掃、通風等冷卻，你每一步都做對了。':'下一次記得：油鍋起火絕對不能用水；先蓋鍋蓋再關火；蓋上就靜置 3 到 5 分鐘，不掀、不移動。'];
+  return [g===DEC.length?'兩次起火，火都只在鍋子裡燒，廚房沒有燒到別的東西。':g>=2?'火都熄了。中間有幾個危險的動作，幸好沒有釀成大火。':'火熄了，但你的手被熱油和火舌燙傷，廚房也燻黑了一片。',
+    '要記得：鍋蓋只適合剛起火 8 到 10 秒內的小火，而且要跟鍋子一樣大。火已經竄高就不要靠近蓋，改用住宅用強化液滅火器，保持距離噴；滅不了就關門離開、打 119。',
+    '家裡買滅火器，選住宅用強化液滅火器：普通火災、電器火災、油鍋起火都能用。乾粉滅火器壓得住火焰，但對油鍋起火很容易復燃。',
+    g===DEC.length?'先喊家人、及時蓋上大小相符的鍋蓋再關火、靜置 3 到 5 分鐘、火大時用強化液滅火器保持距離噴、通風等冷卻，你每一步都做對了。':'下一次記得：先大喊通知家人；油鍋起火絕對不能用水；8 到 10 秒內蓋上大小相符的鍋蓋，再關火；蓋上就靜置 3 到 5 分鐘。'];
 };
 function sceneLights(){
   var L=[
@@ -2002,12 +2043,14 @@ function sceneSprites(){
   fxAdd();
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
   fxSmoke();
-  if(PN.spray){var p0=c2w([.06,-.16,-.5]),at=FPAN.p;for(var i=0;i<16;i++){var t=((tNow*1.8+i/16)%1);drawSprite(TX.smoke,[p0[0]+(at[0]-p0[0])*t+Math.sin(i)*.08*t,p0[1]+(at[1]-p0[1])*t+Math.cos(i*2)*.06*t,p0[2]+(at[2]-p0[2])*t],.04+t*.3,.04+t*.3,i,[1,1,1,.26*(1-t*.6)])}}
+  if(PN.spray===2){var p0=c2w([.06,-.16,-.5]),at=FPAN.p;for(var i=0;i<16;i++){var t=((tNow*1.8+i/16)%1);drawSprite(TX.smoke,[p0[0]+(at[0]-p0[0])*t+Math.sin(i)*.08*t,p0[1]+(at[1]-p0[1])*t+Math.cos(i*2)*.06*t,p0[2]+(at[2]-p0[2])*t],.04+t*.3,.04+t*.3,i,[1,1,1,.26*(1-t*.6)])}}
+  else if(PN.spray){var q0=c2w([.06,-.16,-.5]),a2=FPAN.p;for(var j=0;j<22;j++){var u=((tNow*2.4+j/22)%1),sag=Math.sin(u*PI)*.12;drawSprite(TX.smoke,[q0[0]+(a2[0]-q0[0])*u+Math.sin(j*1.7)*.04*u,q0[1]+(a2[1]+.05-q0[1])*u+sag*.3,q0[2]+(a2[2]-q0[2])*u],.02+u*.14,.02+u*.14,j,[.82,.9,1,.32*(1-u*.4)])}}
 }
 function sceneTick(dt){fxTick(dt);if(knobOn&&FPAN.v<.05&&!STEAMP.v)STEAMP.v=0}
 function titleCam(){var c=CAM.stove;cam.x=c.x+Math.sin(tNow*.2)*.08;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch}
 
-SCN.flow=[{"t": "蓋鍋蓋、關火", "s": "火還小才蓋，先蓋再關火"}, {"t": "靜置 3–5 分", "s": "不掀蓋、不移動"}, {"t": "蓋不住用滅火器", "s": "拉、瞄、壓、掃，保持距離"}, {"t": "通風等冷卻", "s": "熱油不沖水"}];
+SCN.flow=[{"t": "喊人、蓋鍋蓋", "s": "8–10 秒內、大小相符，再關火"}, {"t": "靜置 3–5 分", "s": "不掀蓋、不移動"}, {"t": "火大用強化液", "s": "背對出口，保持距離噴"}, {"t": "通風等冷卻", "s": "熱油不沖水"}];
+SCN.flowIntro="如果油鍋又起火，從起火那一刻到火熄了之後，正確的處理順序是？";
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -2117,12 +2160,12 @@ function showFeedback(d,o){
   var f=o.fb,g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad',h;
   if(d.quick){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.bt)+'</h3><p>'+esc(d.q.replace(/^現場追問 \d+／\d+　/,''))+'</p></div></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
   }else{
     var L=SC.log[SC.log.length-1],ix=DEC.indexOf(d);
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
     h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
@@ -2135,7 +2178,7 @@ function showFeedback(d,o){
   chime(o.grade==='good');
 }
 /* ================= 精緻版：詳解卡、流程圖解、得分浮字、流程排序 ================= */
-var MK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+var FMK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
 var LK={ty:0,tp:0,act:0};
 function maxPts(d){return Math.max.apply(null,d.opts.map(function(o){return o.pts||0}))}
 function hasFlow(){return !!(SCN.flow&&SCN.flow.length>2)}
@@ -2171,10 +2214,14 @@ function runOrder(next){
   do{idx=shuffle(idx)}while(idx.every(function(v,i){return v===i}));
   cur={id:'ord',ord:true,q:'流程排序',opts:[]};curDone=null;decideEnd=0;phase='decide';controls=true;TS=1;
   show('phone',false);show('fb',false);show('hint',false);show('prompt',false);show('useBtn',false);
-  el('decQ').textContent='流程排序：照正確順序，依序點出這 '+N+' 個步驟（點錯可以再點一次取消）';
+  var FI=SCN.flowIntro||('回想剛剛「'+SCN.title+'」的情況：正確的應變順序是什麼？');
+  function guide(){var k=seq.length;el('decQ').innerHTML='<span class="ordS">'+esc(FI)+'</span><span class="ordN">'+(k<N?'現在請點：<b>第 '+(k+1)+' 步</b>（共 '+N+' 步）'+(k===0?'——最先要做的事':k===N-1?'——最後一步':'——接在「'+esc(F[seq[k-1]].t)+'」之後'):'排好了，檢查中…')+'</span>'}
   el('tbar').style.visibility='hidden';el('decT').textContent='';
   var opts=el('opts');opts.innerHTML='';opts.className='k-seq';
-  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''})}
+  var gd=document.createElement('div');gd.className='ordG';gd.textContent='下面 '+N+' 張卡片，是這個情境的 '+N+' 個應變步驟，順序被打亂了。從第 1 步開始，依序點到最後一步；點錯了，再點一次那張卡就能取消。';opts.appendChild(gd);
+  var sl=document.createElement('div');sl.className='ordSl';for(var q=0;q<N;q++){var it=document.createElement('i');it.textContent=(q+1)+'　';sl.appendChild(it)}opts.appendChild(sl);
+  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''});
+    [].forEach.call(sl.children,function(it,q){it.textContent=(q+1)+'　'+(seq[q]!=null?F[seq[q]].t:'');it.classList.toggle('on',seq[q]!=null)});guide()}
   idx.forEach(function(i){
     var b=document.createElement('button');b.type='button';b.className='card sq';b.dataset.i=i;
     b.innerHTML='<span class="no"></span><span class="t"></span><small></small>';b.querySelector('.t').textContent=F[i].t;b.querySelector('small').textContent=F[i].s;
@@ -2182,7 +2229,7 @@ function runOrder(next){
     opts.appendChild(b);
   });
   var r=document.createElement('button');r.type='button';r.className='sqr';r.textContent='重新排列';r.addEventListener('click',function(){if(!fin){seq=[];paint()}});opts.appendChild(r);
-  show('dec',true);
+  guide();show('dec',true);
   function done(sq){
     if(phase!=='decide')return;
     phase='cut';controls=false;show('dec',false);
@@ -2190,7 +2237,7 @@ function runOrder(next){
     var lv=ok===N?'good':ok>=Math.ceil(N/2)?'mid':'bad',b=lv==='good'?'ok':lv;
     var pf=el('ptsF');if(pf){pf.className='on '+lv;pf.textContent='排對 '+ok+' / '+N;clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){pf.className=''},1500)}
     var h='<div class="fbh"><span class="badge '+b+'">'+ICON[b]+'</span><div><h3>'+(lv==='good'?'順序完全正確':lv==='mid'?'大致記住了':'順序要再記熟')+'</h3><p>流程排序</p></div><b class="fpt">'+ok+'<small>/'+N+'</small></b></div><div class="fst cmp">';
-    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+MK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
+    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+FMK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
     h+='</div><p class="fwhy">'+(lv==='good'?'流程都記住了。真的遇到時，照這個順序一步一步做。':'順序很重要：前一步沒做好，後面做得再多也可能白費。看一下正確流程。')+'</p>';
     h+='<div class="dgp">'+flowSvg(-1)+'</div>';
     fbOpen(h,(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單',next);
@@ -2238,7 +2285,7 @@ function newGame(){
   SCN.start();
 }
 function toQuick(){
-  phase='cut';controls=false;restHands();
+  phase='cut';controls=false;if(SCN.preQuick)SCN.preQuick();restHands();
   var n=DEC.length+1;
   function quick(){
     if(!SCN.quick||!SCN.quick.length){endScene();return}
@@ -2370,12 +2417,12 @@ function showEnd(){
   SC.log.forEach(function(l,i){
     var g=l.o.grade==='good'?'good':l.o.grade==='mid'?'mid':'bad',ix=DEC.indexOf(l.d),ck=(typeof CLKS!=='undefined'&&CLKS[ix])?CLKS[ix]:'#'+(i+1);
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
-    h+='<p><i class="'+g+'">'+MK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
+    h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
     h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
-    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+MK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
+    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
   h+='</div>';
   h+='<div class="sec">評等標準</div><div class="crit"><p><b>S</b>每個決定都對、總分 92 以上</p><p><b>A</b>判斷正確 85 以上、總分 78 以上</p><p><b>B</b>判斷正確 55 以上</p><p><b>C</b>其他</p></div>';
   if(QZ.length){

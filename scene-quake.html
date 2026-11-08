@@ -142,6 +142,13 @@
 .card.sq .t{padding-right:24px}
 .fst.cmp{gap:4px}.fst.cmp>div{padding:6px 10px;align-items:center}.fst.cmp small{display:inline;margin-right:8px}.fst.cmp b{display:inline;font-size:14px}.fst.cmp span{font-size:12.5px}
 .tli p.kcx{display:block}
+.ordS{display:block;font-size:13px;line-height:1.5;color:var(--ink2);font-weight:500;margin-bottom:4px}
+.ordN{display:block}
+.ordN b{color:#f2c14e}
+#opts.k-seq .ordG{grid-column:1/-1;font-size:12.5px;color:var(--ink2);line-height:1.5;padding:0 2px 2px}
+#opts.k-seq .ordSl{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.ordSl i{font-style:normal;flex:1 1 0;min-width:60px;border:1px dashed rgba(255,255,255,.28);border-radius:8px;padding:5px 6px;font-size:12px;line-height:1.3;color:var(--ink2);text-align:center}
+.ordSl i.on{border-style:solid;border-color:#f2c14e;color:#fff;background:rgba(242,193,78,.12)}
 </style>
 <title>IRON WILL 地震：晚餐時的搖晃｜求生現場</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1387,6 +1394,9 @@ function tween(obj,to,dur,done,ez){
 function after(ms,fn){var t={t:vt+ms,fn:fn};timers.push(t);return t}
 function clearAll(){tw.length=0;timers.length=0}
 function stepTime(dtms){
+  capClock+=dtms*TS;
+  if(CAPQ.length){if(!capGate()){capFlush()}else if(capClock>=capUntil){var q=CAPQ.shift();capShow(q[0],q[1])}}
+  if(CAPQ.length&&capGate())return;
   vt+=dtms*TS;
   for(var i=tw.length-1;i>=0;i--){var a=tw[i];if(!a)continue;var u=Math.min(1,(vt-a.s)/a.d),e=a.e(u);
     for(var k in a.t)a.o[k]=a.f[k]+(a.t[k]-a.f[k])*e;
@@ -1811,7 +1821,17 @@ function labelTex(txt){
 var controls=false,cur=null,curDone=function(){},decideEnd=0,decideLimit=8000,SC=null,STAGE=-1,baseSmoke=.12;
 function el(id){return $('#'+id)}
 function show(id,v){el(id).hidden=!v}
+var CAPQ=[],capClock=0,capUntil=0;
+function capRead(t){return Math.min(6.5,1.1+String(t).length*.14)*1000}
+function capGate(){return phase==='cut'}
+function capFlush(){if(!CAPQ.length)return;var q=CAPQ[CAPQ.length-1];CAPQ.length=0;capShow(q[0],q[1])}
 function cap(txt,who){
+  if(capGate()&&(CAPQ.length||capClock<capUntil)){CAPQ.push([txt,who]);return}
+  if(!capGate())CAPQ.length=0;
+  capShow(txt,who);
+}
+function capShow(txt,who){
+  capUntil=txt?capClock+capRead(txt):0;
   var p=el('capP');p.classList.remove('on');if(!txt)return;
   setTimeout(function(){el('capW').textContent=who||'';el('capS').textContent=txt;p.classList.add('on')},140);
 }
@@ -2009,6 +2029,7 @@ function sceneTick(dt){fxTick(dt);ST.shake=Math.max(ST.shake*.9,QK.sh*(.7+.3*Mat
 function titleCam(){var c=CAM.sit;cam.x=c.x+Math.sin(tNow*.2)*.08;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch}
 
 SCN.flow=[{"t": "趴下掩護", "s": "躲桌下，抓住桌腳"}, {"t": "穿鞋離開", "s": "瓦斯很濃，不碰開關直接走"}, {"t": "樓梯疏散", "s": "不搭電梯，到空曠處"}, {"t": "報平安", "s": "1991 或文字訊息"}];
+SCN.flowIntro="如果再遇到大地震，從搖晃開始到跟家人報平安，正確的處理順序是？";
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -2118,12 +2139,12 @@ function showFeedback(d,o){
   var f=o.fb,g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad',h;
   if(d.quick){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.bt)+'</h3><p>'+esc(d.q.replace(/^現場追問 \d+／\d+　/,''))+'</p></div></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
   }else{
     var L=SC.log[SC.log.length-1],ix=DEC.indexOf(d);
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
     h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
@@ -2136,7 +2157,7 @@ function showFeedback(d,o){
   chime(o.grade==='good');
 }
 /* ================= 精緻版：詳解卡、流程圖解、得分浮字、流程排序 ================= */
-var MK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+var FMK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
 var LK={ty:0,tp:0,act:0};
 function maxPts(d){return Math.max.apply(null,d.opts.map(function(o){return o.pts||0}))}
 function hasFlow(){return !!(SCN.flow&&SCN.flow.length>2)}
@@ -2172,10 +2193,14 @@ function runOrder(next){
   do{idx=shuffle(idx)}while(idx.every(function(v,i){return v===i}));
   cur={id:'ord',ord:true,q:'流程排序',opts:[]};curDone=null;decideEnd=0;phase='decide';controls=true;TS=1;
   show('phone',false);show('fb',false);show('hint',false);show('prompt',false);show('useBtn',false);
-  el('decQ').textContent='流程排序：照正確順序，依序點出這 '+N+' 個步驟（點錯可以再點一次取消）';
+  var FI=SCN.flowIntro||('回想剛剛「'+SCN.title+'」的情況：正確的應變順序是什麼？');
+  function guide(){var k=seq.length;el('decQ').innerHTML='<span class="ordS">'+esc(FI)+'</span><span class="ordN">'+(k<N?'現在請點：<b>第 '+(k+1)+' 步</b>（共 '+N+' 步）'+(k===0?'——最先要做的事':k===N-1?'——最後一步':'——接在「'+esc(F[seq[k-1]].t)+'」之後'):'排好了，檢查中…')+'</span>'}
   el('tbar').style.visibility='hidden';el('decT').textContent='';
   var opts=el('opts');opts.innerHTML='';opts.className='k-seq';
-  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''})}
+  var gd=document.createElement('div');gd.className='ordG';gd.textContent='下面 '+N+' 張卡片，是這個情境的 '+N+' 個應變步驟，順序被打亂了。從第 1 步開始，依序點到最後一步；點錯了，再點一次那張卡就能取消。';opts.appendChild(gd);
+  var sl=document.createElement('div');sl.className='ordSl';for(var q=0;q<N;q++){var it=document.createElement('i');it.textContent=(q+1)+'　';sl.appendChild(it)}opts.appendChild(sl);
+  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''});
+    [].forEach.call(sl.children,function(it,q){it.textContent=(q+1)+'　'+(seq[q]!=null?F[seq[q]].t:'');it.classList.toggle('on',seq[q]!=null)});guide()}
   idx.forEach(function(i){
     var b=document.createElement('button');b.type='button';b.className='card sq';b.dataset.i=i;
     b.innerHTML='<span class="no"></span><span class="t"></span><small></small>';b.querySelector('.t').textContent=F[i].t;b.querySelector('small').textContent=F[i].s;
@@ -2183,7 +2208,7 @@ function runOrder(next){
     opts.appendChild(b);
   });
   var r=document.createElement('button');r.type='button';r.className='sqr';r.textContent='重新排列';r.addEventListener('click',function(){if(!fin){seq=[];paint()}});opts.appendChild(r);
-  show('dec',true);
+  guide();show('dec',true);
   function done(sq){
     if(phase!=='decide')return;
     phase='cut';controls=false;show('dec',false);
@@ -2191,7 +2216,7 @@ function runOrder(next){
     var lv=ok===N?'good':ok>=Math.ceil(N/2)?'mid':'bad',b=lv==='good'?'ok':lv;
     var pf=el('ptsF');if(pf){pf.className='on '+lv;pf.textContent='排對 '+ok+' / '+N;clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){pf.className=''},1500)}
     var h='<div class="fbh"><span class="badge '+b+'">'+ICON[b]+'</span><div><h3>'+(lv==='good'?'順序完全正確':lv==='mid'?'大致記住了':'順序要再記熟')+'</h3><p>流程排序</p></div><b class="fpt">'+ok+'<small>/'+N+'</small></b></div><div class="fst cmp">';
-    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+MK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
+    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+FMK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
     h+='</div><p class="fwhy">'+(lv==='good'?'流程都記住了。真的遇到時，照這個順序一步一步做。':'順序很重要：前一步沒做好，後面做得再多也可能白費。看一下正確流程。')+'</p>';
     h+='<div class="dgp">'+flowSvg(-1)+'</div>';
     fbOpen(h,(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單',next);
@@ -2239,7 +2264,7 @@ function newGame(){
   SCN.start();
 }
 function toQuick(){
-  phase='cut';controls=false;restHands();
+  phase='cut';controls=false;if(SCN.preQuick)SCN.preQuick();restHands();
   var n=DEC.length+1;
   function quick(){
     if(!SCN.quick||!SCN.quick.length){endScene();return}
@@ -2371,12 +2396,12 @@ function showEnd(){
   SC.log.forEach(function(l,i){
     var g=l.o.grade==='good'?'good':l.o.grade==='mid'?'mid':'bad',ix=DEC.indexOf(l.d),ck=(typeof CLKS!=='undefined'&&CLKS[ix])?CLKS[ix]:'#'+(i+1);
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
-    h+='<p><i class="'+g+'">'+MK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
+    h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
     h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
-    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+MK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
+    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
   h+='</div>';
   h+='<div class="sec">評等標準</div><div class="crit"><p><b>S</b>每個決定都對、總分 92 以上</p><p><b>A</b>判斷正確 85 以上、總分 78 以上</p><p><b>B</b>判斷正確 55 以上</p><p><b>C</b>其他</p></div>';
   if(QZ.length){

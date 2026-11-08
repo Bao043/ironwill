@@ -142,6 +142,13 @@
 .card.sq .t{padding-right:24px}
 .fst.cmp{gap:4px}.fst.cmp>div{padding:6px 10px;align-items:center}.fst.cmp small{display:inline;margin-right:8px}.fst.cmp b{display:inline;font-size:14px}.fst.cmp span{font-size:12.5px}
 .tli p.kcx{display:block}
+.ordS{display:block;font-size:13px;line-height:1.5;color:var(--ink2);font-weight:500;margin-bottom:4px}
+.ordN{display:block}
+.ordN b{color:#f2c14e}
+#opts.k-seq .ordG{grid-column:1/-1;font-size:12.5px;color:var(--ink2);line-height:1.5;padding:0 2px 2px}
+#opts.k-seq .ordSl{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.ordSl i{font-style:normal;flex:1 1 0;min-width:60px;border:1px dashed rgba(255,255,255,.28);border-radius:8px;padding:5px 6px;font-size:12px;line-height:1.3;color:var(--ink2);text-align:center}
+.ordSl i.on{border-style:solid;border-color:#f2c14e;color:#fff;background:rgba(242,193,78,.12)}
 </style>
 <title>IRON WILL 行動電源冒煙起火｜求生現場</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -571,7 +578,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　求生現場</div>
     <h1>行動電源冒煙起火</h1>
-    <p class="lead">深夜 23:40，牆邊鐵桌上充電中的行動電源突然冒煙。斷電、撤離、報案、跟消防隊交接，你會怎麼做？</p>
+    <p class="lead">深夜 23:40，牆邊鐵桌上充電中的行動電源突然冒出大量白煙。不靠近、通報家人、撤離、報案、交接，最後還要學會怎麼買、怎麼充。</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -590,7 +597,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="mark"><i></i>情境提要</div>
   <h2>行動電源冒煙起火</h2>
   <div class="bi now"><b>現在</b><p>深夜 23:40，家裡的客廳。你的行動電源放在牆邊的鐵桌上，接著延長線充電，旁邊沒有放其他東西。家人已經在房間睡了。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>行動電源冒煙時的第一步</li><li>它爆裂起火了</li><li>到了門外，打 119</li><li>消防隊到場</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
+  <div class="bi"><b>你要做</b><ol><li>行動電源熱失控</li><li>它爆裂起火了</li><li>到了門外，打 119</li><li>消防隊到場</li><li>買新的行動電源</li></ol><small>共 5 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -1400,6 +1407,9 @@ function tween(obj,to,dur,done,ez){
 function after(ms,fn){var t={t:vt+ms,fn:fn};timers.push(t);return t}
 function clearAll(){tw.length=0;timers.length=0}
 function stepTime(dtms){
+  capClock+=dtms*TS;
+  if(CAPQ.length){if(!capGate()){capFlush()}else if(capClock>=capUntil){var q=CAPQ.shift();capShow(q[0],q[1])}}
+  if(CAPQ.length&&capGate())return;
   vt+=dtms*TS;
   for(var i=tw.length-1;i>=0;i--){var a=tw[i];if(!a)continue;var u=Math.min(1,(vt-a.s)/a.d),e=a.e(u);
     for(var k in a.t)a.o[k]=a.f[k]+(a.t[k]-a.f[k])*e;
@@ -1824,7 +1834,17 @@ function labelTex(txt){
 var controls=false,cur=null,curDone=function(){},decideEnd=0,decideLimit=8000,SC=null,STAGE=-1,baseSmoke=.12;
 function el(id){return $('#'+id)}
 function show(id,v){el(id).hidden=!v}
+var CAPQ=[],capClock=0,capUntil=0;
+function capRead(t){return Math.min(6.5,1.1+String(t).length*.14)*1000}
+function capGate(){return phase==='cut'}
+function capFlush(){if(!CAPQ.length)return;var q=CAPQ[CAPQ.length-1];CAPQ.length=0;capShow(q[0],q[1])}
 function cap(txt,who){
+  if(capGate()&&(CAPQ.length||capClock<capUntil)){CAPQ.push([txt,who]);return}
+  if(!capGate())CAPQ.length=0;
+  capShow(txt,who);
+}
+function capShow(txt,who){
+  capUntil=txt?capClock+capRead(txt):0;
   var p=el('capP');p.classList.remove('on');if(!txt)return;
   setTimeout(function(){el('capW').textContent=who||'';el('capS').textContent=txt;p.classList.add('on')},140);
 }
@@ -1852,13 +1872,13 @@ var SCN={
   src:'內容整理自消防單位鋰電池火災宣導：鋰電池熱失控會反覆爆裂、噴濺火花，起火後不要靠近撲滅，人先撤離、關門、報案，交給消防人員處理；充電時放在不會燒的硬桌面、旁邊不放可燃物。細節仍待對照官方原文。',
   env:{fog:[.05,.045,.045],fogD:.014,sky:[.4,.4,.46],gnd:[.24,.22,.2],dirD:[-.4,-.8,-.2],dirC:[.06,.06,.08],ao:1},
   who:{f:'爸爸'},
-  icons:{unplug:'hand',grab:'x',cover:'x',leave:'run',water:'water',ext:'ext',addr:'phone',story:'phone',hang:'x',brief:'phone',vague:'phone',back:'x'},
+  icons:{back:'run',unplug:'x',grab:'x',cover:'x',buy:'hand',cheap:'x',bed:'x',leave:'run',water:'water',ext:'ext',addr:'phone',story:'phone',hang:'x',brief:'phone',vague:'phone',back:'x'},
   hurtSnd:function(){thud(.5)}
 };
-var DEC=[{"id": "d1", "q": "牆邊鐵桌上的行動電源一邊充電，一邊發出「嘶嘶」聲，外殼鼓了起來，開始冒白煙。你要怎麼做？", "time": 10, "kc": {"t": "冒煙、膨脹：先斷電，不要用手拿", "s": "行動電源膨脹、冒煙、有異味或摸起來異常發燙，代表電池可能正在熱失控。在不用靠近它的情況下先拔掉電源；不要用手拿、不要拿東西蓋住。人往後退，叫醒家人準備離開。"}, "best": "在安全的情況下拔掉延長線上的插頭，不要碰行動電源，人退開、叫醒家人", "opts": [{"id": "unplug", "t": "插頭拿得到：拔掉延長線上的插頭，不碰行動電源，人往後退，大聲叫醒家人", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先斷電、人退開", "p": "電池正在失控時，先切斷充電讓它不要繼續發熱；不要用手拿，它隨時可能噴火。退開並叫醒家人，準備下一步。"}}, {"id": "grab", "t": "趕快用手把它拿起來，丟到陽台外面", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "失控的電池隨時會噴火", "p": "電池內部溫度可能已經好幾百度，拿在手上可能直接燙傷，甚至在手裡噴火、爆開。丟出去也可能砸傷人、引燃別的東西。"}}, {"id": "cover", "t": "拿椅背上的外套把它蓋住，把煙悶住", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "火上加油", "h": "布料會變成燃料", "p": "電池起火不需要外面的空氣也能燒，蓋住悶不熄，反而讓外套、布料一起燒起來，熱也散不掉。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "它越來越燙，煙越來越多", "p": "看到膨脹、冒煙，先在安全的情況下斷電，人退開。"}}}, {"id": "d2", "q": "「啪」一聲，它爆出一大串火花，噴得滿地都是，鐵桌上燒起一團火。每隔幾秒又爆一次。你要怎麼做？", "time": 10, "kc": {"t": "鋰電池起火：不要靠近滅火，人先撤離", "s": "鋰電池熱失控時會一顆一顆電芯接著爆裂、噴出火花和火舌，不是單純燃燒。這時候靠近倒水或噴滅火器，很容易被噴濺燙傷，而且電池還是會繼續燒。人先離開、把門關上，報案交給消防人員處理。"}, "best": "不要靠近滅火：叫家人一起離開，出門時把大門帶上", "opts": [{"id": "leave", "t": "不要靠近：叫爸爸一起離開，出門時把大門帶上", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "人先離開，門把火關在裡面", "p": "鋰電池起火會反覆爆裂、噴火花，靠近非常危險。人先撤離，隨手關門可以把煙和火擋在屋裡，接著到安全的地方報案。"}}, {"id": "water", "t": "衝去廚房裝一大盆水，靠近整盆倒下去", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "靠近就會被噴濺，倒水也燒不完", "p": "電池內部還在一直發熱，一盆水澆下去火可能暫時變小，但很快又會爆開、繼續燒。你站在旁邊倒水，正好被噴出來的火花和火舌打到。"}}, {"id": "ext", "t": "拿門邊的滅火器，走到旁邊對著它噴", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "壓得住火焰，壓不住電池", "p": "乾粉能把火焰暫時壓下去，但電池裡面還在反應，幾秒後又會爆開。為了噴它而靠近，就是讓自己暴露在爆裂和有毒的煙裡。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "它又爆了一次", "p": "鋰電池起火會一直爆，不要靠近，人先離開、關門、報案。"}}}, {"id": "d3", "q": "你們到了門外的走廊，你撥打 119。", "time": 12, "phone": true, "phL": "119", "say": [["d", "119 你好，請問哪裡發生什麼事？"]], "kc": {"t": "打 119：先講地址，再講狀況", "s": "報案時先說清楚地址（縣市、區、路名、門牌、樓層），再說什麼東西起火、火還在不在燒、人都出來了沒、有沒有人受傷。不要急著掛電話，照執勤員的指示做。"}, "best": "先說地址，再說行動電源在鐵桌上起火、一直爆、人都在門外、門關著", "opts": [{"id": "addr", "t": "「新北市板橋區幸福路 7 號 5 樓。家裡的行動電源起火，在鐵桌上一直爆，人都出來了，門關著，沒有人受傷。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "地址第一，再講重點", "p": "執勤員最需要的是地址，才能派車；接著說什麼在燒、人都出來了沒，消防隊出發時就知道要準備什麼。"}}, {"id": "story", "t": "「我剛剛在充電，突然聽到嘶嘶聲，然後它就鼓起來……」從頭開始講", "grade": "mid", "pts": 8, "dmg": 5, "fb": {"b": "mid", "bt": "太慢了", "h": "先講地址", "p": "從頭講故事會拖到派車時間。先講地址，再用一兩句話說重點。"}}, {"id": "hang", "t": "「行動電源燒起來了，你們快來！」說完就掛掉", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "bad", "bt": "沒有地址", "h": "消防隊不知道要去哪裡", "p": "沒講地址就掛電話，執勤員還得回撥問你，浪費寶貴的時間。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話那頭在等你說話", "p": "先講地址，再講發生什麼事。"}}}, {"id": "d4", "q": "消防員到了，問你：「裡面什麼東西燒起來？有沒有人還在裡面？」你要怎麼回答？", "time": 12, "kc": {"t": "跟消防隊交接：什麼在燒、在哪裡、人在不在", "s": "消防人員到場時，主動說清楚：什麼東西起火、在哪個位置、旁邊有沒有容易燒的東西、所有人是不是都出來了、門窗有沒有關。說完就留在安全的地方，不要自己再回去開門。"}, "best": "說清楚：客廳牆邊鐵桌上的行動電源起火、旁邊沒有東西、家人都出來了、大門關著", "opts": [{"id": "brief", "t": "「5 樓客廳牆邊的鐵桌上，行動電源起火，一直在爆。旁邊沒有東西會燒，家人都出來了，大門關著。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "位置、起火物、人員，一次講清楚", "p": "消防人員最需要知道：燒什麼、在哪裡、有沒有人受困。你一次講清楚，他們就能直接判斷怎麼進去、要不要搜救。"}}, {"id": "vague", "t": "「裡面燒起來了，你們快點進去！」", "grade": "mid", "pts": 8, "dmg": 5, "fb": {"b": "mid", "bt": "資訊不夠", "h": "消防員還要再問一次", "p": "沒說是什麼東西、在哪裡、人有沒有出來，消防員還得一個一個問，延誤處置。"}}, {"id": "back", "t": "「我先進去幫你們開門看看！」自己衝回去開門", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "屋裡都是有毒的煙", "p": "鋰電池燃燒的煙有毒，門一開，濃煙和火就會衝出來。已經離開了就不要再回去，交給消防人員。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "消防員在等你回答", "p": "主動告訴消防員：什麼在燒、在哪裡、人都出來了沒。"}}}];
-SCN.quick=[{"q": "行動電源出現哪種情況，要立刻停止使用？", "ok": "膨脹、變形、漏液、生鏽、有異味或異常發燙", "w": ["電量掉得比以前快", "外殼有一點刮痕"], "why": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。", "kc": {"t": "六大異常要停用", "s": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。"}}, {"q": "行動電源最好在什麼情況下充電？", "ok": "有人看得到的時候，放在不會燒的硬桌面（例如鐵桌）上，旁邊不放東西", "w": ["睡覺時放在枕頭旁邊", "包在棉被裡比較安靜"], "why": "避免睡覺或長時間沒人看著時充電；放在不會燒的硬桌面上，遠離床、沙發、紙張這些容易燒的東西。萬一起火，旁邊沒有東西可以燒，損失就小很多。", "kc": {"t": "充電放在不會燒的地方", "s": "避免睡覺或長時間沒人看著時充電；放在不會燒的硬桌面上，遠離床、沙發、紙張這些容易燒的東西。萬一起火，旁邊沒有東西可以燒，損失就小很多。"}}, {"q": "膨脹的行動電源要怎麼處理？", "ok": "停止使用，正負極貼上絕緣膠帶，拿去回收", "w": ["用力壓平，再繼續用", "丟進一般垃圾車"], "why": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。", "kc": {"t": "膨脹電池要回收", "s": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。"}}, {"q": "行動電源充飽電之後？", "ok": "盡快拔掉電源", "w": ["一直插著，讓它保持滿電", "插著沒關係，反正會自動斷電"], "why": "避免長時間過度充電，充飽後盡快拔掉電源。", "kc": {"t": "充飽就拔", "s": "避免長時間過度充電，充飽後盡快拔掉電源。"}}, {"q": "邊充電邊玩手機好嗎？", "ok": "最好不要，電池會更熱", "w": ["沒有影響", "反而充比較快"], "why": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。", "kc": {"t": "充電時別使用", "s": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。"}}, {"q": "行動電源起火、一直劈啪爆開，該怎麼做？", "ok": "不要靠近滅火，人先離開、關門、報案", "w": ["用水澆到它熄滅為止", "拿毛巾包起來丟出去"], "why": "鋰電池熱失控會反覆爆裂、噴濺火花，靠近撲滅很容易受傷，倒水也很難讓它停下來。人先撤離、關門、報案，交給消防人員。", "kc": {"t": "鋰電池起火先撤離", "s": "鋰電池熱失控會反覆爆裂、噴濺火花，靠近撲滅很容易受傷，倒水也很難讓它停下來。人先撤離、關門、報案，交給消防人員。"}}, {"q": "鋰電池燒起來的煙？", "ok": "有毒，要離開、開窗通風", "w": ["跟燒紙的煙一樣，沒關係", "捂住鼻子就可以待著"], "why": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。", "kc": {"t": "電池煙有毒", "s": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。"}}, {"q": "買行動電源要先看什麼？", "ok": "有沒有經濟部標準檢驗局的「商品安全標章」", "w": ["容量越大越好", "越便宜越划算"], "why": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。", "kc": {"t": "認明安全標章", "s": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。"}}, {"q": "離開起火的家之後，要做什麼？", "ok": "在安全的地方等消防隊，告訴他們起火物、位置、人都出來了沒", "w": ["回去拿貴重物品", "回去開門看火熄了沒"], "why": "離開之後就不要再回去。消防人員到場時，主動說清楚什麼在燒、在哪裡、有沒有人還在裡面。", "kc": {"t": "出來了就不要再回去", "s": "離開之後就不要再回去。消防人員到場時，主動說清楚什麼在燒、在哪裡、有沒有人還在裡面。"}}];
-var CHS=['冒煙','爆裂起火','報案','消防隊到場'],CLKS=['23:40','23:41','23:42','23:49'];
-DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
+var DEC=[{"id": "d1", "q": "牆邊鐵桌上的行動電源一下子鼓了起來，冒出一大團白煙。你要怎麼做？", "time": 8, "kc": {"t": "熱失控：不要再靠近，先通知家人", "s": "行動電源開始冒出大量白煙、外殼迅速膨脹，代表內部已經熱失控，短時間內隨時會爆裂起火。這時候不要再靠近，也不要冒險去拔插頭或拿東西蓋。人往後退，先大聲通知家人「失火了」，準備一起撤離。（只是摸起來異常發燙、還沒冒煙膨脹時，才是拔插頭、停止使用的時機。）"}, "best": "不要靠近：往後退，大聲通知家人「失火了」", "opts": [{"id": "back", "t": "不要靠近：馬上往後退，大聲通知家人「失火了！行動電源要爆了！」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "熱失控就保持距離，先通報", "p": "大量白煙加上迅速膨脹，代表已經熱失控，隨時會爆。這時候靠近就是讓自己受傷。往後退、先喊家人，大家才有時間準備離開。"}}, {"id": "unplug", "t": "趁還沒起火，衝過去拔掉插頭", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "太危險了", "h": "熱失控後拔插頭也來不及", "p": "電池內部已經失控，拔掉電源也停不下來。走到旁邊伸手拔插頭的那幾秒，正好可能遇到它爆裂，火花和高溫氣體會直接噴到你身上。"}}, {"id": "cover", "t": "拿外套蓋住它，把煙悶住", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "蓋住悶不熄，還多了燃料", "p": "鋰電池燃燒不需要外面的空氣，蓋住悶不熄。外套反而會被點燃，讓火變大，而且你得走到它旁邊。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "它隨時會爆", "p": "冒大量白煙、迅速膨脹：不要靠近，先往後退、大喊通知家人。"}}}, {"id": "d2", "q": "「啪」一聲，它爆出一大串火花，噴得滿地都是，鐵桌上燒起一團火。每隔幾秒又爆一次。你要怎麼做？", "time": 10, "kc": {"t": "鋰電池起火：不要靠近滅火，人先撤離", "s": "鋰電池熱失控時會一顆一顆電芯接著爆裂、噴出火花和火舌，不是單純燃燒。這時候靠近倒水或噴滅火器，很容易被噴濺燙傷，而且電池還是會繼續燒。人先離開、把門關上，報案交給消防人員處理。"}, "best": "不要靠近滅火：叫家人一起離開，出門時把大門帶上", "opts": [{"id": "leave", "t": "不要靠近：叫爸爸一起離開，出門時把大門帶上", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "人先離開，門把火關在裡面", "p": "鋰電池起火會反覆爆裂、噴火花，靠近非常危險。人先撤離，隨手關門可以把煙和火擋在屋裡，接著到安全的地方報案。"}}, {"id": "water", "t": "衝去廚房裝一大盆水，靠近整盆倒下去", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "靠近就會被噴濺，倒水也燒不完", "p": "電池內部還在一直發熱，一盆水澆下去火可能暫時變小，但很快又會爆開、繼續燒。你站在旁邊倒水，正好被噴出來的火花和火舌打到。"}}, {"id": "ext", "t": "拿門邊的滅火器，走到旁邊對著它噴", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "壓得住火焰，壓不住電池", "p": "乾粉能把火焰暫時壓下去，但電池裡面還在反應，幾秒後又會爆開。為了噴它而靠近，就是讓自己暴露在爆裂和有毒的煙裡。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "它又爆了一次", "p": "鋰電池起火會一直爆，不要靠近，人先離開、關門、報案。"}}}, {"id": "d3", "q": "你們到了門外的走廊，你撥打 119。", "time": 12, "phone": true, "phL": "119", "say": [["d", "119 你好，請問哪裡發生什麼事？"]], "kc": {"t": "打 119：先講地址，再講狀況", "s": "報案時先說清楚地址（縣市、區、路名、門牌、樓層），再說什麼東西起火、火還在不在燒、人都出來了沒、有沒有人受傷。不要急著掛電話，照執勤員的指示做。"}, "best": "先說地址，再說行動電源在鐵桌上起火、一直爆、人都在門外、門關著", "opts": [{"id": "addr", "t": "「新北市板橋區幸福路 7 號 5 樓。家裡的行動電源起火，在鐵桌上一直爆，人都出來了，門關著，沒有人受傷。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "地址第一，再講重點", "p": "執勤員最需要的是地址，才能派車；接著說什麼在燒、人都出來了沒，消防隊出發時就知道要準備什麼。"}}, {"id": "story", "t": "「我剛剛在充電，突然聽到嘶嘶聲，然後它就鼓起來……」從頭開始講", "grade": "mid", "pts": 8, "dmg": 5, "fb": {"b": "mid", "bt": "太慢了", "h": "先講地址", "p": "從頭講故事會拖到派車時間。先講地址，再用一兩句話說重點。"}}, {"id": "hang", "t": "「行動電源燒起來了，你們快來！」說完就掛掉", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "bad", "bt": "沒有地址", "h": "消防隊不知道要去哪裡", "p": "沒講地址就掛電話，執勤員還得回撥問你，浪費寶貴的時間。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話那頭在等你說話", "p": "先講地址，再講發生什麼事。"}}}, {"id": "d4", "q": "消防員到了，問你：「裡面什麼東西燒起來？有沒有人還在裡面？」你要怎麼回答？", "time": 12, "kc": {"t": "跟消防隊交接：什麼在燒、在哪裡、人在不在", "s": "消防人員到場時，主動說清楚：什麼東西起火、在哪個位置、旁邊有沒有容易燒的東西、所有人是不是都出來了、門窗有沒有關。說完就留在安全的地方，不要自己再回去開門。"}, "best": "說清楚：客廳牆邊鐵桌上的行動電源起火、旁邊沒有東西、家人都出來了、大門關著", "opts": [{"id": "brief", "t": "「5 樓客廳牆邊的鐵桌上，行動電源起火，一直在爆。旁邊沒有東西會燒，家人都出來了，大門關著。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "位置、起火物、人員，一次講清楚", "p": "消防人員最需要知道：燒什麼、在哪裡、有沒有人受困。你一次講清楚，他們就能直接判斷怎麼進去、要不要搜救。"}}, {"id": "vague", "t": "「裡面燒起來了，你們快點進去！」", "grade": "mid", "pts": 8, "dmg": 5, "fb": {"b": "mid", "bt": "資訊不夠", "h": "消防員還要再問一次", "p": "沒說是什麼東西、在哪裡、人有沒有出來，消防員還得一個一個問，延誤處置。"}}, {"id": "back", "t": "「我先進去幫你們開門看看！」自己衝回去開門", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "屋裡都是有毒的煙", "p": "鋰電池燃燒的煙有毒，門一開，濃煙和火就會衝出來。已經離開了就不要再回去，交給消防人員。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "消防員在等你回答", "p": "主動告訴消防員：什麼在燒、在哪裡、人都出來了沒。"}}}, {"id": "d5", "q": "隔天，你要再買一顆新的行動電源。怎麼買、怎麼充才安全？", "time": 12, "kc": {"t": "行動電源：買對、充對、放對", "s": "買有商品安全標章（BSMI）的、有信譽的品牌，不買來路不明的便宜貨。不要在沒人看顧的時候充電（像是晚上睡覺、出門的時候）。充電時放在鐵桌這類不會燒的硬桌面上，周圍保持淨空，萬一起火也不會延燒到其他東西。"}, "best": "買有安全標章的知名品牌；有人在的時候才充，放在鐵桌上、周圍淨空", "opts": [{"id": "buy", "t": "買有商品安全標章的知名品牌；有人在的時候才充，放在鐵桌上、周圍淨空", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "買對、充對、放對", "p": "有標章的產品通過檢驗；有人看著，異狀才會馬上被發現；放在不會燒的桌面、旁邊淨空，萬一出事也不會燒到別的東西。"}}, {"id": "cheap", "t": "網路上買最便宜、沒有標章的就好", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "bad", "bt": "風險很高", "h": "來路不明，品質沒有保障", "p": "沒有標章、來路不明的行動電源，電芯和保護電路的品質都沒有保障，比較容易過熱、膨脹、起火。"}}, {"id": "bed", "t": "買有標章的，晚上睡覺時插在床頭充一整晚", "grade": "mid", "pts": 8, "dmg": 8, "fb": {"b": "mid", "bt": "充電方式不對", "h": "沒人看著，又放在床上", "p": "產品買對了，但睡覺時充電沒人看顧，床鋪、棉被又都是可燃物。一旦出事，發現時往往已經燒起來了。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "還沒決定", "p": "買有標章的知名品牌，有人看顧時才充，放在不燃桌面上、周圍淨空。"}}}];
+SCN.quick=[{"q": "行動電源出現哪種情況，要立刻停止使用？", "ok": "膨脹、變形、漏液、生鏽、有異味或異常發燙", "w": ["電量掉得比以前快", "外殼有一點刮痕"], "why": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。", "kc": {"t": "六大異常要停用", "s": "台北市消防局提醒，出現變形、膨脹、液體滲漏、生鏽、異常氣味、異常高溫這六種情況，就要立刻停用。"}}, {"q": "行動電源最好在什麼情況下充電？", "ok": "有人看顧的時候，放在鐵桌這類不會燒的桌面上，周圍淨空", "w": ["睡覺時放在枕頭旁邊充一整晚", "出門前插著，回家剛好充飽"], "why": "不要在沒人看顧的時候充電，像是晚上睡覺、出門的時候。充電時放在不會燒的硬桌面（例如鐵桌），周圍保持淨空，避免起火延燒到其他可燃物。", "kc": {"t": "有人看顧、不燃桌面、周圍淨空", "s": "不要在沒人看顧的時候充電，像是晚上睡覺、出門的時候。充電時放在不會燒的硬桌面（例如鐵桌），周圍保持淨空，避免起火延燒到其他可燃物。"}}, {"q": "膨脹的行動電源要怎麼處理？", "ok": "停止使用，正負極貼上絕緣膠帶，拿去回收", "w": ["用力壓平，再繼續用", "丟進一般垃圾車"], "why": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。", "kc": {"t": "膨脹電池要回收", "s": "膨脹的電池不能再充電、也不能丟一般垃圾（垃圾車壓縮時可能起火）。單獨放好、避開高溫，接點貼絕緣膠帶，交給回收點。"}}, {"q": "行動電源充飽電之後？", "ok": "盡快拔掉電源", "w": ["一直插著，讓它保持滿電", "插著沒關係，反正會自動斷電"], "why": "避免長時間過度充電，充飽後盡快拔掉電源。", "kc": {"t": "充飽就拔", "s": "避免長時間過度充電，充飽後盡快拔掉電源。"}}, {"q": "邊充電邊玩手機好嗎？", "ok": "最好不要，電池會更熱", "w": ["沒有影響", "反而充比較快"], "why": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。", "kc": {"t": "充電時別使用", "s": "邊充電邊使用，會讓電池溫度更高，增加過熱的風險。"}}, {"q": "行動電源起火、一直劈啪爆開，該怎麼做？", "ok": "不要靠近滅火，人先離開、關門、報案", "w": ["用水澆到它熄滅為止", "拿毛巾包起來丟出去"], "why": "鋰電池熱失控會反覆爆裂、噴濺火花，靠近撲滅很容易受傷，倒水也很難讓它停下來。人先撤離、關門、報案，交給消防人員。", "kc": {"t": "鋰電池起火先撤離", "s": "鋰電池熱失控會反覆爆裂、噴濺火花，靠近撲滅很容易受傷，倒水也很難讓它停下來。人先撤離、關門、報案，交給消防人員。"}}, {"q": "鋰電池燒起來的煙？", "ok": "有毒，要離開、開窗通風", "w": ["跟燒紙的煙一樣，沒關係", "捂住鼻子就可以待著"], "why": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。", "kc": {"t": "電池煙有毒", "s": "鋰電池燃燒會釋放有毒的煙，不要吸入，人先離開並通風。"}}, {"q": "買行動電源要先看什麼？", "ok": "有沒有經濟部標準檢驗局的「商品安全標章」", "w": ["容量越大越好", "越便宜越划算"], "why": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。", "kc": {"t": "認明安全標章", "s": "行動電源屬於要檢驗的商品，買之前先認明商品安全標章。"}}, {"q": "離開起火的家之後，要做什麼？", "ok": "在安全的地方等消防隊，告訴他們起火物、位置、人都出來了沒", "w": ["回去拿貴重物品", "回去開門看火熄了沒"], "why": "離開之後就不要再回去。消防人員到場時，主動說清楚什麼在燒、在哪裡、有沒有人還在裡面。", "kc": {"t": "出來了就不要再回去", "s": "離開之後就不要再回去。消防人員到場時，主動說清楚什麼在燒、在哪裡、有沒有人還在裡面。"}}, {"q": "行動電源冒出大量白煙、外殼迅速鼓起來，代表什麼？", "ok": "內部已經熱失控，隨時會爆，不要再靠近", "w": ["只是有點熱，拔掉插頭就好", "電量快滿了的正常現象"], "why": "大量白煙加上迅速膨脹，是熱失控的徵兆，短時間內隨時會爆裂起火。不要再靠近、不要冒險拔插頭，先往後退、通知家人。", "kc": {"t": "熱失控不要靠近", "s": "大量白煙加上迅速膨脹，是熱失控的徵兆，短時間內隨時會爆裂起火。不要再靠近、不要冒險拔插頭，先往後退、通知家人。"}}, {"q": "買行動電源要注意什麼？", "ok": "認明商品安全標章（BSMI），選有信譽的品牌", "w": ["越便宜越好", "容量越大越好，標章不重要"], "why": "有商品安全標章代表通過檢驗。來路不明的便宜產品，電芯和保護電路品質沒有保障，比較容易出事。", "kc": {"t": "認明商品安全標章", "s": "有商品安全標章代表通過檢驗。來路不明的便宜產品，電芯和保護電路品質沒有保障，比較容易出事。"}}];
+var CHS=['熱失控','爆裂起火','報案','消防隊到場','買新的行動電源'],CLKS=['23:40','23:41','23:42','23:49','隔天'];
+DEC.forEach(function(d,i){d.ch='第'+'一二三四五'[i]+'章　'+CHS[i]});
 /* ---- 鏡頭 ---- */
 var CAM={};
 function camSetup(){
@@ -1889,10 +1909,10 @@ function boom(pw,hurt){
   ST.shake=.18*pw;tween(ST,{shake:0},.35);scorch.a=Math.min(.85,scorch.a+.15);
   if(hurt){ST.dmg=.8;tween(ST,{dmg:0},1)}
 }
-function ignite(){boom(1.8);FPB.v=.95;SMW.v=0;SMR.v=.6;loopSnd('roar','lowpass',520,.5,1,.1);loopSnd('hiss','highpass',3200,.8,.25,.05);pbTop.col=[.15,.12,.1];pbBulge.vis=false;PBX.boom=1;PBX.nb=rnd(2.4,3.6)}
+function ignite(hurt){if(PBX.lit)return;PBX.lit=1;boom(1.8,hurt);FPB.v=.95;SMW.v=0;SMR.v=.6;loopSnd('roar','lowpass',520,.5,1,.1);loopSnd('hiss','highpass',3200,.8,.25,.05);pbTop.col=[.15,.12,.1];pbBulge.vis=false;PBX.boom=1;PBX.nb=rnd(2.4,3.6)}
 SCN.reset=function(){
   fxReset();FPB.p=AT.slice();FPB.h=1.1;FPB.w=.75;
-  for(var k in PBX)PBX[k]=0;PBX.nb=3;PBX.lamp=1;
+  for(var k in PBX)PBX[k]=0;PBX.nb=3;PBX.lamp=1;SMW.a=.38;
   pbN.p=[PBP.x,PBP.y,PBP.z];pbN.r=[0,.25,0];pbN.s=[1,1,1];pbBody.vis=pbTop.vis=pbLed.vis=true;pbBulge.vis=false;pbBurnt.vis=false;pbTop.col=hex(0x3a3f46);pbLed.col=hex(0x7fd6ff);
   pbShard.forEach(function(q){q.vis=false});burnDots.forEach(function(d){d.a=0});
   plug.p=[STRIP.x,MT.y+.05,STRIP.z+.06];PLUG.in=1;scorch.a=0;steamPool.a=0;floorPool.a=0;
@@ -1903,7 +1923,7 @@ SCN.start=function(){
   phase='cut';controls=false;bars(true);showSkip(true);
   setCam(CAM.sit);fadeTo(0,1600);cap('深夜 23:40。你坐在餐桌前滑手機。行動電源放在牆邊的鐵桌上，接著延長線充電。');
   after(3400,function(){cap('「嘶——」鐵桌那邊傳來細細的聲音。');loopSnd('hiss','highpass',3200,.8,.5,.05);SMW.v=.35});
-  after(5600,function(){cap('行動電源鼓了起來，開始冒出白煙。');pbBulge.vis=true;tween(pbN.s,{1:1.35},2);tween(SMW,{v:1},2);pbLed.col=[1,.2,.1];loopSnd('hiss','highpass',3200,.8,1,.05)});
+  after(5600,function(){cap('行動電源一下子鼓了起來，冒出一大團白煙——這是熱失控，隨時會爆。');pbBulge.vis=true;tween(pbN.s,{0:1.15,1:1.6,2:1.1},1.2);tween(SMW,{v:1},1.2);SMW.a=.55;pbLed.col=[1,.2,.1];loopSnd('hiss','highpass',3200,.8,1,.05)});
   after(8600,function(){showSkip(false);step(1)});
 };
 function step(n){
@@ -1935,9 +1955,9 @@ function basinTick(){if(!BAS.on)return;var c=c2w([0,-.24-BAS.tilt*.05,-.46+BAS.t
 function holdBasin(on){BAS.on=on?1:0;if(on){hIn(HR,{p:[.17,-.25,-.44],r:[.2,-.9,.2],curl:.55,thumb:.4,abs:true},.3);hIn(HL,{p:[-.17,-.25,-.44],r:[.2,.9,-.2],curl:.55,thumb:.4,abs:true},.3)}}
 var PRE={
   2:function(go){
-    if(PLUG.in)unplugAnim(.01);
     camTo(CAM.back,.8);
-    after(1000,function(){ignite();cap('「啪！」它爆出一大串火花，噴得滿地都是，鐵桌上燒起一團火。')});
+    if(PBX.lit){after(900,function(){cap('鐵桌上燒起一團火，隔幾秒就「啪」地爆一次，火花噴得滿地都是。')})}
+    else after(1000,function(){ignite();cap('「啪！」它爆出一大串火花，噴得滿地都是，鐵桌上燒起一團火。')});
     after(3000,function(){cap('隔幾秒，又「啪」一聲爆開一次。')});
     after(4200,go);
   },
@@ -1945,6 +1965,10 @@ var PRE={
     var g=function(){cap('你和爸爸站在門外的走廊，拿出手機。');hIn(HR,'phone',.4);HR.hold='phone';dial119();after(1300,go)};
     if(G.d2&&G.d2.id==='leave'){after(300,g);return}
     goOut('你拉著爸爸往外跑，出門時把大門帶上。',g);
+  },
+  5:function(go){
+    fadeTo(1,600);after(700,function(){quietRoom();setClock('隔天');setCam(CAM.sit);pbBurnt.vis=false;scorch.a=.3;burnDots.forEach(function(d){d.a=0});pbShard.forEach(function(q){q.vis=false});fadeTo(0,800);cap('隔天。鐵桌擦乾淨了，你要再買一顆新的行動電源。')});
+    after(3600,go);
   },
   4:function(go){
     HR.hold='';hOut(HR,.3);fadeTo(1,500);
@@ -1958,32 +1982,26 @@ var PRE={
 /* ---- 每個選項的動作 ---- */
 var PLAY={
  d1:{
-  unplug:function(done){
-    camTo(CAM.near,.9);
-    after(1000,function(){var a=w2c(plug.p);hIn(HR,{p:[a[0]+.01,a[1]+.05,a[2]+.04],r:[.6,-.3,0],curl:.6,thumb:.55,abs:true},.45)});
-    after(1600,function(){hTo(HR,{curl:.85,thumb:.75},.15);unplugAnim(.3);var b=w2c([STRIP.x+.12,MT.y+.06,STRIP.z+.2]);hTo(HR,{p:[b[0],b[1]+.03,b[2]+.04],abs:true},.3)});
-    after(2300,function(){hOut(HR,.3);cap('你伸長手拔掉插頭，沒有碰到行動電源，馬上往後退。');camTo(CAM.back,1.0)});
-    after(3600,function(){cap('「爸！起來！行動電源在冒煙！」','你')});
-    after(5000,function(){cap('「什麼？」房間的燈亮了。','爸爸')});
-    after(6000,done);
+  back:function(done){
+    camTo(CAM.back,.9);cap('你立刻往後退，大聲喊：「失火了！爸，行動電源要爆了，快起來！」','你');
+    after(2400,function(){cap('「什麼？」房間的燈亮了。','爸爸')});
+    after(3600,done);
   },
-  grab:function(done){
-    camTo(CAM.near,.8);
-    after(900,function(){var a=w2c([pbN.p[0],MT.y+.03,pbN.p[2]]);hIn(HR,{p:[a[0],a[1]+.04,a[2]+.02],r:[.7,-.2,0],curl:.5,thumb:.5,abs:true},.45)});
-    after(1600,function(){hTo(HR,{curl:.8,thumb:.7},.12);ST.dmg=.6;tween(ST,{dmg:0},.8);cap('好燙！');pop()});
-    after(2000,function(){var a=w2c([pbN.p[0],MT.y+.03,pbN.p[2]]);hTo(HR,{p:[a[0]+.1,a[1]+.2,a[2]+.1],curl:.2,thumb:.2,abs:true},.2);cap('燙得你手一甩，它掉回桌上，手掌已經紅了一片。')});
-    after(3200,function(){hOut(HR,.3);unplugAnim(.01);camTo(CAM.back,1.0)});
+  unplug:function(done){
+    camTo(CAM.near,.9);cap('你想趁它還沒燒起來，衝過去拔插頭——');
+    after(1000,function(){var a=w2c(plug.p);hIn(HR,{p:[a[0]+.01,a[1]+.05,a[2]+.04],r:[.6,-.3,0],curl:.6,thumb:.55,abs:true},.45)});
+    after(1600,function(){hOut(HR,.15);ignite(true);cap('手才伸過去，它就「啪」地爆開，火花噴到你的手和臉上。')});
+    after(3200,function(){camTo(CAM.back,.8);cap('你痛得往後退，大喊：「爸！失火了！」','你')});
     after(4600,done);
   },
   cover:function(done){
-    camTo(CAM.near,.8);cap('你抓起椅背上的外套，走過去蓋在行動電源上。');
+    camTo(CAM.near,.8);cap('你抓起椅背上的外套，走過去想蓋住它。');
     after(1100,function(){jacket.vis=true;jacket.p=[pbN.p[0],MT.y+.045,pbN.p[2]]});
-    after(1700,function(){SMW.v=1;SMW.c=[.5,.48,.46];cap('外套底下冒出更濃的煙，布料開始焦黑。');jacket.col=[.12,.1,.09]});
-    after(3000,function(){jacket.vis=false;SMW.c=[.92,.92,.92]});
-    after(3100,function(){unplugAnim(.01);camTo(CAM.back,1.0)});
-    after(4300,done);
+    after(1700,function(){ignite(true);jacket.col=[.12,.1,.09];cap('外套才蓋上去，它就爆開了，外套跟著燒起來，火花噴到你身上。')});
+    after(3000,function(){jacket.vis=false;camTo(CAM.back,1.0);cap('你往後退，大喊：「爸！失火了！」','你')});
+    after(4400,done);
   },
-  _:function(done){cap('你愣在椅子上，煙越來越濃。');tween(SMW,{v:1},1);SMR.v=.3;after(2600,function(){unplugAnim(.01);done()})}
+  _:function(done){cap('你愣在椅子上，煙越來越濃。');tween(SMW,{v:1},1);SMR.v=.3;after(2600,done)}
  },
  d2:{
   leave:function(done){
@@ -2038,6 +2056,12 @@ var PLAY={
     after(6200,done);
   },
   _:function(done){cap('你愣在一旁，消防員先進去確認了。');after(1500,function(){fadeTo(1,600)});after(2200,function(){quietRoom();setCam(CAM.back);fadeTo(0,800)});after(4200,done)}
+ },
+ d5:{
+  buy:function(done){cap('你到正規通路，買了有商品安全標章的知名品牌。');after(2400,function(){cap('之後只在有人在家、醒著的時候充電，放在鐵桌上，旁邊什麼都不放。')});after(5000,done)},
+  cheap:function(done){cap('你在網路上買了一顆最便宜、沒有標章的。');after(2400,function(){cap('來路不明的電池，電芯和保護電路品質都沒有保障。')});after(4800,done)},
+  bed:function(done){cap('你買了有標章的，晚上睡覺時插在床頭，充一整晚。');after(2400,function(){cap('就算品質好，沒人看著、又放在床上，出事時就沒人發現，床鋪也會跟著燒。')});after(5200,done)},
+  _:function(done){cap('你還沒想好要怎麼買。');after(2400,done)}
  }
 };
 function quietRoom(){
@@ -2049,7 +2073,7 @@ SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length,hurtA=G.d2&&G.d2.id!=='leave';
   return [g===DEC.length?'23:52，消防員確認：行動電源已經燒完，鐵桌上只留下一片焦黑，屋裡其他東西都沒有燒到。':hurtA?'23:52，火熄了。鐵桌上一片焦黑，你的手臂被噴出的火花燙傷，要去醫院處理。':'23:52，火熄了，屋裡被燻黑了一些，幸好人都沒事。',
     '還好它是放在不會燒的鐵桌上、旁邊沒有東西，能量釋放完就自己熄了。如果放在床上、沙發上，就會變成一場住宅火災。',
-    g===DEC.length?'斷電後退、不靠近滅火、關門撤離、報案、跟消防隊交接，你每一步都做對了。':'下一次記得：鋰電池起火會一直爆，不要靠近滅火，人先出去、把門關上、報案，再把狀況告訴消防隊。'];
+    g===DEC.length?'熱失控不靠近、先喊家人、不靠近滅火、關門撤離、報案、跟消防隊交接、買對的行動電源，你每一步都做對了。':'下一次記得：行動電源冒大量白煙、迅速膨脹就不要靠近，先大喊通知家人；起火後不要滅火，人先出去、把門關上、報案。'];
 };
 /* ---- 光線、特效、每幀更新 ---- */
 function sceneLights(){
@@ -2081,7 +2105,8 @@ function sceneTick(dt){
 }
 function titleCam(){var c=CAM.sit;cam.x=c.x+Math.sin(tNow*.2)*.08;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch+.05}
 
-SCN.flow=[{"t": "斷電退開", "s": "拔插頭，不碰電池"}, {"t": "不靠近滅火", "s": "會一直爆，人先離開"}, {"t": "關門報案", "s": "帶上門，先講地址"}, {"t": "交接消防隊", "s": "起火物、位置、人員"}];
+SCN.flow=[{"t": "不靠近、先喊", "s": "熱失控就後退，通知家人"}, {"t": "不靠近滅火", "s": "會一直爆，人先離開"}, {"t": "關門報案", "s": "帶上門，先講地址"}, {"t": "交接消防隊", "s": "起火物、位置、人員"}, {"t": "買對充對", "s": "標章、有人看顧、不燃桌面"}];
+SCN.flowIntro="如果行動電源又冒煙膨脹，從發現異狀到之後重新購買，正確的處理順序是？";
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -2191,12 +2216,12 @@ function showFeedback(d,o){
   var f=o.fb,g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad',h;
   if(d.quick){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.bt)+'</h3><p>'+esc(d.q.replace(/^現場追問 \d+／\d+　/,''))+'</p></div></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
   }else{
     var L=SC.log[SC.log.length-1],ix=DEC.indexOf(d);
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
     h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
@@ -2209,7 +2234,7 @@ function showFeedback(d,o){
   chime(o.grade==='good');
 }
 /* ================= 精緻版：詳解卡、流程圖解、得分浮字、流程排序 ================= */
-var MK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+var FMK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
 var LK={ty:0,tp:0,act:0};
 function maxPts(d){return Math.max.apply(null,d.opts.map(function(o){return o.pts||0}))}
 function hasFlow(){return !!(SCN.flow&&SCN.flow.length>2)}
@@ -2245,10 +2270,14 @@ function runOrder(next){
   do{idx=shuffle(idx)}while(idx.every(function(v,i){return v===i}));
   cur={id:'ord',ord:true,q:'流程排序',opts:[]};curDone=null;decideEnd=0;phase='decide';controls=true;TS=1;
   show('phone',false);show('fb',false);show('hint',false);show('prompt',false);show('useBtn',false);
-  el('decQ').textContent='流程排序：照正確順序，依序點出這 '+N+' 個步驟（點錯可以再點一次取消）';
+  var FI=SCN.flowIntro||('回想剛剛「'+SCN.title+'」的情況：正確的應變順序是什麼？');
+  function guide(){var k=seq.length;el('decQ').innerHTML='<span class="ordS">'+esc(FI)+'</span><span class="ordN">'+(k<N?'現在請點：<b>第 '+(k+1)+' 步</b>（共 '+N+' 步）'+(k===0?'——最先要做的事':k===N-1?'——最後一步':'——接在「'+esc(F[seq[k-1]].t)+'」之後'):'排好了，檢查中…')+'</span>'}
   el('tbar').style.visibility='hidden';el('decT').textContent='';
   var opts=el('opts');opts.innerHTML='';opts.className='k-seq';
-  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''})}
+  var gd=document.createElement('div');gd.className='ordG';gd.textContent='下面 '+N+' 張卡片，是這個情境的 '+N+' 個應變步驟，順序被打亂了。從第 1 步開始，依序點到最後一步；點錯了，再點一次那張卡就能取消。';opts.appendChild(gd);
+  var sl=document.createElement('div');sl.className='ordSl';for(var q=0;q<N;q++){var it=document.createElement('i');it.textContent=(q+1)+'　';sl.appendChild(it)}opts.appendChild(sl);
+  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''});
+    [].forEach.call(sl.children,function(it,q){it.textContent=(q+1)+'　'+(seq[q]!=null?F[seq[q]].t:'');it.classList.toggle('on',seq[q]!=null)});guide()}
   idx.forEach(function(i){
     var b=document.createElement('button');b.type='button';b.className='card sq';b.dataset.i=i;
     b.innerHTML='<span class="no"></span><span class="t"></span><small></small>';b.querySelector('.t').textContent=F[i].t;b.querySelector('small').textContent=F[i].s;
@@ -2256,7 +2285,7 @@ function runOrder(next){
     opts.appendChild(b);
   });
   var r=document.createElement('button');r.type='button';r.className='sqr';r.textContent='重新排列';r.addEventListener('click',function(){if(!fin){seq=[];paint()}});opts.appendChild(r);
-  show('dec',true);
+  guide();show('dec',true);
   function done(sq){
     if(phase!=='decide')return;
     phase='cut';controls=false;show('dec',false);
@@ -2264,7 +2293,7 @@ function runOrder(next){
     var lv=ok===N?'good':ok>=Math.ceil(N/2)?'mid':'bad',b=lv==='good'?'ok':lv;
     var pf=el('ptsF');if(pf){pf.className='on '+lv;pf.textContent='排對 '+ok+' / '+N;clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){pf.className=''},1500)}
     var h='<div class="fbh"><span class="badge '+b+'">'+ICON[b]+'</span><div><h3>'+(lv==='good'?'順序完全正確':lv==='mid'?'大致記住了':'順序要再記熟')+'</h3><p>流程排序</p></div><b class="fpt">'+ok+'<small>/'+N+'</small></b></div><div class="fst cmp">';
-    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+MK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
+    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+FMK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
     h+='</div><p class="fwhy">'+(lv==='good'?'流程都記住了。真的遇到時，照這個順序一步一步做。':'順序很重要：前一步沒做好，後面做得再多也可能白費。看一下正確流程。')+'</p>';
     h+='<div class="dgp">'+flowSvg(-1)+'</div>';
     fbOpen(h,(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單',next);
@@ -2312,7 +2341,7 @@ function newGame(){
   SCN.start();
 }
 function toQuick(){
-  phase='cut';controls=false;restHands();
+  phase='cut';controls=false;if(SCN.preQuick)SCN.preQuick();restHands();
   var n=DEC.length+1;
   function quick(){
     if(!SCN.quick||!SCN.quick.length){endScene();return}
@@ -2444,12 +2473,12 @@ function showEnd(){
   SC.log.forEach(function(l,i){
     var g=l.o.grade==='good'?'good':l.o.grade==='mid'?'mid':'bad',ix=DEC.indexOf(l.d),ck=(typeof CLKS!=='undefined'&&CLKS[ix])?CLKS[ix]:'#'+(i+1);
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
-    h+='<p><i class="'+g+'">'+MK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
+    h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
     h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
-    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+MK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
+    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
   h+='</div>';
   h+='<div class="sec">評等標準</div><div class="crit"><p><b>S</b>每個決定都對、總分 92 以上</p><p><b>A</b>判斷正確 85 以上、總分 78 以上</p><p><b>B</b>判斷正確 55 以上</p><p><b>C</b>其他</p></div>';
   if(QZ.length){

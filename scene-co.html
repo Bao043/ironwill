@@ -142,6 +142,13 @@
 .card.sq .t{padding-right:24px}
 .fst.cmp{gap:4px}.fst.cmp>div{padding:6px 10px;align-items:center}.fst.cmp small{display:inline;margin-right:8px}.fst.cmp b{display:inline;font-size:14px}.fst.cmp span{font-size:12.5px}
 .tli p.kcx{display:block}
+.ordS{display:block;font-size:13px;line-height:1.5;color:var(--ink2);font-weight:500;margin-bottom:4px}
+.ordN{display:block}
+.ordN b{color:#f2c14e}
+#opts.k-seq .ordG{grid-column:1/-1;font-size:12.5px;color:var(--ink2);line-height:1.5;padding:0 2px 2px}
+#opts.k-seq .ordSl{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.ordSl i{font-style:normal;flex:1 1 0;min-width:60px;border:1px dashed rgba(255,255,255,.28);border-radius:8px;padding:5px 6px;font-size:12px;line-height:1.3;color:var(--ink2);text-align:center}
+.ordSl i.on{border-style:solid;border-color:#f2c14e;color:#fff;background:rgba(242,193,78,.12)}
 </style>
 <title>IRON WILL 浴室熱水器：一氧化碳｜求生現場</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -590,7 +597,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="mark"><i></i>情境提要</div>
   <h2>浴室熱水器：一氧化碳</h2>
   <div class="bi now"><b>現在</b><p>冬天晚上 22:30，你在家裡的浴室洗熱水澡。老公寓的熱水器就裝在浴室牆上，窗戶因為冷，關得緊緊的。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>洗到一半覺得不對勁</li><li>走到客廳之後</li><li>弟弟也要洗澡</li><li>熱水器要怎麼改</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
+  <div class="bi"><b>你要做</b><ol><li>洗到一半覺得不對勁</li><li>走到客廳之後</li><li>弟弟想回去拿手機</li><li>熱水器要怎麼改</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -1168,6 +1175,16 @@ function mkHall(){
 }
 var BRO=mkBody({p:[1.35,0,RD/2-.3],ry:PI,k:1.1,shirt:0x3d5a80,pants:0x2e3440,skin:0xd9a98d});BRO.show(false);
 var STEAM=mkSmoke([-1.8,1.2,-1.9],{r:.25,rise:1.0,c:[.8,.8,.8],a:.1,sz:1.1,speed:.12,n:8});
+/* 樓下戶外空地（離開家、關上門之後到這裡報案） */
+var OUT={x:0,z:46};
+Q(30,24,OUT.x,0,OUT.z,-PI/2,0,0x6a6866,{tex:TX.tileF,rep:[10,8],spec:.3});
+B(26,12,.4,OUT.x,6,OUT.z-7,0x8a8478,{tex:TX.wall,rep:[6,3]});
+(function(){for(var fy=0;fy<4;fy++)for(var fx=-4;fx<=4;fx++){var lit=((fx*7+fy*3)%5)<2;B(1.1,1.2,.06,OUT.x+fx*2.6,1.6+fy*2.8,OUT.z-6.78,lit?0xf2d9a0:0x1c2430,lit?{unlit:1,em:[.6,.5,.3]}:{spec:.9})}})();
+B(2.2,2.6,.1,OUT.x-1.0,1.3,OUT.z-6.75,0x3a3f45,{spec:.6});
+B(2.4,.12,1.2,OUT.x-1.0,2.7,OUT.z-6.2,0x55585c);
+var outLamp=[OUT.x+3.2,3.6,OUT.z-1.5];Cy(.08,3.6,.08,outLamp[0],1.8,outLamp[2],0x3a3d42,{spec:.6});Sp(.32,.16,.32,outLamp[0],3.65,outLamp[2],0xfff4dc,{unlit:1,em:[1,.92,.7]});
+[[-4.5,-2],[5.5,1.5]].forEach(function(t){Cy(.18,1.6,.18,OUT.x+t[0],.8,OUT.z+t[1],0x5a4632);Sp(1.6,1.5,1.6,OUT.x+t[0],2.2,OUT.z+t[1],0x3f5a3a,{tex:TX.fabric,spec:.1})});
+[0,1,2].forEach(function(i){var x=OUT.x-5.5+i*.9,z=OUT.z-4.6;B(.35,.55,1.4,x,.45,z,[0xb33a32,0x3a4a6a,0xd8d4cc][i],{spec:.6});Cy(.45,.1,.45,x,.22,z-.55,0x18191b,{r:[0,0,PI/2]});Cy(.45,.1,.45,x,.22,z+.55,0x18191b,{r:[0,0,PI/2]})});
 
 var objsOpaque=[],objsTrans=[];
 objsOpaque=objs.filter(function(o){return o.g&&o.blend==='none'});objsTrans=objs.filter(function(o){return o.g&&o.blend!=='none'});
@@ -1330,6 +1347,9 @@ function tween(obj,to,dur,done,ez){
 function after(ms,fn){var t={t:vt+ms,fn:fn};timers.push(t);return t}
 function clearAll(){tw.length=0;timers.length=0}
 function stepTime(dtms){
+  capClock+=dtms*TS;
+  if(CAPQ.length){if(!capGate()){capFlush()}else if(capClock>=capUntil){var q=CAPQ.shift();capShow(q[0],q[1])}}
+  if(CAPQ.length&&capGate())return;
   vt+=dtms*TS;
   for(var i=tw.length-1;i>=0;i--){var a=tw[i];if(!a)continue;var u=Math.min(1,(vt-a.s)/a.d),e=a.e(u);
     for(var k in a.t)a.o[k]=a.f[k]+(a.t[k]-a.f[k])*e;
@@ -1754,7 +1774,17 @@ function labelTex(txt){
 var controls=false,cur=null,curDone=function(){},decideEnd=0,decideLimit=8000,SC=null,STAGE=-1,baseSmoke=.12;
 function el(id){return $('#'+id)}
 function show(id,v){el(id).hidden=!v}
+var CAPQ=[],capClock=0,capUntil=0;
+function capRead(t){return Math.min(6.5,1.1+String(t).length*.14)*1000}
+function capGate(){return phase==='cut'}
+function capFlush(){if(!CAPQ.length)return;var q=CAPQ[CAPQ.length-1];CAPQ.length=0;capShow(q[0],q[1])}
 function cap(txt,who){
+  if(capGate()&&(CAPQ.length||capClock<capUntil)){CAPQ.push([txt,who]);return}
+  if(!capGate())CAPQ.length=0;
+  capShow(txt,who);
+}
+function capShow(txt,who){
+  capUntil=txt?capClock+capRead(txt):0;
   var p=el('capP');p.classList.remove('on');if(!txt)return;
   setTimeout(function(){el('capW').textContent=who||'';el('capS').textContent=txt;p.classList.add('on')},140);
 }
@@ -1782,12 +1812,12 @@ var SCN={
   src:'內容整理自高雄市政府消防局一氧化碳中毒宣導（2026，症狀、處置步驟、熱水器安裝五要）與一般燃氣熱水器安全宣導。細節仍待對照官方原文。',
   env:{fog:[.06,.06,.065],fogD:.01,sky:[.45,.45,.5],gnd:[.28,.26,.24],dirD:[-.4,-.8,-.2],dirC:[.06,.06,.08],ao:1},
   who:{b:'弟弟'},
-  icons:{leave:'run',rest:'x',shut:'x',out:'run',sleep:'x',heater:'x',stop:'hand',quick:'x',door:'x',fix:'valve',vent:'win',seal:'x'},
+  icons:{leave:'run',rest:'x',shut:'x',out:'run',stay:'hand',go:'x',me:'x',sleep:'x',heater:'x',stop:'hand',quick:'x',door:'x',fix:'valve',vent:'win',seal:'x'},
   hurtSnd:function(){thud(.4)}
 };
-var DEC=[{"id": "d1", "q": "冬天晚上，你在浴室洗熱水澡。洗到一半，頭開始痛、頭暈、想吐。浴室裡的熱水器還在轟轟地燒。", "time": 8, "kc": {"t": "頭痛、頭暈、想吐：可能是一氧化碳中毒", "s": "用瓦斯熱水器時出現頭痛、頭暈、噁心、想吐，要當作一氧化碳中毒：馬上停止使用熱水器、打開門窗，離開到通風的地方。"}, "best": "關掉熱水、打開門窗，馬上離開浴室", "opts": [{"id": "leave", "t": "關掉熱水、打開浴室的門和窗，馬上離開浴室", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "停止使用、通風、離開", "p": "一氧化碳沒有顏色也沒有味道，等到想睡、手腳無力時就很難自救了。一覺得不對勁，就先停止使用、離開。"}}, {"id": "rest", "t": "以為是泡太久，坐在浴室地上休息一下", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "繼續待著只會吸進更多一氧化碳", "p": "一氧化碳會讓人越來越想睡、手腳無力，坐下休息可能就站不起來了。"}}, {"id": "shut", "t": "把門窗關緊，熱水開大一點，讓身體暖起來", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "熱水器燒得越久，一氧化碳越多", "p": "門窗關得越緊、熱水器燒得越久，浴室裡的一氧化碳就越濃。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "wait", "bt": "時間到", "h": "頭越來越暈", "p": "覺得不對勁，馬上停止使用熱水器、開窗、離開浴室。"}}}, {"id": "d2", "q": "你扶著牆走到客廳，腳很軟，頭還是很暈。", "time": 10, "kc": {"t": "中毒症狀：離開家，到外面再打 119", "s": "一氧化碳會擴散，客廳也可能還有。打開門窗後，人離開家到外面通風的地方，再打 119，告訴執勤員可能是一氧化碳中毒。中毒的嚴重程度自己看不出來，要讓醫護人員評估。"}, "best": "打開窗戶和大門，拿著手機到門外通風處，打 119 說可能一氧化碳中毒", "opts": [{"id": "out", "t": "打開窗戶和大門，拿著手機走到門外，在通風的地方打 119，說可能一氧化碳中毒", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "離開家，再報案", "p": "一氧化碳可能已經擴散到客廳，留在屋裡就會繼續吸入。開窗、離開家，到外面通風的地方再報案，說清楚可能是一氧化碳中毒，醫護人員才會準備對的處置。"}}, {"id": "sleep", "t": "躺在沙發上睡一下就好", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "不能睡", "h": "睡著了就看不出變化", "p": "中毒的人會越來越想睡，睡著後狀況惡化也沒人發現。先通風、打 119。"}}, {"id": "heater", "t": "把電暖器打開，關緊窗戶取暖", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "關窗不通風", "h": "屋裡的一氧化碳散不掉", "p": "熱水器剛燒過，屋裡可能還有一氧化碳。門窗要打開通風，不是關緊。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "你越來越想睡", "p": "開窗、離開家，到外面通風的地方打 119。"}}}, {"id": "d3", "q": "弟弟從房間走出來，站在門口：「你洗好了喔？換我洗！」", "time": 10, "kc": {"t": "熱水器檢查前：先不要用", "s": "發生過一氧化碳中毒的熱水器，在專業人員檢查、改善之前都不能再用。"}, "best": "叫他先不要洗、也先出來，熱水器檢查好之前都不能用", "opts": [{"id": "stop", "t": "叫他先不要洗，也先出來：熱水器檢查好之前都不能再用", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "問題沒解決，下一個人也會中毒", "p": "熱水器裝的位置、型式或排氣有問題，下一個人洗也會中毒。在專業人員檢查之前，都不要再用。"}}, {"id": "quick", "t": "叫他把窗戶打開，洗快一點就好", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "還是會中毒", "h": "開一點窗擋不住", "p": "浴室的通風不夠，就算洗快一點，一氧化碳一樣會累積。熱水器在檢查之前都不要用。"}}, {"id": "door", "t": "叫他把浴室門打開一條縫再洗", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不夠", "h": "門縫擋不住一氧化碳", "p": "門開一條縫，一氧化碳還是會在浴室和屋裡累積，連帶家人一起中毒。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "弟弟已經走進浴室了", "p": "叫他先不要用熱水器。"}}}, {"id": "d4", "q": "醫護人員說你們都沒事了。之後，熱水器要怎麼改？", "time": 12, "kc": {"t": "熱水器五要：安全品牌、正確型式、安全安裝、定期檢修、保持通風", "s": "瓦斯熱水器要裝在室外通風良好的地方；裝在室內就要選強制排氣型，並把廢氣用排氣管排到室外。請合格技術士安裝，定期檢修，家裡加裝一氧化碳警報器。"}, "best": "請合格技術士把熱水器移到室外通風處，或改成強制排氣型，並裝一氧化碳警報器", "opts": [{"id": "fix", "t": "請合格技術士把熱水器移到室外通風處，或換成強制排氣型，並裝一氧化碳警報器", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "從源頭改善", "p": "熱水器裝在不通風的地方，是一氧化碳中毒最常見的原因。移到室外或改成強制排氣型，再加裝一氧化碳警報器，才是真的解決。"}}, {"id": "vent", "t": "在浴室門下開個通風孔就好", "grade": "mid", "pts": 8, "dmg": 8, "fb": {"b": "mid", "bt": "不夠", "h": "只是減少，沒有解決", "p": "通風孔能帶進一點空氣，但熱水器的廢氣還是排在室內。要把熱水器移到室外，或改成強制排氣型。"}}, {"id": "seal", "t": "陽台加裝鋁窗封起來，冬天比較保暖", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "更危險", "h": "陽台封起來，熱水器就沒有通風了", "p": "很多中毒意外，就是因為熱水器所在的陽台被加窗封閉。熱水器的位置一定要保持通風。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "熱水器還沒處理", "p": "熱水器移到室外通風處或改成強制排氣型，加裝一氧化碳警報器。"}}}];
-SCN.quick=[{"q": "一氧化碳有什麼特性？", "ok": "沒有顏色、沒有味道，很難察覺", "w": ["有很重的臭味", "看得到黑煙"], "why": "一氧化碳無色無味，所以常常在不知不覺中中毒。", "kc": {"t": "無色無味", "s": "一氧化碳無色無味，所以常常在不知不覺中中毒。"}}, {"q": "一氧化碳中毒常見的症狀？", "ok": "頭痛、頭暈、噁心想吐、想睡、手腳無力", "w": ["皮膚起紅疹", "肚子餓"], "why": "用瓦斯熱水器或爐具時出現頭痛、頭暈、噁心、嘔吐，就要想到可能是一氧化碳中毒。", "kc": {"t": "中毒症狀", "s": "用瓦斯熱水器或爐具時出現頭痛、頭暈、噁心、嘔吐，就要想到可能是一氧化碳中毒。"}}, {"q": "發現可能一氧化碳中毒，第一步？", "ok": "停止使用熱水器，打開門窗，離開到通風處", "w": ["先睡一覺看會不會好", "把門窗關緊保暖"], "why": "停止使用燃氣設備、開窗通風、到戶外，有不舒服就打 119。", "kc": {"t": "停用、通風、離開", "s": "停止使用燃氣設備、開窗通風、到戶外，有不舒服就打 119。"}}, {"q": "瓦斯熱水器最好裝在哪裡？", "ok": "室外通風良好的地方", "w": ["浴室裡，比較方便", "封閉的陽台，比較不會被風吹"], "why": "熱水器要裝在室外通風處；裝在室內就要用強制排氣型，廢氣排到室外。", "kc": {"t": "熱水器裝室外", "s": "熱水器要裝在室外通風處；裝在室內就要用強制排氣型，廢氣排到室外。"}}, {"q": "陽台裝了熱水器，可以加裝鋁窗封起來嗎？", "ok": "不行，會讓熱水器通風不良", "w": ["可以，冬天比較保暖", "可以，只要窗戶開一點"], "why": "封閉的陽台會讓廢氣排不出去，是常見的中毒原因。", "kc": {"t": "陽台不要封閉", "s": "封閉的陽台會讓廢氣排不出去，是常見的中毒原因。"}}, {"q": "熱水器的火焰顏色正常應該是？", "ok": "穩定的藍色", "w": ["黃色或紅色", "忽明忽暗才正常"], "why": "火焰變黃、變紅，代表燃燒不完全，會產生更多一氧化碳，要請人檢修。", "kc": {"t": "火焰要是藍色", "s": "火焰變黃、變紅，代表燃燒不完全，會產生更多一氧化碳，要請人檢修。"}}, {"q": "煙霧偵測器能偵測一氧化碳嗎？", "ok": "不能，要另外裝一氧化碳警報器", "w": ["可以，同一種東西", "只有冬天可以"], "why": "煙霧偵測器偵測的是煙，偵測不到一氧化碳，要另外裝一氧化碳警報器。", "kc": {"t": "裝一氧化碳警報器", "s": "煙霧偵測器偵測的是煙，偵測不到一氧化碳，要另外裝一氧化碳警報器。"}}, {"q": "熱水器安裝「五要」不包括哪一項？", "ok": "要裝在浴室裡", "w": ["要安全品牌", "要定期檢修"], "why": "熱水器五要：要安全品牌、要正確型式、要安全安裝、要定期檢修、要保持通風。", "kc": {"t": "熱水器五要", "s": "熱水器五要：要安全品牌、要正確型式、要安全安裝、要定期檢修、要保持通風。"}}];
-var CHS=['不對勁','離開之後','家人','改善'],CLKS=['22:30','22:32','22:38','一週後'];
+var DEC=[{"id": "d1", "q": "冬天晚上，你在浴室洗熱水澡。洗到一半，頭開始痛、頭暈、想吐。浴室裡的熱水器還在轟轟地燒。", "time": 8, "kc": {"t": "頭痛、頭暈、想吐：可能是一氧化碳中毒", "s": "用瓦斯熱水器時出現頭痛、頭暈、噁心、想吐，要當作一氧化碳中毒：馬上停止使用熱水器、打開門窗，離開到通風的地方。"}, "best": "關掉熱水、打開門窗，馬上離開浴室", "opts": [{"id": "leave", "t": "關掉熱水、打開浴室的門和窗，馬上離開浴室", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "停止使用、通風、離開", "p": "一氧化碳沒有顏色也沒有味道，等到想睡、手腳無力時就很難自救了。一覺得不對勁，就先停止使用、離開。"}}, {"id": "rest", "t": "以為是泡太久，坐在浴室地上休息一下", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "繼續待著只會吸進更多一氧化碳", "p": "一氧化碳會讓人越來越想睡、手腳無力，坐下休息可能就站不起來了。"}}, {"id": "shut", "t": "把門窗關緊，熱水開大一點，讓身體暖起來", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "熱水器燒得越久，一氧化碳越多", "p": "門窗關得越緊、熱水器燒得越久，浴室裡的一氧化碳就越濃。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "wait", "bt": "時間到", "h": "頭越來越暈", "p": "覺得不對勁，馬上停止使用熱水器、開窗、離開浴室。"}}}, {"id": "d2", "q": "你扶著牆走到客廳，腳很軟，頭還是很暈。", "time": 10, "kc": {"t": "帶家人離開家，關上門，到戶外再打 119", "s": "一氧化碳會擴散，客廳、走廊也可能有。打開窗戶，叫家人一起離開；出門時把門帶上，不要站在門口，免得屋裡的氣體跟著飄出來。到戶外空曠、通風的地方，再打 119，告訴執勤員可能是一氧化碳中毒。"}, "best": "開窗、叫弟弟一起出來，離開家把門帶上，到戶外空曠處再打 119", "opts": [{"id": "out", "t": "打開窗戶，叫弟弟一起出來；離開家把門帶上，到樓下戶外空曠處再打 119", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "到戶外空曠處，再報案", "p": "一氧化碳可能已經擴散到客廳。站在門口講電話，屋裡的氣體會順著門飄出來讓你繼續吸到。帶家人離開、把門帶上，到戶外空曠通風的地方再報案，說清楚可能是一氧化碳中毒。"}}, {"id": "sleep", "t": "躺在沙發上睡一下就好", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "不能睡", "h": "睡著了就看不出變化", "p": "中毒的人會越來越想睡，睡著後狀況惡化也沒人發現。先通風、打 119。"}}, {"id": "heater", "t": "把電暖器打開，關緊窗戶取暖", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "關窗不通風", "h": "屋裡的一氧化碳散不掉", "p": "熱水器剛燒過，屋裡可能還有一氧化碳。門窗要打開通風，不是關緊。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "你越來越想睡", "p": "開窗、帶家人離開家，把門帶上，到戶外空曠處再打 119。"}}}, {"id": "d3", "q": "到了樓下空地。弟弟說：「我手機還在房間，我上去拿一下，很快就下來！」", "time": 10, "kc": {"t": "離開了，就不要重返現場", "s": "屋裡的一氧化碳還沒散，回去拿東西、開窗，都可能再次吸入，甚至昏倒在裡面。人出來了就不要再回去，等消防人員處理、確認安全後再說。"}, "best": "不要回去，等消防人員處理、確認安全再說", "opts": [{"id": "stay", "t": "「不要回去！等消防人員處理、確認安全再說。」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "人出來了，就不要再進去", "p": "一氧化碳看不到、聞不到，屋裡還有多少沒人知道。手機、東西都可以等，人不要再回去。"}}, {"id": "go", "t": "「好，快去快回。」", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "很危險", "h": "他會再吸到一氧化碳", "p": "屋裡的一氧化碳還沒散，上去拿東西的這幾分鐘，就可能再次中毒，甚至昏倒在裡面沒人發現。"}}, {"id": "me", "t": "「我上去幫你拿，順便把窗戶都打開。」", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "換你重返現場", "h": "誰回去都一樣危險", "p": "你已經有中毒症狀，再回去吸一次會更嚴重。開窗通風交給消防人員，人不要再進去。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "弟弟往樓梯口走了", "p": "叫住他：人出來了就不要再回去。"}}}, {"id": "d4", "q": "醫護人員說你們都沒事了。之後，熱水器要怎麼改？", "time": 12, "kc": {"t": "熱水器五要：安全品牌、正確型式、安全安裝、定期檢修、保持通風", "s": "瓦斯熱水器要裝在室外通風良好的地方；裝在室內就要選強制排氣型，並把廢氣用排氣管排到室外。請合格技術士安裝，定期檢修，家裡加裝一氧化碳警報器。"}, "best": "請合格技術士把熱水器移到室外通風處，或改成強制排氣型，並裝一氧化碳警報器", "opts": [{"id": "fix", "t": "請合格技術士把熱水器移到室外通風處，或換成強制排氣型，並裝一氧化碳警報器", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "從源頭改善", "p": "熱水器裝在不通風的地方，是一氧化碳中毒最常見的原因。移到室外或改成強制排氣型，再加裝一氧化碳警報器，才是真的解決。"}}, {"id": "vent", "t": "在浴室門下開個通風孔就好", "grade": "mid", "pts": 8, "dmg": 8, "fb": {"b": "mid", "bt": "不夠", "h": "只是減少，沒有解決", "p": "通風孔能帶進一點空氣，但熱水器的廢氣還是排在室內。要把熱水器移到室外，或改成強制排氣型。"}}, {"id": "seal", "t": "陽台加裝鋁窗封起來，冬天比較保暖", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "更危險", "h": "陽台封起來，熱水器就沒有通風了", "p": "很多中毒意外，就是因為熱水器所在的陽台被加窗封閉。熱水器的位置一定要保持通風。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "熱水器還沒處理", "p": "熱水器移到室外通風處或改成強制排氣型，加裝一氧化碳警報器。"}}}];
+SCN.quick=[{"q": "一氧化碳有什麼特性？", "ok": "沒有顏色、沒有味道，很難察覺", "w": ["有很重的臭味", "看得到黑煙"], "why": "一氧化碳無色無味，所以常常在不知不覺中中毒。", "kc": {"t": "無色無味", "s": "一氧化碳無色無味，所以常常在不知不覺中中毒。"}}, {"q": "一氧化碳中毒常見的症狀？", "ok": "頭痛、頭暈、噁心想吐、想睡、手腳無力", "w": ["皮膚起紅疹", "肚子餓"], "why": "用瓦斯熱水器或爐具時出現頭痛、頭暈、噁心、嘔吐，就要想到可能是一氧化碳中毒。", "kc": {"t": "中毒症狀", "s": "用瓦斯熱水器或爐具時出現頭痛、頭暈、噁心、嘔吐，就要想到可能是一氧化碳中毒。"}}, {"q": "發現可能一氧化碳中毒，第一步？", "ok": "停止使用熱水器，打開門窗，離開到通風處", "w": ["先睡一覺看會不會好", "把門窗關緊保暖"], "why": "停止使用燃氣設備、開窗通風、到戶外，有不舒服就打 119。", "kc": {"t": "停用、通風、離開", "s": "停止使用燃氣設備、開窗通風、到戶外，有不舒服就打 119。"}}, {"q": "瓦斯熱水器最好裝在哪裡？", "ok": "室外通風良好的地方", "w": ["浴室裡，比較方便", "封閉的陽台，比較不會被風吹"], "why": "熱水器要裝在室外通風處；裝在室內就要用強制排氣型，廢氣排到室外。", "kc": {"t": "熱水器裝室外", "s": "熱水器要裝在室外通風處；裝在室內就要用強制排氣型，廢氣排到室外。"}}, {"q": "陽台裝了熱水器，可以加裝鋁窗封起來嗎？", "ok": "不行，會讓熱水器通風不良", "w": ["可以，冬天比較保暖", "可以，只要窗戶開一點"], "why": "封閉的陽台會讓廢氣排不出去，是常見的中毒原因。", "kc": {"t": "陽台不要封閉", "s": "封閉的陽台會讓廢氣排不出去，是常見的中毒原因。"}}, {"q": "熱水器的火焰顏色正常應該是？", "ok": "穩定的藍色", "w": ["黃色或紅色", "忽明忽暗才正常"], "why": "火焰變黃、變紅，代表燃燒不完全，會產生更多一氧化碳，要請人檢修。", "kc": {"t": "火焰要是藍色", "s": "火焰變黃、變紅，代表燃燒不完全，會產生更多一氧化碳，要請人檢修。"}}, {"q": "煙霧偵測器能偵測一氧化碳嗎？", "ok": "不能，要另外裝一氧化碳警報器", "w": ["可以，同一種東西", "只有冬天可以"], "why": "煙霧偵測器偵測的是煙，偵測不到一氧化碳，要另外裝一氧化碳警報器。", "kc": {"t": "裝一氧化碳警報器", "s": "煙霧偵測器偵測的是煙，偵測不到一氧化碳，要另外裝一氧化碳警報器。"}}, {"q": "熱水器安裝「五要」不包括哪一項？", "ok": "要裝在浴室裡", "w": ["要安全品牌", "要定期檢修"], "why": "熱水器五要：要安全品牌、要正確型式、要安全安裝、要定期檢修、要保持通風。", "kc": {"t": "熱水器五要", "s": "熱水器五要：要安全品牌、要正確型式、要安全安裝、要定期檢修、要保持通風。"}}, {"q": "疑似一氧化碳中毒，離開家後要在哪裡打 119？", "ok": "戶外空曠、通風的地方，出門時把門帶上", "w": ["站在家門口，門開著比較好說明", "回到客廳把窗戶都打開再打"], "why": "站在門口，屋裡的一氧化碳會順著門飄出來，讓你繼續吸到。把門帶上，到戶外空曠通風處再報案，人出來了就不要再回去。", "kc": {"t": "到戶外空曠處再報案", "s": "站在門口，屋裡的一氧化碳會順著門飄出來，讓你繼續吸到。把門帶上，到戶外空曠通風處再報案，人出來了就不要再回去。"}}];
+var CHS=['不對勁','離開家、報案','不重返現場','改善'],CLKS=['22:30','22:32','22:38','一週後'];
 DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
 var CAM={};
 function camSetup(){
@@ -1801,12 +1831,14 @@ function camSetup(){
   CAM.after=lookAt([-.2,1.6,-.9],[-.9,1.9,-2.3]);
   CAM.fdoor=lookAt([-.6,1.6,RD/2-1.1],[-.95,1.2,RD/2+.5]);
   CAM.hall=lookAt([-.3,1.6,RD/2+1.9],[-1.0,1.25,RD/2-.2]);
+  CAM.out=lookAt([OUT.x+1.5,1.6,OUT.z+3.5],[OUT.x-.5,1.2,OUT.z-1.5]);
+  CAM.bdoor2=lookAt([.4,1.6,RD/2-1.5],[1.35,1.3,RD/2]);
 }
 camSetup();
-var CO={on:1,v:0,dz:0,hall:0};
+var CO={on:1,v:0,dz:0,hall:0,out:0};
 function dizzy(v,d){tween(CO,{dz:v},d||1.5)}
 SCN.reset=function(){
-  fxReset();CO.on=1;CO.v=0;CO.dz=0;ST.sat=1;flameWin.vis=true;tap.r=[0,0,-1.0];bathDoor.r=[0,0,0];fDoor.r=[0,0,0];CO.hall=0;bathWin.p=[-1.65,1.95,BZ0+.03];livWin.p=[RW/2-.06,1.5,.85];
+  fxReset();CO.on=1;CO.v=0;CO.dz=0;ST.sat=1;flameWin.vis=true;tap.r=[0,0,-1.0];bathDoor.r=[0,0,0];fDoor.r=[0,0,0];CO.hall=0;CO.out=0;bathWin.p=[-1.65,1.95,BZ0+.03];livWin.p=[RW/2-.06,1.5,.85];
   BRO.show(false);heatGlow.em=[0,0,0];coAlarm.vis=false;STEAM.v=0;
 };
 SCN.start=function(){
@@ -1823,7 +1855,8 @@ function step(n){
   var go=function(){chap(n,CHS[n-1],CLKS[n-1],function(){startDecision(DEC[n-1],function(){after(200,function(){step(n+1)})})})};
   if(PRE[n])PRE[n](go);else go();
 }
-function toHall(){CO.hall=1;bothOut(.01);setCam(CAM.hall)}
+function toHall(){CO.hall=1;CO.out=0;bothOut(.01);setCam(CAM.hall)}
+function toOut(){CO.out=1;CO.hall=0;bothOut(.01);setCam(CAM.out)}
 function heaterOff(){CO.on=0;flameWin.vis=false;tween(tap.r,{2:-1.0},.3);loopSnd('water','highpass',1400,.6,0);loopSnd('heater','lowpass',260,.6,0);tween(STEAM,{v:0},3)}
 var PRE={
   2:function(go){
@@ -1832,15 +1865,15 @@ var PRE={
     camTo(CAM.liv,1.2);cap('你扶著牆走到客廳。腳軟軟的，頭還是很暈。');after(2400,go);
   },
   3:function(go){
-    var g=function(){BRO.node.p=[1.35,0,RD/2-.3];BRO.node.r=[0,PI,0];BRO.show(true);tween(BRO.node.p,{0:-.9,2:RD/2-.55},1.6);after(1700,function(){BRO.node.r=[0,0,0]});
-      after(1900,function(){cap('「哥，你怎麼站在外面？你洗好了喔？換我洗！」','弟弟')});after(3300,go)};
+    var g=function(){BRO.node.p=[OUT.x-.2,0,OUT.z+1.2];BRO.node.r=[0,.6,0];BRO.show(true);
+      after(800,function(){cap('「我手機還在房間，我上去拿一下，很快就下來！」','弟弟');tween(BRO.node.r,{1:PI},.5)});after(2600,go)};
     if(G.d2&&G.d2.id==='out'){g();return}
-    cap('你撐著打開窗戶和大門，走到門外的走廊。');fadeTo(1,500);
-    after(600,function(){livWin.p[2]=.15;fDoor.r=[0,-1.35,0];toHall();fadeTo(0,600)});
-    after(1700,g);
+    cap('你撐著打開窗戶，叫弟弟一起出來，離開家、把門帶上，走到樓下的空地。');fadeTo(1,500);
+    after(600,function(){livWin.p[2]=.15;fDoor.r=[0,0,0];toOut();fadeTo(0,600)});
+    after(1900,g);
   },
   4:function(go){
-    fadeTo(1,600);after(800,function(){BRO.show(false);CO.hall=0;fDoor.r=[0,0,0];bothOut(.01);dizzy(0,.1);ST.sat=1;setClock('一週後');setCam(CAM.after);fadeTo(0,800);cap('醫護人員說你們都沒事了。熱水器暫時停用，等你決定怎麼改。')});
+    fadeTo(1,600);after(800,function(){BRO.show(false);CO.hall=0;CO.out=0;fDoor.r=[0,0,0];bothOut(.01);dizzy(0,.1);ST.sat=1;setClock('一週後');setCam(CAM.after);fadeTo(0,800);cap('醫護人員說你們都沒事了。熱水器暫時停用，等你決定怎麼改。')});
     after(3000,go);
   }
 };
@@ -1872,12 +1905,13 @@ var PLAY={
   out:function(done){
     camTo(CAM.win,1.2);after(1300,function(){var a=w2c([RW/2-.06,1.3,.55]);hIn(HR,{p:[a[0]-.05,a[1],a[2]],r:[1.2,-.2,0],curl:.15,thumb:.2,abs:true},.4)});
     after(1800,function(){tween(livWin.p,{2:.15},1);cap('你推開客廳的窗戶，抓起手機。');hOut(HR,.3)});
-    after(2900,function(){camTo(CAM.fdoor,1.2)});
-    after(4200,function(){tween(fDoor.r,{1:-1.35},.7);cap('一氧化碳可能已經飄到客廳了。你打開大門，走到門外的走廊。')});
-    after(5200,function(){fadeTo(1,350)});after(5600,function(){toHall();fadeTo(0,450)});
-    after(6300,function(){hIn(HR,'phone',.4);HR.hold='phone';dial119()});
-    after(7600,function(){cap('「我洗澡時頭痛、頭暈、想吐，熱水器裝在浴室裡，可能是一氧化碳中毒。我已經離開家，在門外。」','你');dizzy(.3,3)});
-    after(10200,done);
+    after(2900,function(){camTo(CAM.bdoor2,1.0);cap('「弟！快出來，熱水器有問題，我們先出去！」','你');thud(.3)});
+    after(4300,function(){BRO.node.p=[1.35,0,RD/2-.3];BRO.node.r=[0,PI,0];BRO.show(true);tween(BRO.node.p,{0:-.9,2:RD/2-.55},1.6);camTo(CAM.fdoor,1.2)});
+    after(6000,function(){tween(fDoor.r,{1:-1.35},.7);cap('一氧化碳可能已經飄到客廳了。你們走出家門，把門帶上，不讓屋裡的氣體跟著飄出來。')});
+    after(7200,function(){fadeTo(1,400)});after(7700,function(){fDoor.r=[0,0,0];BRO.show(false);toOut();fadeTo(0,500);cap('你們下樓，走到外面空曠、通風的空地。')});
+    after(8900,function(){hIn(HR,'phone',.4);HR.hold='phone';dial119()});
+    after(10200,function(){cap('「我洗澡時頭痛、頭暈、想吐，熱水器裝在浴室裡，可能是一氧化碳中毒。我們已經離開家，在樓下空地。」','你');dizzy(.3,3)});
+    after(12800,done);
   },
   sleep:function(done){
     cap('你躺到沙發上，想說睡一下就好。');camTo(CAM.sofa,1.2);
@@ -1895,25 +1929,25 @@ var PLAY={
   _:function(done){cap('你坐在客廳，越來越想睡。');dizzy(.9,2);after(2600,done)}
  },
  d3:{
-  stop:function(done){
+  stay:function(done){
     hIn(HR,{p:[.08,-.08,-.45],r:[1.4,-.1,0],curl:0,thumb:.2,abs:true},.35);
-    cap('「先不要洗！熱水器有問題，檢查好之前都不能用。你也先出來，屋裡可能還有一氧化碳。」','你');
-    after(2400,function(){hOut(HR,.3);tween(BRO.node.p,{0:-.4,2:RD/2+1.0},1.4);cap('「好啦……」弟弟穿上拖鞋，走了出來。','弟弟')});
-    after(4200,done);
+    cap('「不要回去！屋裡可能還有一氧化碳，等消防人員處理好、確認安全再說。手機不重要。」','你');
+    after(2600,function(){hOut(HR,.3);tween(BRO.node.r,{1:.6},.4);cap('「好啦……」弟弟留在你旁邊。','弟弟')});
+    after(4400,done);
   },
-  quick:function(done){
-    cap('「窗戶打開，洗快一點就好。」','你');BRO.node.r=[0,PI,0];tween(BRO.node.p,{0:-.6,2:-.2},1.6);
-    after(1800,function(){BRO.show(false);loopSnd('water','highpass',1400,.6,.4,.06)});
-    after(3600,function(){cap('十分鐘後，屋裡傳來「咚」的一聲。弟弟頭暈跌倒了。');thud(.8);loopSnd('water','highpass',1400,.6,0)});
-    after(5600,done);
+  go:function(done){
+    cap('「好，快去快回。」','你');tween(BRO.node.p,{2:OUT.z-5.5},2.2);
+    after(2400,function(){BRO.show(false)});
+    after(4200,function(){cap('過了好幾分鐘，弟弟還沒下來。你打電話也沒人接。');ST.dmg=.3;tween(ST,{dmg:0},1)});
+    after(6200,done);
   },
-  door:function(done){
-    cap('「浴室門開一條縫再洗。」','你');BRO.node.r=[0,PI,0];tween(BRO.node.p,{0:-.6,2:-.2},1.6);
-    after(1800,function(){BRO.show(false)});
-    after(3600,function(){cap('弟弟洗沒多久，就說頭好痛、想吐，趕緊跑出來。');ST.dmg=.3;tween(ST,{dmg:0},1)});
-    after(5200,done);
+  me:function(done){
+    cap('「我上去幫你拿，順便把窗戶都打開。」','你');fadeTo(1,500);
+    after(900,function(){toHall();fadeTo(0,500);dizzy(.8,2);cap('你一進屋就又頭暈了起來，扶著牆才走得出來。')});
+    after(3400,function(){fadeTo(1,400)});after(3900,function(){toOut();fadeTo(0,500)});
+    after(5000,done);
   },
-  _:function(done){cap('弟弟已經拿著毛巾往浴室走了。');BRO.node.r=[0,PI,0];tween(BRO.node.p,{0:-.6,2:-.2},1.6);after(2600,function(){BRO.show(false);done()})}
+  _:function(done){cap('弟弟已經往樓梯口走了。');tween(BRO.node.p,{2:OUT.z-5.5},2.2);after(2600,function(){BRO.show(false);done()})}
  },
  d4:{
   fix:function(done){
@@ -1926,17 +1960,17 @@ var PLAY={
   _:function(done){cap('熱水器還在原來的地方。');after(2400,done)}
  }
 };
-SCN.quickCam=function(){bothOut(.3);dizzy(0,.5);CO.hall=0;setCam(CAM.liv)};
+SCN.quickCam=function(){bothOut(.3);dizzy(0,.5);CO.hall=0;CO.out=0;setCam(CAM.liv)};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
   return [g===DEC.length?'救護人員抵達後幫你檢查，因為發現得早、離開得快，你很快就恢復了。':g>=2?'你被送到醫院觀察了一晚。醫生說，再晚一點發現就危險了。':'你和弟弟都被送到醫院治療。醫生說，一氧化碳中毒有時會留下後遺症，要回診追蹤。',
     '一氧化碳沒有顏色、沒有味道。熱水器裝在不通風的地方，就是看不見的危險。',
-    g===DEC.length?'停用離開、離開家再報案、不讓家人再用、從源頭改善，你每一步都做對了。':'下一次記得：洗澡時頭痛頭暈想吐，馬上關熱水器、開窗、離開家，到外面再打 119。'];
+    g===DEC.length?'停用離開、帶家人到戶外再報案、不重返現場、從源頭改善，你每一步都做對了。':'下一次記得：洗澡時頭痛頭暈想吐，馬上關熱水器、開窗、帶家人離開家，把門帶上，到戶外空曠處再打 119，不要再回去。'];
 };
 function sceneLights(){
   return [
     [bathLamp,[.42,.4,.37],2.6],
-    CO.hall?[coHallLamp,[.8,.72,.58],4.6]:[livLamp,[.9,.82,.68],5.5],
+    CO.out?[outLamp,[1.1,1.0,.82],14]:CO.hall?[coHallLamp,[.8,.72,.58],4.6]:[livLamp,[.9,.82,.68],5.5],
     [[RW/2+.6,1.6,.5],[.16,.2,.34],4.2],
     [[HTR.x,HTR.y-.12,HTR.z+.2],[.1*CO.on,.25*CO.on,.9*CO.on],1.0],
     [[.6,.4,.8],[1.2*heatGlow.em[0],.5*heatGlow.em[0],.2*heatGlow.em[0]],2.0]
@@ -1957,7 +1991,8 @@ function sceneTick(dt){
 }
 function titleCam(){var c=CAM.shower;cam.x=c.x+Math.sin(tNow*.2)*.06;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch}
 
-SCN.flow=[{"t": "停用離開", "s": "關熱水、開窗、出浴室"}, {"t": "離開家再報案", "s": "到外面說可能一氧化碳中毒"}, {"t": "先別再用", "s": "家人也先出來"}, {"t": "改善", "s": "移到室外＋警報器"}];
+SCN.flow=[{"t": "停用離開", "s": "關熱水、開窗、出浴室"}, {"t": "到戶外再報案", "s": "帶家人出來，關門，空曠處打 119"}, {"t": "不重返現場", "s": "東西再重要也不回去"}, {"t": "改善", "s": "熱水器移到室外＋警報器"}];
+SCN.flowIntro="如果洗澡時又覺得頭痛、頭暈、想吐，從發現到改善熱水器，正確的處理順序是？";
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -2067,12 +2102,12 @@ function showFeedback(d,o){
   var f=o.fb,g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad',h;
   if(d.quick){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.bt)+'</h3><p>'+esc(d.q.replace(/^現場追問 \d+／\d+　/,''))+'</p></div></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的答案</small><b>'+esc(o.t)+'</b>'+(g!=='good'?'<span>答案：'+esc(d.best)+'</span>':'')+'</div></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
   }else{
     var L=SC.log[SC.log.length-1],ix=DEC.indexOf(d);
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
-    h+='<div class="fst"><div class="'+g+'"><i>'+MK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
+    h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
     h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
@@ -2085,7 +2120,7 @@ function showFeedback(d,o){
   chime(o.grade==='good');
 }
 /* ================= 精緻版：詳解卡、流程圖解、得分浮字、流程排序 ================= */
-var MK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+var FMK={good:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
 var LK={ty:0,tp:0,act:0};
 function maxPts(d){return Math.max.apply(null,d.opts.map(function(o){return o.pts||0}))}
 function hasFlow(){return !!(SCN.flow&&SCN.flow.length>2)}
@@ -2121,10 +2156,14 @@ function runOrder(next){
   do{idx=shuffle(idx)}while(idx.every(function(v,i){return v===i}));
   cur={id:'ord',ord:true,q:'流程排序',opts:[]};curDone=null;decideEnd=0;phase='decide';controls=true;TS=1;
   show('phone',false);show('fb',false);show('hint',false);show('prompt',false);show('useBtn',false);
-  el('decQ').textContent='流程排序：照正確順序，依序點出這 '+N+' 個步驟（點錯可以再點一次取消）';
+  var FI=SCN.flowIntro||('回想剛剛「'+SCN.title+'」的情況：正確的應變順序是什麼？');
+  function guide(){var k=seq.length;el('decQ').innerHTML='<span class="ordS">'+esc(FI)+'</span><span class="ordN">'+(k<N?'現在請點：<b>第 '+(k+1)+' 步</b>（共 '+N+' 步）'+(k===0?'——最先要做的事':k===N-1?'——最後一步':'——接在「'+esc(F[seq[k-1]].t)+'」之後'):'排好了，檢查中…')+'</span>'}
   el('tbar').style.visibility='hidden';el('decT').textContent='';
   var opts=el('opts');opts.innerHTML='';opts.className='k-seq';
-  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''})}
+  var gd=document.createElement('div');gd.className='ordG';gd.textContent='下面 '+N+' 張卡片，是這個情境的 '+N+' 個應變步驟，順序被打亂了。從第 1 步開始，依序點到最後一步；點錯了，再點一次那張卡就能取消。';opts.appendChild(gd);
+  var sl=document.createElement('div');sl.className='ordSl';for(var q=0;q<N;q++){var it=document.createElement('i');it.textContent=(q+1)+'　';sl.appendChild(it)}opts.appendChild(sl);
+  function paint(){[].forEach.call(opts.querySelectorAll('.card.sq'),function(b){var k=seq.indexOf(+b.dataset.i);b.classList.toggle('on',k>=0);b.querySelector('.no').textContent=k>=0?k+1:''});
+    [].forEach.call(sl.children,function(it,q){it.textContent=(q+1)+'　'+(seq[q]!=null?F[seq[q]].t:'');it.classList.toggle('on',seq[q]!=null)});guide()}
   idx.forEach(function(i){
     var b=document.createElement('button');b.type='button';b.className='card sq';b.dataset.i=i;
     b.innerHTML='<span class="no"></span><span class="t"></span><small></small>';b.querySelector('.t').textContent=F[i].t;b.querySelector('small').textContent=F[i].s;
@@ -2132,7 +2171,7 @@ function runOrder(next){
     opts.appendChild(b);
   });
   var r=document.createElement('button');r.type='button';r.className='sqr';r.textContent='重新排列';r.addEventListener('click',function(){if(!fin){seq=[];paint()}});opts.appendChild(r);
-  show('dec',true);
+  guide();show('dec',true);
   function done(sq){
     if(phase!=='decide')return;
     phase='cut';controls=false;show('dec',false);
@@ -2140,7 +2179,7 @@ function runOrder(next){
     var lv=ok===N?'good':ok>=Math.ceil(N/2)?'mid':'bad',b=lv==='good'?'ok':lv;
     var pf=el('ptsF');if(pf){pf.className='on '+lv;pf.textContent='排對 '+ok+' / '+N;clearTimeout(ptsFloat._t);ptsFloat._t=setTimeout(function(){pf.className=''},1500)}
     var h='<div class="fbh"><span class="badge '+b+'">'+ICON[b]+'</span><div><h3>'+(lv==='good'?'順序完全正確':lv==='mid'?'大致記住了':'順序要再記熟')+'</h3><p>流程排序</p></div><b class="fpt">'+ok+'<small>/'+N+'</small></b></div><div class="fst cmp">';
-    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+MK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
+    sq.forEach(function(v,k){var g=v===k?'good':'bad';h+='<div class="'+g+'"><i>'+FMK[g]+'</i><div><small>第 '+(k+1)+' 步</small><b>'+esc(F[v].t)+'</b>'+(g==='bad'?'<span>第 '+(k+1)+' 步應該是：'+esc(F[k].t)+'</span>':'')+'</div></div>'});
     h+='</div><p class="fwhy">'+(lv==='good'?'流程都記住了。真的遇到時，照這個順序一步一步做。':'順序很重要：前一步沒做好，後面做得再多也可能白費。看一下正確流程。')+'</p>';
     h+='<div class="dgp">'+flowSvg(-1)+'</div>';
     fbOpen(h,(SCN.quick&&SCN.quick.length)?'進入現場追問':'查看成績單',next);
@@ -2188,7 +2227,7 @@ function newGame(){
   SCN.start();
 }
 function toQuick(){
-  phase='cut';controls=false;restHands();
+  phase='cut';controls=false;if(SCN.preQuick)SCN.preQuick();restHands();
   var n=DEC.length+1;
   function quick(){
     if(!SCN.quick||!SCN.quick.length){endScene();return}
@@ -2320,12 +2359,12 @@ function showEnd(){
   SC.log.forEach(function(l,i){
     var g=l.o.grade==='good'?'good':l.o.grade==='mid'?'mid':'bad',ix=DEC.indexOf(l.d),ck=(typeof CLKS!=='undefined'&&CLKS[ix])?CLKS[ix]:'#'+(i+1);
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
-    h+='<p><i class="'+g+'">'+MK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
+    h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
     h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
-    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+MK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
+    h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}
   h+='</div>';
   h+='<div class="sec">評等標準</div><div class="crit"><p><b>S</b>每個決定都對、總分 92 以上</p><p><b>A</b>判斷正確 85 以上、總分 78 以上</p><p><b>B</b>判斷正確 55 以上</p><p><b>C</b>其他</p></div>';
   if(QZ.length){
