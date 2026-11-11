@@ -578,7 +578,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　求生現場</div>
     <h1>百貨公司的火警</h1>
-    <p class="lead">週末下午 15:40，百貨公司 5 樓。警報大響，走道開始有煙。指示燈、防火門、樓梯見煙、出來之後，你會怎麼做？</p>
+    <p class="lead">週末下午 15:40，百貨公司 5 樓。警報大響，3 樓發生火警。先叫同伴、指示燈、防火門、樓梯見煙、出來之後，你會怎麼做？</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -1097,10 +1097,13 @@ var HYD=(function(){var c=cv(256,320),x=c.getContext('2d');x.fillStyle='#c4231b'
 function bench(x,z){B(1.5,.06,.46,x,.45,z,0x8a6a4a,{tex:TX.wood,spec:.4});[[-.65,-.18],[.65,-.18],[-.65,.18],[.65,.18]].forEach(function(l){B(.04,.44,.04,x+l[0],.22,z+l[1],0x3a3d42,{spec:.8})})}
 function planter(x,z){Cy(.55,.6,.55,x,.3,z,0xd9d4c8,{spec:.4});Sp(.62,.55,.62,x,.95,z,0x4f7a4a,{tex:TX.fabric,spec:.1});Sp(.42,.5,.42,x+.12,1.25,z-.08,0x5d8a54,{tex:TX.fabric,spec:.1})}
 bench(-1.3,-1.0);bench(-1.3,7.8);planter(1.6,-3.2);planter(1.6,6.0);planter(-1.6,3.4);
-var DIR=(function(){var c=cv(256,512),x=c.getContext('2d');x.fillStyle='#1d2024';x.fillRect(0,0,256,512);x.fillStyle='#f2c14e';x.font='bold 64px sans-serif';x.fillText('5F',24,80);
+function mkDir(FL){var c=cv(256,512),x=c.getContext('2d');x.fillStyle='#1d2024';x.fillRect(0,0,256,512);x.fillStyle='#f2c14e';x.font='bold 64px sans-serif';x.fillText(FL,24,80);
   x.fillStyle='#f2ede2';x.font='bold 26px sans-serif';x.fillText('樓層指南',110,72);var it=['服飾 APPAREL','鞋包 BAGS','家居 HOME','童裝 KIDS','運動 SPORTS','美妝 BEAUTY','書店 BOOKS','咖啡 CAFÉ'];
-  x.font='22px sans-serif';it.forEach(function(t,i){x.fillText(t,24,140+i*40)});x.fillStyle='#0a9a4f';x.fillRect(24,470,208,6);x.fillStyle='#f2ede2';x.fillText('安全梯 A ↑　B ↓',24,500);return texFrom(c,{mip:true})})();
-B(.5,1.9,.16,1.7,.95,9.2,0x1d2024,{spec:.5});Q(.46,.92,1.7,1.25,9.2-.085,0,PI,0xffffff,{tex:DIR,unlit:1});
+  x.font='22px sans-serif';it.forEach(function(t,i){x.fillText(t,24,140+i*40)});x.fillStyle='#0a9a4f';x.fillRect(24,470,208,6);x.fillStyle='#f2ede2';x.fillText('安全梯 A ↑　B ↓',24,500);return texFrom(c,{mip:true})}
+var DIR=mkDir('5F'),DIR4=mkDir('4F');
+B(.5,1.9,.16,1.7,.95,9.2,0x1d2024,{spec:.5});var dirSign=Q(.46,.92,1.7,1.25,9.2-.085,0,PI,0xffffff,{tex:DIR,unlit:1,dyn:true});
+/* 退回 4 樓時，樓層指南換成 4F */
+function setFloor(f){dirSign.tex=f===4?DIR4:DIR}
 /* 外牆（北、南） */
 wallB(-RW/2,-.2,0,RH,-RD/2-.12,-RD/2);wallB(1.2,RW/2,0,RH,-RD/2-.12,-RD/2);wallB(-.2,1.2,2.2,RH,-RD/2-.12,-RD/2);
 wallB(-RW/2,-.2,0,RH,RD/2,RD/2+.12);wallB(1.2,RW/2,0,RH,RD/2,RD/2+.12);wallB(-.2,1.2,2.2,RH,RD/2,RD/2+.12);
@@ -1921,7 +1924,7 @@ var SCN={
   icons:{exit:'run',elev:'x',pay:'x',check:'hand',prop:'x',rush:'hand',other:'run',dash:'x',up:'x',stay:'hand',goback:'x',watch:'x'},
   hurtSnd:function(){thud(.4)}
 };
-var DEC=[{"id": "d1", "q": "你在百貨公司 5 樓走道上，朋友在試衣間。警報突然大響，廣播：「3 樓發生火警，請依照指示疏散。」走道上已經聞到煙味。", "time": 10, "kc": {"t": "公共場所火警：不搭電梯，跟著綠色指示燈走安全梯", "s": "聽到火警，先讓身邊的人知道（朋友、家人、同事），再一起避難。放下手上的東西，跟著綠色的出口標示燈、避難方向指示燈走安全梯，不搭電梯。"}, "best": "先通知朋友，放下東西，跟著指示燈走最近的安全梯", "opts": [{"id": "exit", "t": "先大喊通知試衣間的朋友「失火了」，放下東西，跟著綠色避難方向指示燈走最近的安全梯", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "跟著綠色指示燈走", "p": "避難方向指示燈會指向最近的安全梯。放下東西，跟著指示走，不要搭電梯。"}}, {"id": "elev", "t": "搭電梯下樓比較快", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "電梯可能斷電，或停在起火的樓層", "p": "火災時電梯可能斷電把你困住，也可能把你直接送到濃煙的樓層。逃生一律走樓梯。"}}, {"id": "pay", "t": "先把手上的東西結帳再走", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不要拖延", "h": "煙蔓延的速度比你想得快", "p": "不要為了東西耽誤逃生的時間，煙往上竄得非常快。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "走道上的煙越來越多", "p": "聽到警報，跟著綠色指示燈走安全梯。"}}}, {"id": "d2", "q": "你走到安全梯門口，厚重的防火門關著。後面還有很多人跟著來。", "time": 10, "kc": {"t": "防火門：進去之後要關上", "s": "安全梯的防火門是為了把煙擋在外面，進出後要讓它自己關上，不能用東西卡住。開門前，先用手背摸門的上方，不燙再開一條縫看看有沒有煙。"}, "best": "用手背摸門的上方，不燙、沒煙才進去，讓防火門自己關上", "opts": [{"id": "check", "t": "用手背摸門的上方，不燙再開一條縫，沒有煙才進去，讓門自己關上", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "防火門擋住煙，樓梯才能逃生", "p": "樓梯間是大家逃生的通道，防火門關著，煙才不會灌進來。後面的人推門就能進來。"}}, {"id": "prop", "t": "拿旁邊的垃圾桶把防火門卡住，讓大家比較好走", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "門開著，煙會灌進樓梯間", "p": "防火門被卡住，煙就會灌進樓梯，整座樓梯都不能用了。"}}, {"id": "rush", "t": "直接用力推開衝進去", "grade": "mid", "pts": 8, "dmg": 10, "fb": {"b": "mid", "bt": "少了一步", "h": "先確認門後的狀況", "p": "如果門後已經有濃煙或高溫，衝進去就危險了。先摸門的上方、開一條縫確認，再進去。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "後面的人在推擠", "p": "摸門上方確認，進去後讓防火門自己關上。"}}}, {"id": "d3", "q": "你沿著樓梯往下走到 4 樓，往下看，3 樓的樓梯間湧上來一團濃煙。", "time": 10, "kc": {"t": "樓梯見煙：不硬闖，往水平方向找其他路線", "s": "樓梯間有煙時，不要往下硬闖，也不要往上逃（煙會往上竄）。退回上一層，關上防火門，沿著樓層水平找另一座安全梯。"}, "best": "退回 4 樓，關上防火門，跟著指示燈找另一座安全梯", "opts": [{"id": "other", "t": "退回 4 樓，關上防火門，跟著指示燈找另一座安全梯", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "往水平方向找其他路線", "p": "大型建築都有兩座以上的安全梯。這座有煙，就換另一座，不要硬闖。"}}, {"id": "dash", "t": "憋氣，摀住口鼻往下衝", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "濃煙裡看不見、溫度很高", "p": "濃煙裡什麼都看不見，吸一兩口就可能昏倒。濕毛巾、摀口鼻都擋不住一氧化碳。"}}, {"id": "up", "t": "往頂樓跑，等直升機救援", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "不要往上", "h": "煙往上竄的速度比人快", "p": "煙和熱會往上累積，往上跑等於追著煙跑。逃生要往下、往外，下不去就水平找別的路。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "煙往上湧", "p": "退回上一層，關門，找另一座安全梯。"}}}, {"id": "d4", "q": "你從另一座安全梯走到一樓，出了大門。朋友說：「我包包放在 5 樓的試衣間！」", "time": 10, "kc": {"t": "出來就不要再回去", "s": "逃出來之後，就不要回去拿東西。到遠離建築物的空曠處，有人沒出來或知道火在哪裡，告訴消防人員。"}, "best": "不要回去，到空曠處，把知道的狀況告訴消防人員", "opts": [{"id": "stay", "t": "拉住朋友，到空曠的地方，把知道的狀況告訴消防人員", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "東西可以再買，人不行", "p": "出來就不要再進去。把還有誰沒出來、哪座樓梯有煙這些資訊告訴消防人員，幫助救援。"}}, {"id": "goback", "t": "陪朋友回去拿包包", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "不要回去", "h": "火場裡的狀況隨時在變", "p": "回頭的那幾分鐘，煙可能已經佔滿樓梯。為了東西回去，是最常見的悲劇。"}}, {"id": "watch", "t": "站在大門口看看狀況", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "擋住出口", "h": "門口是大家逃生、消防隊進出的地方", "p": "站在門口不但會被掉落物或煙波及，還會擋住後面逃生的人和進來的消防員。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "朋友已經往回走了", "p": "出來就不要回去，到空曠處。"}}}];
+var DEC=[{"id": "d1", "q": "你在百貨公司 5 樓走道上，朋友在試衣間。警報突然大響，廣播：「3 樓發生火警，請依照指示疏散。」有人往電梯跑。", "time": 10, "kc": {"t": "公共場所火警：不搭電梯，跟著綠色指示燈走安全梯", "s": "聽到火警，先讓身邊的人知道（朋友、家人、同事），再一起避難。放下手上的東西，跟著綠色的出口標示燈、避難方向指示燈走安全梯，不搭電梯。"}, "best": "先通知朋友，放下東西，跟著指示燈走最近的安全梯", "opts": [{"id": "exit", "t": "先大喊通知試衣間的朋友「失火了」，放下東西，跟著綠色避難方向指示燈走最近的安全梯", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "跟著綠色指示燈走", "p": "避難方向指示燈會指向最近的安全梯。放下東西，跟著指示走，不要搭電梯。"}}, {"id": "elev", "t": "搭電梯下樓比較快", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "電梯可能斷電，或停在起火的樓層", "p": "火災時電梯可能斷電把你困住，也可能把你直接送到濃煙的樓層。逃生一律走樓梯。"}}, {"id": "pay", "t": "先把手上的東西結帳再走", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不要拖延", "h": "煙蔓延的速度比你想得快", "p": "不要為了東西耽誤逃生的時間，煙往上竄得非常快。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "走道上的煙越來越多", "p": "聽到警報，跟著綠色指示燈走安全梯。"}}}, {"id": "d2", "q": "你走到安全梯門口，厚重的防火門關著。後面還有很多人跟著來。", "time": 10, "kc": {"t": "防火門：進去之後要關上", "s": "安全梯的防火門是為了把煙擋在外面，進出後要讓它自己關上，不能用東西卡住。開門前，先用手背貼在門的上方、靠近上面的門縫摸摸看（熱煙會先從上面出來），不燙再開一條縫看看有沒有煙。"}, "best": "用手背貼在門的上方、靠近門縫摸摸看，不燙再開一條縫，沒有煙才進去，讓門自己關上", "opts": [{"id": "check", "t": "用手背貼在門的上方、靠近門縫摸摸看，不燙再開一條縫，沒有煙才進去，讓門自己關上", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "防火門擋住煙，樓梯才能逃生", "p": "樓梯間是大家逃生的通道，防火門關著，煙才不會灌進來。後面的人推門就能進來。"}}, {"id": "prop", "t": "拿旁邊的垃圾桶把防火門卡住，讓大家比較好走", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "門開著，煙會灌進樓梯間", "p": "防火門被卡住，煙就會灌進樓梯，整座樓梯都不能用了。"}}, {"id": "rush", "t": "直接用力推開衝進去", "grade": "mid", "pts": 8, "dmg": 10, "fb": {"b": "mid", "bt": "少了一步", "h": "先確認門後的狀況", "p": "如果門後已經有濃煙或高溫，衝進去就危險了。先摸門的上方、開一條縫確認，再進去。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "後面的人在推擠", "p": "摸門上方確認，進去後讓防火門自己關上。"}}}, {"id": "d3", "q": "你沿著樓梯往下走到 4 樓，往下看，3 樓的樓梯間湧上來一團濃煙。", "time": 10, "kc": {"t": "樓梯見煙：不硬闖，往水平方向找其他路線", "s": "樓梯間有煙時，不要往下硬闖，也不要往上逃（煙會往上竄）。退回最近一層沒有煙的樓層（這裡是 4 樓），關上防火門，在同一層水平移動，找另一座安全梯。"}, "best": "退回 4 樓，關上防火門，跟著指示燈找另一座安全梯", "opts": [{"id": "other", "t": "退回 4 樓，關上防火門，跟著指示燈找另一座安全梯", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "往水平方向找其他路線", "p": "大型建築都有兩座以上的安全梯。這座有煙，就換另一座，不要硬闖。"}}, {"id": "dash", "t": "憋氣，摀住口鼻往下衝", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "非常危險", "h": "濃煙裡看不見、溫度很高", "p": "濃煙裡什麼都看不見，吸一兩口就可能昏倒。濕毛巾、摀口鼻都擋不住一氧化碳。"}}, {"id": "up", "t": "往頂樓跑，等直升機救援", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "不要往上", "h": "煙往上竄的速度比人快", "p": "煙和熱會往上累積，往上跑等於追著煙跑。逃生要往下、往外，下不去就水平找別的路。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "煙往上湧", "p": "退回上一層，關門，找另一座安全梯。"}}}, {"id": "d4", "q": "你從另一座安全梯走到一樓，出了大門。朋友說：「我包包放在 5 樓的試衣間！」", "time": 10, "kc": {"t": "出來就不要再回去", "s": "逃出來之後，就不要回去拿東西。到遠離建築物的空曠處，有人沒出來或知道火在哪裡，告訴消防人員。"}, "best": "不要回去，到空曠處，把知道的狀況告訴消防人員", "opts": [{"id": "stay", "t": "拉住朋友，到空曠的地方，把知道的狀況告訴消防人員", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "東西可以再買，人不行", "p": "出來就不要再進去。把還有誰沒出來、哪座樓梯有煙這些資訊告訴消防人員，幫助救援。"}}, {"id": "goback", "t": "陪朋友回去拿包包", "grade": "bad", "pts": 0, "dmg": 35, "fb": {"b": "bad", "bt": "不要回去", "h": "火場裡的狀況隨時在變", "p": "回頭的那幾分鐘，煙可能已經佔滿樓梯。為了東西回去，是最常見的悲劇。"}}, {"id": "watch", "t": "站在大門口看看狀況", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "擋住出口", "h": "門口是大家逃生、消防隊進出的地方", "p": "站在門口不但會被掉落物或煙波及，還會擋住後面逃生的人和進來的消防員。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "朋友已經往回走了", "p": "出來就不要回去，到空曠處。"}}}];
 SCN.quick=[{"q": "避難方向指示燈是什麼顏色？", "ok": "綠色", "w": ["紅色", "黃色"], "why": "綠色的避難方向指示燈和出口標示燈，會指向最近的安全梯或出口。", "kc": {"t": "綠色指示燈", "s": "綠色的避難方向指示燈和出口標示燈，會指向最近的安全梯或出口。"}}, {"q": "火災時可以搭電梯嗎？", "ok": "不行，可能斷電或停在火災樓層", "w": ["可以，比較快", "人少就可以"], "why": "火場可能斷電，電梯也可能停在起火的樓層，一律走樓梯。", "kc": {"t": "火災不搭電梯", "s": "火場可能斷電，電梯也可能停在起火的樓層，一律走樓梯。"}}, {"q": "安全梯的防火門可以用東西卡住嗎？", "ok": "不行，要讓它保持關閉", "w": ["可以，大家比較好走", "人多的時候可以"], "why": "防火門關著，煙才不會灌進樓梯間。卡住它，整座樓梯都會被煙佔滿。", "kc": {"t": "防火門要關", "s": "防火門關著，煙才不會灌進樓梯間。卡住它，整座樓梯都會被煙佔滿。"}}, {"q": "火場逃生的方向原則？", "ok": "往下、往外逃", "w": ["往上跑到頂樓", "躲在原地等"], "why": "煙往上竄得比人快，往下、往外離開建築物最好；下不去就水平找別的路。", "kc": {"t": "往下往外", "s": "煙往上竄得比人快，往下、往外離開建築物最好；下不去就水平找別的路。"}}, {"q": "可以躲進廁所等救援嗎？", "ok": "不行，廁所門擋不住煙，也不容易被發現", "w": ["可以，有水比較安全", "可以，關門就好"], "why": "浴廁門多是塑膠材質，會熔化變形，門下百葉擋不住煙，也常沒有對外窗。", "kc": {"t": "不躲浴廁", "s": "浴廁門多是塑膠材質，會熔化變形，門下百葉擋不住煙，也常沒有對外窗。"}}, {"q": "拿濕毛巾摀住口鼻，就能穿過濃煙嗎？", "ok": "不行，濕毛巾擋不住一氧化碳", "w": ["可以，越濕越好", "可以，憋氣就好"], "why": "濕毛巾擋不住一氧化碳等有毒氣體，濃煙不可以硬闖。", "kc": {"t": "不硬闖濃煙", "s": "濕毛巾擋不住一氧化碳等有毒氣體，濃煙不可以硬闖。"}}, {"q": "進到陌生的商場、電影院，可以先做什麼？", "ok": "先看一下安全梯和出口在哪裡", "w": ["先找電梯的位置", "先找最近的廁所"], "why": "平常就先確認兩條逃生路線，遇到狀況才不會慌。", "kc": {"t": "先看逃生路線", "s": "平常就先確認兩條逃生路線，遇到狀況才不會慌。"}}, {"q": "用手背摸防火門，摸哪裡？", "ok": "門的上方", "w": ["門把", "門的下方"], "why": "熱煙會先累積在上方，摸門的上方最準；門把是金屬，可能摸不出溫度。", "kc": {"t": "摸門的上方", "s": "熱煙會先累積在上方，摸門的上方最準；門把是金屬，可能摸不出溫度。"}}];
 var CHS=['警報','防火門','樓梯見煙','逃出之後'],CLKS=['15:40','15:41','15:43','15:48'];
 DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
@@ -1931,6 +1934,7 @@ function camSetup(){
   CAM.look=lookAt([.3,1.6,3.0],[-2.0,2.6,-2]);
   CAM.exitS=lookAt([.3,1.6,-6],[.5,2.3,-RD/2]);
   CAM.door=lookAt([.4,1.6,-RD/2+2.3],[.5,1.7,-RD/2]);
+  CAM.dtop=lookAt([.4,1.62,-RD/2+.85],[.46,2.02,-RD/2]);
   CAM.elev=lookAt([-2.1,1.6,-RD/2+2.2],[ELV.x,1.2,ELV.z]);
   CAM.st5=lookAt([1.4,1.6,SZ-.8],[1.45,-.8,SZ-3.0]);
   CAM.mid=lookAt([.6,-.25,SZ-3.5],[-.4,-3.0,SZ-1.4]);
@@ -1943,7 +1947,7 @@ var alarmT=null;
 function mallAlarm(v){ML.alarm=v;if(alarmT){clearInterval(alarmT);alarmT=null}if(v)alarmT=setInterval(function(){if(!paused&&ML.alarm){beep(960,.22,.05,0);beep(760,.22,.05,.25)}},700)}
 function setZone(z){ML.zone=z}
 SCN.reset=function(){
-  fxReset();mallAlarm(0);setZone(0);doorA.r=[0,0,0];doorB.r=[0,0,0];door4.r=[0,0,0];bin.p=[-1.6,.3,-RD/2+1.2];elevDoor.p=[ELV.x,1.05,ELV.z+.05];
+  fxReset();mallAlarm(0);setZone(0);setFloor(5);CEIL.forEach(function(s){s.v=0;s.a=.35});doorA.r=[0,0,0];doorB.r=[0,0,0];door4.r=[0,0,0];bin.p=[-1.6,.3,-RD/2+1.2];elevDoor.p=[ELV.x,1.05,ELV.z+.05];
   FRIEND.show(false);CROWD.forEach(function(b){b.show(false)});FFM.show(false);
 };
 function crowdGo(){CROWD.forEach(function(b,i){b.node.p=[-1.2+i*.8,0,2+i*1.2];b.node.r=[0,PI,0];b.show(true);tween(b.node.p,{2:-RD/2+1.2,0:.4+i*.15},6+i*.8,function(){b.show(false)})})}
@@ -1951,8 +1955,8 @@ SCN.start=function(){
   phase='cut';controls=false;bars(true);showSkip(true);
   setCam(CAM.walk);fadeTo(0,1600);cap('週末下午 15:40。朋友在試衣間，你在 5 樓走道上等她。');
   after(2600,function(){mallAlarm(1);cap('「嗶——嗶——」警報突然大響。')});
-  after(4200,function(){cap('「3 樓發生火警，請依照指示，往安全梯疏散。」','廣播');CEIL.forEach(function(s){tween(s,{v:1},4)});crowdGo()});
-  after(6600,function(){camTo(CAM.look,1.2);cap('天花板開始飄著一層灰煙，有人往電梯跑。')});
+  after(4200,function(){cap('「3 樓發生火警，請依照指示，往安全梯疏散。」','廣播');crowdGo()});
+  after(6600,function(){camTo(CAM.elev,1.2);cap('5 樓的走道上還看不到煙，但有人往電梯跑。')});
   after(8800,function(){showSkip(false);step(1)});
 };
 function step(n){
@@ -1993,23 +1997,27 @@ var PLAY={
     after(5400,done);
   },
   pay:function(done){
-    cap('你拿著衣服到櫃檯排隊結帳。');after(1600,function(){CEIL.forEach(function(s){s.a=.55});cap('隊伍沒有在動，店員也已經跑了。天花板的煙越壓越低。');ST.dmg=.3;tween(ST,{dmg:0},.8)});
+    cap('你拿著衣服到櫃檯排隊結帳。');after(1600,function(){cap('隊伍沒有在動，店員也已經跑了。廣播一直在催，你白白浪費了好幾分鐘。');ST.dmg=.3;tween(ST,{dmg:0},.8)});
     after(3600,function(){cap('你丟下衣服，往安全梯跑。')});after(4800,done);
   },
   _:function(done){cap('你站在原地，不知道往哪走。');after(2400,done)}
  },
  d2:{
   check:function(done){
-    var a=w2c([.5,1.95,-RD/2+.04]);hIn(HR,{p:[a[0],a[1],a[2]+.08],r:[1.45,PI,0],curl:.1,thumb:.15,abs:true},.45);
-    after(700,function(){cap('你用手背摸門的上方：不燙。')});
-    after(1500,function(){hTo(HR,{p:[HR.p[0],HR.p[1]-.5,HR.p[2]],r:[1.3,0,0],curl:.7,abs:true},.4);tween(doorA.r,{1:-.25},.4);cap('推開一條縫，沒有煙。')});
-    after(2600,function(){tween(doorA.r,{1:-1.2},.5);hOut(HR,.3);cap('你走進去，防火門在背後慢慢自己關上。')});
-    after(3600,function(){tween(doorA.r,{1:0},1.2,function(){thud(.6)})});
-    after(5000,done);
+    /* 走近防火門，抬頭看門的上方：手背貼在門板上緣、靠近門縫的地方（熱煙會先從上面的門縫出來） */
+    camTo(CAM.dtop,.9);
+    after(1000,function(){var a=w2c([.42,2.1,-RD/2-.008]);hIn(HR,{p:a,r:[1.45,PI,0],curl:.08,thumb:.12,abs:true},.45)});
+    after(1700,function(){cap('你把手背貼在門的上方、靠近上面門縫的地方：不燙。')});
+    after(3100,function(){hOut(HR,.25);camTo(CAM.door,.6)});
+    after(3800,function(){var a=w2c([.05,1.0,-RD/2+.02]);hIn(HR,{p:a,r:[1.3,0,0],curl:.7,thumb:.5,abs:true},.3)});
+    after(4200,function(){tween(doorA.r,{1:-.25},.4);cap('推開一條縫，沒有煙。')});
+    after(5300,function(){tween(doorA.r,{1:-1.2},.5);hOut(HR,.3);cap('你走進去，防火門在背後慢慢自己關上。')});
+    after(6300,function(){tween(doorA.r,{1:0},1.2,function(){thud(.6)})});
+    after(7600,done);
   },
   prop:function(done){
     cap('你把旁邊的垃圾桶推過去，卡住防火門。');tween(doorA.r,{1:-1.2},.6);after(700,function(){tween(bin.p,{0:.1,2:-RD/2-.2},.8)});
-    after(2000,function(){DOORS.v=1;DOORS.p=[.5,1.4,-RD/2-.6];cap('走道上的煙，跟著大家一起灌進了樓梯間。');ST.dmg=.3;tween(ST,{dmg:0},.8)});
+    after(2000,function(){cap('防火門被卡住一直開著。等一下樓梯間的煙一上來，就會整個灌進這一層。');ST.dmg=.2;tween(ST,{dmg:0},.8)});
     after(3800,function(){cap('一個清潔人員衝過來，把垃圾桶踢開，讓門關上。');tween(bin.p,{0:-1.6,2:-RD/2+1.2},.6);tween(doorA.r,{1:0},1.2);tween(DOORS,{v:0},2)});
     after(5400,done);
   },
@@ -2020,22 +2028,25 @@ var PLAY={
  },
  d3:{
   other:function(done){
-    cap('你轉身往回走，回到 5 樓，關上防火門。');camTo(CAM.st5,1.4);
-    after(1600,function(){fadeTo(1,300)});after(1900,function(){setZone(0);STS.v=STS2.v=0;setCam(lookAt([.3,1.6,-RD/2+2],[.3,1.6,RD/2]));fadeTo(0,300);cap('跟著地上的綠色指示燈，往走道另一頭的安全梯 B 走。')});
-    after(3200,function(){camTo(lookAt([.3,1.6,RD/2-2],[.5,1.5,RD/2]),1.6)});
-    after(5000,done);
+    cap('你不往下走，推開 4 樓的防火門，退回 4 樓。');camTo(CAM.st4,1.2);
+    after(1300,function(){tween(door4.r,{1:-1.1},.5)});
+    after(2300,function(){fadeTo(1,300)});
+    after(2600,function(){setZone(0);setFloor(4);STS.v=STS2.v=0;CEIL.forEach(function(s){s.v=0});door4.r=[0,0,0];setCam(lookAt([.3,1.6,-RD/2+2],[.3,1.6,RD/2]));fadeTo(0,300);
+      cap('4 樓的走道沒有煙。防火門在背後關上，你跟著地上的綠色指示燈，往走道另一頭的安全梯 B 走。')});
+    after(4200,function(){camTo(lookAt([.3,1.6,RD/2-2],[.5,1.5,RD/2]),1.6)});
+    after(6200,done);
   },
   dash:function(done){
     cap('你憋住氣，摀著口鼻往下衝——');camTo(CAM.st4,1.0);
     after(1000,function(){fadeTo(.9,600);ST.dmg=.7;tween(ST,{dmg:.2},1.2)});
     after(2400,function(){cap('什麼都看不見，吸了一口煙，喉嚨像被火燒。')});
-    after(4000,function(){cap('你摸著扶手退回 5 樓，改走另一座安全梯。');setZone(0);STS.v=STS2.v=0;setCam(lookAt([.3,1.6,RD/2-2],[.5,1.5,RD/2]));fadeTo(0,700);tween(ST,{dmg:0},1)});
+    after(4000,function(){cap('你摸著扶手退回 4 樓，關上防火門，改走另一座安全梯。');setZone(0);setFloor(4);STS.v=STS2.v=0;setCam(lookAt([.3,1.6,RD/2-2],[.5,1.5,RD/2]));fadeTo(0,700);tween(ST,{dmg:0},1)});
     after(5600,done);
   },
   up:function(done){
     cap('你往上跑，想到頂樓等救援。');fadeTo(1,500);
     after(1000,function(){fadeTo(.6,400);cap('頂樓的門鎖著。煙一路從下面追上來。');ST.dmg=.5;tween(ST,{dmg:.1},1)});
-    after(3200,function(){cap('你只好退回 5 樓，改走另一座安全梯。');setZone(0);STS.v=STS2.v=0;setCam(lookAt([.3,1.6,RD/2-2],[.5,1.5,RD/2]));fadeTo(0,700);tween(ST,{dmg:0},1)});
+    after(3200,function(){cap('你只好往下退回 4 樓，關上防火門，改走另一座安全梯。');setZone(0);setFloor(4);STS.v=STS2.v=0;setCam(lookAt([.3,1.6,RD/2-2],[.5,1.5,RD/2]));fadeTo(0,700);tween(ST,{dmg:0},1)});
     after(4800,done);
   },
   _:function(done){cap('煙往上湧。');after(2400,done)}
@@ -2045,7 +2056,7 @@ var PLAY={
     var a=w2c(b2w(FRIEND,[.2,.95,0]));hIn(HR,{p:[a[0],a[1],a[2]],r:[.6,-.4,0],curl:.75,thumb:.6,abs:true},.4);
     cap('「不要回去，東西可以再買。」你拉住她，走到廣場上。','你');
     after(1800,function(){hOut(HR,.3);camTo(lookAt([-1.5,1.6,PLZ.z+.5],[2.2,1.4,PLZ.z-1.5]),1.0)});
-    after(2800,function(){cap('「5 樓北邊的安全梯，往下有濃煙，3 樓那邊。」你告訴消防員。','你')});
+    after(2800,function(){cap('「北邊的安全梯 A，3 樓的樓梯間有濃煙往上竄。」你告訴消防員。','你')});
     after(4800,done);
   },
   goback:function(done){
@@ -2205,9 +2216,10 @@ function showFeedback(d,o){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
     h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
-    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
+    var fx=flowIx(d),fok=hasFlow()&&fx>=0;
+    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(fok?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
-    if(hasFlow())h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(ix,g)+'</div>';
+    if(fok)h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(fx,g)+'</div>';
   }
   var lab;
   if(d.quick)lab=d.qlast?'查看成績單':'下一題';
@@ -2241,6 +2253,8 @@ function flowSvg(hi,g){
   return h+'</svg>';
 }
 function SV_FLOW(){return SCN.kind==='survive'}
+/* 這一題對應流程排序的第幾步；fi:-1 代表不在流程裡（例如「隔天怎麼買」） */
+function flowIx(d){return d&&d.fi!=null?d.fi:DEC.indexOf(d)}
 function ptsFloat(o,pts,to){
   var d=el('ptsF');if(!d)return;var g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad';
   d.className='on '+g;d.textContent=to?'時間到':g==='good'?'+'+pts:g==='mid'?'+'+pts+'　還可以更好':(SCN.kind==='survive'?'危險':'不正確');
@@ -2457,7 +2471,7 @@ function showEnd(){
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
     h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
-    h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
+    h+='<details><summary>'+(hasFlow()&&flowIx(l.d)>=0?'看圖解與重點':'看重點')+'</summary>'+(hasFlow()&&flowIx(l.d)>=0?'<div class="dgp">'+flowSvg(flowIx(l.d),g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
     h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}

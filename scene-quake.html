@@ -578,7 +578,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　求生現場</div>
     <h1>地震：晚餐時的搖晃</h1>
-    <p class="lead">晚上 21:05，你在家裡餐桌前吃飯，整棟樓突然劇烈搖晃。趴下掩護、搖晃後判斷瓦斯外洩、疏散、報平安，你會怎麼做？</p>
+    <p class="lead">晚上 21:05，你在家裡餐桌前吃飯，整棟樓突然劇烈搖晃。趴下掩護、搖晃停了穿鞋拿避難包、走樓梯疏散、到家人約好的集合地點、報平安，你會怎麼做？</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -596,8 +596,8 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 <div id="brief" class="sheet" hidden><div class="box pad">
   <div class="mark"><i></i>情境提要</div>
   <h2>地震：晚餐時的搖晃</h2>
-  <div class="bi now"><b>現在</b><p>晚上 21:05，你一個人在家，坐在餐桌前吃晚餐。廚房爐子上還小火煮著湯。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>搖晃的時候</li><li>搖晃停止，瓦斯味很濃</li><li>怎麼下樓、去哪裡</li><li>跟家人報平安</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
+  <div class="bi now"><b>現在</b><p>晚上 21:05，你一個人在家，坐在餐桌前吃晚餐。爸媽還在下班的路上。全家之前約好：有災害時，到巷口的幸福里公園集合。</p></div>
+  <div class="bi"><b>你要做</b><ol><li>搖晃的時候</li><li>搖晃停了，地上都是碎玻璃</li><li>怎麼下樓</li><li>去哪裡和家人會合</li><li>跟家人報平安</li></ol><small>共 5 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -1856,15 +1856,15 @@ function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;
 /* ================= 求生現場：地震 ================= */
 var SCN={
   id:'quake',kind:'survive',title:'地震：晚餐時的搖晃',eye:1.2,clock0:'21:05',clockQ:'21:40',stage1:'晚上，家裡的餐桌…',
-  src:'內容整理自內政部消防署地震保命三步驟（趴下、掩護、穩住）與地震後應變宣導、火災逃生避難原則，以及中華電信 1991 報平安留言平台說明。細節仍待對照官方原文。',
+  src:'內容整理自內政部消防署地震保命三步驟（趴下、掩護、穩住）、地震後應變與疏散宣導、家庭防災卡（約定集合地點與聯絡方式），以及災後以文字訊息報平安的宣導。細節仍待對照官方原文。',
   env:{fog:[.05,.05,.06],fogD:.012,sky:[.3,.32,.4],gnd:[.24,.22,.2],dirD:[-.4,-.8,-.2],dirC:[.06,.06,.08],ao:1},
-  icons:{drop:'hand',run:'run',door:'x',leave:'run',valve:'x',light:'x',stairs:'run',elev:'x',arcade:'x',msg:'phone',redial:'phone',back:'x'},
+  icons:{drop:'hand',run:'run',door:'x',prep:'run',barefoot:'x',pack:'x',stairs:'run',elev:'x',arcade:'x',meet:'run',search:'x',lobby:'x',msg:'phone',redial:'phone',back:'x'},
   hurtSnd:function(){thud(.5)}
 };
-var DEC=[{"id": "d1", "q": "整棟樓突然劇烈搖晃，櫃子裡的碗盤嘩啦啦地掉下來，燈在頭上晃。", "time": 8, "kc": {"t": "地震來了：趴下、掩護、穩住", "s": "搖晃時最重要的是保護頭頸：趴下，躲到堅固的桌子底下，一手抓住桌腳，直到搖晃停止。不要急著往外跑。"}, "best": "趴下，躲到餐桌底下，一手抓住桌腳", "opts": [{"id": "drop", "t": "趴下，躲到餐桌底下，一手護住頭頸、一手抓住桌腳", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "趴下、掩護、穩住", "p": "大部分的受傷，是被掉落的東西砸到，或在搖晃中跌倒。躲在堅固的桌子底下、抓住桌腳，讓桌子跟著你一起晃。"}}, {"id": "run", "t": "衝出門，往樓下跑", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "搖晃時移動最容易受傷", "p": "搖晃中跑樓梯很容易跌倒，門外的東西也可能掉下來砸到你。先就地保護自己，搖晃停了再判斷要不要離開。"}}, {"id": "door", "t": "跑到門框下面站著", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "這是舊觀念", "h": "現在的門框不比其他地方堅固", "p": "門框下沒有東西能擋住掉下來的物品，門還可能被搖得甩來甩去夾傷手。趴下、躲在桌子底下比較安全。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "你被搖得站不穩", "p": "搖晃時先趴下、找掩護、穩住。"}}}, {"id": "d2", "q": "搖晃停了。地上都是碎玻璃。湯鍋翻倒把爐火澆熄了，廚房飄來很濃的瓦斯味，還聽得到「嘶——」的漏氣聲。", "time": 10, "kc": {"t": "地震後大量瓦斯外洩：不要止洩，直接離開", "s": "搖晃停止後先穿鞋保護雙腳。瓦斯味很濃、聽得到漏氣聲，代表大量外洩，不要走進去關瓦斯（人走動時衣服摩擦的靜電都可能引爆），任何開關都不碰，帶著避難包直接離開，到外面再報案。只有味道很淡、剛開始漏的時候，才考慮小心去關瓦斯、開窗。"}, "best": "先穿上鞋子，什麼開關都不碰，背起避難包直接離開", "opts": [{"id": "leave", "t": "先穿上鞋子，什麼開關都不碰，背起門邊的避難包直接離開", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "大量外洩，人先走", "p": "地上都是碎玻璃，先穿鞋。瓦斯這麼濃、又不知道漏了多少，留在屋裡多待一秒都危險。不碰開關、直接離開，到外面再報案，交給消防隊和瓦斯公司。"}}, {"id": "valve", "t": "走進廚房關掉爐子和瓦斯總開關，再打開窗戶", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "大量外洩時不要去止洩", "p": "瓦斯已經很濃的時候，人走進去、轉開關、身上衣服摩擦，產生的靜電火花都可能引爆。過去很多氣爆，就是有人想進去關瓦斯時發生的。"}}, {"id": "light", "t": "先把燈打開，看清楚再說", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "有瓦斯味不能碰開關", "h": "開關的火花可能引爆瓦斯", "p": "聞到瓦斯味時，開燈、按開關都可能產生火花。什麼開關都不要碰，直接離開。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "瓦斯還在一直漏", "p": "先穿鞋，瓦斯味很濃就什麼都不碰，直接離開。"}}}, {"id": "d3", "q": "你們到了樓梯間，牆上有好幾道裂縫，大樓廣播請住戶到戶外空曠處。", "time": 10, "kc": {"t": "疏散：走樓梯、帶避難包、到空曠處", "s": "地震後疏散要走樓梯，不要搭電梯（可能停電或受損卡住）。帶上緊急避難包，到遠離建築物的空曠處，不要在騎樓、外牆、招牌底下停留，小心餘震。"}, "best": "走樓梯下樓，到遠離建築物的空曠處", "opts": [{"id": "stairs", "t": "走樓梯下樓，到遠離建築物的空曠處", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "走樓梯、到空曠處", "p": "電梯可能因為停電或損壞把你困住；騎樓和外牆附近也可能有掉落物。到空曠的地方，才能避開餘震時掉下來的東西。"}}, {"id": "elev", "t": "搭電梯下樓比較快", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "餘震或停電會把你困在電梯裡", "p": "地震後電梯可能已經受損，再遇到餘震或停電，就會被困在電梯裡。疏散一律走樓梯。"}}, {"id": "arcade", "t": "到樓下騎樓，靠著大樓外牆等", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不夠安全", "h": "外牆、招牌、玻璃可能掉下來", "p": "騎樓上方有招牌、冷氣、玻璃，餘震時最容易掉落。要到遠離建築物的空曠處。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "廣播一直在催", "p": "走樓梯、帶避難包，到遠離建築物的空曠處。"}}}, {"id": "d4", "q": "到了公園。你想打電話給家人報平安，但電話一直打不通。", "time": 10, "kc": {"t": "報平安：用 1991 留言或文字訊息", "s": "災害發生後電話線路很塞，一直重撥只會讓救災電話更難打進來。可以用 1991 報平安留言平台，或用簡訊、通訊軟體留言報平安。"}, "best": "用 1991 報平安留言平台，或傳簡訊、通訊軟體報平安", "opts": [{"id": "msg", "t": "用 1991 報平安留言平台留言，或傳簡訊、通訊軟體報平安", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "把線路留給救災電話", "p": "1991 報平安留言平台可以錄音留言，家人撥號就能聽到；簡訊、通訊軟體也比打電話容易傳出去。"}}, {"id": "redial", "t": "一直重撥，打通為止", "grade": "mid", "pts": 8, "dmg": 8, "fb": {"b": "mid", "bt": "線路會更塞", "h": "大家都在打電話", "p": "每個人都一直重撥，線路就更塞，真正需要求救的電話也打不進去。改用留言或文字訊息。"}}, {"id": "back", "t": "回家裡用市內電話打打看", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "不要回去", "h": "餘震隨時可能來", "p": "建築物已經有裂縫，回去等於把自己放回危險裡。在安全的地方用留言或文字訊息報平安。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話一直打不通", "p": "用 1991 報平安留言平台，或傳文字訊息。"}}}];
-SCN.quick=[{"q": "睡覺時遇到地震，怎麼做比較好？", "ok": "留在床上，轉身趴下，用枕頭護住頭頸", "w": ["馬上跳下床往外跑", "躲到衣櫃旁邊"], "why": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。", "kc": {"t": "在床上就趴下", "s": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。"}}, {"q": "在戶外遇到地震？", "ok": "遠離建築物，蹲低，用隨身物品護住頭頸", "w": ["跑進最近的建築物裡躲", "站在招牌底下"], "why": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。", "kc": {"t": "戶外蹲低護頭", "s": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。"}}, {"q": "開車時遇到地震？", "ok": "慢慢減速、打警示燈，靠路邊空曠處停車", "w": ["加速開過去", "馬上急煞停在原地"], "why": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。", "kc": {"t": "開車靠邊停", "s": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。"}}, {"q": "地震後要疏散，可以搭電梯嗎？", "ok": "不行，要走樓梯", "w": ["可以，比較快", "人少的時候可以"], "why": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。", "kc": {"t": "不搭電梯", "s": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。"}}, {"q": "被困在倒塌的地方，怎麼讓外面的人知道？", "ok": "敲擊管線或牆壁、吹哨子製造聲音", "w": ["一直大聲喊叫", "安靜等著就好"], "why": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。", "kc": {"t": "受困製造聲音", "s": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。"}}, {"q": "緊急避難包裡應該放什麼？", "ok": "飲用水、手電筒、常用藥品、證件影本", "w": ["大量現金和首飾", "筆電和充電器就好"], "why": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。", "kc": {"t": "準備避難包", "s": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。"}}, {"q": "平常可以怎麼減少地震時的傷害？", "ok": "把高的櫃子、書架固定在牆上", "w": ["把重的東西放在櫃子頂端", "床頭放玻璃擺飾"], "why": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。", "kc": {"t": "固定家具", "s": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。"}}, {"q": "地震後聞到瓦斯味？", "ok": "味道很濃、聽得到漏氣聲：什麼都不碰，直接離開，到戶外再報案", "w": ["一定要先進去把瓦斯總開關關掉", "開燈找漏氣的地方"], "why": "地震後瓦斯管線可能破裂。味道很濃就是大量外洩，不要進去止洩，任何開關都不碰，直接離開；只有味道很淡、剛開始漏，才考慮小心關瓦斯、開窗。", "kc": {"t": "地震後瓦斯味很濃：直接離開", "s": "地震後瓦斯管線可能破裂。味道很濃就是大量外洩，不要進去止洩，任何開關都不碰，直接離開；只有味道很淡、剛開始漏，才考慮小心關瓦斯、開窗。"}}];
-var CHS=['搖晃','瓦斯外洩','疏散','報平安'],CLKS=['21:05','21:06','21:10','21:25'];
-DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
+var DEC=[{"id": "d1", "q": "整棟樓突然劇烈搖晃，櫃子裡的碗盤嘩啦啦地掉下來，燈在頭上晃。", "time": 8, "kc": {"t": "地震來了：趴下、掩護、穩住", "s": "搖晃時最重要的是保護頭頸：趴下，躲到堅固的桌子底下，一手抓住桌腳，直到搖晃停止。不要急著往外跑。"}, "best": "趴下，躲到餐桌底下，一手抓住桌腳", "opts": [{"id": "drop", "t": "趴下，躲到餐桌底下，一手護住頭頸、一手抓住桌腳", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "趴下、掩護、穩住", "p": "大部分的受傷，是被掉落的東西砸到，或在搖晃中跌倒。躲在堅固的桌子底下、抓住桌腳，讓桌子跟著你一起晃。"}}, {"id": "run", "t": "衝出門，往樓下跑", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "搖晃時移動最容易受傷", "p": "搖晃中跑樓梯很容易跌倒，門外的東西也可能掉下來砸到你。先就地保護自己，搖晃停了再判斷要不要離開。"}}, {"id": "door", "t": "跑到門框下面站著", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "這是舊觀念", "h": "現在的門框不比其他地方堅固", "p": "門框下沒有東西能擋住掉下來的物品，門還可能被搖得甩來甩去夾傷手。趴下、躲在桌子底下比較安全。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "wait", "bt": "時間到", "h": "你被搖得站不穩", "p": "搖晃時先趴下、找掩護、穩住。"}}}, {"id": "d2", "q": "搖晃停了。地上都是碎玻璃和碎碗盤，燈一閃一閃的。接下來你要先做什麼？", "time": 10, "kc": {"t": "搖晃停了：先穿鞋，拿避難包，離開", "s": "搖晃停止後，地上常有碎玻璃、碎瓷片，先穿上鞋子保護雙腳。接著拿起放在門邊的緊急避難包，打開大門確保出口，從樓梯離開到戶外空曠處。不要回頭收拾東西，餘震隨時可能再來。"}, "best": "先穿上鞋子，背起門邊的避難包，開門離開", "opts": [{"id": "prep", "t": "先穿上鞋子，背起門邊的避難包，打開大門離開", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "鞋子、避難包、出口", "p": "地上都是碎玻璃，先穿鞋才能安全走動。避難包平常就放在門邊，拿了就走，打開大門確保出口，不在屋裡多待。"}}, {"id": "barefoot", "t": "光著腳，先衝到門口再說", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "會受傷", "h": "腳被碎玻璃割傷", "p": "搖晃後地上滿是碎玻璃、碎碗盤，光腳走很容易割傷，受傷後就更難離開。先穿鞋再走。"}}, {"id": "pack", "t": "先回房間收拾筆電、充電器和貴重物品", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "東西不重要，人先走", "p": "在屋裡多待一分鐘，就多一分被餘震困住的風險。要用的東西平常就放進避難包，搖晃停了拿了就走。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "燈一直在閃", "p": "先穿鞋，拿避難包，打開大門離開。"}}}, {"id": "d3", "q": "你們到了樓梯間，牆上有好幾道裂縫，大樓廣播請住戶到戶外空曠處。", "time": 10, "kc": {"t": "疏散：走樓梯、帶避難包、到空曠處", "s": "地震後疏散要走樓梯，不要搭電梯（可能停電或受損卡住）。帶上緊急避難包，到遠離建築物的空曠處，不要在騎樓、外牆、招牌底下停留，小心餘震。"}, "best": "走樓梯下樓，到遠離建築物的空曠處", "opts": [{"id": "stairs", "t": "走樓梯下樓，到遠離建築物的空曠處", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "走樓梯、到空曠處", "p": "電梯可能因為停電或損壞把你困住；騎樓和外牆附近也可能有掉落物。到空曠的地方，才能避開餘震時掉下來的東西。"}}, {"id": "elev", "t": "搭電梯下樓比較快", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "很危險", "h": "餘震或停電會把你困在電梯裡", "p": "地震後電梯可能已經受損，再遇到餘震或停電，就會被困在電梯裡。疏散一律走樓梯。"}}, {"id": "arcade", "t": "到樓下騎樓，靠著大樓外牆等", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不夠安全", "h": "外牆、招牌、玻璃可能掉下來", "p": "騎樓上方有招牌、冷氣、玻璃，餘震時最容易掉落。要到遠離建築物的空曠處。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "廣播一直在催", "p": "走樓梯、帶避難包，到遠離建築物的空曠處。"}}}, {"id": "d4", "q": "你走出大樓。爸媽還在下班回家的路上，電話打不通。你要去哪裡？", "time": 10, "kc": {"t": "到家人事先約好的集合地點", "s": "平常就和家人約好：災害發生時，大家到哪裡集合（例如家附近的公園、學校操場這類空曠地），最好再約一個備用地點。就算手機、網路都不通，大家照約定到同一個地方，還是能會合。"}, "best": "去和家人事先約好的集合地點：巷口的公園", "opts": [{"id": "meet", "t": "去和家人事先約好的集合地點：巷口的幸福里公園", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "照約定集合，不用通訊也能會合", "p": "全家事先約好集合地點，就算電話、網路都不通，大家還是知道要去哪裡找彼此。公園空曠、遠離建築物，餘震時也比較安全。"}}, {"id": "search", "t": "沿著街道到處去找爸媽", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "街上有掉落物，也容易錯過", "p": "地震後街上可能有掉落的招牌、磚塊，到處走很危險；爸媽也可能正在找你，兩邊都在移動，反而碰不到面。"}}, {"id": "lobby", "t": "回大樓一樓的大廳等爸媽回來", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "不要回去", "h": "建築物已經有裂縫", "p": "大樓牆上已經有裂縫，餘震時大廳的玻璃、天花板都可能掉下來。要待在遠離建築物的空曠處。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "站在大樓門口", "p": "到家人事先約好的集合地點，遠離建築物。"}}}, {"id": "d5", "q": "到了公園，旁邊聚集了很多鄰居。你想打給爸媽，但電話一直打不通。", "time": 10, "kc": {"t": "報平安：用文字訊息，把電話留給救災", "s": "災害發生後電話線路很塞，一直重撥只會讓救災電話更難打進來。用 LINE、Facebook、手機簡訊或 Email 傳文字訊息報平安，說清楚「我平安、人在哪裡」。就算訊息傳不出去，大家也照約定到集合地點會合。"}, "best": "用 LINE、簡訊傳文字訊息：「我平安，在約好的公園」", "opts": [{"id": "msg", "t": "用 LINE、簡訊傳文字訊息給爸媽：「我平安，在約好的公園等你們」", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "把線路留給救災電話", "p": "文字訊息比打電話容易傳出去，也不會占用線路。訊息裡講清楚「我平安、人在哪裡」，家人一看就知道。"}}, {"id": "redial", "t": "一直重撥，打通為止", "grade": "mid", "pts": 8, "dmg": 8, "fb": {"b": "mid", "bt": "線路會更塞", "h": "大家都在打電話", "p": "每個人都一直重撥，線路就更塞，真正需要求救的電話也打不進去。改用 LINE、簡訊這類文字訊息。"}}, {"id": "back", "t": "回家裡用市內電話打打看", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "不要回去", "h": "餘震隨時可能來", "p": "建築物已經有裂縫，回去等於把自己放回危險裡。在集合地點用文字訊息報平安。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "電話一直打不通", "p": "用 LINE、簡訊這類文字訊息報平安。"}}}];
+SCN.quick=[{"q": "睡覺時遇到地震，怎麼做比較好？", "ok": "留在床上，轉身趴下，用枕頭護住頭頸", "w": ["馬上跳下床往外跑", "躲到衣櫃旁邊"], "why": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。", "kc": {"t": "在床上就趴下", "s": "消防署建議：在床上不要急著起身，轉身趴下、拿枕頭保護頭頸，直到搖晃停止。"}}, {"q": "在戶外遇到地震？", "ok": "遠離建築物，蹲低，用隨身物品護住頭頸", "w": ["跑進最近的建築物裡躲", "站在招牌底下"], "why": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。", "kc": {"t": "戶外蹲低護頭", "s": "戶外相對安全，放低重心、保護頭頸，不要跑回室內。"}}, {"q": "開車時遇到地震？", "ok": "慢慢減速、打警示燈，靠路邊空曠處停車", "w": ["加速開過去", "馬上急煞停在原地"], "why": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。", "kc": {"t": "開車靠邊停", "s": "安全減速、開警示燈，靠路邊空曠處停車，等搖晃停止再前進。"}}, {"q": "地震後要疏散，可以搭電梯嗎？", "ok": "不行，要走樓梯", "w": ["可以，比較快", "人少的時候可以"], "why": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。", "kc": {"t": "不搭電梯", "s": "電梯可能因停電或損壞把人困住，疏散一律走樓梯。"}}, {"q": "被困在倒塌的地方，怎麼讓外面的人知道？", "ok": "敲擊管線或牆壁、吹哨子製造聲音", "w": ["一直大聲喊叫", "安靜等著就好"], "why": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。", "kc": {"t": "受困製造聲音", "s": "大喊很耗體力，也可能吸入灰塵。敲擊東西、吹哨子，讓救援人員找到你。"}}, {"q": "緊急避難包裡應該放什麼？", "ok": "飲用水、手電筒、常用藥品、證件影本", "w": ["大量現金和首飾", "筆電和充電器就好"], "why": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。", "kc": {"t": "準備避難包", "s": "避難包要有水、乾糧、手電筒、急救用品與常用藥、證件影本、口哨等，平時放在容易拿的地方。"}}, {"q": "平常可以怎麼減少地震時的傷害？", "ok": "把高的櫃子、書架固定在牆上", "w": ["把重的東西放在櫃子頂端", "床頭放玻璃擺飾"], "why": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。", "kc": {"t": "固定家具", "s": "固定家具、重物放低，床邊不要放會掉落、會碎的東西。"}}, {"q": "全家要約定災害時的集合地點，選哪裡比較好？", "ok": "家附近的公園、學校操場這類空曠地，再約一個備用地點", "w": ["大樓一樓的騎樓下", "附近的百貨公司裡面"], "why": "集合地點要空曠、遠離建築物，大家都知道怎麼走；再約一個備用地點，萬一第一個地點不能去還有地方會合。可以寫在家庭防災卡上。", "kc": {"t": "事先約好集合地點", "s": "集合地點要空曠、遠離建築物，大家都知道怎麼走；再約一個備用地點，萬一第一個地點不能去還有地方會合。可以寫在家庭防災卡上。"}}, {"q": "地震後要報平安，用什麼方式比較好？", "ok": "LINE、Facebook、手機簡訊或 Email 這類文字訊息", "w": ["一直打電話，打通為止", "等晚上再說"], "why": "災後電話線路很塞，文字訊息比較容易傳出去，也不會占用救災需要的線路。訊息裡講清楚「我平安、人在哪裡」。", "kc": {"t": "用文字訊息報平安", "s": "災後電話線路很塞，文字訊息比較容易傳出去，也不會占用救災需要的線路。訊息裡講清楚「我平安、人在哪裡」。"}}];
+var CHS=['搖晃','搖晃停了','疏散','到集合點','報平安'],CLKS=['21:05','21:06','21:10','21:15','21:25'];
+DEC.forEach(function(d,i){d.ch='第'+'一二三四五'[i]+'章　'+CHS[i]});
 var CAM={};
 function camSetup(){
   CAM.sit=lookAt([TB.x-.36,1.2,TB.z+.78],[TB.x-.6,1.0,-RD/2+.6]);
@@ -1877,13 +1877,17 @@ function camSetup(){
   CAM.hall=lookAt([.0,1.6,RD/2+.7],[-.6,1.3,RD/2+2.4]);
   CAM.sw=lookAt([.25,1.6,RD/2-.45],[SWP.x,SWP.y,SWP.z]);
   CAM.park=lookAt([PARK.x-2.5,1.6,PARK.z+2.5],[PARK.x+1.5,1.2,PARK.z-1.5]);
+  CAM.street=lookAt([PARK.x-5.0,1.6,PARK.z+4.6],[PARK.x+.2,1.3,PARK.z-.6]);
+  CAM.glass=lookAt([-.5,1.45,RD/2-1.2],[-.9,.0,-RD/2+1.0]);
   CAM.crack=lookAt([.2,1.6,RD/2-1.4],[1.0,1.6,RD/2]);
 }
 camSetup();
-var QK={sh:0,lamp:1,flick:0,dark:0};
+var QK={sh:0,lamp:1,flick:0,dark:0,out:0};
+/* 公園旁的路燈（走出大樓之後的街上） */
+var stLamp=[PARK.x-3.6,3.3,PARK.z+2.2];Cy(.07,3.3,.07,stLamp[0],1.65,stLamp[2],0x3a3d42,{spec:.6});Sp(.3,.14,.3,stLamp[0],3.34,stLamp[2],0xfff4dc,{unlit:1,em:[1,.92,.7]});
 function shakeOn(v,dur){tween(QK,{sh:v},dur||.4);loopSnd('rumble','lowpass',120,.7,v,.18)}
 SCN.reset=function(){
-  fxReset();QK.sh=0;QK.lamp=1;QK.flick=0;QK.dark=0;
+  fxReset();QK.sh=0;QK.lamp=1;QK.flick=0;QK.dark=0;QK.out=0;
   dishes.forEach(function(d){d.o.p=d.p0.slice();d.o.r=[0,0,0]});shards.forEach(function(s){s.vis=false});
   picFrame.p=[-RW/2+.03,1.6,.6];picFrame.r=[0,PI/2,0];picFrameP.p=[-RW/2+.05,1.6,.6];picFrameP.r=[0,PI/2,0];picFrameP.vis=true;
   shoes[0].p=[-.35,.035,RD/2-.4];shoes[1].p=[-.2,.035,RD/2-.38];shoes.forEach(function(s){s.vis=true});bag.vis=true;
@@ -1896,7 +1900,7 @@ function dropDishes(){dishes.forEach(function(d,i){after(i*160,function(){tween(
   after(500,function(){tween(picFrame.p,{1:.2,0:-RW/2+.25},.5);tween(picFrame.r,{0:-1.4},.5);tween(picFrameP.p,{1:.2,0:-RW/2+.26},.5);tween(picFrameP.r,{0:-1.4},.5,function(){thud(.4)})})}
 SCN.start=function(){
   phase='cut';controls=false;bars(true);showSkip(true);
-  setCam(CAM.sit);fadeTo(0,1600);cap('晚上 21:05。你一個人在家吃晚餐，爐子上還小火煮著一鍋湯。');
+  setCam(CAM.sit);fadeTo(0,1600);cap('晚上 21:05。你一個人在家吃晚餐，爸媽還在下班回家的路上。');
   after(2600,function(){shakeOn(.15,.6);cap('桌上的碗開始輕輕地跳。')});
   after(4000,function(){shakeOn(.75,.5);QK.flick=1;cap('整棟樓突然劇烈搖晃！');dropDishes()});
   after(6200,function(){showSkip(false);step(1)});
@@ -1907,20 +1911,26 @@ function step(n){
   var go=function(){chap(n,CHS[n-1],CLKS[n-1],function(){startDecision(DEC[n-1],function(){after(200,function(){step(n+1)})})})};
   if(PRE[n])PRE[n](go);else go();
 }
-function closeGas(){knobs.forEach(function(n){tween(n.r,{2:0},.4)});tween(valH.r,{2:-PI/2},.4)}
 var PRE={
-  2:function(go){shakeOn(0,1.2);QK.flick=0;bothOut(.3);cap('搖晃慢慢停了下來。');after(1400,function(){camTo(CAM.stand,1.2);loopSnd('leak','highpass',2600,.7,.6,.04);cap('地上都是碎碗盤。湯鍋被搖翻，把爐火澆熄了——廚房飄來很濃的瓦斯味，還聽得到「嘶——」的漏氣聲。')});after(3800,go)},
+  2:function(go){shakeOn(0,1.2);QK.flick=0;bothOut(.3);cap('搖晃慢慢停了下來。');after(1400,function(){camTo(CAM.glass,1.2);QK.flick=1;cap('地上都是碎玻璃和碎碗盤，燈一閃一閃的。')});after(3800,function(){QK.flick=0;go()})},
   3:function(go){
-    var g=function(){loopSnd('leak','highpass',2600,.7,0);beep(784,.3,.08,0);beep(659,.4,.08,.35);cap('樓梯間的牆上有好幾道裂縫。大樓廣播：「請住戶走樓梯，到戶外空曠處。」','廣播');after(2800,go)};
-    if(G.d2&&G.d2.id==='leave'){g();return}
-    cap('你趕緊穿上鞋子，背起避難包，開門出去。');fadeTo(1,400);
+    var g=function(){beep(784,.3,.08,0);beep(659,.4,.08,.35);cap('樓梯間的牆上有好幾道裂縫。大樓廣播：「請住戶走樓梯，到戶外空曠處。」','廣播');after(2800,go)};
+    if(G.d2&&G.d2.id==='prep'){g();return}
+    cap('你穿上鞋子，背起避難包，開門出去。');fadeTo(1,400);
     after(500,function(){shoes.forEach(function(s){s.vis=false});bag.vis=false;HALL.door.r=[0,1.3,0];setCam(CAM.hall);fadeTo(0,500)});
     after(1600,g);
   },
   4:function(go){
-    fadeTo(1,500);after(600,function(){setCam(CAM.park);NB.forEach(function(b){b.show(true)});bag.vis=false;fadeTo(0,700);cap('附近的公園裡，聚集了很多鄰居。')});
-    after(2400,function(){hIn(HR,'phone',.4);HR.hold='phone';cap('你想打給爸媽，但電話一直「嘟嘟嘟」打不通。')});
-    after(4000,go);
+    fadeTo(1,500);after(600,function(){QK.out=1;setCam(CAM.street);NB.forEach(function(b){b.show(false)});bag.vis=false;fadeTo(0,700);cap('你走出大樓，到了外面的路上。遠處傳來救護車的聲音。')});
+    after(2600,function(){hIn(HR,'phone',.4);HR.hold='phone';cap('打給爸媽，電話一直「嘟嘟嘟」打不通。他們還在下班的路上。')});
+    after(4600,function(){hOut(HR,.3);HR.hold=null;go()});
+  },
+  5:function(go){
+    var g=function(){QK.out=1;NB.forEach(function(b){b.show(true)});setCam(CAM.park);
+      after(600,function(){hIn(HR,'phone',.4);HR.hold='phone';cap('公園裡聚集了很多鄰居。你又打了一次給爸媽，還是打不通。')});
+      after(2600,go)};
+    if(G.d4&&G.d4.id==='meet'){g();return}
+    fadeTo(1,400);after(500,function(){g();fadeTo(0,500)});
   }
 };
 var PLAY={
@@ -1947,31 +1957,29 @@ var PLAY={
   _:function(done){cap('你抓著椅子，被搖得站不穩。');after(2600,done)}
  },
  d2:{
-  leave:function(done){
+  prep:function(done){
     camTo(CAM.shoes,1.2);
     after(1300,function(){var a=w2c([-.28,.1,RD/2-.4]);hIn(HR,{p:[a[0],a[1]+.05,a[2]],r:[.9,-.2,0],curl:.7,abs:true},.4)});
-    after(1900,function(){shoes.forEach(function(s){s.vis=false});hOut(HR,.3);cap('你先穿上鞋子。')});
+    after(1900,function(){shoes.forEach(function(s){s.vis=false});hOut(HR,.3);cap('你先穿上鞋子，踩過碎玻璃也不怕。')});
     after(2700,function(){camTo(CAM.door,1.0)});
     after(3800,function(){var a=w2c([.25,.4,RD/2-.25]);hIn(HR,{p:[a[0],a[1],a[2]],r:[.6,-.2,0],curl:.85,abs:true},.35)});
-    after(4300,function(){bag.vis=false;hOut(HR,.3);cap('背起門邊的避難包。瓦斯這麼濃，什麼開關都不碰，直接開門出去。');tween(HALL.door.r,{1:1.3},.6)});
+    after(4300,function(){bag.vis=false;hOut(HR,.3);cap('背起門邊的避難包，打開大門，確保出口。');tween(HALL.door.r,{1:1.3},.6)});
     after(5600,function(){fadeTo(1,300)});after(5900,function(){setCam(CAM.hall);fadeTo(0,400)});
     after(6800,done);
   },
-  valve:function(done){
-    cap('你踩過碎玻璃，走進廚房。');camTo(CAM.stove,1.2);
-    after(1400,function(){var k=w2c(knobs[0].p);hIn(HR,{p:[k[0],k[1]+.02,k[2]+.07],r:[.9,0,0],curl:.75,thumb:.6,abs:true},.4)});
-    after(2000,function(){closeGas();cap('你把爐子和瓦斯總開關都關上了。')});
-    after(2800,function(){hOut(HR,.3);ST.dmg=.5;tween(ST,{dmg:0},.8);cap('但在這麼濃的瓦斯裡走動、轉開關，衣服摩擦的一點靜電火花就可能引爆。你是在賭運氣。')});
-    after(5600,done);
+  barefoot:function(done){
+    cap('你光著腳，往門口衝。');camTo(CAM.glass,.6);
+    after(900,function(){thud(.5);try{noiseHit(3500,1,.25,.08,'highpass',.4)}catch(e){}ST.dmg=.6;tween(ST,{dmg:0},1);cap('「啊！」腳底踩到碎玻璃，一陣刺痛，血流了出來。')});
+    after(2800,function(){cap('你一拐一拐地退回去，忍著痛先把鞋子穿上。');camTo(CAM.shoes,1.0)});
+    after(4400,done);
   },
-  light:function(done){
-    camTo(CAM.sw,.8);
-    after(900,function(){var a=w2c([SWP.x,SWP.y,SWP.z-.02]);hIn(HR,{p:[a[0],a[1]-.02,a[2]+.08],r:[1.3,0,0],curl:.9,thumb:.5,fo:[-.9,0,0,0],abs:true},.4)});
-    after(1500,function(){sparkBurst([SWP.x,SWP.y,SWP.z-.03],8,.4,0);try{noiseHit(3000,1.2,.35,.05,'bandpass',.3)}catch(e){}hOut(HR,.3);cap('「啪」，開關閃了一下火花。')});
-    after(3000,function(){cap('幸好沒有引爆。你嚇出一身冷汗，什麼都不敢再碰。')});
-    after(4600,done);
+  pack:function(done){
+    cap('你走回房間，翻抽屜找筆電、充電器和存摺。');fadeTo(.7,500);
+    after(1800,function(){shakeOn(.55,.2);thud(.6);cap('餘震又來了！櫃子上的東西又掉下來，砸在你肩膀上。');ST.dmg=.5;tween(ST,{dmg:0},.9)});
+    after(3600,function(){shakeOn(0,.6);fadeTo(0,400);setCam(CAM.shoes);cap('你什麼都沒拿，趕快回到門口。')});
+    after(5000,done);
   },
-  _:function(done){cap('你站在原地，瓦斯味越來越重。');after(2400,done)}
+  _:function(done){cap('你站在原地，燈一直在閃。');after(2400,done)}
  },
  d3:{
   stairs:function(done){
@@ -1987,25 +1995,46 @@ var PLAY={
   },
   arcade:function(done){
     fadeTo(1,300);
-    after(500,function(){setCam(CAM.park);fadeTo(.4,400);cap('你走樓梯到了樓下，站在騎樓，靠著大樓外牆。')});
+    after(500,function(){QK.out=1;setCam(CAM.street);fadeTo(.4,400);cap('你走樓梯到了樓下，站在騎樓，靠著大樓外牆。')});
     after(3600,function(){shakeOn(.5,.2);bang();cap('餘震又來了，頭頂上的招牌「哐」一聲掉下來，砸在你旁邊。');ST.dmg=.5;tween(ST,{dmg:0},.8)});
-    after(5400,function(){shakeOn(0,.6);fadeTo(0,500);cap('你嚇得往公園跑。');done()});
+    after(5400,function(){shakeOn(0,.6);fadeTo(0,500);cap('你嚇得趕快離開騎樓。');done()});
   },
   _:function(done){cap('廣播一直在催促大家離開。');after(2400,done)}
  },
  d4:{
-  msg:function(done){cap('你打開 1991 報平安留言平台，錄下：「是我，我平安，人在幸福里公園。」');after(2400,function(){beep(880,.12,.06,0);cap('再傳一則簡訊給爸媽。過了一下，訊息顯示已讀。')});after(4400,done)},
+  meet:function(done){
+    cap('你想起全家約好的地方：巷口的幸福里公園。');camTo(lookAt([PARK.x-2.8,1.6,PARK.z+3.0],[PARK.x+1.0,1.3,PARK.z-1.0]),2.4);
+    after(2600,function(){NB.forEach(function(b){b.show(true)});cap('公園空曠、離大樓有一段距離。你在約好的路燈旁邊等。')});
+    after(4600,done);
+  },
+  search:function(done){
+    cap('你沿著街道，一條一條巷子去找爸媽。');fadeTo(.6,500);
+    after(1800,function(){shakeOn(.5,.2);bang();cap('餘震又來了，一塊磁磚從頭上掉下來，砸在你腳邊。');ST.dmg=.5;tween(ST,{dmg:0},.8)});
+    after(3800,function(){shakeOn(0,.6);fadeTo(0,500);cap('繞了一大圈都沒找到人。你想起全家約好的公園，趕快走過去。')});
+    after(5400,done);
+  },
+  lobby:function(done){
+    cap('你走回大樓一樓的大廳，坐在椅子上等。');fadeTo(1,400);
+    after(600,function(){QK.out=0;setCam(CAM.hall);fadeTo(.3,400)});
+    after(2000,function(){shakeOn(.55,.2);thud(.8);cap('餘震又來了，大廳天花板的燈罩和玻璃掉了一地。');ST.dmg=.5;tween(ST,{dmg:0},.9)});
+    after(4000,function(){shakeOn(0,.6);fadeTo(1,400);cap('你衝出大樓，往全家約好的公園跑。')});
+    after(5400,function(){QK.out=1;setCam(CAM.street);fadeTo(0,400);done()});
+  },
+  _:function(done){cap('你站在大樓門口，不知道要去哪。');after(2400,done)}
+ },
+ d5:{
+  msg:function(done){cap('你打開 LINE，傳給爸媽：「我平安，在約好的幸福里公園等你們。」');after(2400,function(){beep(880,.12,.06,0);cap('再傳一則簡訊。過了一下，LINE 顯示已讀：「我們在路上，馬上到！」')});after(4600,done)},
   redial:function(done){cap('你一直重撥。');for(var i=0;i<3;i++)(function(i){after(500+i*900,function(){beep(480,.35,.06,0);beep(480,.35,.06,.5)})})(i);after(3600,function(){cap('還是打不通，旁邊的人也都在一直重撥。')});after(5000,done)},
   back:function(done){cap('你往大樓走回去。');after(1400,function(){shakeOn(.5,.2);cap('餘震又來了，大樓外牆的磁磚嘩啦啦地掉下來。');ST.dmg=.5;tween(ST,{dmg:0},.8)});after(3600,function(){shakeOn(0,.5);cap('你趕緊退回公園。')});after(5000,done)},
   _:function(done){cap('電話還是打不通。');after(2400,done)}
  }
 };
-SCN.quickCam=function(){bothOut(.3);setCam(CAM.park);NB.forEach(function(b){b.show(true)})};
+SCN.quickCam=function(){bothOut(.3);HR.hold=null;QK.out=1;setCam(CAM.park);NB.forEach(function(b){b.show(true)})};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
-  return [g===DEC.length?'21:40，搖晃平息。你毫髮無傷。消防隊和瓦斯公司人員進去關閉瓦斯、確認沒有再外洩。':g>=2?'21:40，搖晃平息。你受了一點皮肉傷，幸好沒有大礙。':'21:40，搖晃平息。這一晚你受了傷，也好幾次差點陷入更大的危險。',
+  return [g===DEC.length?'21:40，搖晃平息。你毫髮無傷，爸媽照著約定也來到公園，全家會合了。':g>=3?'21:40，搖晃平息。你受了一點皮肉傷，爸媽照著約定來到公園，全家會合了。':'21:40，搖晃平息。這一晚你受了傷，也好幾次差點陷入更大的危險。還好爸媽照著約定來到公園。',
     '這次地震規模不小，大樓之後要請結構技師檢查，確認安全才能回家。',
-    g===DEC.length?'趴下掩護穩住、穿鞋後遇到大量瓦斯外洩直接離開、走樓梯到空曠處、用留言報平安，你每一步都做對了。':'下一次記得：搖晃時先保護頭頸；停了先穿鞋；瓦斯味很濃就什麼都不碰、直接離開；疏散走樓梯；報平安用留言。'];
+    g===DEC.length?'趴下掩護穩住、停了先穿鞋拿避難包、走樓梯到空曠處、到約好的集合點、用文字訊息報平安，你每一步都做對了。':'下一次記得：搖晃時先保護頭頸；停了先穿鞋、拿避難包；疏散走樓梯；到家人約好的集合地點；報平安用文字訊息。'];
 };
 function sceneLights(){
   var lk=QK.flick?(Math.random()<.15?.2:1):1,l=lk*(1-QK.dark);
@@ -2013,8 +2042,8 @@ function sceneLights(){
     [[TB.x,RH-.7,TB.z],[1.0*l,.84*l,.6*l],5.0],
     [[-.75,1.45,-RD/2+.35],[.6*l,.55*l,.45*l],2.4],
     [[RW/2+.6,1.6,.5],[.18,.22,.36],4.2],
-    [[HALL.lamp[0],HALL.lamp[1],HALL.lamp[2]],[.7,.6,.45],4],
-    [[parkLamp[0],parkLamp[1],parkLamp[2]],[.9,.8,.6],9]
+    QK.out?[stLamp,[1.0,.9,.7],11]:[[HALL.lamp[0],HALL.lamp[1],HALL.lamp[2]],[.7,.6,.45],4],
+    [[parkLamp[0],parkLamp[1],parkLamp[2]],[1.0,.9,.68],13]
   ];
   return L;
 }
@@ -2028,8 +2057,8 @@ function sceneSprites(){
 function sceneTick(dt){fxTick(dt);ST.shake=Math.max(ST.shake*.9,QK.sh*(.7+.3*Math.sin(tNow*7)))}
 function titleCam(){var c=CAM.sit;cam.x=c.x+Math.sin(tNow*.2)*.08;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch}
 
-SCN.flow=[{"t": "趴下掩護", "s": "躲桌下，抓住桌腳"}, {"t": "穿鞋離開", "s": "瓦斯很濃，不碰開關直接走"}, {"t": "樓梯疏散", "s": "不搭電梯，到空曠處"}, {"t": "報平安", "s": "1991 或文字訊息"}];
-SCN.flowIntro="如果再遇到大地震，從搖晃開始到跟家人報平安，正確的處理順序是？";
+SCN.flow=[{"t": "趴下掩護", "s": "躲桌下，抓住桌腳"}, {"t": "穿鞋拿避難包", "s": "停了才移動，不收東西"}, {"t": "樓梯疏散", "s": "不搭電梯，遠離建築物"}, {"t": "到集合點", "s": "和家人事先約好的地方"}, {"t": "文字報平安", "s": "LINE、簡訊，不一直重撥"}];
+SCN.flowIntro="如果再遇到大地震，從搖晃開始到和家人會合，正確的處理順序是？";
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
 var ICON={ok:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',bad:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',mid:'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',wait:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
@@ -2146,9 +2175,10 @@ function showFeedback(d,o){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
     h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
-    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
+    var fx=flowIx(d),fok=hasFlow()&&fx>=0;
+    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(fok?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
-    if(hasFlow())h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(ix,g)+'</div>';
+    if(fok)h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(fx,g)+'</div>';
   }
   var lab;
   if(d.quick)lab=d.qlast?'查看成績單':'下一題';
@@ -2182,6 +2212,8 @@ function flowSvg(hi,g){
   return h+'</svg>';
 }
 function SV_FLOW(){return SCN.kind==='survive'}
+/* 這一題對應流程排序的第幾步；fi:-1 代表不在流程裡（例如「隔天怎麼買」） */
+function flowIx(d){return d&&d.fi!=null?d.fi:DEC.indexOf(d)}
 function ptsFloat(o,pts,to){
   var d=el('ptsF');if(!d)return;var g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad';
   d.className='on '+g;d.textContent=to?'時間到':g==='good'?'+'+pts:g==='mid'?'+'+pts+'　還可以更好':(SCN.kind==='survive'?'危險':'不正確');
@@ -2398,7 +2430,7 @@ function showEnd(){
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
     h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
-    h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
+    h+='<details><summary>'+(hasFlow()&&flowIx(l.d)>=0?'看圖解與重點':'看重點')+'</summary>'+(hasFlow()&&flowIx(l.d)>=0?'<div class="dgp">'+flowSvg(flowIx(l.d),g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
     h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}

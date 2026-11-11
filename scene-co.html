@@ -1008,8 +1008,13 @@ var tap=Cy(.016,.12,.016,BX0+.08,1.05,-1.8,0xd8dbde,{spec:1,r:[0,0,-1.0],dyn:tru
 B(.012,2.0,.9,-1.45,1.0,-1.95,0xcfe3ea,{a:.18,blend:'alpha',spec:1});
 /* 熱水器（裝在浴室裡，沒有排氣管） */
 var HTR={x:-.85,y:1.75,z:BZ0+.11};
-B(.36,.56,.18,HTR.x,HTR.y,HTR.z,0xf2f2ee,{spec:.5});
-var flameWin=B(.1,.05,.01,HTR.x,HTR.y-.12,HTR.z+.095,0x3a7bff,{unlit:1,em:[.2,.5,1],dyn:true});
+/* 熱水器本體做成一組，之後技術士可以把它整台拆下來（管線留在牆上） */
+var HTN=O({g:null,p:[HTR.x,HTR.y,HTR.z],dyn:true}),HTP=[];
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,0,0],s:[.36,.56,.18],col:hex(0xf2f2ee),spec:.5}));
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,.08,.092],s:[.24,.16,.006],col:hex(0xdcdcd6),spec:.4}));
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,.12,.096],s:[.09,.04,.004],col:hex(0x1c2228),spec:.8}));
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,.295,0],s:[.3,.03,.14],col:hex(0xc8c8c2),spec:.4}));
+var flameWin=O({g:'box',parent:HTN,dyn:true,p:[0,-.12,.095],s:[.1,.05,.01],col:hex(0x3a7bff),unlit:1,em:[.2,.5,1]});HTP.push(flameWin);
 Cy(.02,.5,.02,HTR.x-.1,HTR.y-.5,HTR.z,0xc0c4c8,{spec:.8});Cy(.02,.5,.02,HTR.x+.1,HTR.y-.5,HTR.z,0xc0c4c8,{spec:.8});
 /* 小窗（關著） */
 var bathWin=B(.5,.4,.03,-1.65,1.95,BZ0+.03,0xd8e2e6,{a:.5,blend:'alpha',spec:.6,dyn:true});
@@ -1028,7 +1033,7 @@ var livLamp=[.2,RH-.1,.8];Cy(.4,.04,.4,livLamp[0],RH-.03,livLamp[2],0xfff6e6,{un
 /* 電暖器 */
 var heaterE=B(.4,.5,.15,.6,.25,1.0,0xd0d2d4,{spec:.4});var heatGlow=B(.3,.3,.01,.6,.28,.92,0xff6a2a,{unlit:1,em:[0,0,0],dyn:true});
 /* 一氧化碳警報器（之後才裝） */
-var coAlarm=Cy(.12,.03,.12,-1.0,RH-.02,-1.0,0xf4f4f2,{dyn:true});coAlarm.vis=false;
+var coAlarm={vis:false};/* 一氧化碳警報器的模型在 co_props.js */
 var frontDoor=null;
 /* 大門（南牆左側，往外開）與門外走廊 */
 var FD={x0:-1.4,x1:-.5};
@@ -1185,6 +1190,57 @@ B(2.4,.12,1.2,OUT.x-1.0,2.7,OUT.z-6.2,0x55585c);
 var outLamp=[OUT.x+3.2,3.6,OUT.z-1.5];Cy(.08,3.6,.08,outLamp[0],1.8,outLamp[2],0x3a3d42,{spec:.6});Sp(.32,.16,.32,outLamp[0],3.65,outLamp[2],0xfff4dc,{unlit:1,em:[1,.92,.7]});
 [[-4.5,-2],[5.5,1.5]].forEach(function(t){Cy(.18,1.6,.18,OUT.x+t[0],.8,OUT.z+t[1],0x5a4632);Sp(1.6,1.5,1.6,OUT.x+t[0],2.2,OUT.z+t[1],0x3f5a3a,{tex:TX.fabric,spec:.1})});
 [0,1,2].forEach(function(i){var x=OUT.x-5.5+i*.9,z=OUT.z-4.6;B(.35,.55,1.4,x,.45,z,[0xb33a32,0x3a4a6a,0xd8d4cc][i],{spec:.6});Cy(.45,.1,.45,x,.22,z-.55,0x18191b,{r:[0,0,PI/2]});Cy(.45,.1,.45,x,.22,z+.55,0x18191b,{r:[0,0,PI/2]})});
+
+/* ================= 改善：拆浴室熱水器 → 裝到室外陽台 → 天花板裝一氧化碳警報器 ================= */
+/* 技術士（深藍工作服） */
+var TECH=mkBody({p:[-1.25,0,-1.55],ry:-2.6,k:1.15,shirt:0x2e4f73,pants:0x2b2f36,skin:0xc99a7e});
+TECH.show(false);/* 手臂在 scn_co.js 裡加（要等手部模型準備好） */
+/* 浴室熱水器拆掉後，牆上封好的管線蓋子 */
+var capA=Cy(.035,.03,.035,HTR.x-.1,HTR.y-.26,HTR.z+.02,0xe0b43c,{dyn:true}),capB=Cy(.035,.03,.035,HTR.x+.1,HTR.y-.26,HTR.z+.02,0xe0b43c,{dyn:true});capA.vis=capB.vis=false;
+/* 陽台（室外、開放、通風） */
+var BAL={x:-30,z:0};
+Q(4.4,2.4,BAL.x,0,BAL.z,-PI/2,0,0x9a958c,{tex:TX.tileF,rep:[4,2],spec:.3});
+B(4.4,3.2,.2,BAL.x,1.6,BAL.z-1.3,0xd6d0c4,{tex:TX.wall,rep:[2,2]});
+B(1.3,2.1,.04,BAL.x+1.1,1.05,BAL.z-1.18,0xbfd3de,{a:.35,blend:'alpha',spec:1});B(1.36,.05,.06,BAL.x+1.1,2.12,BAL.z-1.18,0x8a9096);
+B(.2,3.2,2.4,BAL.x-2.3,1.6,BAL.z,0xd6d0c4,{tex:TX.wall});B(.2,3.2,2.4,BAL.x+2.3,1.6,BAL.z,0xd6d0c4,{tex:TX.wall});
+B(4.4,.25,2.4,BAL.x,3.2,BAL.z,0xd6d0c4);
+/* 欄杆（高約 1.1 公尺，上方完全開放） */
+B(4.4,.05,.06,BAL.x,1.1,BAL.z+1.15,0x9aa0a6,{spec:.8});B(4.4,.04,.05,BAL.x,.08,BAL.z+1.15,0x9aa0a6,{spec:.8});
+for(var bi=-14;bi<=14;bi++)Cy(.012,1.02,.012,BAL.x+bi*.15,.59,BAL.z+1.15,0x9aa0a6,{spec:.8});
+/* 遠處的建築物 */
+[[-7,9,5],[-1,12,7],[5,10,4],[10,14,6],[-12,11,8]].forEach(function(b,bi){B(b[2],b[1],3,BAL.x+b[0],b[1]/2-6,BAL.z+18,0x3a3e46,{tex:TX.wall,rep:[2,4]});
+  for(var wy=0;wy<Math.floor(b[1]/1.6);wy++)for(var wx=0;wx<Math.floor(b[2]/1.2);wx++){if(((wx*5+wy*3+bi)%4)===0)continue;var lit=((wx*7+wy*11+bi*3)%5)<2;
+    B(.6,.7,.06,BAL.x+b[0]-b[2]/2+.6+wx*1.2,-6+.9+wy*1.6,BAL.z+16.47,lit?0xf2d9a0:0x2a3240,lit?{unlit:1,em:[.7,.58,.36]}:{spec:.6})}});
+/* 洗衣機 */
+B(.6,.85,.6,BAL.x+.6,.43,BAL.z-.85,0xf2f2ee,{spec:.5});Cy(.36,.02,.36,BAL.x+.6,.86,BAL.z-.85,0xcfd3d6,{spec:.8});
+/* 室外型熱水器（掛在外牆上，上方有排氣罩），瓦斯管、冷熱水管 */
+var HO={x:BAL.x-.9,y:1.65,z:BAL.z-1.08};
+var HON=O({g:null,p:[HO.x,HO.y,HO.z],dyn:true}),HOP=[];
+HOP.push(O({g:'box',parent:HON,dyn:true,p:[0,0,0],s:[.42,.62,.2],col:hex(0xf4f4f0),spec:.5}));
+HOP.push(O({g:'box',parent:HON,dyn:true,p:[0,.34,.02],s:[.44,.06,.24],col:hex(0xc9cac6),spec:.6}));
+HOP.push(O({g:'box',parent:HON,dyn:true,p:[0,.395,.06],s:[.3,.05,.14],col:hex(0x9aa0a6),spec:.7}));
+HOP.push(O({g:'box',parent:HON,dyn:true,p:[0,.1,.103],s:[.28,.16,.006],col:hex(0xdedcd6),spec:.4}));
+HOP.push(O({g:'box',parent:HON,dyn:true,p:[0,.14,.107],s:[.1,.04,.004],col:hex(0x1c2228),spec:.8}));
+var hoFlame=O({g:'box',parent:HON,dyn:true,p:[0,-.14,.105],s:[.1,.05,.01],col:hex(0x3a7bff),unlit:1,em:[.2,.5,1]});HOP.push(hoFlame);
+HOP.push(O({g:'cyl',parent:HON,dyn:true,p:[-.12,-.58,0],s:[.022,.56,.022],col:hex(0xe0b43c),spec:.6}));
+HOP.push(O({g:'cyl',parent:HON,dyn:true,p:[0,-.58,0],s:[.022,.56,.022],col:hex(0xc0c4c8),spec:.8}));
+HOP.push(O({g:'cyl',parent:HON,dyn:true,p:[.12,-.58,0],s:[.022,.56,.022],col:hex(0xb87a4a),spec:.8}));
+function hoShow(v){HOP.forEach(function(q){q.vis=v})}hoShow(false);
+/* 陽台加裝鋁窗（錯誤示範） */
+var alWin=[];for(var wi=0;wi<4;wi++)alWin.push(B(1.1,1.9,.03,BAL.x-1.65+wi*1.1+(wi%2?.0:-.0),2.12,BAL.z+1.15+(wi%2?.04:0),0xbcd3ea,{a:.32,blend:'alpha',spec:1,dyn:true}));
+alWin.forEach(function(w){w.vis=false});
+var balLamp=[BAL.x-.2,2.95,BAL.z-.2];
+/* 一氧化碳警報器（白色圓形，中間有感測孔，綠色電源燈、紅色警報燈、測試鍵） */
+TX.coLbl=(function(){var c=cv(128,128),x=c.getContext('2d');x.fillStyle='#f4f4f2';x.fillRect(0,0,128,128);x.strokeStyle='#c9ccce';x.lineWidth=3;
+  for(var i=0;i<3;i++){x.beginPath();x.arc(64,64,14+i*9,0,PI*2);x.stroke()}
+  x.fillStyle='#2b2f33';x.font='bold 22px sans-serif';x.textAlign='center';x.fillText('CO',64,30);x.font='bold 13px sans-serif';x.fillText('TEST',64,112);return texFrom(c,{mip:true})})();
+var COA={x:1.05,z:RD/2-1.05};
+var coN=O({g:null,p:[COA.x,RH-.02,COA.z],dyn:true}),coP=[];
+coP.push(O({g:'cyl',parent:coN,dyn:true,p:[0,-.018,0],s:[.13,.036,.13],col:hex(0xf4f4f2),spec:.5}));
+coP.push(O({g:'quad',parent:coN,dyn:true,p:[0,-.0365,0],r:[PI/2,0,0],s:[.115,.115,1],col:hex(0xffffff),tex:TX.coLbl}));
+var coLed=O({g:'sph',parent:coN,dyn:true,p:[.042,-.037,.0],s:[.008,.004,.008],col:hex(0x40d070),unlit:1,em:[.2,1,.4]});coP.push(coLed);
+var coRed=O({g:'sph',parent:coN,dyn:true,p:[-.042,-.037,.0],s:[.008,.004,.008],col:hex(0x5a1a16),unlit:1,em:[0,0,0]});coP.push(coRed);
+function coShow(v){coP.forEach(function(q){q.vis=v})}coShow(false);
 
 var objsOpaque=[],objsTrans=[];
 objsOpaque=objs.filter(function(o){return o.g&&o.blend==='none'});objsTrans=objs.filter(function(o){return o.g&&o.blend!=='none'});
@@ -1833,13 +1889,21 @@ function camSetup(){
   CAM.hall=lookAt([-.3,1.6,RD/2+1.9],[-1.0,1.25,RD/2-.2]);
   CAM.out=lookAt([OUT.x+1.5,1.6,OUT.z+3.5],[OUT.x-.5,1.2,OUT.z-1.5]);
   CAM.bdoor2=lookAt([.4,1.6,RD/2-1.5],[1.35,1.3,RD/2]);
+  CAM.htr=lookAt([-1.75,1.5,-1.15],[-.85,1.62,-2.25]);
+  CAM.bal=lookAt([BAL.x+1.8,1.55,BAL.z+.5],[BAL.x-1.2,1.3,BAL.z-.6]);
+  CAM.bal2=lookAt([BAL.x+1.6,1.55,BAL.z-.9],[BAL.x-1.4,1.25,BAL.z+.9]);
+  CAM.coA=lookAt([COA.x-.05,1.66,COA.z-.42],[COA.x,RH-.02,COA.z]);
+  CAM.coA0=lookAt([COA.x-.05,1.62,COA.z-.4],[COA.x,2.02,COA.z]);
 }
 camSetup();
-var CO={on:1,v:0,dz:0,hall:0,out:0};
+var CO={on:1,v:0,dz:0,hall:0,out:0,bal:0,ho:0,trap:0};
+addArms(TECH,0xc99a7e,0x2e4f73,[.2,.55,.06],[-.2,.55,.06],{aim:0,curl:.6});TECH.show(false);
 function dizzy(v,d){tween(CO,{dz:v},d||1.5)}
 SCN.reset=function(){
   fxReset();CO.on=1;CO.v=0;CO.dz=0;ST.sat=1;flameWin.vis=true;tap.r=[0,0,-1.0];bathDoor.r=[0,0,0];fDoor.r=[0,0,0];CO.hall=0;CO.out=0;bathWin.p=[-1.65,1.95,BZ0+.03];livWin.p=[RW/2-.06,1.5,.85];
   BRO.show(false);heatGlow.em=[0,0,0];coAlarm.vis=false;STEAM.v=0;
+  TECH.show(false);resetBody(TECH);HTN.p=[HTR.x,HTR.y,HTR.z];HTP.forEach(function(q){q.vis=true});capA.vis=capB.vis=false;hoShow(false);CO.bal=0;CO.ho=0;CO.trap=0;
+  alWin.forEach(function(w){w.vis=false;w.a=0});coShow(false);coN.p=[COA.x,RH-.02,COA.z];coRed.em=[0,0,0];coRed.col=hex(0x5a1a16);
 };
 SCN.start=function(){
   phase='cut';controls=false;bars(true);showSkip(true);
@@ -1951,16 +2015,52 @@ var PLAY={
  },
  d4:{
   fix:function(done){
-    cap('你請合格技術士來，把熱水器移到陽台外面通風的地方。');fadeTo(1,500);
-    after(800,function(){flameWin.vis=false;coAlarm.vis=true;fadeTo(0,700);cap('家裡也裝了一氧化碳警報器。')});
-    after(3200,done);
+    /* 第一步：拆掉浴室裡的熱水器 */
+    fadeTo(1,300);
+    after(400,function(){bathDoor.r=[0,1.3,0];TECH.node.p=[-.75,0,-1.72];TECH.node.r=[0,PI,0];TECH.show(true);setWt(TECH.arms[0],[HTR.x+.2,HTR.y-.04,HTR.z+.06]);setWt(TECH.arms[1],[HTR.x-.2,HTR.y-.04,HTR.z+.06]);
+      setCam(CAM.htr);fadeTo(0,400);cap('合格的技術士來了。熱水器不能裝在浴室裡，先把它拆下來。')});
+    after(2600,function(){tween(HTN.p,{1:HTR.y+.05,2:HTR.z+.08},.5)});
+    after(3300,function(){tween(HTN.p,{1:HTR.y-.35,2:HTR.z+.35},.6)});
+    after(4100,function(){fadeTo(1,300)});
+    after(4500,function(){HTP.forEach(function(q){q.vis=false});capA.vis=capB.vis=true;TECH.show(false);setCam(CAM.htr);fadeTo(0,400);cap('浴室裡的熱水器拆掉了，牆上的瓦斯管、水管都封好。')});
+    /* 第二步：改裝到室外、開放的陽台 */
+    after(6400,function(){fadeTo(1,400)});
+    after(6900,function(){CO.bal=1;hoShow(true);CO.ho=1;TECH.node.p=[HO.x-.45,0,HO.z+.48];TECH.node.r=[0,2.39,0];TECH.show(true);resetBody(TECH);
+      setWt(TECH.arms[0],[HO.x-.2,HO.y+.08,HO.z+.08]);setWt(TECH.arms[1],[HO.x-.06,HO.y-.2,HO.z+.12]);
+      setCam(CAM.bal);fadeTo(0,500);cap('改裝到室外、通風良好的陽台上，上面的排氣罩把廢氣直接排到外面。')});
+    after(9200,function(){cap('陽台要保持開放：不能加裝鋁窗或用東西封起來，廢氣才散得出去。')});
+    after(11200,function(){camTo(CAM.bal2,1.6);cap('如果一定要裝在室內，就要換成「強制排氣型」，用排氣管把廢氣接到室外。')});
+    /* 第三步：天花板裝一氧化碳警報器，按測試鍵 */
+    after(13600,function(){fadeTo(1,400)});
+    after(14100,function(){CO.bal=0;TECH.show(false);setCam(CAM.coA0);coShow(true);coN.p=[COA.x,RH-.6,COA.z];
+      var a=w2c([COA.x+.03,RH-.63,COA.z]);hIn(HR,{p:a,r:[.3,0,0],curl:.3,thumb:.4,abs:true},.01);HR.follow=function(){return w2c([coN.p[0]+.03,coN.p[1]-.03,coN.p[2]])};
+      fadeTo(0,400);cap('最後，在臥室門口附近的天花板，裝一顆一氧化碳警報器（離熱水器、瓦斯爐 1.5 公尺以上）。')});
+    after(15200,function(){tween(coN.p,{1:RH-.02},.9)});
+    after(15900,function(){HR.follow=null;hOut(HR,.3)});
+    after(16400,function(){camTo(CAM.coA,.8)});
+    after(17400,function(){var a=w2c([COA.x+.11,RH-.14,COA.z+.02]);hIn(HR,{p:a,r:[1.3,0,0],curl:.75,thumb:.55,fo:[-.9,0,0,0],abs:true},.35)});
+    after(18000,function(){cap('按下測試鍵：「嗶、嗶、嗶——」紅燈閃爍，關著房門也聽得到。');
+      for(var i=0;i<6;i++)(function(i){after(i*420,function(){var on=i%2===0;coRed.em=on?[1,.15,.1]:[0,0,0];coRed.col=hex(on?0xff3a2a:0x5a1a16);if(on){beep(3100,.18,.07,0)}})})(i)});
+    after(20400,function(){hOut(HR,.3);coRed.em=[0,0,0];coRed.col=hex(0x5a1a16)});
+    after(21200,done);
   },
-  vent:function(done){cap('你在浴室門下開了個通風孔。');after(2000,function(){cap('但熱水器的廢氣，還是排在浴室裡。')});after(3600,done)},
-  seal:function(done){cap('你想把陽台也用鋁窗封起來，冬天比較保暖。');after(2200,function(){cap('很多中毒意外，就是這樣發生的。')});after(3800,done)},
+  vent:function(done){
+    camTo(CAM.htr,1.0);
+    after(600,function(){cap('你在浴室門下開了個通風孔。')});
+    after(2600,function(){cap('但熱水器還在浴室裡，燒完的廢氣還是直接排在浴室裡。')});
+    after(4600,done);
+  },
+  seal:function(done){
+    fadeTo(1,400);
+    after(500,function(){CO.bal=1;hoShow(true);CO.ho=1;setCam(CAM.bal2);fadeTo(0,500);cap('熱水器裝在陽台。你想把陽台用鋁窗封起來，冬天比較保暖。')});
+    after(2200,function(){alWin.forEach(function(w,i){w.vis=true;after(i*250,function(){tween(w,{a:.32},.6)})})});
+    after(4200,function(){tween(CO,{trap:1},3);cap('窗戶一關，熱水器的廢氣散不出去，一氧化碳又從陽台飄回家裡。很多中毒意外，就是這樣發生的。')});
+    after(7600,done);
+  },
   _:function(done){cap('熱水器還在原來的地方。');after(2400,done)}
  }
 };
-SCN.quickCam=function(){bothOut(.3);dizzy(0,.5);CO.hall=0;CO.out=0;setCam(CAM.liv)};
+SCN.quickCam=function(){bothOut(.3);HR.follow=null;dizzy(0,.5);CO.hall=0;CO.out=0;CO.bal=0;TECH.show(false);setCam(CAM.liv)};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
   return [g===DEC.length?'救護人員抵達後幫你檢查，因為發現得早、離開得快，你很快就恢復了。':g>=2?'你被送到醫院觀察了一晚。醫生說，再晚一點發現就危險了。':'你和弟弟都被送到醫院治療。醫生說，一氧化碳中毒有時會留下後遺症，要回診追蹤。',
@@ -1970,7 +2070,7 @@ SCN.epilogue=function(){
 function sceneLights(){
   return [
     [bathLamp,[.42,.4,.37],2.6],
-    CO.out?[outLamp,[1.1,1.0,.82],14]:CO.hall?[coHallLamp,[.8,.72,.58],4.6]:[livLamp,[.9,.82,.68],5.5],
+    CO.bal?[balLamp,[.62,.6,.55],6]:CO.out?[outLamp,[1.1,1.0,.82],14]:CO.hall?[coHallLamp,[.8,.72,.58],4.6]:[livLamp,[.9,.82,.68],5.5],
     [[RW/2+.6,1.6,.5],[.16,.2,.34],4.2],
     [[HTR.x,HTR.y-.12,HTR.z+.2],[.1*CO.on,.25*CO.on,.9*CO.on],1.0],
     [[.6,.4,.8],[1.2*heatGlow.em[0],.5*heatGlow.em[0],.2*heatGlow.em[0]],2.0]
@@ -1982,6 +2082,9 @@ function sceneSprites(){
   fxAdd();
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
   fxSmoke();
+  /* 陽台：室外型熱水器排氣罩冒出的熱氣；封起來時廢氣積在陽台 */
+  if(CO.bal&&CO.ho){var hx=HO.x,hy=HO.y+.42,hz=HO.z+.12;for(var i=0;i<10;i++){var t=((tNow*.35+i/10)%1);drawSprite(TX.smoke,[hx+Math.sin(i*1.7)*.05*t,hy+t*.7,hz+t*(CO.trap>.5?.2:.6)],.04+t*.16,.04+t*.16,i,[.85,.85,.85,.16*(1-t)])}}
+  if(CO.bal&&CO.trap>.02){for(var k=0;k<6;k++)drawSprite(TX.smoke,[BAL.x-1.6+k*.65,2.2+Math.sin(tNow*.3+k)*.1,BAL.z+.2],1.4,1.0,k,[.7,.7,.7,.28*CO.trap])}
 }
 function sceneTick(dt){
   fxTick(dt);
@@ -2109,9 +2212,10 @@ function showFeedback(d,o){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
     h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
-    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
+    var fx=flowIx(d),fok=hasFlow()&&fx>=0;
+    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(fok?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
-    if(hasFlow())h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(ix,g)+'</div>';
+    if(fok)h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(fx,g)+'</div>';
   }
   var lab;
   if(d.quick)lab=d.qlast?'查看成績單':'下一題';
@@ -2145,6 +2249,8 @@ function flowSvg(hi,g){
   return h+'</svg>';
 }
 function SV_FLOW(){return SCN.kind==='survive'}
+/* 這一題對應流程排序的第幾步；fi:-1 代表不在流程裡（例如「隔天怎麼買」） */
+function flowIx(d){return d&&d.fi!=null?d.fi:DEC.indexOf(d)}
 function ptsFloat(o,pts,to){
   var d=el('ptsF');if(!d)return;var g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad';
   d.className='on '+g;d.textContent=to?'時間到':g==='good'?'+'+pts:g==='mid'?'+'+pts+'　還可以更好':(SCN.kind==='survive'?'危險':'不正確');
@@ -2361,7 +2467,7 @@ function showEnd(){
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
     h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
-    h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
+    h+='<details><summary>'+(hasFlow()&&flowIx(l.d)>=0?'看圖解與重點':'看重點')+'</summary>'+(hasFlow()&&flowIx(l.d)>=0?'<div class="dgp">'+flowSvg(flowIx(l.d),g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
     h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}

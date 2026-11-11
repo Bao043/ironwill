@@ -578,7 +578,7 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
   <div class="box pad">
     <div class="mark"><i></i>IRON WILL　求生現場</div>
     <h1>延長線走火</h1>
-    <p class="lead">冬天晚上 21:30，客廳的延長線插滿了電器，插頭突然冒煙、起火。斷電、滅火、確認、改正用電習慣，你會怎麼做？</p>
+    <p class="lead">冬天晚上 21:30，客廳的延長線插滿了電器，插頭突然冒煙、整條線發燙。先喊家人、安全斷電、滅火、確認熄滅、改正用電習慣，你會怎麼做？</p>
     <div class="tgl">
       <button type="button" id="sSound" aria-pressed="true">聲音</button>
       <button type="button" id="sTimer" aria-pressed="true">倒數計時</button>
@@ -596,8 +596,8 @@ h1{margin:12px 0 6px;font-family:var(--serif);font-size:clamp(44px,13vw,64px);li
 <div id="brief" class="sheet" hidden><div class="box pad">
   <div class="mark"><i></i>情境提要</div>
   <h2>延長線走火</h2>
-  <div class="bi now"><b>現在</b><p>冬天晚上 21:30，你在客廳看電視，爸媽在房間。電暖器、吹風機、手機充電器，全都插在電視旁邊地上的同一條延長線上。</p></div>
-  <div class="bi"><b>你要做</b><ol><li>插頭冒煙、有焦味</li><li>延長線燒起來了</li><li>火熄了之後</li><li>以後怎麼用電</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
+  <div class="bi now"><b>現在</b><p>冬天晚上 21:30，你在客廳看電視，爸媽在房間。電暖器、吹風機、手機充電器，全都插在同一條延長線上。大門旁邊的牆上有配電箱，門邊有一支乾粉滅火器。</p></div>
+  <div class="bi"><b>你要做</b><ol><li>插頭冒煙、整條線發燙</li><li>延長線燒起來了</li><li>火熄了之後</li><li>以後怎麼用電</li></ol><small>共 4 個限時決定，選錯會扣「安全值」。做完再把正確流程排一次，最後還有現場追問。每一題都有詳解和流程圖解，成績單會拆成細項給分。</small></div>
   <div class="bi how"><b>怎麼玩</b><p style="font-size:16px;line-height:1.6">劇情會自動往下走。輪到你決定時，從下方的選項挑一個；想看看四周，可以拖曳畫面轉頭。<span class="pc2">Esc 可暫停。</span></p></div>
   <button class="go" id="briefGo" type="button">我知道了，開始</button>
   <button type="button" class="bbk" id="briefBack">‹ 回上一頁</button>
@@ -1008,8 +1008,13 @@ var tap=Cy(.016,.12,.016,BX0+.08,1.05,-1.8,0xd8dbde,{spec:1,r:[0,0,-1.0],dyn:tru
 B(.012,2.0,.9,-1.45,1.0,-1.95,0xcfe3ea,{a:.18,blend:'alpha',spec:1});
 /* 熱水器（裝在浴室裡，沒有排氣管） */
 var HTR={x:-.85,y:1.75,z:BZ0+.11};
-B(.36,.56,.18,HTR.x,HTR.y,HTR.z,0xf2f2ee,{spec:.5});
-var flameWin=B(.1,.05,.01,HTR.x,HTR.y-.12,HTR.z+.095,0x3a7bff,{unlit:1,em:[.2,.5,1],dyn:true});
+/* 熱水器本體做成一組，之後技術士可以把它整台拆下來（管線留在牆上） */
+var HTN=O({g:null,p:[HTR.x,HTR.y,HTR.z],dyn:true}),HTP=[];
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,0,0],s:[.36,.56,.18],col:hex(0xf2f2ee),spec:.5}));
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,.08,.092],s:[.24,.16,.006],col:hex(0xdcdcd6),spec:.4}));
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,.12,.096],s:[.09,.04,.004],col:hex(0x1c2228),spec:.8}));
+HTP.push(O({g:'box',parent:HTN,dyn:true,p:[0,.295,0],s:[.3,.03,.14],col:hex(0xc8c8c2),spec:.4}));
+var flameWin=O({g:'box',parent:HTN,dyn:true,p:[0,-.12,.095],s:[.1,.05,.01],col:hex(0x3a7bff),unlit:1,em:[.2,.5,1]});HTP.push(flameWin);
 Cy(.02,.5,.02,HTR.x-.1,HTR.y-.5,HTR.z,0xc0c4c8,{spec:.8});Cy(.02,.5,.02,HTR.x+.1,HTR.y-.5,HTR.z,0xc0c4c8,{spec:.8});
 /* 小窗（關著） */
 var bathWin=B(.5,.4,.03,-1.65,1.95,BZ0+.03,0xd8e2e6,{a:.5,blend:'alpha',spec:.6,dyn:true});
@@ -1028,7 +1033,7 @@ var livLamp=[.2,RH-.1,.8];Cy(.4,.04,.4,livLamp[0],RH-.03,livLamp[2],0xfff6e6,{un
 /* 電暖器 */
 var heaterE=B(.4,.5,.15,.6,.25,1.0,0xd0d2d4,{spec:.4});var heatGlow=B(.3,.3,.01,.6,.28,.92,0xff6a2a,{unlit:1,em:[0,0,0],dyn:true});
 /* 一氧化碳警報器（之後才裝） */
-var coAlarm=Cy(.12,.03,.12,-1.0,RH-.02,-1.0,0xf4f4f2,{dyn:true});coAlarm.vis=false;
+var coAlarm={vis:false};/* 一氧化碳警報器的模型在 co_props.js */
 var frontDoor=null;
 /* 大門（南牆左側，往外開）與門外走廊 */
 var FD={x0:-1.4,x1:-.5};
@@ -1205,6 +1210,18 @@ var FCORD=mkFire([STR.x,.05,STR.z+.04],{w:.38,h:.5,smoke:.9,light:.5});
 var FPAP=mkFire([-.22,.2,-1.45],{w:.55,h:.65,smoke:.9,light:.45});
 var SMC=mkSmoke([STR.x,.06,STR.z+.03],{r:.04,rise:1.4,c:[.42,.4,.38],a:.6,sz:.5,speed:.3,n:10});
 var SMR=mkSmoke([.2,2.1,-1.2],{r:.8,rise:.3,c:[.3,.29,.28],a:.3,sz:2.6,speed:.07,n:7});
+
+/* 配電箱（大門旁邊的牆上）：插座那一路的開關。延長線過熱時，不碰延長線，到這裡斷電 */
+var BRK={x:.25,y:1.72,z:RD/2-.035};
+B(.34,.42,.05,BRK.x,BRK.y,BRK.z,0xd8dadc,{spec:.5});
+TX.brk=(function(){var c=cv(256,320),x=c.getContext('2d');x.fillStyle='#e9ebec';x.fillRect(0,0,256,320);x.fillStyle='#2b2f33';x.font='bold 24px sans-serif';x.textAlign='center';x.fillText('配電箱',128,30);
+  x.font='bold 18px sans-serif';x.fillText('總開關',128,66);['照明','客廳插座','廚房','冷氣'].forEach(function(t,i){x.fillText(t,i%2?205:52,i<2?220:304)});return texFrom(c,{mip:true})})();
+var brkFace=Q(.3,.375,BRK.x,BRK.y,BRK.z-.027,0,PI,0xffffff,{tex:TX.brk});
+/* 開關把手：往上是 ON，扳下來是 OFF（只做「客廳插座」那一個會動） */
+var brkMain=B(.05,.06,.03,BRK.x,BRK.y+.06,BRK.z-.04,0x1c1d1f,{spec:.4});
+B(.05,.06,.03,BRK.x+.074,BRK.y-.02,BRK.z-.04,0x1c1d1f,{spec:.4});B(.05,.06,.03,BRK.x+.074,BRK.y-.12,BRK.z-.04,0x1c1d1f,{spec:.4});B(.05,.06,.03,BRK.x-.074,BRK.y-.12,BRK.z-.04,0x1c1d1f,{spec:.4});
+var brkSw=O({g:null,p:[BRK.x-.074,BRK.y-.02,BRK.z-.04],dyn:true});O({g:'box',parent:brkSw,dyn:true,p:[0,.012,0],s:[.05,.06,.03],col:hex(0x1c1d1f),spec:.4});
+var brkTag=B(.016,.008,.002,BRK.x-.074,BRK.y+.022,BRK.z-.03,0x2fa66a,{unlit:1,em:[.2,.8,.4],dyn:true});
 
 var objsOpaque=[],objsTrans=[];
 objsOpaque=objs.filter(function(o){return o.g&&o.blend==='none'});objsTrans=objs.filter(function(o){return o.g&&o.blend!=='none'});
@@ -1829,14 +1846,14 @@ function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;
 /* ================= 求生現場：延長線走火 ================= */
 var SCN={
   id:'cord',kind:'survive',title:'延長線走火',eye:1.15,clock0:'21:30',clockQ:'21:50',stage1:'冬天晚上，客廳的延長線插滿了電器…',
-  src:'內容整理自內政部消防署與各縣市消防局用電安全宣導，以及乾粉滅火器使用要領（先通報；背對出口、距離 5 公尺以上開始噴，火勢被壓制再邊噴邊前進）（延長線不超過額定電流、大電器直接插牆上插座、插頭定期清潔防止積污導電、不壓在地毯下、選購有商品安全標章與過載保護的延長線；電器起火先斷電）。常見延長線額定為 15A、1650W，以產品標示為準。細節仍待對照官方原文。',
+  src:'內容整理自內政部消防署與各縣市消防局用電安全宣導，以及乾粉滅火器使用要領（先通報；背對出口、距離 5 公尺以上開始噴，火勢被壓制再邊噴邊前進）。延長線過載時整條線高溫，不用手拔插頭，改到配電箱斷電；延長線不超過額定電流、大電器直接插牆上插座、插頭定期清潔防止積污導電、不壓在地毯下、選購有商品安全標章與過載保護的延長線。細節仍待對照官方原文。',
   env:{fog:[.06,.06,.065],fogD:.01,sky:[.45,.45,.5],gnd:[.28,.26,.24],dirD:[-.4,-.8,-.2],dirC:[.06,.06,.08],ao:1},
-  icons:{unplug:'hand',water:'x',half:'x',ext:'ext',blanket:'x',close:'ext',call:'phone',replug:'x',wash:'x',right:'hand',more:'x',tape:'x'},
+  icons:{breaker:'hand',unplug:'x',water:'x',ext:'ext',blanket:'x',close:'ext',check:'hand',reuse:'x',replug:'x',right:'hand',more:'x',tape:'x'},
   hurtSnd:function(){thud(.4)}
 };
-var DEC=[{"id": "d1", "q": "延長線的插頭發黑、冒煙，有刺鼻的塑膠焦味，還沒有起火。你要怎麼做？", "time": 10, "kc": {"t": "電器冒煙：先斷電", "s": "插頭、延長線冒煙或有焦味，第一步是切斷電源：手要是乾的，抓住插頭本體從牆上插座拔掉（不要拉電線），或關掉電源總開關。帶電的時候絕對不能用水。"}, "best": "抓住插頭本體，把延長線從牆上的插座拔掉，切斷電源", "opts": [{"id": "unplug", "t": "手擦乾，抓住插頭本體，把延長線從牆上的插座拔掉，切斷電源", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先斷電，熱源就停了", "p": "過熱的源頭是電流。先從牆上的插座把電切掉，插頭就不會繼續發熱；抓插頭本體，不要拉電線，也不要碰冒煙的地方。"}}, {"id": "water", "t": "拿杯水往冒煙的插頭倒下去降溫", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "非常危險", "h": "帶電的東西不能用水", "p": "水會導電。往還有電的插頭倒水，可能短路、冒出電弧，甚至讓你觸電。一定要先斷電。"}}, {"id": "half", "t": "把電暖器關掉，電用少一點就好", "grade": "mid", "pts": 8, "dmg": 10, "fb": {"b": "mid", "bt": "只做了一半", "h": "插頭已經燒壞了", "p": "減少用電方向是對的，但插頭已經燒到發黑冒煙，接觸不良會繼續發熱。要整條斷電，不要再用。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "焦味越來越重", "p": "插頭冒煙，先從牆上的插座把電拔掉。"}}}, {"id": "d2", "q": "延長線的塑膠外皮燒了起來，火苗往旁邊那疊報紙竄。爸媽在房間，大門邊有一支乾粉滅火器。", "time": 10, "kc": {"t": "先通報，再用乾粉滅火器：5 公尺外開始，壓住了再前進", "s": "不論火大火小，先大喊「失火了」讓家人知道。乾粉滅火器：拉掉插銷，背對出口，在距離火源 5 公尺以上的地方開始噴，瞄準火源底部左右掃；感覺火勢被壓制了，再一邊噴一邊往前。一開始就靠太近，火和煙可能反撲傷到你。滅不了就離開、關門、打 119。"}, "best": "先大喊家人，拿乾粉滅火器，背對大門、5 公尺外開始噴，火勢壓下來再往前", "opts": [{"id": "ext", "t": "先大喊「失火了！」，拿乾粉滅火器，背對大門、在約 5 公尺外開始噴，火勢壓下來再邊噴邊前進", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先通報，再保持距離滅火", "p": "家人先知道，才有時間反應。從 5 公尺外開始噴，萬一火勢反撲你也來得及退；背對大門，滅不了就能直接離開。"}}, {"id": "close", "t": "拿乾粉滅火器，直接走到火旁邊近距離噴", "grade": "mid", "pts": 8, "dmg": 12, "fb": {"b": "mid", "bt": "太近了", "h": "初期滅火靠太近會被反撲", "p": "一開始火勢還沒被壓制，站在旁邊噴，火和煙很可能往你身上撲。先在 5 公尺外噴，壓下來再往前。也別忘了先喊家人。"}}, {"id": "blanket", "t": "抓起沙發上的毛毯，往火上拍", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "火會更大", "h": "布料本身就是燃料", "p": "一般的毛毯不是防火毯，拍下去很容易被點燃，火反而跟著毛毯擴大。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "火燒到報紙上了", "p": "趁火還小，用滅火器：拉、瞄、壓、掃。"}}}, {"id": "d3", "q": "火熄了。牆上的插座周圍也發黑了，還一直有焦味。接下來？", "time": 12, "kc": {"t": "燒過的插座不要再用，請消防人員確認", "s": "延長線起火時，牆上的插座和牆裡的線路可能也被燒到，有時會在牆裡悶燒。不要再通電，打 119 說明狀況，請消防人員到場確認；之後請合格電器承裝業者檢修。"}, "best": "不要再通電，打 119 請消防人員確認牆裡的線路有沒有在悶燒", "opts": [{"id": "call", "t": "插座不要再用，打 119 說明狀況，請消防人員確認牆裡的線路有沒有在悶燒", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "看不到的地方也要確認", "p": "插座都燒黑了，代表熱已經傳到牆裡。消防人員可以用熱像儀檢查有沒有在悶燒，避免半夜再燒起來。"}}, {"id": "replug", "t": "換一條新的延長線插回去，繼續開電暖器", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "插座裡面可能已經燒壞", "p": "燒黑的插座，裡面的金屬片和線可能已經變形、接觸不良，再插上去用，很容易再次起火。"}}, {"id": "wash", "t": "拿一碗水往發黑的插座潑上去降溫", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "非常危險", "h": "牆上的插座還有電", "p": "拔掉的是延長線，牆上的插座本身還是有電。往插座潑水會短路，甚至觸電。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "焦味一直散不掉", "p": "燒過的插座不要再用，打 119 請消防人員確認。"}}}, {"id": "d4", "q": "一週後，插座換新了。冬天還很冷，電暖器還要繼續用。你打算怎麼插？", "time": 12, "kc": {"t": "延長線怎麼用才安全", "s": "電暖器、吹風機、電鍋這類大電器，直接插牆上的插座，不要插延長線。延長線選有商品安全標章、附過載保護開關的，插的電器加起來不超過額定值（常見 15A、1650W，以產品標示為準），不串接、不壓在地毯或家具下，插頭定期清潔。"}, "best": "大電器直接插牆上插座；延長線選有安全標章、過載保護開關的，不串接、不壓在地毯下", "opts": [{"id": "right", "t": "電暖器直接插牆上插座；延長線換成有安全標章、附過載保護開關的，不串接、不壓在地毯下", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "從源頭避免過載", "p": "大電器自己用一個牆上插座，延長線只接小電器，加上安全標章和過載保護，起火的機會就小很多。"}}, {"id": "more", "t": "買一條插孔更多的延長線，再接上原本那條，全部插在一起", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "更危險", "h": "插得越多，電流越大", "p": "延長線串接、插滿大電器，電流超過額定值，電線和插頭就會過熱。上次就是這樣燒起來的。"}}, {"id": "tape", "t": "把發黑的插頭用絕緣膠帶纏一纏，繼續用", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "擋不住", "h": "燒壞的插頭會一直發熱", "p": "插頭燒過，裡面的金屬已經氧化、接觸不良，通電就會發熱。膠帶擋不住熱，要整條換掉。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "延長線還是插得滿滿的", "p": "大電器直接插牆上插座，延長線選有安全標章、過載保護的。"}}}];
-SCN.quick=[{"q": "一條延長線，插的電器加起來不能超過什麼？", "ok": "延長線標示的額定電流或瓦數（常見 15A、1650W）", "w": ["插孔有幾個，就可以插幾個", "只要開關沒跳，就沒問題"], "why": "延長線都有額定值，常見是 15 安培、1650 瓦。電暖器、吹風機這類大電器，一台就可能用掉一大半，插兩台就超過了。以產品上的標示為準。", "kc": {"t": "看額定值", "s": "延長線都有額定值，常見是 15 安培、1650 瓦。電暖器、吹風機這類大電器，一台就可能用掉一大半，插兩台就超過了。以產品上的標示為準。"}}, {"q": "插頭和插座之間積了灰塵，又遇到潮濕，可能會怎樣？", "ok": "灰塵吸了濕氣導電、發熱，引起「積污導電」起火", "w": ["沒有影響，擦掉就好", "只會讓電費變高"], "why": "插頭插著不拔，灰塵堆積後吸收濕氣，就可能在兩支插腳之間導電、發熱起火。不用的插頭拔掉，定期擦乾淨。", "kc": {"t": "積污導電", "s": "插頭插著不拔，灰塵堆積後吸收濕氣，就可能在兩支插腳之間導電、發熱起火。不用的插頭拔掉，定期擦乾淨。"}}, {"q": "延長線可以壓在地毯、床墊或家具底下嗎？", "ok": "不行，散熱不好又容易被壓壞", "w": ["可以，比較整齊", "只要不踩到就沒關係"], "why": "電線被壓住，熱散不出去，外皮也可能被壓破、折斷，久了就容易短路起火。", "kc": {"t": "不要壓住電線", "s": "電線被壓住，熱散不出去，外皮也可能被壓破、折斷，久了就容易短路起火。"}}, {"q": "電線外皮破了一點，露出裡面的線，怎麼辦？", "ok": "停止使用，整條換新", "w": ["用膠帶纏起來就好", "還能用就繼續用"], "why": "外皮破損可能漏電、短路。膠帶只能暫時遮住，擋不住熱和磨損，要整條換掉。", "kc": {"t": "破損就換新", "s": "外皮破損可能漏電、短路。膠帶只能暫時遮住，擋不住熱和磨損，要整條換掉。"}}, {"q": "電器或插座起火，可以直接用水滅嗎？", "ok": "不行，先斷電，再用滅火器", "w": ["可以，水最方便", "用濕毛巾蓋住就好"], "why": "水會導電，帶電時用水可能短路、觸電。先切斷電源，再用滅火器。", "kc": {"t": "電器火災先斷電", "s": "水會導電，帶電時用水可能短路、觸電。先切斷電源，再用滅火器。"}}, {"q": "買延長線要先看什麼？", "ok": "商品安全標章，最好附過載保護開關", "w": ["顏色好不好看", "插孔越多越好"], "why": "延長線是應施檢驗商品，要認明商品安全標章；有過載保護開關的，電流太大時會自動斷電。", "kc": {"t": "認明安全標章", "s": "延長線是應施檢驗商品，要認明商品安全標章；有過載保護開關的，電流太大時會自動斷電。"}}, {"q": "電暖器、微波爐這類大電器，要插在哪裡？", "ok": "直接插在牆上的插座", "w": ["插在延長線上比較方便", "跟其他電器插在同一條延長線"], "why": "大電器耗電量大，直接用牆上的插座，避免延長線過載。", "kc": {"t": "大電器插牆上", "s": "大電器耗電量大，直接用牆上的插座，避免延長線過載。"}}, {"q": "插頭摸起來很燙、有焦味，代表什麼？", "ok": "接觸不良或過載，馬上停用、拔掉檢查", "w": ["正常現象，用久了都會熱", "只要沒冒煙就沒事"], "why": "插頭異常發燙、有焦味，是起火前的警訊。先停用，拔掉檢查，必要時整條換新。", "kc": {"t": "發燙是警訊", "s": "插頭異常發燙、有焦味，是起火前的警訊。先停用，拔掉檢查，必要時整條換新。"}}, {"q": "用乾粉滅火器滅火，一開始要站多遠？", "ok": "背對出口，距離火源 5 公尺以上開始噴，火勢壓下來再往前", "w": ["越近越好，才噴得準", "站在火旁邊 1 公尺內"], "why": "初期火勢還沒被壓制，站太近可能被火和煙反撲。先懂火再滅火：背對出口、保持 5 公尺以上，感覺火勢被壓下來，再邊噴邊前進；滅不了就離開。", "kc": {"t": "5 公尺外開始，背對出口", "s": "初期火勢還沒被壓制，站太近可能被火和煙反撲。先懂火再滅火：背對出口、保持 5 公尺以上，感覺火勢被壓下來，再邊噴邊前進；滅不了就離開。"}}];
-var CHS=['焦味','起火','火熄了之後','一週後'],CLKS=['21:30','21:31','21:33','一週後'];
+var DEC=[{"id": "d1", "q": "延長線的插頭發黑、冒煙，有刺鼻的塑膠焦味；靠近就感覺得到熱，整條線都在發燙，還沒有起火。爸媽在房間。你要怎麼做？", "time": 10, "kc": {"t": "延長線過熱冒煙：先喊人，不碰它，到配電箱斷電", "s": "延長線過載時，整條線都會發燙，插頭的塑膠可能已經軟化，用手去拔很容易燙傷，拔的瞬間也可能冒出電弧。先大聲通知家人，再到配電箱把插座那一路的開關（分不清楚就關總開關）關掉，切斷電源。絕對不要用水。"}, "best": "先大喊通知爸媽，不碰發燙的延長線，到配電箱把電關掉", "opts": [{"id": "breaker", "t": "先大喊通知爸媽，不碰發燙的延長線，到大門邊的配電箱把插座的開關關掉", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先通報，再安全地斷電", "p": "家人先知道，才有時間反應。過載時整條延長線都在高溫，不要用手碰；到配電箱關掉開關，一樣能切斷電源，又不會被燙傷或被電弧打到。"}}, {"id": "unplug", "t": "抓住插頭，把延長線從牆上的插座拔掉", "grade": "bad", "pts": 0, "dmg": 25, "fb": {"b": "bad", "bt": "會燙傷", "h": "過載時整條線都在高溫", "p": "延長線過載發熱時，插頭和電線都很燙，塑膠可能已經軟化，一抓就燙傷，拔的瞬間還可能冒出電弧。改到配電箱關開關斷電。"}}, {"id": "water", "t": "拿杯水往冒煙的插頭倒下去降溫", "grade": "bad", "pts": 0, "dmg": 30, "fb": {"b": "bad", "bt": "非常危險", "h": "水會導電", "p": "插頭還有電，水一倒下去就可能短路、觸電，甚至讓火更大。先斷電，絕對不要用水。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "焦味越來越重", "p": "先大喊通知家人，不碰延長線，到配電箱把電關掉。"}}}, {"id": "d2", "q": "電斷了，可是已經燒熱的延長線外皮還是燒了起來，火苗往旁邊那疊報紙竄。大門邊有一支乾粉滅火器。", "time": 10, "kc": {"t": "先通報，再用乾粉滅火器：5 公尺外開始，壓住了再前進", "s": "不論火大火小，先大喊「失火了」讓家人知道。乾粉滅火器：拉掉插銷，背對出口，在距離火源 5 公尺以上的地方開始噴，瞄準火源底部左右掃；感覺火勢被壓制了，再一邊噴一邊往前。一開始就靠太近，火和煙可能反撲傷到你。滅不了就離開、關門、打 119。"}, "best": "先大喊家人，拿乾粉滅火器，背對大門、5 公尺外開始噴，火勢壓下來再往前", "opts": [{"id": "ext", "t": "先大喊「失火了！」，拿乾粉滅火器，背對大門、在約 5 公尺外開始噴，火勢壓下來再邊噴邊前進", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "先通報，再保持距離滅火", "p": "家人先知道，才有時間反應。從 5 公尺外開始噴，萬一火勢反撲你也來得及退；背對大門，滅不了就能直接離開。"}}, {"id": "close", "t": "拿乾粉滅火器，直接走到火旁邊近距離噴", "grade": "mid", "pts": 8, "dmg": 12, "fb": {"b": "mid", "bt": "太近了", "h": "初期滅火靠太近會被反撲", "p": "一開始火勢還沒被壓制，站在旁邊噴，火和煙很可能往你身上撲。先在 5 公尺外噴，壓下來再往前。也別忘了先喊家人。"}}, {"id": "blanket", "t": "抓起沙發上的毛毯，往火上拍", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "火會更大", "h": "布料本身就是燃料", "p": "一般的毛毯不是防火毯，拍下去很容易被點燃，火反而跟著毛毯擴大。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "wait", "bt": "時間到", "h": "火燒到報紙上了", "p": "趁火還小，用滅火器：拉、瞄、壓、掃。"}}}, {"id": "d3", "q": "火熄了。延長線燒得焦黑，牆上的插座看起來沒事，屋裡還有焦味和滅火器的乾粉。接下來？", "time": 10, "kc": {"t": "火熄了之後：確認熄滅、通風，燒過的延長線不再用", "s": "用滅火器把火壓熄後，要再盯著確認沒有復燃、沒有再冒煙，打開窗戶讓煙和乾粉散掉。燒過的延長線裡面的銅線和絕緣都已經壞了，直接丟掉、不要再用。如果滅火器噴完火還是沒熄，就不要再滅了：帶家人離開、把門帶上，到外面打 119。"}, "best": "確認火完全熄了、開窗通風，燒過的延長線直接丟掉", "opts": [{"id": "check", "t": "再確認火完全熄了、沒有再冒煙，打開窗戶通風；燒過的延長線直接丟掉", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "確認熄滅，燒過的不再用", "p": "火看起來熄了，也可能還有餘火，再盯著確認一下；開窗讓煙和乾粉散掉。延長線燒過，裡面的線路已經壞了，留著只會再出事。"}}, {"id": "reuse", "t": "等延長線冷了，擦一擦繼續用", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "很危險", "h": "外表擦乾淨，裡面還是壞的", "p": "燒過的延長線，外皮底下的銅線和絕緣已經損壞，下一次通電很可能直接短路起火。一定要丟掉換新。"}}, {"id": "replug", "t": "馬上把開關扳回去，換一條延長線，把電暖器、吹風機全部插回去", "grade": "bad", "pts": 0, "dmg": 20, "fb": {"b": "bad", "bt": "問題沒解決", "h": "一樣會過載", "p": "起火的原因是一條延長線插了太多大電器。換一條新的、照樣全部插上去，很快又會過熱。電暖器這類大電器要直接插牆上插座。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 10, "fb": {"b": "wait", "bt": "時間到", "h": "焦味一直散不掉", "p": "確認火完全熄了、開窗通風，燒過的延長線直接丟掉。"}}}, {"id": "d4", "q": "一週後。冬天還很冷，電暖器還要繼續用。你打算怎麼插？", "time": 12, "kc": {"t": "延長線怎麼用才安全", "s": "電暖器、吹風機、電鍋這類大電器，直接插牆上的插座，不要插延長線。延長線選有商品安全標章、附過載保護開關的，插的電器加起來不超過額定值（常見 15A、1650W，以產品標示為準），不串接、不壓在地毯或家具下，插頭定期清潔。"}, "best": "大電器直接插牆上插座；延長線選有安全標章、過載保護開關的，不串接、不壓在地毯下", "opts": [{"id": "right", "t": "電暖器直接插牆上插座；延長線換成有安全標章、附過載保護開關的，不串接、不壓在地毯下", "grade": "good", "pts": 22, "dmg": 0, "fb": {"b": "ok", "bt": "做對了", "h": "從源頭避免過載", "p": "大電器自己用一個牆上插座，延長線只接小電器，加上安全標章和過載保護，起火的機會就小很多。"}}, {"id": "more", "t": "買一條插孔更多的延長線，再接上原本那條，全部插在一起", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "更危險", "h": "插得越多，電流越大", "p": "延長線串接、插滿大電器，電流超過額定值，電線和插頭就會過熱。上次就是這樣燒起來的。"}}, {"id": "tape", "t": "把發黑的插頭用絕緣膠帶纏一纏，繼續用", "grade": "bad", "pts": 0, "dmg": 15, "fb": {"b": "bad", "bt": "擋不住", "h": "燒壞的插頭會一直發熱", "p": "插頭燒過，裡面的金屬已經氧化、接觸不良，通電就會發熱。膠帶擋不住熱，要整條換掉。"}}], "timeout": {"id": "timeout", "t": "（時間到，沒有行動）", "grade": "bad", "pts": 0, "dmg": 5, "fb": {"b": "wait", "bt": "時間到", "h": "延長線還是插得滿滿的", "p": "大電器直接插牆上插座，延長線選有安全標章、過載保護的。"}}}];
+SCN.quick=[{"q": "一條延長線，插的電器加起來不能超過什麼？", "ok": "延長線標示的額定電流或瓦數（常見 15A、1650W）", "w": ["插孔有幾個，就可以插幾個", "只要開關沒跳，就沒問題"], "why": "延長線都有額定值，常見是 15 安培、1650 瓦。電暖器、吹風機這類大電器，一台就可能用掉一大半，插兩台就超過了。以產品上的標示為準。", "kc": {"t": "看額定值", "s": "延長線都有額定值，常見是 15 安培、1650 瓦。電暖器、吹風機這類大電器，一台就可能用掉一大半，插兩台就超過了。以產品上的標示為準。"}}, {"q": "插頭和插座之間積了灰塵，又遇到潮濕，可能會怎樣？", "ok": "灰塵吸了濕氣導電、發熱，引起「積污導電」起火", "w": ["沒有影響，擦掉就好", "只會讓電費變高"], "why": "插頭插著不拔，灰塵堆積後吸收濕氣，就可能在兩支插腳之間導電、發熱起火。不用的插頭拔掉，定期擦乾淨。", "kc": {"t": "積污導電", "s": "插頭插著不拔，灰塵堆積後吸收濕氣，就可能在兩支插腳之間導電、發熱起火。不用的插頭拔掉，定期擦乾淨。"}}, {"q": "延長線可以壓在地毯、床墊或家具底下嗎？", "ok": "不行，散熱不好又容易被壓壞", "w": ["可以，比較整齊", "只要不踩到就沒關係"], "why": "電線被壓住，熱散不出去，外皮也可能被壓破、折斷，久了就容易短路起火。", "kc": {"t": "不要壓住電線", "s": "電線被壓住，熱散不出去，外皮也可能被壓破、折斷，久了就容易短路起火。"}}, {"q": "電線外皮破了一點，露出裡面的線，怎麼辦？", "ok": "停止使用，整條換新", "w": ["用膠帶纏起來就好", "還能用就繼續用"], "why": "外皮破損可能漏電、短路。膠帶只能暫時遮住，擋不住熱和磨損，要整條換掉。", "kc": {"t": "破損就換新", "s": "外皮破損可能漏電、短路。膠帶只能暫時遮住，擋不住熱和磨損，要整條換掉。"}}, {"q": "電器或插座起火，可以直接用水滅嗎？", "ok": "不行，先到配電箱斷電，再用滅火器", "w": ["可以，水最方便", "用濕毛巾蓋住就好"], "why": "水會導電，帶電時用水可能短路、觸電。先切斷電源，再用滅火器。", "kc": {"t": "電器火災先斷電", "s": "水會導電，帶電時用水可能短路、觸電。先切斷電源，再用滅火器。"}}, {"q": "買延長線要先看什麼？", "ok": "商品安全標章，最好附過載保護開關", "w": ["顏色好不好看", "插孔越多越好"], "why": "延長線是應施檢驗商品，要認明商品安全標章；有過載保護開關的，電流太大時會自動斷電。", "kc": {"t": "認明安全標章", "s": "延長線是應施檢驗商品，要認明商品安全標章；有過載保護開關的，電流太大時會自動斷電。"}}, {"q": "電暖器、微波爐這類大電器，要插在哪裡？", "ok": "直接插在牆上的插座", "w": ["插在延長線上比較方便", "跟其他電器插在同一條延長線"], "why": "大電器耗電量大，直接用牆上的插座，避免延長線過載。", "kc": {"t": "大電器插牆上", "s": "大電器耗電量大，直接用牆上的插座，避免延長線過載。"}}, {"q": "延長線插頭冒煙、有焦味，整條線都很燙，怎麼辦？", "ok": "不要用手去拔，先喊家人，到配電箱把電關掉", "w": ["抓住插頭趕快拔掉", "倒水讓它降溫"], "why": "過載時整條延長線都在高溫，插頭外殼可能已經軟化，用手拔容易燙傷，也可能冒出電弧。先通知家人，到配電箱關掉開關切斷電源，冷卻後整條換新。", "kc": {"t": "延長線發燙冒煙：不用手拔", "s": "過載時整條延長線都在高溫，插頭外殼可能已經軟化，用手拔容易燙傷，也可能冒出電弧。先通知家人，到配電箱關掉開關切斷電源，冷卻後整條換新。"}}, {"q": "用乾粉滅火器滅火，一開始要站多遠？", "ok": "背對出口，距離火源 5 公尺以上開始噴，火勢壓下來再往前", "w": ["越近越好，才噴得準", "站在火旁邊 1 公尺內"], "why": "初期火勢還沒被壓制，站太近可能被火和煙反撲。先懂火再滅火：背對出口、保持 5 公尺以上，感覺火勢被壓下來，再邊噴邊前進；滅不了就離開。", "kc": {"t": "5 公尺外開始，背對出口", "s": "初期火勢還沒被壓制，站太近可能被火和煙反撲。先懂火再滅火：背對出口、保持 5 公尺以上，感覺火勢被壓下來，再邊噴邊前進；滅不了就離開。"}}];
+var CHS=['冒煙發燙','起火','火熄了之後','一週後'],CLKS=['21:30','21:31','21:33','一週後'];
 DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
 var CAM={};
 function camSetup(){
@@ -1848,9 +1865,10 @@ function camSetup(){
   CAM.spray=lookAt([-.75,1.5,2.0],[STR.x-.05,.1,STR.z+.2]);
   CAM.spray2=lookAt([-.25,1.45,-.25],[STR.x-.08,.1,STR.z+.2]);
   CAM.after=lookAt([.45,1.45,-.6],[-.15,.3,-2.0]);
+  CAM.brk=lookAt([BRK.x-.05,1.62,BRK.z-.62],[BRK.x,BRK.y-.02,BRK.z]);
 }
 camSetup();
-var CD={arc:0,sp:[0,0,0],power:1,heat:1};
+var CD={arc:0,sp:[0,0,0],power:1,heat:1,lamp:1};
 function arc(p,n){CD.sp=p.slice();CD.arc=1;tween(CD,{arc:0},.3);sparkBurst(p,n||6,.45,0);try{noiseHit(3200,1.2,.3,.05,'bandpass',.3)}catch(e){}}
 function cordTick(){
   var s=[STR.x,.02,STR.z-.21],w=[wallPlug.p[0],wallPlug.p[1]-.02,wallPlug.p[2]+.02];
@@ -1858,17 +1876,18 @@ function cordTick(){
   var h=[.6,.05,.93];setCyl(cordW[2],[plugs[0].p[0],.04,plugs[0].p[2]],[STR.x+.3,.01,STR.z-.2]);setCyl(cordW[3],[STR.x+.3,.01,STR.z-.2],h);
 }
 SCN.reset=function(){
-  fxReset();CD.arc=0;CD.power=1;CD.heat=1;heatGlow.em=[1,.4,.15];wallPlug.p=[SOK.x,SOK.y,SOK.z+.025];sokBurn.a=0;plugBurn.a=0;
+  fxReset();CD.arc=0;CD.power=1;CD.heat=1;CD.lamp=1;brkSw.r=[0,0,0];brkTag.em=[.2,.8,.4];brkTag.col=hex(0x2fa66a);cordW.forEach(function(w){w.vis=true});heatGlow.em=[1,.4,.15];wallPlug.p=[SOK.x,SOK.y,SOK.z+.025];sokBurn.a=0;plugBurn.a=0;
   papers.col=hex(0xe8e2d2);extN.p=[EXT.x,0,EXT.z];strip.vis=true;newStrip.vis=false;plugs.forEach(function(p){p.vis=true});stripSw.col=hex(0xd23a2e);fDoor.r=[0,0,0];
   loopSnd('tv','bandpass',700,.4,0);
 };
 SCN.start=function(){
   phase='cut';controls=false;bars(true);showSkip(true);
   setCam(CAM.sofa);fadeTo(0,1600);heatGlow.em=[1,.4,.15];loopSnd('tv','bandpass',700,.4,.4,.04);
-  cap('冬天晚上 21:30。你窩在沙發上看電視，爸媽在房間。電暖器、吹風機、手機充電器，都插在電視旁邊同一條延長線上。');
+  cap('冬天晚上 21:30。你窩在沙發上看電視，爸媽在房間。電暖器、吹風機、手機充電器，都插在同一條延長線上。');
   after(3400,function(){cap('一股刺鼻的塑膠焦味飄過來。');SMC.v=.35});
-  after(5600,function(){camTo(CAM.look,1.6);cap('你站起來走過去看：電視旁邊地上的延長線，插頭那裡發黑，冒出一縷一縷的煙。');SMC.v=.8;plugBurn.a=.5;arc([STR.x,.07,STR.z+.02],3)});
-  after(8800,function(){showSkip(false);step(1)});
+  after(5600,function(){camTo(CAM.look,1.6);cap('你走過去看：延長線的插頭發黑，冒出一縷一縷的煙。');SMC.v=.8;plugBurn.a=.5;arc([STR.x,.07,STR.z+.02],3)});
+  after(8200,function(){cap('還沒靠近就感覺得到熱，整條延長線都在發燙。')});
+  after(10400,function(){showSkip(false);step(1)});
 };
 function step(n){
   if(n>DEC.length){toQuick();return}
@@ -1877,22 +1896,30 @@ function step(n){
   if(PRE[n])PRE[n](go);else go();
 }
 function powerOff(){CD.power=0;heatGlow.em=[0,0,0];loopSnd('tv','bandpass',700,.4,0);tween(wallPlug.p,{2:SOK.z+.18,1:SOK.y-.05},.35)}
+/* 到配電箱把「客廳插座」那一路扳下來：插座沒電，天花板的燈（照明那一路）還亮著 */
+function cutPower(){CD.power=0;heatGlow.em=[0,0,0];loopSnd('tv','bandpass',700,.4,0);tween(brkSw.r,{0:-.9},.15);brkTag.em=[.9,.15,.1];brkTag.col=hex(0xd23a2e);thud(.25)}
+function toBreaker(done){
+  camTo(CAM.brk,1.0);
+  after(1100,function(){var a=w2c([brkSw.p[0],brkSw.p[1]+.02,brkSw.p[2]-.02]);hIn(HR,{p:[a[0],a[1]+.01,a[2]+.04],r:[1.2,0,0],curl:.75,thumb:.6,abs:true},.35)});
+  after(1700,function(){cutPower();var a=w2c([brkSw.p[0],brkSw.p[1]-.03,brkSw.p[2]-.02]);hTo(HR,{p:[a[0],a[1]+.01,a[2]+.04],abs:true},.15)});
+  after(2300,function(){hOut(HR,.3);done&&done()});
+}
 var PRE={
   2:function(go){
     camTo(CAM.near,.9);
     after(1000,function(){if(CD.power)arc([STR.x,.07,STR.z+.02],14);else thud(.3);FCORD.v=.8;SMC.v=.6;SMR.v=.4;loopSnd('roar','lowpass',520,.5,.6,.08);plugBurn.a=.85;
-      cap(CD.power?'「啪」一聲，插頭冒出火花，延長線的塑膠外皮燒了起來，火苗往旁邊那疊報紙竄。':'插頭雖然拔掉了，已經燒熱的塑膠外皮還是冒出火苗，往旁邊那疊報紙竄。')});
+      cap(CD.power?'「啪」一聲，插頭冒出火花，延長線的塑膠外皮燒了起來，火苗往旁邊那疊報紙竄。':'電斷了，可是已經燒熱的延長線外皮還是冒出火苗，往旁邊那疊報紙竄。')});
     after(2600,function(){FPAP.v=.45});
     after(3600,go);
   },
   3:function(go){
     if(G.d2&&G.d2.id!=='ext'&&G.d2.id!=='close'){cap('你大喊家人，拿到滅火器，背對大門保持距離，把火壓熄。');extN.p=[0,-5,0];tween(FCORD,{v:0},1);tween(FPAP,{v:0},1);loopSnd('roar','lowpass',520,.5,0)}
-    camTo(CAM.after,1.2);SMC.v=.25;tween(SMR,{v:.6},2);sokBurn.a=.6;
-    after(1400,function(){cap('火熄了。牆上的插座周圍也發黑了，還一直有焦味。')});
+    camTo(CAM.after,1.2);SMC.v=.25;tween(SMR,{v:.6},2);sokBurn.a=0;
+    after(1400,function(){cap('火熄了。延長線燒得焦黑，牆上的插座看起來沒事，屋裡還有焦味和乾粉。')});
     after(3200,go);
   },
   4:function(go){
-    fadeTo(1,600);after(800,function(){SMC.v=0;SMR.v=0;bothOut(.01);setClock('一週後');setCam(CAM.look);fadeTo(0,800);cap('一週後。插座換新了，客廳還放著那台電暖器。')});
+    fadeTo(1,600);after(800,function(){SMC.v=0;SMR.v=0;bothOut(.01);setClock('一週後');setCam(CAM.look);fadeTo(0,800);cap('一週後。冬天還很冷，客廳還放著那台電暖器。')});
     after(3200,go);
   }
 };
@@ -1914,27 +1941,26 @@ function extAnim(close,done){
 }
 var PLAY={
  d1:{
+  breaker:function(done){
+    cap('「爸、媽！延長線冒煙了，快起來！」你先大聲喊。','你');
+    after(1900,function(){cap('你不碰那條發燙的延長線，走到大門邊的配電箱。')});
+    after(2200,function(){toBreaker(function(){cap('把「客廳插座」那一個開關扳下來。電暖器的紅光熄了，電視也暗了。');after(1600,done)})});
+  },
   unplug:function(done){
     camTo(CAM.sock,1.0);
     after(1100,function(){var a=w2c(wallPlug.p);hIn(HR,{p:[a[0],a[1]+.02,a[2]+.06],r:[.9,0,0],curl:.75,thumb:.6,abs:true},.4)});
-    after(1700,function(){hTo(HR,{curl:.9,thumb:.75},.12);powerOff();var a=w2c([SOK.x,SOK.y-.05,SOK.z+.18]);hTo(HR,{p:[a[0],a[1]+.02,a[2]+.06],abs:true},.35)});
-    after(2300,function(){hOut(HR,.3);cap('你抓住插頭本體，從牆上的插座拔下來。電暖器的紅光熄了，電視也暗了。')});
-    after(3800,done);
+    after(1700,function(){hTo(HR,{curl:.9,thumb:.75},.12);arc([SOK.x,SOK.y,SOK.z+.04],8);thud(.5);ST.dmg=.6;tween(ST,{dmg:0},1);cap('「好燙！」插頭的塑膠已經軟掉，你的手被燙了一下，還閃了一道火花。')});
+    after(2400,function(){hOut(HR,.2)});
+    after(3600,function(){cap('你忍著痛，趕快到大門邊的配電箱把電關掉。');toBreaker(function(){after(800,done)})});
   },
   water:function(done){
     cap('你抓起桌上的水杯，往冒煙的插頭倒下去——');hIn(HR,{p:[.12,-.2,-.42],r:[.4,-.2,0],curl:.7,thumb:.5,abs:true},.3);camTo(CAM.near,.6);
     after(1000,function(){hOut(HR,.15);arc([STR.x,.07,STR.z+.02],22);ST.flash=.5;tween(ST,{flash:0},.4);ST.dmg=.8;tween(ST,{dmg:0},1);thud(.8);cap('「啪滋！」一道電弧閃過，你的手一陣麻，整個人往後彈。')});
-    after(2600,function(){cap('還好家裡的漏電斷路器跳了，屋裡一片黑。');CD.power=0;heatGlow.em=[0,0,0];loopSnd('tv','bandpass',700,.4,0)});
-    after(4000,done);
+    after(2600,function(){cap('還好家裡的漏電斷路器跳了，屋裡一片黑。');CD.power=0;CD.lamp=0;heatGlow.em=[0,0,0];loopSnd('tv','bandpass',700,.4,0)});
+    after(4600,function(){CD.lamp=1;cap('爸爸拿手電筒出來，把配電箱的總開關推回去，只留插座那一路關著。');tween(brkSw.r,{0:-.9},.1);brkTag.em=[.9,.15,.1]});
+    after(6400,done);
   },
-  half:function(done){
-    camTo(lookAt([.95,1.1,1.25],[.6,.2,1.0]),.8);
-    after(900,function(){var a=w2c([.6,.48,1.0]);hIn(HR,{p:[a[0],a[1]+.02,a[2]+.06],r:[.9,0,0],curl:.75,thumb:.6,abs:true},.4)});
-    after(1500,function(){heatGlow.em=[0,0,0];hOut(HR,.3);cap('你把電暖器關掉，想說電用少一點就好。')});
-    after(3000,function(){arc([STR.x,.07,STR.z+.02],6);cap('可是插頭已經燒壞了，還是一直冒煙。');SMC.v=1});
-    after(4400,done);
-  },
-  _:function(done){cap('你盯著冒煙的插頭，焦味越來越重。');SMC.v=1;after(2600,done)}
+  _:function(done){cap('你盯著冒煙的插頭，焦味越來越重。');SMC.v=1;after(2000,function(){cap('爸爸聞到焦味跑出來，衝到配電箱把插座的電關掉。');cutPower()});after(4400,done)}
  },
  d2:{
   ext:function(done){extAnim(false,function(){cap('火熄了。');after(900,done)})},
@@ -1948,22 +1974,24 @@ var PLAY={
   _:function(done){cap('火燒到報紙上，越燒越大。');FPAP.v=1;after(2600,done)}
  },
  d3:{
-  call:function(done){
-    hIn(HR,'phone',.4);HR.hold='phone';dial119();
-    after(1200,function(){cap('「我家客廳延長線起火，已經用滅火器撲滅，可是牆上插座也燒黑了。電已經拔掉，請你們來看一下。」','你')});
-    after(4200,function(){cap('「好，消防人員會帶熱像儀過去，確認牆裡的線路有沒有在悶燒。插座先不要再用。」','執勤員')});
-    after(6800,done);
+  check:function(done){
+    camTo(CAM.near,1.0);
+    after(1100,function(){cap('你在旁邊盯著看：沒有再冒煙，也沒有火星。')});
+    after(3000,function(){SMC.v=0;tween(SMR,{v:.15},2);cap('打開窗戶，讓煙和乾粉散出去。燒黑的延長線等它冷了，裝袋丟掉，不再使用。')});
+    after(4400,function(){strip.vis=false;plugs.forEach(function(p){p.vis=false});cordW.forEach(function(w){w.vis=false});plugBurn.a=0});
+    after(6000,done);
+  },
+  reuse:function(done){
+    camTo(CAM.near,1.0);
+    after(900,function(){cap('你等延長線冷了，拿抹布擦一擦，打算繼續用。')});
+    after(3000,function(){cap('外皮底下的銅線和絕緣早就燒壞了，下一次一通電，很可能直接短路起火。');ST.dmg=.2;tween(ST,{dmg:0},.8)});
+    after(5200,done);
   },
   replug:function(done){
-    cap('你翻出另一條延長線，插回同一個插座，把電暖器打開。');camTo(CAM.sock,.9);
-    after(1600,function(){tween(wallPlug.p,{2:SOK.z+.025,1:SOK.y},.3);arc([SOK.x,SOK.y,SOK.z+.04],12);sokBurn.a=.9;cap('「啪」一聲，牆上的插座冒出火花，一縷煙從面板縫裡飄出來。')});
-    after(3200,function(){tween(wallPlug.p,{2:SOK.z+.18,1:SOK.y-.05},.3);cap('你嚇得趕快拔掉。插座裡面的線，可能早就燒壞了。');ST.dmg=.3;tween(ST,{dmg:0},.8)});
-    after(4800,done);
-  },
-  wash:function(done){
-    cap('你拿了一碗水，往發黑的插座潑上去降溫。');camTo(CAM.sock,.9);
-    after(1300,function(){arc([SOK.x,SOK.y,SOK.z+.04],18);ST.flash=.4;tween(ST,{flash:0},.4);ST.dmg=.7;tween(ST,{dmg:0},1);thud(.6);cap('「啪滋！」牆上的插座還有電，水一潑上去就短路，你被電了一下。')});
-    after(3200,done);
+    cap('你把配電箱的開關扳回去，拿一條新的延長線，把電暖器、吹風機又全部插上。');camTo(CAM.look,1.0);
+    after(1600,function(){tween(brkSw.r,{0:0},.15);brkTag.em=[.2,.8,.4];CD.power=1;heatGlow.em=[1,.4,.15];strip.vis=false;newStrip.vis=true});
+    after(3200,function(){arc([STR.x,.06,STR.z+.02],5);cap('沒多久，新的延長線插頭也開始發燙——問題出在一條線插了太多大電器。');ST.dmg=.25;tween(ST,{dmg:0},.8)});
+    after(5400,function(){cutPower();heatGlow.em=[0,0,0];done()});
   },
   _:function(done){cap('焦味一直散不掉。');after(2400,done)}
  },
@@ -1982,14 +2010,14 @@ var PLAY={
 SCN.quickCam=function(){bothOut(.3);setCam(CAM.after)};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length;
-  return [g===DEC.length?'消防人員用熱像儀檢查，牆裡的線路沒有在悶燒。只有延長線和那疊報紙燒壞了。':g>=2?'火撲滅了，客廳燻黑了一角。中間有幾個危險的動作，幸好沒有人受傷。':'火撲滅了，你的手被燙傷，也被電了一下，要去醫院檢查。',
-    '延長線起火，常常是插太多大電器（過載），或插頭積灰塵受潮（積污導電）。',
-    g===DEC.length?'先斷電、用滅火器、不再通電請消防確認、改正用電習慣，你每一步都做對了。':'下一次記得：電器冒煙起火先斷電，不要用水；燒過的插座不要再用；大電器直接插牆上插座。'];
+  return [g===DEC.length?'火很快就被撲滅，只有延長線和那疊報紙燒壞了，牆上的插座和線路都沒事。':g>=2?'火撲滅了，客廳燻黑了一角。中間有幾個危險的動作，幸好沒有大礙。':'火撲滅了，你的手被燙傷，也被電了一下，要去醫院檢查。',
+    '延長線起火，常常是插太多大電器（過載），或插頭積灰塵受潮（積污導電）。過載時整條線都在發燙，不要用手去拔。',
+    g===DEC.length?'先喊家人、到配電箱斷電、5 公尺外用滅火器、確認熄滅不再用、改正用電習慣，你每一步都做對了。':'下一次記得：先喊家人；延長線發燙不要用手拔，到配電箱斷電；不要用水；燒過的延長線丟掉；大電器直接插牆上插座。'];
 };
 function sceneLights(){
   var fl=fireLights(),f0=fl[0]||[[STR.x,.3,STR.z],[0,0,0],1],a=CD.arc,pw=CD.power;
   return [
-    [livLamp,[.9*pw+.05,.82*pw+.05,.68*pw+.06],5.5],
+    [livLamp,[.9*CD.lamp+.05,.82*CD.lamp+.05,.68*CD.lamp+.06],5.5],
     [[.9,1.0,-2.0],[.12*pw,.16*pw,.28*pw],3.0],
     [[RW/2+.6,1.6,.5],[.16,.2,.34],4.2],
     f0,
@@ -2007,7 +2035,7 @@ function sceneSprites(){
 function sceneTick(dt){fxTick(dt);cordTick();if(SMC.v>.5&&CD.power&&Math.random()<dt*.25)arc([STR.x,.07,STR.z+.02],2)}
 function titleCam(){var c=CAM.sofa;cam.x=c.x+Math.sin(tNow*.2)*.06;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch}
 
-SCN.flow=[{"t": "先斷電", "s": "拔牆上插頭，不用水"}, {"t": "喊人、滅火器", "s": "5 公尺外開始，壓住再前進"}, {"t": "不再通電", "s": "請消防人員確認牆裡"}, {"t": "正確用電", "s": "大電器插牆上、不串接"}];
+SCN.flow=[{"t": "喊人、斷電", "s": "不碰發燙的延長線，到配電箱關"}, {"t": "5 公尺外滅火", "s": "背對出口，壓住再前進"}, {"t": "確認熄滅、不再用", "s": "開窗通風，燒過的丟掉"}, {"t": "正確用電", "s": "大電器直插牆上插座"}];
 SCN.flowIntro="如果延長線又冒煙起火，從發現到之後改善用電習慣，正確的處理順序是？";
 
 /* ================= 急救現場共用：流程、判斷、現場追問、成績單 ================= */
@@ -2125,9 +2153,10 @@ function showFeedback(d,o){
     h='<div class="fbh"><span class="badge '+f.b+'">'+ICON[f.b]+'</span><div><h3>'+esc(f.b==='ok'?'做對了！':f.bt)+'</h3><p>'+esc(f.h)+'</p></div><b class="fpt">'+(L?L.pts:0)+'<small>/'+((L?L.max:0)+3)+'</small></b></div>';
     h+='<div class="fst"><div class="'+g+'"><i>'+FMK[g]+'</i><div><small>你的選擇'+(L&&L.timeUsed!=null?'　'+L.timeUsed.toFixed(1)+' 秒':'')+'</small><b>'+esc(String(o.t).replace(/^「|」$/g,''))+'</b>'+(g!=='good'?'<span>比較好的做法：'+esc(d.best)+'</span>':'')+'</div><em>+'+(L?L.pts:0)+'</em></div></div>';
     h+='<p class="fwhy">'+esc(f.p)+'</p>';
-    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(hasFlow()?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
+    var fx=flowIx(d),fok=hasFlow()&&fx>=0;
+    h+='<div class="ftab" role="tablist"><button type="button" class="on" data-p="kc">知識補充</button>'+(fok?'<button type="button" data-p="dg">看流程圖解</button>':'')+'</div>';
     h+='<div class="fpn" data-p="kc">'+kcBox(d.kc)+'</div>';
-    if(hasFlow())h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(ix,g)+'</div>';
+    if(fok)h+='<div class="fpn dgp" data-p="dg" hidden>'+flowSvg(fx,g)+'</div>';
   }
   var lab;
   if(d.quick)lab=d.qlast?'查看成績單':'下一題';
@@ -2161,6 +2190,8 @@ function flowSvg(hi,g){
   return h+'</svg>';
 }
 function SV_FLOW(){return SCN.kind==='survive'}
+/* 這一題對應流程排序的第幾步；fi:-1 代表不在流程裡（例如「隔天怎麼買」） */
+function flowIx(d){return d&&d.fi!=null?d.fi:DEC.indexOf(d)}
 function ptsFloat(o,pts,to){
   var d=el('ptsF');if(!d)return;var g=o.grade==='good'?'good':o.grade==='mid'?'mid':'bad';
   d.className='on '+g;d.textContent=to?'時間到':g==='good'?'+'+pts:g==='mid'?'+'+pts+'　還可以更好':(SCN.kind==='survive'?'危險':'不正確');
@@ -2377,7 +2408,7 @@ function showEnd(){
     h+='<div class="tli '+g+'"><span class="tc">'+esc(ck)+'</span><div><b>'+esc(String(l.d.ch||'').replace(/^第.章　/,''))+'<em>+'+l.pts+'</em></b>';
     h+='<p><i class="'+g+'">'+FMK[g]+'</i>你的選擇：'+esc(String(l.o.t).replace(/^「|」$/g,''))+(l.timeUsed!=null?'（'+l.timeUsed.toFixed(1)+' 秒）':'')+'</p>';
     if(g!=='good')h+='<p class="fix">比較好的做法：'+esc(l.d.best)+'</p>';
-    h+='<details><summary>看圖解與重點</summary>'+(hasFlow()?'<div class="dgp">'+flowSvg(ix,g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
+    h+='<details><summary>'+(hasFlow()&&flowIx(l.d)>=0?'看圖解與重點':'看重點')+'</summary>'+(hasFlow()&&flowIx(l.d)>=0?'<div class="dgp">'+flowSvg(flowIx(l.d),g)+'</div>':'')+'<p class="kcx"><b>'+esc(l.d.kc.t)+'</b>'+esc(l.d.kc.s)+'</p></details></div></div>';
   });
   if(SC.ord){var og=SC.ord.ok===SC.ord.n?'good':SC.ord.ok>=Math.ceil(SC.ord.n/2)?'mid':'bad';
     h+='<div class="tli '+og+'"><span class="tc">排序</span><div><b>流程排序<em>'+SC.ord.ok+' / '+SC.ord.n+'</em></b><p><i class="'+og+'">'+FMK[og]+'</i>你的順序：'+esc(SC.ord.seq.map(function(v){return SCN.flow[v].t}).join(' → '))+'</p>'+(og!=='good'?'<p class="fix">正確順序：'+esc(SCN.flow.map(function(f){return f.t}).join(' → '))+'</p>':'')+'</div></div>'}

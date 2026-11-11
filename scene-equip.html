@@ -76,6 +76,15 @@ main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 16px 24px}
 .card.on{border-color:#7ea2ff;background:#16213a}
 .fb{position:fixed;left:0;right:0;bottom:0;z-index:20;max-height:78vh;overflow:auto;padding:18px 18px calc(env(safe-area-inset-bottom,0px) + 16px);background:var(--panel);border-top:1px solid var(--line);border-radius:20px 20px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.6);transform:translateY(105%);transition:transform .35s cubic-bezier(.2,.9,.3,1)}
 .fb.on{transform:none}
+.res{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);animation:resIn .35s ease}
+@keyframes resIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.acap{display:flex;align-items:flex-start;gap:10px;min-height:48px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#10171b;border:1px solid #24313a;font-size:14.5px;line-height:1.6}
+.acap .an{flex:none;padding:2px 8px;border-radius:99px;background:var(--gold);color:#1a1204;font-size:12px;font-weight:700;margin-top:2px}
+.acap .skp{margin-left:auto;flex:none;border:1px solid var(--line);background:#161d22;color:var(--ink2);border-radius:99px;padding:4px 10px;font-size:12.5px}
+[hidden]{display:none!important}
+.fx-me{fill:#7ea2ff;stroke:#0e1316;stroke-width:3}
+.fx-lbl{fill:#eceeea;font-size:22px;font-family:var(--font);font-weight:600;paint-order:stroke;stroke:#0e1316;stroke-width:5px}
+.fx-s{fill:#eceeea;font-size:15px;font-family:var(--font);font-weight:600;paint-order:stroke;stroke:#0e1316;stroke-width:4px}
 .fb .in{max-width:720px;margin:0 auto}
 .fbh{display:flex;align-items:center;gap:12px}
 .badge{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:22px;font-weight:800}
@@ -109,17 +118,46 @@ main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 16px 24px}
 <div class="top"><div class="st" id="stN">1</div><div><h1 id="stT">居家消防器材：裝在哪裡？</h1><p id="stP">滅火器、住警器、瓦斯偵測器、一氧化碳警報器</p></div><button class="x" id="exitB" type="button" aria-label="離開">✕</button></div>
 <div class="prog" id="prog"></div>
 <main id="main"></main>
-<div class="fb" id="fb" role="dialog" aria-live="polite"><div class="in" id="fbIn"></div></div>
+
 <script>
 (function(){
 var IN_FRAME=false;try{IN_FRAME=window.parent!==window}catch(e){IN_FRAME=true}
 function toParent(m){try{if(IN_FRAME)window.parent.postMessage(m,'*')}catch(e){}}
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-var NS='http://www.w3.org/2000/svg';
-var SCORE=[],CARDS=[],TIMERS=[];
-function later(fn,ms){var t=setTimeout(fn,ms);TIMERS.push(t);return t}
-function clearLater(){TIMERS.forEach(clearTimeout);TIMERS=[]}
+var SCORE=[],CARDS=[],TIMERS=[],FAST=false;
+function later(fn,ms){var t=setTimeout(fn,FAST?1:ms);TIMERS.push(t);return t}
+function clearLater(){TIMERS.forEach(clearTimeout);TIMERS=[];ANIM.id++}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function lerp(a,b,t){return a+(b-a)*t}
+function seg(t,a,b){return clamp((t-a)/(b-a),0,1)}
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+/* 沿著折線走：pts=[[x,y],...]，u=0~1 */
+function along(pts,u){
+  var L=[],tot=0,i;for(i=1;i<pts.length;i++){var d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);L.push(d);tot+=d}
+  var r=u*tot;for(i=0;i<L.length;i++){if(r<=L[i]||i===L.length-1){var k=L[i]?clamp(r/L[i],0,1):0;return [lerp(pts[i][0],pts[i+1][0],k),lerp(pts[i][1],pts[i+1][1],k)]}r-=L[i]}
+  return pts[pts.length-1];
+}
+function poly(pts,u){var out=[pts[0]],L=0,i,tot=0,seg2=[];for(i=1;i<pts.length;i++){var d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg2.push(d);tot+=d}
+  var r=u*tot;for(i=0;i<seg2.length;i++){if(r>=seg2[i]){out.push(pts[i+1]);r-=seg2[i]}else{var k=seg2[i]?r/seg2[i]:0;out.push([lerp(pts[i][0],pts[i+1][0],k),lerp(pts[i][1],pts[i+1][1],k)]);break}}
+  return 'M'+out.map(function(p){return p[0].toFixed(1)+' '+p[1].toFixed(1)}).join('L')}
+/* ---------- 動畫：畫在題目圖上的 #fx 圖層，說明文字放在圖下方（不會擋到圖） ---------- */
+var ANIM={id:0};
+function play(steps,done){
+  /* steps：[{d:毫秒, cap:'說明', draw:function(t){return svg字串}}] 依序播放 */
+  var id=++ANIM.id,k=0,cap=$('acap'),fx=document.querySelector('#stg svg #fx');
+  if(!fx){var sv=document.querySelector('#stg svg');if(sv){fx=document.createElementNS('http://www.w3.org/2000/svg','g');fx.setAttribute('id','fx');sv.appendChild(fx)}}
+  if(cap){cap.hidden=false;cap.innerHTML='<span class="an">動畫</span><span id="acapT"></span><button type="button" class="skp" id="askip">跳過</button>';$('askip').onclick=function(){finish()}}
+  function finish(){if(id!==ANIM.id)return;ANIM.id++;var last=steps[steps.length-1];if(fx)fx.innerHTML=last.draw(1);if($('acapT'))$('acapT').textContent=last.cap;var b=$('askip');if(b)b.remove();done&&done()}
+  function run(){
+    if(id!==ANIM.id)return;if(k>=steps.length){finish();return}
+    var S=steps[k],t0=performance.now(),D=FAST?1:S.d;if($('acapT'))$('acapT').textContent=S.cap;
+    function f(now){if(id!==ANIM.id)return;var t=clamp((now-t0)/D,0,1);if(fx)fx.innerHTML=S.draw(t);if(t<1)requestAnimationFrame(f);else{k++;run()}}
+    requestAnimationFrame(f);
+  }
+  run();
+  return finish;
+}
 /* ---------- 平面圖（依講師提供的示意圖：廚房、客廳、走廊、主臥室、客房、家中大門） ---------- */
 function planInner(extra){
   return '<rect class="room" x="45" y="25" width="720" height="440"/>'+
@@ -144,12 +182,15 @@ function planInner(extra){
   '<text class="rl" x="92" y="320">主臥室</text><text class="rl" x="430" y="318">客房</text>'+
   (extra||'');
 }
-function plan(extra){return '<svg viewBox="0 0 800 500" role="img" aria-label="住家平面圖：廚房、客廳、走廊、主臥室、客房、家中大門">'+planInner(extra)+'</svg>'}
-function fire(x,y,s){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 18C-14 18-18 6-12-4-10 4-6 6-6 6-8-6 0-16 2-24 6-14 16-8 14 4 12 14 6 18 0 18Z" fill="#ff8a3d"/><path d="M0 18C-6 18-8 12-4 6-2 10 2 10 2 2 6 8 8 14 0 18Z" fill="#ffd36b"/></g>'}
+function plan(extra){return '<svg viewBox="0 0 800 500" role="img" aria-label="住家平面圖：廚房、客廳、走廊、主臥室、客房、家中大門">'+planInner(extra)+'<g id="fx"></g></svg>'}
+function fire(x,y,s){s=s||1;return '<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+s.toFixed(2)+')"><path d="M0 18C-14 18-18 6-12-4-10 4-6 6-6 6-8-6 0-16 2-24 6-14 16-8 14 4 12 14 6 18 0 18Z" fill="#ff8a3d"/><path d="M0 18C-6 18-8 12-4 6-2 10 2 10 2 2 6 8 8 14 0 18Z" fill="#ffd36b"/></g>'}
+function extIcon(x,y,s){s=s||1;return '<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+s+')"><rect x="-7" y="-14" width="14" height="30" rx="5" fill="#c42d22" stroke="#0e1316" stroke-width="2"/><rect x="-3" y="-20" width="6" height="7" fill="#333"/><path d="M3 -18h9" stroke="#333" stroke-width="3"/></g>'}
+function me(x,y,lab){return '<circle class="fx-me" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="12"/>'+(lab?'<text class="fx-s" x="'+x.toFixed(1)+'" y="'+(y-20).toFixed(1)+'" text-anchor="middle">'+lab+'</text>':'')}
+function xMark(x,y){return '<path d="M'+(x-16)+' '+(y-16)+'l32 32M'+(x+16)+' '+(y-16)+'l-32 32" stroke="#d9483b" stroke-width="7" stroke-linecap="round"/>'}
+function waves(x,y,t,c){var h='';for(var i=0;i<3;i++){var k=(((t*1.6+i/3)%1)+1)%1;h+='<circle cx="'+x+'" cy="'+y+'" r="'+(14+k*46).toFixed(1)+'" fill="none" stroke="'+(c||'#d9483b')+'" stroke-width="3" opacity="'+(1-k).toFixed(2)+'"/>'}return h}
 /* 可以點的位置：圓圈加英文字母；說明文字放在圖下方的選項按鈕上 */
 function tgt(id,x,y,r){r=r||26;return '<g class="tgt" data-id="'+id+'"><circle class="r" cx="'+x+'" cy="'+y+'" r="'+r+'"/><text x="'+x+'" y="'+y+'" font-size="'+Math.round(r*1.05)+'">'+id+'</text></g>'}
 function chips(list){return '<div class="chips" id="chips">'+list.map(function(c){return '<button type="button" class="chip" data-id="'+c[0]+'"><b>'+c[0]+'</b><span>'+esc(c[1])+'</span></button>'}).join('')+'</div>'}
-/* 圖上的圓圈與下方按鈕都可以選；選了之後標示對錯 */
 function bindPick(fn){
   var lock=false;
   function go(id){if(lock)return;lock=true;fn(id)}
@@ -172,48 +213,81 @@ var R=[
 var ri=0;
 function prog(){var p=$('prog');p.innerHTML='';R.forEach(function(r,i){var e=document.createElement('i');e.className=i<ri?'done':i===ri?'on':'';p.appendChild(e)});
   $('stN').textContent=ri<R.length?ri+1:'✓';$('stT').textContent=ri<R.length?R[ri].t:'成績單';$('stP').textContent=ri<R.length?R[ri].sub:'看看每一題的重點'}
-function fbShow(h,btn,next){var f=$('fbIn');f.innerHTML=h+'<div class="btns"><button class="go" id="fbGo" type="button">'+btn+' →</button></div>';$('fb').classList.add('on');$('fb').scrollTop=0;
-  var used=false;$('fbGo').onclick=function(){if(used)return;used=true;$('fb').classList.remove('on');later(next,250)}}
+/* 結果放在圖的下方（不再用蓋住畫面的浮動視窗） */
+function result(h,btn,next,replay){
+  var r=$('res');if(!r)return;
+  r.hidden=false;r.innerHTML=h+'<div class="btns">'+(replay?'<button class="go alt" id="again1" type="button">再看一次動畫</button>':'')+'<button class="go" id="fbGo" type="button">'+btn+' →</button></div>';
+  var used=false;$('fbGo').onclick=function(){if(used)return;used=true;later(next,60)};
+  if(replay)$('again1').onclick=function(){replay()};
+  try{r.scrollIntoView({behavior:FAST?'auto':'smooth',block:'nearest'})}catch(e){}
+}
 function head(g,title,sub,pts,max){var ic={ok:'✓',mid:'–',bad:'✕'}[g];return '<div class="fbh"><span class="badge '+g+'">'+ic+'</span><div><h3>'+esc(title)+'</h3><p>'+esc(sub)+'</p></div>'+(max?'<b class="pt">'+pts+'<small>/'+max+'</small></b>':'')+'</div>'}
 function kc(t,s){CARDS.push({t:t,s:s});return '<div class="kc"><div><b>'+esc(t)+'</b><span>'+esc(s)+'</span></div></div>'}
 function qbox(n,t,b,s){return '<div class="q"><small>第 '+n+' 題　'+esc(t)+'</small><b>'+esc(b)+'</b>'+(s?'<span>'+esc(s)+'</span>':'')+'</div>'}
-function next(){ri++;prog();window.scrollTo(0,0);if(ri<R.length)RUN[R[ri].key]();else end()}
+function stageTail(){return '<div class="acap" id="acap" hidden aria-live="polite"></div>'}
+function next(){clearLater();ri++;prog();window.scrollTo(0,0);if(ri<R.length)RUN[R[ri].key]();else end()}
+function stageTop(){var s=$('stg');if(s)try{s.scrollIntoView({behavior:FAST?'auto':'smooth',block:'start'})}catch(e){}}
 
 var RUN={};
-/* 第 1 題：滅火器 */
+/* ====== 第 1 題：滅火器 ====== */
+/* 路線（平面圖座標）：客廳的「你」、各個放置點、主臥室門口、大門 */
+var P1={me:[560,150],C:[612,212],hallE:[470,212],hallM:[330,212],bedDoor:[292,212],bedIn:[292,300],A:[150,128],kDoor:[376,132],B:[150,392],D:[92,212],door:[698,262]};
+function extSteps(id){
+  var s=[],F=P1;
+  if(id==='C'){
+    s.push({d:1500,cap:'深夜，主臥室起火了。你在客廳。',draw:function(t){return fire(200,355,.6+t*.8)+me(F.me[0],F.me[1],'你')+extIcon(F.C[0],F.C[1])}});
+    var go=[F.me,F.C,F.hallE,F.hallM,F.bedDoor,F.bedIn];
+    s.push({d:3000,cap:'先到大門旁邊拿滅火器，再往主臥室走過去。',draw:function(t){var u=ease(t),p=along(go,u),hasE=u>.12;return '<path d="'+poly(go,u)+'" fill="none" stroke="#7ea2ff" stroke-width="5" stroke-dasharray="10 8"/>'+fire(200,355,1.4+t*.4)+(hasE?'':extIcon(F.C[0],F.C[1]))+me(p[0],p[1],'你')+(hasE?extIcon(p[0]+18,p[1]-4,.8):'')}});
+    s.push({d:2200,cap:'噴了一陣子，火還是越燒越大，滅不了。',draw:function(t){return fire(200,355,1.8+t*.9)+'<circle cx="230" cy="350" r="'+(70+t*40)+'" fill="rgba(160,160,160,.28)"/>'+me(F.bedIn[0],F.bedIn[1]-6,'你')}});
+    var back=[F.bedIn,F.bedDoor,F.hallM,F.hallE,[640,212],F.door];
+    s.push({d:2600,cap:'滅不了就退：你本來就是從大門那邊過來的，往回走就是出口。',draw:function(t){var u=ease(t),p=along(back,u);return fire(200,355,2.7)+'<circle cx="230" cy="350" r="110" fill="rgba(160,160,160,.28)"/><path d="'+poly(back,u)+'" fill="none" stroke="#2fa66a" stroke-width="6" stroke-dasharray="12 8"/>'+me(p[0],p[1],'你')}});
+    s.push({d:1400,cap:'人在大門口，帶上門離開，到外面再打 119。',draw:function(t){return fire(200,355,2.7)+'<circle cx="230" cy="350" r="110" fill="rgba(160,160,160,.28)"/><path d="'+poly(back,1)+'" fill="none" stroke="#2fa66a" stroke-width="6"/>'+me(F.door[0],F.door[1]+30,'')+'<text class="fx-lbl" x="698" y="230" text-anchor="middle">逃出去了</text>'}});
+  }else if(id==='B'||id==='A'){
+    var home=id==='B'?F.B:F.A,fx=id==='B'?[200,355]:[110,150],room=id==='B'?'主臥室':'廚房';
+    s.push({d:1500,cap:room+'起火了。你在客廳，滅火器就放在'+room+'裡。',draw:function(t){return fire(fx[0],fx[1],.6+t*.8)+me(F.me[0],F.me[1],'你')+extIcon(home[0],home[1])}});
+    var go2=id==='B'?[F.me,F.hallE,F.hallM,F.bedDoor,F.bedIn]:[F.me,[470,132],F.kDoor,[290,132]];
+    s.push({d:2600,cap:'你往'+room+'跑，想去拿滅火器……',draw:function(t){var u=ease(t),p=along(go2,u);return '<path d="'+poly(go2,u)+'" fill="none" stroke="#7ea2ff" stroke-width="5" stroke-dasharray="10 8"/>'+fire(fx[0],fx[1],1.4+t*.6)+extIcon(home[0],home[1])+me(p[0],p[1],'你')}});
+    s.push({d:2200,cap:'滅火器就在火的旁邊，根本拿不到；火勢擴大，你還離大門很遠。',draw:function(t){var e=go2[go2.length-1];return fire(fx[0],fx[1],2+t*.8)+'<circle cx="'+fx[0]+'" cy="'+fx[1]+'" r="'+(60+t*50)+'" fill="rgba(160,160,160,.3)"/>'+extIcon(home[0],home[1])+xMark(home[0],home[1])+me(e[0],e[1],'你')}});
+  }else{
+    s.push({d:1500,cap:'主臥室起火了。你在客廳，滅火器放在走廊最裡面。',draw:function(t){return fire(200,355,.6+t*.8)+me(F.me[0],F.me[1],'你')+extIcon(F.D[0],F.D[1])}});
+    var go3=[F.me,F.hallE,F.hallM,F.D];
+    s.push({d:2600,cap:'你往家裡最深處跑去拿滅火器，經過正在燒的主臥室門口……',draw:function(t){var u=ease(t),p=along(go3,u);return '<path d="'+poly(go3,u)+'" fill="none" stroke="#7ea2ff" stroke-width="5" stroke-dasharray="10 8"/>'+fire(200,355,1.4+t*.6)+(u>.95?'':extIcon(F.D[0],F.D[1]))+me(p[0],p[1],'你')}});
+    s.push({d:2400,cap:'拿到時，火已經從臥室竄到走廊，擋在你和大門中間。',draw:function(t){return fire(200,355,2+t*.4)+fire(292,230,.4+t*1.1)+'<circle cx="292" cy="240" r="'+(30+t*40)+'" fill="rgba(160,160,160,.3)"/>'+me(F.D[0]+20,F.D[1],'你')+extIcon(F.D[0]+40,F.D[1]-4,.8)+(t>.6?xMark(380,212):'')}});
+  }
+  return s;
+}
 RUN.ext=function(){
   $('main').innerHTML=qbox(1,'滅火器','家裡要放一支住宅用滅火器，放在哪個位置最好？','想一想：火可能在家裡任何地方燒起來。你跑去拿滅火器的路上，萬一火已經滅不了，你人會在哪裡？')+
-    '<div class="stage" id="stg">'+plan(tgt('A',150,128)+tgt('B',150,392)+tgt('C',612,212)+tgt('D',92,212))+'</div>'+
-    chips([['A','廚房'],['B','主臥室'],['C','客廳，靠近家中大門'],['D','走廊盡頭']]);
+    '<div class="stage" id="stg">'+plan(tgt('A',150,128)+tgt('B',150,392)+tgt('C',612,212)+tgt('D',92,212))+'</div>'+stageTail()+
+    chips([['A','廚房'],['B','主臥室'],['C','客廳，靠近家中大門'],['D','走廊盡頭']])+'<div class="res" id="res" hidden></div>';
   bindPick(function(id){
     var good=id==='C',g2=good?'ok':'bad',pts=good?20:0;markPick(id,'C');
     SCORE.push({k:'ext',t:'滅火器位置',got:pts,max:20,g:g2});
-    /* 示意：主臥室起火，你從客廳去拿滅火器的路線，以及滅不了時往哪裡逃 */
-    var svg=$('stg').querySelector('svg'),me='<circle cx="560" cy="150" r="11" fill="#7ea2ff"/><text x="560" y="128" fill="#7ea2ff" font-size="20" text-anchor="middle">你</text>';
-    var path=good?'M560 150 L612 212 L470 212 L300 212 L292 300':'M560 150 L470 212 L300 212 L292 300 L150 392';
-    var g=document.createElementNS(NS,'g');g.innerHTML=fire(200,350,1.6)+'<path d="'+path+'" fill="none" stroke="#7ea2ff" stroke-width="5" class="flow"/>'+me+
-      (good?'<path d="M300 212 L640 212 L698 262" fill="none" stroke="#2fa66a" stroke-width="5" class="flow"/>':'<path d="M150 392 L250 330" fill="none" stroke="#d9483b" stroke-width="6"/><path d="M190 340l30 30M220 340l-30 30" stroke="#d9483b" stroke-width="5"/>');
-    svg.appendChild(g);
-    var why=good?'放在大門附近：火不論在哪裡燒起來，你都是先到門口拿滅火器，再回頭去滅火。萬一火勢已經擴大、自己滅不了，你人就在出入口旁邊，轉身就能逃生。':
-      (id==='B'?'放在家裡最深處（主臥室）：要拿滅火器，就得往家裡面跑。主臥室起火時，你連滅火器都拿不到；火勢一擴大，逃生的路也可能被擋住。':
-       id==='A'?'放在廚房：廚房是常起火的地方，火一燒起來，你可能根本拿不到放在火旁邊的滅火器；而且廚房在家裡比較裡面。':
-       '走廊盡頭離大門最遠：去拿滅火器要往家裡深處跑，火勢擴大時，逃生路線可能被擋住。');
-    later(function(){fbShow(head(g2,good?'放對了！':'再想想',good?'C：客廳，靠近家中大門':'正確答案是 C：客廳，靠近家中大門',pts,20)+
-      '<p class="why">'+esc(why)+'</p><div class="rows"><div class="ok"><i>✓</i><span>圖上的藍色虛線：主臥室起火，你從客廳去拿滅火器、再到臥室；'+(good?'綠色：滅不了時，從走廊往大門逃生。':'紅色叉叉：滅火器就在起火的房間裡，拿不到。')+'</span></div></div>'+
-      kc('滅火器放在家中大門附近','火災可能發生在家中任何地方。滅火器放在大門附近，你會先到門口拿、再回頭滅火；火勢擴大、自己滅不了時，人已經在出入口附近，逃生相對容易。放在家裡深處，取用時反而要往裡面跑，逃生路線可能被擋住。'),'下一題',next)},1800);
+    /* 動畫時把題目上的圓圈淡掉，避免跟路線混在一起 */
+    [].forEach.call(document.querySelectorAll('#stg .tgt'),function(t){t.style.opacity=t.dataset.id===id||t.dataset.id==='C'?'.55':'.2'});
+    var why=good?'放在大門附近：火不論在哪裡燒起來，你都是先到門口拿滅火器，再回頭去滅火。萬一火勢已經擴大、自己滅不了，你往回走就是出口，轉身就能逃生。':
+      (id==='B'?'放在家裡最深處（主臥室）：主臥室起火時，滅火器就在火旁邊，根本拿不到；就算拿得到，也要往家裡面跑，逃生的路可能被擋住。':
+       id==='A'?'放在廚房：廚房是常起火的地方，火一燒起來，你可能拿不到放在火旁邊的滅火器；而且廚房在家裡比較裡面。':
+       '走廊盡頭離大門最遠：去拿滅火器要往家裡深處跑，火勢擴大時，火和煙可能擋在你和大門中間。');
+    function show(){result(head(g2,good?'放對了！':'再想想',good?'C：客廳，靠近家中大門':'正確答案是 C：客廳，靠近家中大門',pts,20)+'<p class="why">'+esc(why)+'</p>'+
+      kc('滅火器放在家中大門附近','火災可能發生在家中任何地方。滅火器放在大門附近，你會先到門口拿、再回頭滅火；火勢擴大、自己滅不了時，往回走就是出口，逃生相對容易。放在家裡深處，取用時反而要往裡面跑，逃生路線可能被擋住。'),'下一題',next,replay)}
+    function replay(){stageTop();play(steps,function(){})}
+    var steps=extSteps(id);if(!good)steps=steps.concat([{d:900,cap:'換成正確的放法看看：滅火器放在客廳、靠近家中大門。',draw:function(){return extIcon(P1.C[0],P1.C[1],1.2)}}]).concat(extSteps('C'));
+    stageTop();later(function(){play(steps,show)},350);
   });
 };
-/* 第 2 題：住警器種類 */
+/* ====== 第 2 題：住警器種類 ====== */
 var ROOMS=[{id:'kit',n:'廚房',cx:220,cy:120,need:'heat'},{id:'liv',n:'客廳',cx:640,cy:160,need:'smoke'},{id:'hall',n:'走廊',cx:330,cy:212,need:'smoke'},{id:'mbr',n:'主臥室',cx:185,cy:350,need:'smoke'},{id:'gst',n:'客房',cx:470,cy:385,need:'smoke'}];
 var RECT={kit:[45,25,355,140],liv:[400,25,365,233],hall:[45,165,355,93],mbr:[45,258,277,207],gst:[322,258,278,207]};
 var TYP={none:{n:'沒裝',c:'#7f898d'},smoke:{n:'偵煙式',c:'#7ea2ff'},heat:{n:'定溫式',c:'#ff8a3d'}};
 var TORD=['none','smoke','heat'];
+function alarmDot(x,y,c,on,t){return (on?waves(x,y,t,'#d9483b'):'')+'<circle cx="'+x+'" cy="'+y+'" r="15" fill="'+(on?'#d9483b':c)+'" stroke="#0e1316" stroke-width="3"/>'}
 RUN.alarm=function(){
   var st={};ROOMS.forEach(function(r){st[r.id]='none'});
   $('main').innerHTML=qbox(2,'住宅用火災警報器','每個房間要裝哪一種住警器？','點房間（或下面的按鈕）換一種：沒裝 → 偵煙式 → 定溫式。想想看：哪個房間平常就會有油煙、水蒸氣？')+
-    '<div class="stage" id="stg"></div><div class="rlist" id="rlist"></div>'+
+    '<div class="stage" id="stg"></div>'+stageTail()+'<div class="rlist" id="rlist"></div>'+
     '<div class="legend"><span><i style="background:#7ea2ff"></i>偵煙式：感測到煙就響</span><span><i style="background:#ff8a3d"></i>定溫式：溫度升到約 80℃ 才響</span></div>'+
-    '<div class="btns"><button class="go" id="chk" type="button">裝好了，檢查</button></div>';
+    '<div class="btns" id="chkW"><button class="go" id="chk" type="button">裝好了，檢查</button></div><div class="res" id="res" hidden></div>';
   var locked=false;
   function cyc(k){if(locked)return;st[k]=TORD[(TORD.indexOf(st[k])+1)%3];paint()}
   function paint(){
@@ -228,77 +302,101 @@ RUN.alarm=function(){
   }
   paint();
   RUN.alarm.set=function(v){st=v;paint()};
+  /* 動畫一：廚房煮飯的油煙；動畫二：客廳起火，每個房間都裝 vs 只有主臥室裝一顆 */
+  function steps(){
+    var S=[],kit=st.kit;
+    S.push({d:3000,cap:kit==='smoke'?'傍晚煮飯，廚房冒出油煙和水蒸氣。偵煙式一聞到油煙就一直響（誤報），久了大家就想把它拆掉。':kit==='heat'?'傍晚煮飯，廚房冒出油煙和水蒸氣。定溫式不會被油煙觸發；真的起火、溫度升到約 80℃ 才響。':'傍晚煮飯，廚房冒出油煙。廚房沒有裝住警器，萬一真的起火，要等煙飄到別的房間才有人發現。',
+      draw:function(t){var h='';for(var i=0;i<8;i++){var k=(t*1.4+i/8)%1;h+='<circle cx="'+(150+Math.sin(i*2.1)*30+k*20).toFixed(1)+'" cy="'+(70-k*30).toFixed(1)+'" r="'+(10+k*24).toFixed(1)+'" fill="rgba(200,200,200,'+(.32*(1-k)).toFixed(2)+')"/>'}
+        return h+(kit==='none'?'':alarmDot(220,120,TYP[kit].c,kit==='smoke'&&t>.25,t))+'<text class="fx-lbl" x="150" y="150" text-anchor="middle">煮飯中</text>'}});
+    function spread(all){return function(t){var r=40+t*560,hit=all?t>=.12:t>=.8,al=all?[[640,160],[330,212],[185,350],[470,385],[220,120]]:[[185,350]];
+      return '<circle cx="600" cy="120" r="'+r.toFixed(1)+'" fill="rgba(170,170,170,.26)"/>'+fire(600,112,1.4)+al.map(function(p){return alarmDot(p[0],p[1],'#7ea2ff',hit,t)}).join('')+
+        '<text class="fx-lbl" x="400" y="488" text-anchor="middle">起火後 '+Math.round(t*5)+' 分鐘'+(hit?'：住警器響了':'')+'</text>'}}
+    S.push({d:5200,cap:'客廳起火。每個房間都有裝：客廳那一顆很快就響了，全家很早就知道。',draw:spread(true)});
+    S.push({d:5200,cap:'如果只有主臥室裝一顆：煙要經過走廊、大量飄進臥室才響，已經晚了好幾分鐘。',draw:spread(false)});
+    return S;
+  }
   $('chk').onclick=function(){
-    if(locked)return;locked=true;paint();$('chk').disabled=true;
+    if(locked)return;locked=true;paint();$('chkW').hidden=true;
     var ok=0,rows='';ROOMS.forEach(function(r){var s=st[r.id],g=s===r.need?'ok':s==='none'?'bad':'mid';if(g==='ok')ok++;
       rows+='<div class="'+g+'"><i>'+(g==='ok'?'✓':g==='bad'?'✕':'–')+'</i><span><b>'+r.n+'</b>：你選「'+TYP[s].n+'」'+(g==='ok'?'':'，應該裝「'+TYP[r.need].n+'」')+(r.id==='kit'&&s==='smoke'?'（廚房平常就有油煙、水蒸氣，裝偵煙式容易誤報）':'')+(s==='none'?'（每一個居室都要裝）':'')+(r.id!=='kit'&&s==='heat'?'（定溫式要等溫度升高才響，一般房間用偵煙式比較早發現）':'')+'</span></div>'});
     var pts=Math.round(ok/ROOMS.length*25),g=ok===ROOMS.length?'ok':ok>=3?'mid':'bad';
     SCORE.push({k:'alarm',t:'住警器種類',got:pts,max:25,g:g});
-    fbShow(head(g,ok===ROOMS.length?'全部裝對了！':'還有房間要修正','5 個地方裝對 '+ok+' 個',pts,25)+'<div class="rows">'+rows+'</div>'+
-      '<div class="demo"><b>為什麼每個房間都要裝？看看客廳起火時的差別</b><svg viewBox="0 0 800 500" id="dsvg"></svg>'+
-      '<div class="bar"><i id="dbar"></i></div><p id="dtx"></p>'+
-      '<div class="btns"><button class="go alt" id="dA" type="button">每個房間都裝</button><button class="go alt" id="dB" type="button">只有主臥室裝一顆</button></div></div>'+
-      kc('住警器：每一個居室都要裝，廚房用定溫式','偵煙式適合客廳、臥室、走廊；廚房平常就有油煙、水蒸氣，用定溫式（溫度到約 80℃ 才響），室內車庫也一樣。每一個居室至少裝一顆。如果只在臥室裝一顆，客廳起火時，要等煙大量飄進臥室才會響，就失去了提早警報、提早逃生的時間。'),'下一題',next);
-    later(function(){$('dA').onclick=function(){demo(true)};$('dB').onclick=function(){demo(false)};demo(true)},60);
+    function show(){result(head(g,ok===ROOMS.length?'全部裝對了！':'還有房間要修正','5 個地方裝對 '+ok+' 個',pts,25)+'<div class="rows">'+rows+'</div>'+
+      kc('住警器：每一個居室都要裝，廚房用定溫式','偵煙式適合客廳、臥室、走廊；廚房平常就有油煙、水蒸氣，用定溫式（溫度到約 80℃ 才響），室內車庫也一樣。每一個居室至少裝一顆。如果只在臥室裝一顆，客廳起火時，要等煙大量飄進臥室才會響，就失去了提早警報、提早逃生的時間。'),'下一題',next,function(){stageTop();play(steps(),function(){})})}
+    stageTop();later(function(){play(steps(),show)},350);
   };
-  var DEMO=0;
-  function demo(all){
-    var id=++DEMO,t0=performance.now(),D=6000,FIRE=all?.12:.8,fired=false;
-    $('dA').classList.toggle('on',all);$('dB').classList.toggle('on',!all);
-    function frame(now){
-      if(id!==DEMO||!$('dsvg'))return;
-      var u=Math.min(1,(now-t0)/D),r=40+u*560,hit=u>=FIRE;
-      var al=all?[[640,160],[330,212],[185,350],[470,385],[220,120]]:[[185,350]];
-      $('dsvg').innerHTML=planInner('<circle cx="600" cy="120" r="'+r+'" fill="rgba(170,170,170,.26)"/>'+fire(600,112,1.4)+al.map(function(p){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="16" fill="'+(hit?'#d9483b':'#7ea2ff')+'"'+(hit?' class="blink"':'')+'/>'}).join('')+
-        '<text x="400" y="490" fill="#eceeea" font-size="26" text-anchor="middle">起火後經過 '+Math.round(u*5)+' 分鐘'+(hit?'　住警器響了':'')+'</text>');
-      $('dbar').style.width=(u*100)+'%';
-      if(hit&&!fired){fired=true;$('dtx').textContent=all?'客廳的住警器很快就感測到煙響了，全家很早就知道要逃生。':'煙要經過走廊、大量飄進主臥室，這顆住警器才響——已經晚了好幾分鐘，逃生的時間少了很多。'}
-      if(!fired)$('dtx').textContent=all?'客廳起火，煙往天花板擴散……':'客廳起火，只有主臥室有裝住警器，煙還沒飄到……';
-      if(u<1)requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  }
-  RUN.alarm.demo=demo;
 };
 /* ---------- 側面圖（1 單位約 1 公分；房高 260 公分） ---------- */
 var SV={x0:30,x1:390,top:40,bot:300};
 function sideFrame(inner,label){return '<svg viewBox="0 0 420 330" role="img" aria-label="'+esc(label)+'"><rect x="'+SV.x0+'" y="'+SV.top+'" width="'+(SV.x1-SV.x0)+'" height="'+(SV.bot-SV.top)+'" fill="#141b20"/>'+
   '<path class="wall" d="M'+SV.x0+' '+SV.top+'H'+SV.x1+'M'+SV.x0+' '+SV.bot+'H'+SV.x1+'M'+SV.x0+' '+SV.top+'V'+SV.bot+'M'+SV.x1+' '+SV.top+'V'+SV.bot+'"/>'+
-  '<text x="210" y="28" class="sl">天花板</text><text x="210" y="322" class="sl">地板</text>'+inner+'</svg>'}
-/* 第 3 題：住警器的安裝位置（臥室側面圖） */
+  '<text x="210" y="28" class="sl">天花板</text><text x="210" y="322" class="sl">地板</text>'+inner+'<g id="fx"></g></svg>'}
+function beepTag(x,y,txt){return '<g><rect x="'+(x-26)+'" y="'+(y-11)+'" width="52" height="22" rx="11" fill="#d9483b"/><text x="'+x+'" y="'+(y+5)+'" fill="#fff" font-size="13" font-weight="700" text-anchor="middle">'+txt+'</text></g>'}
+/* ====== 第 3 題：住警器的安裝位置（臥室側面圖） ====== */
 RUN.pos=function(){
   var inner='<rect x="300" y="40" width="70" height="12" fill="#3a444a"/><path d="M308 58l-6 14M322 58l-2 14M336 58l2 14M350 58l6 14" stroke="#8fb3c9" stroke-width="2" opacity=".8"/><text x="335" y="30" class="sl" font-size="14">冷氣出風口</text>'+
     '<rect class="furn" x="130" y="246" width="170" height="54" rx="6"/><rect class="furn" x="136" y="236" width="40" height="14" rx="4"/><text x="215" y="280" class="sl" font-size="15">床</text>'+
+    '<rect class="furn" x="320" y="250" width="50" height="50" rx="4"/>'+
     '<g id="ann" opacity="0"><path d="M35 55V90" stroke="#2fa66a" stroke-width="6"/><text x="80" y="150" fill="#2fa66a" font-size="14">牆面：距天花板 15～50 公分</text>'+
     '<path d="M30 46H90" stroke="#d9483b" stroke-width="6" opacity=".8"/><text x="100" y="104" fill="#d9483b" font-size="14">距牆 60 公分內不裝</text>'+
     '<path d="M150 46H250" stroke="#2fa66a" stroke-width="6" opacity=".8"/></g>'+
     tgt('A',200,66,18)+tgt('B',80,62,18)+tgt('C',52,108,18)+tgt('D',52,200,18)+tgt('E',325,96,18);
   $('main').innerHTML=qbox(3,'住警器的安裝位置','臥室的住警器（偵煙式），裝在哪裡最好？','煙會往上飄，碰到天花板再往四周擴散。')+
-    '<div class="stage" id="stg">'+sideFrame(inner,'臥室側面圖：天花板、牆面、冷氣出風口、床')+'</div>'+
-    chips([['A','天花板中央'],['B','天花板角落（緊貼牆邊）'],['C','牆面上方（靠近天花板）'],['D','牆面中間'],['E','冷氣出風口旁邊']]);
+    '<div class="stage" id="stg">'+sideFrame(inner,'臥室側面圖：天花板、牆面、冷氣出風口、床')+'</div>'+stageTail()+
+    chips([['A','天花板中央'],['B','天花板角落（緊貼牆邊）'],['C','牆面上方（靠近天花板）'],['D','牆面中間'],['E','冷氣出風口旁邊']])+'<div class="res" id="res" hidden></div>';
+  /* 煙：從床邊的小桌起火，往上衝到天花板，沿著天花板往兩邊擴散，煙層慢慢變厚往下降 */
+  var RT={A:.18,C:.42,B:.72,D:.82,E:.9};
+  function smoke(t){
+    var h='',src=[345,250];
+    var up=seg(t,0,.16);h+='<path d="M'+(src[0]-10)+' '+src[1]+'Q'+(src[0]-30)+' '+lerp(src[1],60,up*.6)+' '+(250-20)+' '+lerp(src[1],48,up)+'L'+(250+20)+' '+lerp(src[1],48,up)+'Q'+(src[0]+10)+' '+lerp(src[1],120,up)+' '+(src[0]+10)+' '+src[1]+'Z" fill="rgba(170,170,170,'+(.35*up).toFixed(2)+')"/>';
+    var jet=seg(t,.12,.5),L=lerp(250,40,ease(jet)),Rr=lerp(250,388,ease(jet)),thick=lerp(14,160,seg(t,.3,1));
+    if(jet>0)h+='<rect x="'+L.toFixed(1)+'" y="42" width="'+(Rr-L).toFixed(1)+'" height="'+thick.toFixed(1)+'" fill="rgba(160,160,160,.42)"/>';
+    /* 牆角死角：煙比較晚才進去 */
+    var dz=1-seg(t,.62,.78);if(dz>0&&jet>.6)h+='<path d="M32 42H'+(32+46*dz).toFixed(1)+'L32 '+(42+46*dz).toFixed(1)+'Z" fill="#141b20"/>';
+    /* 出風口：冷氣把煙吹散 */
+    var vz=1-seg(t,.82,.95);if(vz>0&&jet>.7){h+='<ellipse cx="330" cy="88" rx="'+(48*vz).toFixed(1)+'" ry="'+(40*vz).toFixed(1)+'" fill="#141b20"/>';for(var i=0;i<3;i++){var k=(t*3+i/3)%1;h+='<path d="M'+(306+i*16)+' '+(60+k*40)+'l'+(i-1)*6+' 12" stroke="#8fb3c9" stroke-width="2.5" opacity="'+(1-k).toFixed(2)+'"/>'}}
+    h+=fire(345,240,.7+seg(t,0,.5)*.4);
+    Object.keys(RT).forEach(function(k){if(t>=RT[k]){var P={A:[200,66],B:[80,62],C:[52,108],D:[52,200],E:[325,96]}[k];h+=beepTag(P[0]+(k==='C'||k==='D'?44:0),P[1]+(k==='A'?30:k==='B'?30:0),k+' 響')}});
+    h+='<text class="fx-s" x="210" y="226" text-anchor="middle">起火後 '+Math.round(t*180)+' 秒</text>';
+    return h;
+  }
   bindPick(function(id){
     var G={A:'ok',C:'mid',B:'bad',D:'bad',E:'bad'}[id],pts={A:15,C:10,B:0,D:0,E:0}[id];markPick(id,'A',['C']);
-    var an=$('ann');if(an)an.setAttribute('opacity','1');
     SCORE.push({k:'pos',t:'住警器位置',got:pts,max:15,g:G});
     var W={A:'天花板、居室中央：煙往上飄、碰到天花板往四周擴散，裝在中央最快感測到。',C:'牆面也可以裝，但要在距天花板 15～50 公分之間；能裝天花板時，盡量裝天花板中央。',B:'天花板和牆的交角附近，煙比較不容易流進去（死角）。裝在天花板時，要距離牆面或樑 60 公分以上。',D:'牆面中間太低，煙要在天花板下累積很厚才碰得到，警報會變慢。',E:'冷氣出風口會把煙吹散，偵測會變慢，也容易誤報。要遠離出風口。'};
-    later(function(){fbShow(head(G,G==='ok'?'位置正確！':G==='mid'?'可以，但不是最好':'再想想','最好的位置：A 天花板中央',pts,15)+'<p class="why">'+esc(W[id])+'</p>'+
-      kc('住警器裝在天花板中央','以裝在天花板為原則，距離牆面或樑 60 公分以上，盡量在居室中央。裝在牆面時，要在距天花板 15～50 公分之間。遠離冷氣出風口。'),'下一題',next)},700);
+    var S=[{d:2200,cap:'床邊的小桌起火，煙往上衝，碰到天花板。',draw:function(t){return smoke(t*.2)}},
+      {d:3200,cap:'煙沿著天花板往兩邊擴散：天花板中央的 A 最先響，牆面上方的 C 接著響。',draw:function(t){return smoke(.2+t*.3)}},
+      {d:3600,cap:'牆角是死角，煙比較晚才進得去；冷氣把出風口旁的煙吹散；牆面中間要等煙層降下來才碰得到。',draw:function(t){return smoke(.5+t*.5)}}];
+    function show(){var an=$('ann');if(an)an.setAttribute('opacity','1');
+      result(head(G,G==='ok'?'位置正確！':G==='mid'?'可以，但不是最好':'再想想','最好的位置：A 天花板中央',pts,15)+'<p class="why">'+esc(W[id])+'</p>'+
+      kc('住警器裝在天花板中央','以裝在天花板為原則，距離牆面或樑 60 公分以上，盡量在居室中央。裝在牆面時，要在距天花板 15～50 公分之間。遠離冷氣出風口。'),'下一題',next,function(){stageTop();play(S,function(){})})}
+    stageTop();later(function(){play(S,show)},350);
   });
 };
-/* 第 4 題：瓦斯偵測器（廚房側面圖） */
+/* ====== 第 4 題：瓦斯偵測器（廚房側面圖） ====== */
 RUN.gas=function(){
   var step=0,got=0;
-  function kitchen(){
-    return sideFrame('<g id="ann" opacity="0"><path d="M30 70H390" stroke="#2fa66a" stroke-dasharray="6 5" stroke-width="2"/><text x="196" y="88" fill="#2fa66a" font-size="14">天花板下 30 公分以內</text>'+
+  function kitchen(night){
+    return sideFrame((night?'<rect x="30" y="40" width="360" height="260" fill="rgba(5,8,20,.45)"/><text x="60" y="78" font-size="30">🌙</text>':'')+
+      '<g id="ann" opacity="0"><path d="M30 70H390" stroke="#2fa66a" stroke-dasharray="6 5" stroke-width="2"/><text x="196" y="88" fill="#2fa66a" font-size="14">天花板下 30 公分以內</text>'+
       '<path d="M30 270H390" stroke="#2fa66a" stroke-dasharray="6 5" stroke-width="2"/><text x="196" y="262" fill="#2fa66a" font-size="14">地板上 30 公分以內</text></g>'+
-      '<rect class="furn" x="40" y="214" width="150" height="86"/><rect x="58" y="204" width="114" height="10" fill="#2a3136"/><path d="M80 204c-6-10 6-12 0-22M140 204c-6-10 6-12 0-22" stroke="#4a7ab8" stroke-width="3" fill="none"/>'+
+      '<rect class="furn" x="40" y="214" width="150" height="86"/><rect x="58" y="204" width="114" height="10" fill="#2a3136"/>'+(night?'':'<path d="M80 204c-6-10 6-12 0-22M140 204c-6-10 6-12 0-22" stroke="#4a7ab8" stroke-width="3" fill="none"/>')+
       '<path class="furn" d="M55 90H175L158 128H72Z"/><text x="115" y="114" class="sl" font-size="14">抽油煙機</text><text x="115" y="262" class="sl" font-size="15">瓦斯爐</text>'+
       '<rect x="356" y="178" width="26" height="18" rx="3" fill="#2a3136"/><text x="369" y="214" class="sl" font-size="13">插座</text>'+
-      tgt('A',318,56,18)+tgt('B',115,160,18)+tgt('C',318,284,18)+tgt('D',318,172,18),'廚房側面圖：天花板、抽油煙機、瓦斯爐、牆面、地板')}
+      (night?'':tgt('A',318,56,18)+tgt('B',115,160,18)+tgt('C',318,284,18)+tgt('D',318,172,18)),'廚房側面圖：天花板、抽油煙機、瓦斯爐、牆面、地板')}
+  /* 外洩的瓦斯：天然氣往上飄、貼著天花板擴散；桶裝瓦斯往下沉、貼著地面擴散 */
+  function gasDraw(light,det){return function(t){
+    var h='',n=46;for(var i=0;i<n;i++){var r=((i*37)%n)/n,k=clamp(t*1.25-r*.35,0,1);if(k<=0)continue;
+      var x0=110+Math.sin(i*1.7)*14,y0=206,x1=lerp(60,385,((i*53)%n)/n),y1=light?lerp(46,70,((i*29)%n)/n):lerp(300-6,276,((i*29)%n)/n);
+      var e=ease(k),x=lerp(x0,x1,e*e),y=lerp(y0,y1,Math.sqrt(e));h+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="'+(light?'#f2c14e':'#c08bf0')+'" opacity=".75"/>'}
+    var at=light?{A:.55,D:.92}:{C:.55,D:.92},P={A:[318,56],B:[115,160],C:[318,284],D:[318,172]};
+    if(det&&P[det]){var on=at[det]!=null&&t>=at[det];h+='<rect x="'+(P[det][0]-14)+'" y="'+(P[det][1]-10)+'" width="28" height="20" rx="4" fill="#f4f4f2" stroke="#0e1316" stroke-width="2"/>'+(on?waves(P[det][0],P[det][1],t)+beepTag(P[det][0]-48,P[det][1],'響了'):'')}
+    h+='<text class="fx-s" x="270" y="'+(light?150:150)+'" text-anchor="middle">'+(light?'天然氣：比空氣輕，往上飄':'桶裝瓦斯：比空氣重，往下沉')+'</text>';
+    return h}}
   var QS=[
-   {q:'你家用的是天然氣（管線瓦斯）。瓦斯偵測器要裝在哪裡？',hint:'天然氣（主要是甲烷）比空氣輕。漏出來會往哪裡飄？',ans:'A',kind:'pick',ok:'A 天花板下方',
+   {q:'你家用的是天然氣（管線瓦斯）。瓦斯偵測器要裝在哪裡？',hint:'天然氣（主要是甲烷）比空氣輕。漏出來會往哪裡飄？',ans:'A',kind:'pick',ok:'A 天花板下方',light:true,
     W:{A:'天然氣比空氣輕，漏出來會往上飄，所以裝在天花板下方 30 公分以內、離爐具有一段距離的地方。',B:'爐具正上方有熱氣、油煙，容易誤報或被油汙蓋住；不要裝在爐具正上方。',C:'靠近地板是給桶裝瓦斯用的；天然氣會往上飄，裝在下面偵測不到。',D:'牆面中間不上不下，天然氣要在天花板累積很多才會往下碰到。'}},
-   {q:'阿嬤家用的是桶裝瓦斯（液化石油氣）。這次要裝在哪裡？',hint:'桶裝瓦斯（丙烷、丁烷）比空氣重。漏出來會往哪裡沉？',ans:'C',kind:'pick',ok:'C 靠近地板',
+   {q:'阿嬤家用的是桶裝瓦斯（液化石油氣）。這次要裝在哪裡？',hint:'桶裝瓦斯（丙烷、丁烷）比空氣重。漏出來會往哪裡沉？',ans:'C',kind:'pick',ok:'C 靠近地板',light:false,
     W:{C:'桶裝瓦斯比空氣重，漏出來會往下沉、貼著地面擴散，所以裝在地板上方 30 公分以內。',A:'天花板是給天然氣用的；桶裝瓦斯會往下沉，裝在上面偵測不到。',B:'爐具正上方有熱氣、油煙，容易誤報，也不是桶裝瓦斯累積的地方。',D:'牆面中間太高，桶裝瓦斯要在地面累積很多才會碰到。'}},
    {q:'瓦斯偵測器裝好了，平常要怎麼用？',kind:'card',ans:'on',ok:'一直插著電、保持開啟',opts:[['on','插頭一直插著、保持通電，平常就讓它開著'],['use','煮飯的時候才插電'],['night','晚上睡覺時拔掉，省電']],
     W:{on:'瓦斯偵測器要接電才能運作。瓦斯可能在任何時候外洩（包括半夜沒人用瓦斯時），所以要一直插著、保持開啟。',use:'瓦斯也可能在沒煮飯時外洩（管線、接頭老化），只在煮飯時插電，其他時間就沒有保護。',night:'半夜大家睡著時最需要警報；拔掉就等於沒裝。'}}
@@ -306,33 +404,69 @@ RUN.gas=function(){
   function ask(){
     var Q=QS[step];
     $('main').innerHTML=qbox(4,'瓦斯偵測器（'+(step+1)+'／'+QS.length+'）',Q.q,Q.hint)+
-      (Q.kind==='pick'?'<div class="stage" id="stg">'+kitchen()+'</div>'+chips([['A','靠近天花板'],['B','瓦斯爐正上方'],['C','靠近地板'],['D','牆面中間']]):'<div class="chips" id="chips">'+Q.opts.map(function(o,i){return '<button type="button" class="chip wide" data-id="'+o[0]+'"><b>'+'ABC'[i]+'</b><span>'+esc(o[1])+'</span></button>'}).join('')+'</div>');
+      (Q.kind==='pick'?'<div class="stage" id="stg">'+kitchen(false)+'</div>'+stageTail()+chips([['A','靠近天花板'],['B','瓦斯爐正上方'],['C','靠近地板'],['D','牆面中間']]):
+        '<div class="chips" id="chips">'+Q.opts.map(function(o,i){return '<button type="button" class="chip wide" data-id="'+o[0]+'"><b>'+'ABC'[i]+'</b><span>'+esc(o[1])+'</span></button>'}).join('')+'</div><div class="stage" id="stg" hidden>'+kitchen(true)+'</div>'+stageTail())+
+      '<div class="res" id="res" hidden></div>';
     bindPick(function(id){
-      var ok=id===Q.ans;if(ok)got++;markPick(id,Q.ans);var an=$('ann');if(an)an.setAttribute('opacity','1');
-      var last=step===QS.length-1,pts=Math.round(got/QS.length*25);
+      var ok=id===Q.ans;if(ok)got++;markPick(id,Q.ans);
+      var last=step===QS.length-1,pts=Math.round(got/QS.length*25),S;
+      if(Q.kind==='pick'){
+        [].forEach.call(document.querySelectorAll('#stg .tgt'),function(t){t.style.opacity='.25'});
+        S=[{d:4200,cap:Q.light?'瓦斯從爐子漏出來。天然氣比空氣輕，一直往上飄，先積在天花板下面。':'瓦斯從爐子漏出來。桶裝瓦斯比空氣重，一直往下沉，先積在地板上。',draw:gasDraw(Q.light,id)}];
+        if(!ok)S.push({d:3600,cap:'換成正確位置 '+Q.ans+'：瓦斯一積起來，偵測器馬上就響了。',draw:gasDraw(Q.light,Q.ans)});
+      }else{
+        $('stg').hidden=false;
+        var det=function(on){return function(t){var h=gasDraw(true,null)(t*.8)+'<rect x="304" y="46" width="28" height="20" rx="4" fill="#f4f4f2" stroke="#0e1316" stroke-width="2"/>';
+          h+=on?(t>.5?waves(318,56,t)+beepTag(270,56,'響了'):'')+'<path d="M332 60C350 70 360 150 369 178" stroke="#c9d0d3" stroke-width="2" fill="none"/>':'<path d="M332 60C350 70 356 140 350 160" stroke="#c9d0d3" stroke-width="2" fill="none"/><text class="fx-s" x="300" y="188" text-anchor="end">插頭沒插</text>';
+          return h+'<text class="fx-s" x="210" y="236" text-anchor="middle">凌晨 2 點，沒有人在煮飯</text>'}};
+        S=[{d:4200,cap:id==='on'?'凌晨 2 點，管線接頭鬆了，瓦斯慢慢漏出來。偵測器一直插著電，馬上就響了。':'凌晨 2 點，管線接頭鬆了，瓦斯慢慢漏出來。偵測器沒插電，一點聲音都沒有，沒有人知道。',draw:det(id==='on')}];
+        if(id!=='on')S.push({d:3400,cap:'一直插著電的話：瓦斯一漏，偵測器就叫醒全家。',draw:det(true)});
+      }
       var body=head(ok?'ok':'bad',ok?'答對了！':'再想想','正確答案：'+Q.ok,pts,last?25:0)+'<p class="why">'+esc(Q.W[id])+'</p>';
       if(last){SCORE.push({k:'gas',t:'瓦斯偵測器',got:pts,max:25,g:got===3?'ok':got>=2?'mid':'bad'});
         body+=kc('瓦斯偵測器：看瓦斯種類決定高度，一直插電','天然氣比空氣輕，偵測器裝在天花板下方 30 公分以內；桶裝瓦斯（液化石油氣）比空氣重，裝在地板上方 30 公分以內。不要裝在爐具正上方，避開抽油煙機、出風口、潮濕處；與爐具的距離，法規以燃燒器具的水平距離計算（天然氣 8 公尺內、液化石油氣 4 公尺內），產品說明多建議離燃燒器具 1.5 公尺以上（待對照官方原文）。偵測器要接電源，平常一直開著才有功能。')}
-      later(function(){fbShow(body,last?'下一題':'下一小題',function(){if(last)next();else{step++;window.scrollTo(0,0);ask()}})},Q.kind==='pick'?700:300);
+      function show(){var an=$('ann');if(an)an.setAttribute('opacity','1');result(body,last?'下一題':'下一小題',function(){if(last)next();else{clearLater();step++;window.scrollTo(0,0);ask()}},function(){stageTop();play(S,function(){})})}
+      stageTop();later(function(){play(S,show)},350);
     });
   }
   RUN.gas.step=function(){return step};
   ask();
 };
-/* 第 5 題：一氧化碳警報器 */
+/* ====== 第 5 題：一氧化碳警報器 ====== */
 RUN.co=function(){
   var ex='<rect x="52" y="200" width="30" height="46" rx="4" fill="#3a4a5a" stroke="#8d989d" stroke-width="2"/><path d="M60 214h14M60 224h14" stroke="#8d989d" stroke-width="2"/>'+
     '<text x="124" y="250" fill="#c9d0d3" font-size="22" text-anchor="middle">熱水器</text>'+
     tgt('A',292,212)+tgt('B',67,186)+tgt('C',138,122)+tgt('D',660,150);
   $('main').innerHTML=qbox(5,'一氧化碳警報器','燃氣熱水器裝在走廊盡頭的工作陽台。一氧化碳警報器裝在哪裡最好？','一氧化碳看不到、聞不到，最危險的時候是大家都睡著了。')+
-    '<div class="stage" id="stg">'+plan(ex)+'</div>'+
-    chips([['A','走廊天花板，主臥室和客房門口附近'],['B','熱水器正上方'],['C','瓦斯爐旁邊'],['D','客廳天花板']]);
+    '<div class="stage" id="stg">'+plan(ex)+'</div>'+stageTail()+
+    chips([['A','走廊天花板，主臥室和客房門口附近'],['B','熱水器正上方'],['C','瓦斯爐旁邊'],['D','客廳天花板']])+'<div class="res" id="res" hidden></div>';
+  var P={A:[292,212],B:[67,186],C:[138,122],D:[660,150]};
+  function sleepers(woke){return [[150,395],[440,400]].map(function(p){return woke?'<text class="fx-lbl" x="'+p[0]+'" y="'+p[1]+'" text-anchor="middle">醒了！</text>':'<text class="fx-lbl" x="'+p[0]+'" y="'+p[1]+'" text-anchor="middle" opacity=".85">Zzz</text>'}).join('')}
+  function coDraw(det,mode){return function(t){
+    var h='',r=20+t*520;
+    /* 一氧化碳（看不見，這裡用紫色表示）：從熱水器沿著走廊擴散，從門縫飄進臥室 */
+    h+='<clipPath id="cpH"><rect x="45" y="25" width="720" height="440"/></clipPath><g clip-path="url(#cpH)"><circle cx="70" cy="220" r="'+r.toFixed(1)+'" fill="rgba(170,110,230,.2)"/></g>';
+    var reach={A:.22,D:.62}[det],hit=reach!=null&&t>=reach,falsey=(det==='B'||det==='C');
+    if(mode==='false'){var on=(Math.floor(t*6)%2)===0;h='<text class="fx-lbl" x="'+P[det][0]+'" y="'+(P[det][1]+58)+'" text-anchor="middle">'+(det==='B'?'熱水器一點火':'一煮飯')+'就響</text>'+(on?waves(P[det][0],P[det][1],t):'')+(det==='B'?fire(67,232,.5):fire(82,124,.5));}
+    h+='<circle cx="'+P[det][0]+'" cy="'+P[det][1]+'" r="13" fill="#f4f4f2" stroke="#0e1316" stroke-width="3"/>';
+    if(mode!=='false'){
+      if(hit)h+=waves(P[det][0],P[det][1],t)+(det==='A'?waves(P[det][0],P[det][1],t*1.3,'#f2c14e'):'');
+      var woke=hit&&(det==='A'?t>reach+.08:t>.95);
+      h+=sleepers(woke)+(det==='D'&&hit&&!woke?'<text class="fx-s" x="400" y="440" text-anchor="middle">房門關著，臥室裡聽不太到</text>':'');
+    }
+    return h}}
   bindPick(function(id){
     var G={A:'ok',D:'mid',B:'bad',C:'bad'}[id],pts={A:15,D:10,B:0,C:0}[id];markPick(id,'A',['D']);
+    [].forEach.call(document.querySelectorAll('#stg .tgt'),function(t){t.style.opacity='.25'});
     SCORE.push({k:'co',t:'一氧化碳警報器',got:pts,max:15,g:G});
     var W={A:'臥室門口的走廊天花板：大家睡覺時關著房門也聽得到，又離熱水器有一段距離，不容易誤報。',D:'客廳是生活區域，裝在這裡可以；但睡覺時關著房門，可能聽不清楚。家裡如果有兩顆，客廳和臥室附近都裝更好。',B:'熱水器正上方太近，點火瞬間的廢氣容易誤報；設置原則建議離燃燒器具 1.5 公尺以上。',C:'瓦斯爐旁太近，也有油煙、熱氣，容易誤報。'};
-    later(function(){fbShow(head(G,G==='ok'?'位置正確！':G==='mid'?'可以，但還能更好':'再想想','最好的位置：A 臥室門口的走廊',pts,15)+'<p class="why">'+esc(W[id])+'</p>'+
-      kc('一氧化碳警報器：裝在生活、睡覺的區域','裝在客廳、臥室附近等生活區域的天花板，關著房門也要聽得到警報。離燃氣熱水器、瓦斯爐等燃燒器具 1.5 公尺以上，也離冷氣出風口 1.5 公尺以上。最根本的是：燃氣熱水器要裝在室外通風良好的地方。'),'看成績單',next)},700);
+    var S=[];
+    if(id==='B'||id==='C')S.push({d:3400,cap:id==='B'?'警報器裝在熱水器正上方：每次熱水器點火，那一點廢氣就讓它響，常常誤報，最後被拆掉。':'警報器裝在瓦斯爐旁：每次煮飯就響，常常誤報，最後被拆掉。',draw:coDraw(id,'false')});
+    else S.push({d:4600,cap:id==='A'?'半夜，熱水器不完全燃燒，一氧化碳沿著走廊擴散。臥室門口的警報器很快就響了，全家都被叫醒。':'半夜，一氧化碳沿著走廊擴散。客廳的警報器要等擴散到客廳才響，房門關著，臥室裡的人聽不太清楚。',draw:coDraw(id,'co')});
+    if(id!=='A')S.push({d:4600,cap:'裝在正確的位置 A（臥室門口的走廊天花板）：一氧化碳一飄過來就響，關著房門也聽得到。',draw:coDraw('A','co')});
+    function show(){result(head(G,G==='ok'?'位置正確！':G==='mid'?'可以，但還能更好':'再想想','最好的位置：A 臥室門口的走廊',pts,15)+'<p class="why">'+esc(W[id])+'</p>'+
+      kc('一氧化碳警報器：裝在生活、睡覺的區域','裝在客廳、臥室附近等生活區域的天花板，關著房門也要聽得到警報。離燃氣熱水器、瓦斯爐等燃燒器具 1.5 公尺以上，也離冷氣出風口 1.5 公尺以上。最根本的是：燃氣熱水器要裝在室外通風良好的地方。'),'看成績單',next,function(){stageTop();play(S,function(){})})}
+    stageTop();later(function(){play(S,show)},350);
   });
 };
 function end(){
@@ -342,16 +476,16 @@ function end(){
   SCORE.forEach(function(s){h+='<div class="'+s.g+'"><i>'+(s.g==='ok'?'✓':s.g==='bad'?'✕':'–')+'</i><span><b>'+esc(s.t)+'</b>　'+s.got+' / '+s.max+'</span></div>'});
   h+='</div><div class="sec">知識卡總整理</div>';CARDS.forEach(function(c){h+='<div class="kc"><div><b>'+esc(c.t)+'</b><span>'+esc(c.s)+'</span></div></div>'});
   h+='<div class="btns"><button class="go" id="again" type="button">再玩一次</button><button class="go alt" id="bye" type="button">'+(IN_FRAME?'回情境學院':'離開')+'</button></div>'+
-    '<p class="src">資料來源：滅火器擺放觀念由 IRON WILL 講師提供。住宅用火災警報器的種類與安裝位置，參考內政部消防署住警器宣導資料（偵煙式、定溫式；裝天花板距牆或樑 60 公分以上，裝牆面距天花板 15～50 公分）。瓦斯偵測器的安裝高度參考廠商安裝說明（天然氣：天花板下 30 公分內；液化石油氣：地板上 30 公分內）與各類場所消防安全設備設置標準。一氧化碳警報器參考桃園市政府消防局「一氧化碳偵測警報器設置原則」（裝天花板，距燃燒器具及出風口 1.5 公尺以上，關門也聽得到）。標示「待對照官方原文」的內容，教學前請以主管機關最新公布的版本為準。</p></div>';
+    '<p class="src">資料來源：滅火器擺放觀念由 IRON WILL 講師提供。住宅用火災警報器的種類與安裝位置，參考內政部消防署住警器宣導資料（偵煙式、定溫式；裝天花板距牆或樑 60 公分以上，裝牆面距天花板 15～50 公分）。瓦斯偵測器的安裝高度參考廠商安裝說明（天然氣：天花板下 30 公分內；液化石油氣：地板上 30 公分內）與各類場所消防安全設備設置標準。一氧化碳警報器參考桃園市政府消防局「一氧化碳偵測警報器設置原則」（裝天花板，距燃燒器具及出風口 1.5 公尺以上，關門也聽得到）。動畫是幫助理解的示意，煙、瓦斯擴散的時間不是實測數據。標示「待對照官方原文」的內容，教學前請以主管機關最新公布的版本為準。</p></div>';
   $('main').innerHTML=h;window.scrollTo(0,0);
   $('again').onclick=function(){start()};$('bye').onclick=exit;
   try{var d=JSON.parse(localStorage.getItem('iw-day')||'{}')||{};d.equip={r:r,s:T};localStorage.setItem('iw-day',JSON.stringify(d))}catch(e){}
 }
 function exit(){if(IN_FRAME){toParent({iw:'close'});return}try{history.back()}catch(e){}}
-function start(){clearLater();$('fb').classList.remove('on');SCORE=[];CARDS=[];ri=0;prog();RUN.ext();window.scrollTo(0,0)}
+function start(){clearLater();SCORE=[];CARDS=[];ri=0;prog();RUN.ext();window.scrollTo(0,0)}
 $('exitB').onclick=exit;
 /* 測試用 */
-window.__eq={ri:function(){return ri},score:function(){return SCORE},fbGo:function(){var b=$('fbGo');if(b)b.click()},
+window.__eq={ri:function(){return ri},score:function(){return SCORE},fbGo:function(){var b=$('fbGo');if(b)b.click()},fast:function(v){FAST=!!v},
   pick:function(id){var c=document.querySelector('#chips .chip[data-id="'+id+'"]');if(c)c.click()},
   alarmGood:function(){RUN.alarm.set({kit:'heat',liv:'smoke',hall:'smoke',mbr:'smoke',gst:'smoke'});$('chk').click()}};
 start();toParent({iw:'ready'});
