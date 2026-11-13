@@ -78,7 +78,7 @@ main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 16px 24px}
 .fb.on{transform:none}
 .res{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);animation:resIn .35s ease}
 @keyframes resIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.acap{display:flex;align-items:flex-start;gap:10px;min-height:48px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#10171b;border:1px solid #24313a;font-size:14.5px;line-height:1.6}
+.acap{display:flex;align-items:flex-start;gap:10px;min-height:52px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#10171b;border:1px solid #24313a;font-size:16px;line-height:1.65}
 .acap .an{flex:none;padding:2px 8px;border-radius:99px;background:var(--gold);color:#1a1204;font-size:12px;font-weight:700;margin-top:2px}
 .acap .skp{margin-left:auto;flex:none;border:1px solid var(--line);background:#161d22;color:var(--ink2);border-radius:99px;padding:4px 10px;font-size:12.5px}
 [hidden]{display:none!important}
@@ -147,12 +147,14 @@ function play(steps,done){
   /* steps：[{d:毫秒, cap:'說明', draw:function(t){return svg字串}}] 依序播放 */
   var id=++ANIM.id,k=0,cap=$('acap'),fx=document.querySelector('#stg svg #fx');
   if(!fx){var sv=document.querySelector('#stg svg');if(sv){fx=document.createElementNS('http://www.w3.org/2000/svg','g');fx.setAttribute('id','fx');sv.appendChild(fx)}}
-  if(cap){cap.hidden=false;cap.innerHTML='<span class="an">動畫</span><span id="acapT"></span><button type="button" class="skp" id="askip">跳過</button>';$('askip').onclick=function(){finish()}}
-  function finish(){if(id!==ANIM.id)return;ANIM.id++;var last=steps[steps.length-1];if(fx)fx.innerHTML=last.draw(1);if($('acapT'))$('acapT').textContent=last.cap;var b=$('askip');if(b)b.remove();done&&done()}
+  if(cap){cap.hidden=false;cap.innerHTML='<span class="an" id="acapN">動畫</span><span id="acapT"></span><button type="button" class="skp" id="askip">跳過</button>';$('askip').onclick=function(){finish()}}
+  function finish(){if(id!==ANIM.id)return;ANIM.id++;var last=steps[steps.length-1];if(fx)fx.innerHTML=last.draw(1);if($('acapT'))$('acapT').textContent=last.cap;if($('acapN'))$('acapN').textContent='動畫';var b=$('askip');if(b)b.remove();done&&done()}
   function run(){
     if(id!==ANIM.id)return;if(k>=steps.length){finish();return}
-    var S=steps[k],t0=performance.now(),D=FAST?1:S.d;if($('acapT'))$('acapT').textContent=S.cap;
-    function f(now){if(id!==ANIM.id)return;var t=clamp((now-t0)/D,0,1);if(fx)fx.innerHTML=S.draw(t);if(t<1)requestAnimationFrame(f);else{k++;run()}}
+    /* 每一段至少留時間讀完說明（約每字 0.14 秒），畫完再停一下才換下一段 */
+    var S=steps[k],t0=performance.now(),D=FAST?1:Math.max(S.d,(S.cap||'').length*140),H=FAST?1:(S.hold!=null?S.hold:1100);
+    if($('acapT'))$('acapT').textContent=S.cap;if($('acapN'))$('acapN').textContent=steps.length>1?'動畫 '+(k+1)+'／'+steps.length:'動畫';
+    function f(now){if(id!==ANIM.id)return;var t=clamp((now-t0)/D,0,1);if(fx)fx.innerHTML=S.draw(t);if(t<1)requestAnimationFrame(f);else{k++;setTimeout(function(){if(id===ANIM.id)run()},H)}}
     requestAnimationFrame(f);
   }
   run();
@@ -187,7 +189,7 @@ function fire(x,y,s){s=s||1;return '<g transform="translate('+x.toFixed(1)+' '+y
 function extIcon(x,y,s){s=s||1;return '<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+s+')"><rect x="-7" y="-14" width="14" height="30" rx="5" fill="#c42d22" stroke="#0e1316" stroke-width="2"/><rect x="-3" y="-20" width="6" height="7" fill="#333"/><path d="M3 -18h9" stroke="#333" stroke-width="3"/></g>'}
 function me(x,y,lab){return '<circle class="fx-me" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="12"/>'+(lab?'<text class="fx-s" x="'+x.toFixed(1)+'" y="'+(y-20).toFixed(1)+'" text-anchor="middle">'+lab+'</text>':'')}
 function xMark(x,y){return '<path d="M'+(x-16)+' '+(y-16)+'l32 32M'+(x+16)+' '+(y-16)+'l-32 32" stroke="#d9483b" stroke-width="7" stroke-linecap="round"/>'}
-function waves(x,y,t,c){var h='';for(var i=0;i<3;i++){var k=(((t*1.6+i/3)%1)+1)%1;h+='<circle cx="'+x+'" cy="'+y+'" r="'+(14+k*46).toFixed(1)+'" fill="none" stroke="'+(c||'#d9483b')+'" stroke-width="3" opacity="'+(1-k).toFixed(2)+'"/>'}return h}
+function waves(x,y,t,c){var h='',ph=performance.now()/1200+(c==='#f2c14e'?.5:0);for(var i=0;i<3;i++){var k=(((ph+i/3)%1)+1)%1;h+='<circle cx="'+x+'" cy="'+y+'" r="'+(14+k*46).toFixed(1)+'" fill="none" stroke="'+(c||'#d9483b')+'" stroke-width="3" opacity="'+(1-k).toFixed(2)+'"/>'}return h}
 /* 可以點的位置：圓圈加英文字母；說明文字放在圖下方的選項按鈕上 */
 function tgt(id,x,y,r){r=r||26;return '<g class="tgt" data-id="'+id+'"><circle class="r" cx="'+x+'" cy="'+y+'" r="'+r+'"/><text x="'+x+'" y="'+y+'" font-size="'+Math.round(r*1.05)+'">'+id+'</text></g>'}
 function chips(list){return '<div class="chips" id="chips">'+list.map(function(c){return '<button type="button" class="chip" data-id="'+c[0]+'"><b>'+c[0]+'</b><span>'+esc(c[1])+'</span></button>'}).join('')+'</div>'}
@@ -230,29 +232,51 @@ function stageTop(){var s=$('stg');if(s)try{s.scrollIntoView({behavior:FAST?'aut
 
 var RUN={};
 /* ====== 第 1 題：滅火器 ====== */
-/* 路線（平面圖座標）：客廳的「你」、各個放置點、主臥室門口、大門 */
-var P1={me:[560,150],C:[612,212],hallE:[470,212],hallM:[330,212],bedDoor:[292,212],bedIn:[292,300],A:[150,128],kDoor:[376,132],B:[150,392],D:[92,212],door:[698,262]};
+/* 情境：右下角的客房起火。客房門開向客廳，就在家中大門旁邊。
+   路線（平面圖座標）：客廳的「你」、各個放置點、客房門口、大門 */
+var P1={me:[600,140],C:[612,212],GF:[478,392],GDin:[570,292],GDout:[570,234],hallE:[470,212],hallM:[330,212],bedDoor:[292,212],bedIn:[292,300],
+  A:[150,128],kDoor:[376,132],B:[150,392],D:[92,212],door:[698,262],out:[698,318],XB:[600,224]};
+var HOUSE='<clipPath id="cpHouse"><path d="M45 25H765V258H600V465H45Z"/></clipPath><clipPath id="cpGuest"><rect x="322" y="258" width="278" height="207"/></clipPath>';
+function smokeAt(x,y,r,a){return '<g clip-path="url(#cpHouse)"><circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+Math.max(0,r).toFixed(1)+'" fill="rgba(150,150,150,'+(a==null?.34:a)+')"/></g>'}
+function guestFire(k){/* k：0～1 火在客房裡長大，煙先留在客房裡 */return '<g clip-path="url(#cpGuest)"><circle cx="'+P1.GF[0]+'" cy="'+P1.GF[1]+'" r="'+(40+k*150).toFixed(1)+'" fill="rgba(150,150,150,.32)"/></g>'+fire(P1.GF[0],P1.GF[1],1+k*1.4)}
+/* 火從客房門口竄出來、沿著客廳往大門擴散（k：0～1） */
+function fireOut(k){
+  var h=HOUSE+smokeAt(575,250,lerp(30,250,ease(k)),.42);
+  h+=fire(P1.GF[0],P1.GF[1],2.4);
+  var a=seg(k,0,.35),b=seg(k,.35,.7),c=seg(k,.65,1);
+  if(a>0)h+=fire(570,276,.3+a*1.1);
+  if(b>0)h+=fire(588,222,.3+b*1.1);
+  if(c>0)h+=fire(645,236,.3+c*.9);
+  return h;
+}
+function route(pts,u,col,dash){return '<path d="'+poly(pts,u)+'" fill="none" stroke="'+col+'" stroke-width="6" stroke-dasharray="'+(dash||'12 8')+'"/>'}
+/* 折線上第 idx 個點的位置佔全長的比例 */
+function fracAt(pts,idx){var tot=0,part=0;for(var i=1;i<pts.length;i++){var d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);tot+=d;if(i<=idx)part+=d}return tot?part/tot:0}
 function extSteps(id){
   var s=[],F=P1;
   if(id==='C'){
-    s.push({d:1500,cap:'深夜，主臥室起火了。你在客廳。',draw:function(t){return fire(200,355,.6+t*.8)+me(F.me[0],F.me[1],'你')+extIcon(F.C[0],F.C[1])}});
-    var go=[F.me,F.C,F.hallE,F.hallM,F.bedDoor,F.bedIn];
-    s.push({d:3000,cap:'先到大門旁邊拿滅火器，再往主臥室走過去。',draw:function(t){var u=ease(t),p=along(go,u),hasE=u>.12;return '<path d="'+poly(go,u)+'" fill="none" stroke="#7ea2ff" stroke-width="5" stroke-dasharray="10 8"/>'+fire(200,355,1.4+t*.4)+(hasE?'':extIcon(F.C[0],F.C[1]))+me(p[0],p[1],'你')+(hasE?extIcon(p[0]+18,p[1]-4,.8):'')}});
-    s.push({d:2200,cap:'噴了一陣子，火還是越燒越大，滅不了。',draw:function(t){return fire(200,355,1.8+t*.9)+'<circle cx="230" cy="350" r="'+(70+t*40)+'" fill="rgba(160,160,160,.28)"/>'+me(F.bedIn[0],F.bedIn[1]-6,'你')}});
-    var back=[F.bedIn,F.bedDoor,F.hallM,F.hallE,[640,212],F.door];
-    s.push({d:2600,cap:'滅不了就退：你本來就是從大門那邊過來的，往回走就是出口。',draw:function(t){var u=ease(t),p=along(back,u);return fire(200,355,2.7)+'<circle cx="230" cy="350" r="110" fill="rgba(160,160,160,.28)"/><path d="'+poly(back,u)+'" fill="none" stroke="#2fa66a" stroke-width="6" stroke-dasharray="12 8"/>'+me(p[0],p[1],'你')}});
-    s.push({d:1400,cap:'人在大門口，帶上門離開，到外面再打 119。',draw:function(t){return fire(200,355,2.7)+'<circle cx="230" cy="350" r="110" fill="rgba(160,160,160,.28)"/><path d="'+poly(back,1)+'" fill="none" stroke="#2fa66a" stroke-width="6"/>'+me(F.door[0],F.door[1]+30,'')+'<text class="fx-lbl" x="698" y="230" text-anchor="middle">逃出去了</text>'}});
-  }else if(id==='B'||id==='A'){
-    var home=id==='B'?F.B:F.A,fx=id==='B'?[200,355]:[110,150],room=id==='B'?'主臥室':'廚房';
-    s.push({d:1500,cap:room+'起火了。你在客廳，滅火器就放在'+room+'裡。',draw:function(t){return fire(fx[0],fx[1],.6+t*.8)+me(F.me[0],F.me[1],'你')+extIcon(home[0],home[1])}});
-    var go2=id==='B'?[F.me,F.hallE,F.hallM,F.bedDoor,F.bedIn]:[F.me,[470,132],F.kDoor,[290,132]];
-    s.push({d:2600,cap:'你往'+room+'跑，想去拿滅火器……',draw:function(t){var u=ease(t),p=along(go2,u);return '<path d="'+poly(go2,u)+'" fill="none" stroke="#7ea2ff" stroke-width="5" stroke-dasharray="10 8"/>'+fire(fx[0],fx[1],1.4+t*.6)+extIcon(home[0],home[1])+me(p[0],p[1],'你')}});
-    s.push({d:2200,cap:'滅火器就在火的旁邊，根本拿不到；火勢擴大，你還離大門很遠。',draw:function(t){var e=go2[go2.length-1];return fire(fx[0],fx[1],2+t*.8)+'<circle cx="'+fx[0]+'" cy="'+fx[1]+'" r="'+(60+t*50)+'" fill="rgba(160,160,160,.3)"/>'+extIcon(home[0],home[1])+xMark(home[0],home[1])+me(e[0],e[1],'你')}});
+    s.push({d:3000,cap:'深夜，右下角的客房起火了。你在客廳，滅火器就放在大門旁邊。',draw:function(t){return HOUSE+guestFire(t*.3)+me(F.me[0],F.me[1],'你')+extIcon(F.C[0],F.C[1])}});
+    var go=[F.me,F.C,F.GDout];
+    s.push({d:4200,cap:'先到大門旁邊拿滅火器，只要幾步路；再走到客房門口。',draw:function(t){var u=ease(t),p=along(go,u),hasE=u>.3;return HOUSE+guestFire(.3+t*.2)+route(go,u,'#7ea2ff','10 8')+(hasE?'':extIcon(F.C[0],F.C[1]))+me(p[0],p[1],'你')+(hasE?extIcon(p[0]+18,p[1]-4,.8):'')}});
+    s.push({d:4600,cap:'對著火的底部噴。噴了一陣子，火還是越燒越大，滅不了。',draw:function(t){var h=HOUSE+guestFire(.5+t*.5);
+      for(var i=0;i<6;i++){var k=((performance.now()/700)+i/6)%1,x=lerp(F.GDout[0]-6,F.GF[0]+30,k),y=lerp(F.GDout[1]+18,F.GF[1]-30,k);h+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(3+k*7).toFixed(1)+'" fill="rgba(240,240,240,'+(.75*(1-k)).toFixed(2)+')"/>'}
+      if(t>.6)h+=fire(570,280,(t-.6)*2);
+      return h+me(F.GDout[0],F.GDout[1],'你')+extIcon(F.GDout[0]+18,F.GDout[1]-4,.8)}});
+    var back=[F.GDout,[640,226],F.door,F.out];
+    s.push({d:4200,cap:'滅不了就退：大門就在旁邊，轉身幾步就到出口。',draw:function(t){var u=ease(t),p=along(back,u);return fireOut(t*.25)+route(back,u,'#2fa66a')+me(p[0],p[1],'你')}});
+    s.push({d:3400,cap:'人到門外，把門帶上，擋住火和煙，再打 119。',draw:function(t){return fireOut(.25+t*.5)+'<path d="M660 258H735" stroke="#c9d0d3" stroke-width="9"/>'+route(back,1,'#2fa66a','0')+me(F.out[0],F.out[1],'')+'<text class="fx-lbl" x="698" y="458" text-anchor="middle">逃出去了</text>'}});
   }else{
-    s.push({d:1500,cap:'主臥室起火了。你在客廳，滅火器放在走廊最裡面。',draw:function(t){return fire(200,355,.6+t*.8)+me(F.me[0],F.me[1],'你')+extIcon(F.D[0],F.D[1])}});
-    var go3=[F.me,F.hallE,F.hallM,F.D];
-    s.push({d:2600,cap:'你往家裡最深處跑去拿滅火器，經過正在燒的主臥室門口……',draw:function(t){var u=ease(t),p=along(go3,u);return '<path d="'+poly(go3,u)+'" fill="none" stroke="#7ea2ff" stroke-width="5" stroke-dasharray="10 8"/>'+fire(200,355,1.4+t*.6)+(u>.95?'':extIcon(F.D[0],F.D[1]))+me(p[0],p[1],'你')}});
-    s.push({d:2400,cap:'拿到時，火已經從臥室竄到走廊，擋在你和大門中間。',draw:function(t){return fire(200,355,2+t*.4)+fire(292,230,.4+t*1.1)+'<circle cx="292" cy="240" r="'+(30+t*40)+'" fill="rgba(160,160,160,.3)"/>'+me(F.D[0]+20,F.D[1],'你')+extIcon(F.D[0]+40,F.D[1]-4,.8)+(t>.6?xMark(380,212):'')}});
+    var home=F[id],room={A:'廚房',B:'主臥室',D:'走廊盡頭'}[id];
+    var go2={A:[F.me,[470,132],F.kDoor,[182,128]],B:[F.me,F.hallE,F.hallM,F.bedDoor,[292,262],F.bedIn,[182,384]],D:[F.me,F.hallE,F.hallM,[124,212]]}[id];
+    var at=go2[go2.length-1];
+    s.push({d:3000,cap:'深夜，右下角的客房起火了。你在客廳，滅火器放在'+room+'。',draw:function(t){return HOUSE+guestFire(t*.3)+me(F.me[0],F.me[1],'你')+extIcon(home[0],home[1])}});
+    s.push({d:4600,cap:'你往'+room+'跑去拿滅火器——離大門越來越遠。',draw:function(t){var u=ease(t),p=along(go2,u);return HOUSE+guestFire(.3+t*.3)+route(go2,u,'#7ea2ff','10 8')+(u>.97?'':extIcon(home[0],home[1]))+me(p[0],p[1],'你')}});
+    s.push({d:5200,cap:'就在你去拿的這段時間，火從客房門口竄出來，濃煙一路擴散到大門口。',draw:function(t){return fireOut(t)+me(at[0],at[1],'你')+extIcon(at[0]+18,at[1]-4,.8)}});
+    /* 拿到滅火器往大門走：走到快進客廳就被火和煙擋住 */
+    var back=go2.slice().reverse().concat([F.C,F.door]),stopU=fracAt(back,back.length-4),rest=back.slice(back.length-4);
+    s.push({d:5200,cap:'你拿著滅火器想往大門跑，火和濃煙已經擋在你和大門中間，逃生的路被堵住了。',draw:function(t){var u=ease(seg(t,0,.6))*stopU,p=along(back,u),h=fireOut(1)+route(back,u,'#7ea2ff','10 8');
+      if(t>.6){h+='<path d="'+poly(rest,1)+'" fill="none" stroke="#d9483b" stroke-width="4" stroke-dasharray="4 8" opacity=".9"/>'+xMark(F.XB[0],F.XB[1])+'<text class="fx-lbl" x="'+F.XB[0]+'" y="'+(F.XB[1]-46)+'" text-anchor="middle">逃生路線被擋住</text>'}
+      return h+me(p[0],p[1],'你')+extIcon(p[0]+18,p[1]-4,.8)}});
   }
   return s;
 }
@@ -266,13 +290,13 @@ RUN.ext=function(){
     /* 動畫時把題目上的圓圈淡掉，避免跟路線混在一起 */
     [].forEach.call(document.querySelectorAll('#stg .tgt'),function(t){t.style.opacity=t.dataset.id===id||t.dataset.id==='C'?'.55':'.2'});
     var why=good?'放在大門附近：火不論在哪裡燒起來，你都是先到門口拿滅火器，再回頭去滅火。萬一火勢已經擴大、自己滅不了，你往回走就是出口，轉身就能逃生。':
-      (id==='B'?'放在家裡最深處（主臥室）：主臥室起火時，滅火器就在火旁邊，根本拿不到；就算拿得到，也要往家裡面跑，逃生的路可能被擋住。':
-       id==='A'?'放在廚房：廚房是常起火的地方，火一燒起來，你可能拿不到放在火旁邊的滅火器；而且廚房在家裡比較裡面。':
-       '走廊盡頭離大門最遠：去拿滅火器要往家裡深處跑，火勢擴大時，火和煙可能擋在你和大門中間。');
+      (id==='B'?'放在主臥室（家裡比較裡面）：客房起火時，你得先往家裡面跑去拿；拿到的時候，火和煙已經從客房門口竄出來，擋在你和大門中間。':
+       id==='A'?'放在廚房：去拿要往廚房跑，離大門越來越遠；而且廚房本身就是常起火的地方，廚房起火時，滅火器就在火旁邊，根本拿不到。':
+       '走廊盡頭離大門最遠：去拿滅火器要往家裡最深處跑，火勢擴大時，火和煙會擋在你和大門中間。');
     function show(){result(head(g2,good?'放對了！':'再想想',good?'C：客廳，靠近家中大門':'正確答案是 C：客廳，靠近家中大門',pts,20)+'<p class="why">'+esc(why)+'</p>'+
       kc('滅火器放在家中大門附近','火災可能發生在家中任何地方。滅火器放在大門附近，你會先到門口拿、再回頭滅火；火勢擴大、自己滅不了時，往回走就是出口，逃生相對容易。放在家裡深處，取用時反而要往裡面跑，逃生路線可能被擋住。'),'下一題',next,replay)}
     function replay(){stageTop();play(steps,function(){})}
-    var steps=extSteps(id);if(!good)steps=steps.concat([{d:900,cap:'換成正確的放法看看：滅火器放在客廳、靠近家中大門。',draw:function(){return extIcon(P1.C[0],P1.C[1],1.2)}}]).concat(extSteps('C'));
+    var steps=extSteps(id);if(!good)steps=steps.concat([{d:2600,cap:'換成正確的放法看看：滅火器放在客廳、靠近家中大門。',draw:function(t){return extIcon(P1.C[0],P1.C[1],1+.3*Math.sin(t*Math.PI))}}]).concat(extSteps('C'));
     stageTop();later(function(){play(steps,show)},350);
   });
 };
@@ -305,14 +329,14 @@ RUN.alarm=function(){
   /* 動畫一：廚房煮飯的油煙；動畫二：客廳起火，每個房間都裝 vs 只有主臥室裝一顆 */
   function steps(){
     var S=[],kit=st.kit;
-    S.push({d:3000,cap:kit==='smoke'?'傍晚煮飯，廚房冒出油煙和水蒸氣。偵煙式一聞到油煙就一直響（誤報），久了大家就想把它拆掉。':kit==='heat'?'傍晚煮飯，廚房冒出油煙和水蒸氣。定溫式不會被油煙觸發；真的起火、溫度升到約 80℃ 才響。':'傍晚煮飯，廚房冒出油煙。廚房沒有裝住警器，萬一真的起火，要等煙飄到別的房間才有人發現。',
+    S.push({d:6000,cap:kit==='smoke'?'傍晚煮飯，廚房冒出油煙和水蒸氣。偵煙式一聞到油煙就一直響（誤報），久了大家就想把它拆掉。':kit==='heat'?'傍晚煮飯，廚房冒出油煙和水蒸氣。定溫式不會被油煙觸發；真的起火、溫度升到約 80℃ 才響。':'傍晚煮飯，廚房冒出油煙。廚房沒有裝住警器，萬一真的起火，要等煙飄到別的房間才有人發現。',
       draw:function(t){var h='';for(var i=0;i<8;i++){var k=(t*1.4+i/8)%1;h+='<circle cx="'+(150+Math.sin(i*2.1)*30+k*20).toFixed(1)+'" cy="'+(70-k*30).toFixed(1)+'" r="'+(10+k*24).toFixed(1)+'" fill="rgba(200,200,200,'+(.32*(1-k)).toFixed(2)+')"/>'}
         return h+(kit==='none'?'':alarmDot(220,120,TYP[kit].c,kit==='smoke'&&t>.25,t))+'<text class="fx-lbl" x="150" y="150" text-anchor="middle">煮飯中</text>'}});
-    function spread(all){return function(t){var r=40+t*560,hit=all?t>=.12:t>=.8,al=all?[[640,160],[330,212],[185,350],[470,385],[220,120]]:[[185,350]];
+    function spread(all){return function(t0){var t=seg(t0,0,.85),r=40+t*560,hit=all?t>=.12:t>=.8,al=all?[[640,160],[330,212],[185,350],[470,385],[220,120]]:[[185,350]];
       return '<circle cx="600" cy="120" r="'+r.toFixed(1)+'" fill="rgba(170,170,170,.26)"/>'+fire(600,112,1.4)+al.map(function(p){return alarmDot(p[0],p[1],'#7ea2ff',hit,t)}).join('')+
         '<text class="fx-lbl" x="400" y="488" text-anchor="middle">起火後 '+Math.round(t*5)+' 分鐘'+(hit?'：住警器響了':'')+'</text>'}}
-    S.push({d:5200,cap:'客廳起火。每個房間都有裝：客廳那一顆很快就響了，全家很早就知道。',draw:spread(true)});
-    S.push({d:5200,cap:'如果只有主臥室裝一顆：煙要經過走廊、大量飄進臥室才響，已經晚了好幾分鐘。',draw:spread(false)});
+    S.push({d:8000,cap:'客廳起火。每個房間都有裝：客廳那一顆很快就響了，全家很早就知道。',draw:spread(true)});
+    S.push({d:8000,cap:'如果只有主臥室裝一顆：煙要經過走廊、大量飄進臥室才響，已經晚了好幾分鐘。',draw:spread(false)});
     return S;
   }
   $('chk').onclick=function(){
@@ -364,9 +388,9 @@ RUN.pos=function(){
     var G={A:'ok',C:'mid',B:'bad',D:'bad',E:'bad'}[id],pts={A:15,C:10,B:0,D:0,E:0}[id];markPick(id,'A',['C']);
     SCORE.push({k:'pos',t:'住警器位置',got:pts,max:15,g:G});
     var W={A:'天花板、居室中央：煙往上飄、碰到天花板往四周擴散，裝在中央最快感測到。',C:'牆面也可以裝，但要在距天花板 15～50 公分之間；能裝天花板時，盡量裝天花板中央。',B:'天花板和牆的交角附近，煙比較不容易流進去（死角）。裝在天花板時，要距離牆面或樑 60 公分以上。',D:'牆面中間太低，煙要在天花板下累積很厚才碰得到，警報會變慢。',E:'冷氣出風口會把煙吹散，偵測會變慢，也容易誤報。要遠離出風口。'};
-    var S=[{d:2200,cap:'床邊的小桌起火，煙往上衝，碰到天花板。',draw:function(t){return smoke(t*.2)}},
-      {d:3200,cap:'煙沿著天花板往兩邊擴散：天花板中央的 A 最先響，牆面上方的 C 接著響。',draw:function(t){return smoke(.2+t*.3)}},
-      {d:3600,cap:'牆角是死角，煙比較晚才進得去；冷氣把出風口旁的煙吹散；牆面中間要等煙層降下來才碰得到。',draw:function(t){return smoke(.5+t*.5)}}];
+    var S=[{d:4000,cap:'床邊的小桌起火，煙往上衝，碰到天花板。',draw:function(t){return smoke(t*.2)}},
+      {d:6000,cap:'煙沿著天花板往兩邊擴散：天花板中央的 A 最先響，牆面上方的 C 接著響。',draw:function(t){return smoke(.2+t*.3)}},
+      {d:7000,cap:'牆角是死角，煙比較晚才進得去；冷氣把出風口旁的煙吹散；牆面中間要等煙層降下來才碰得到。',draw:function(t){return smoke(.5+t*.5)}}];
     function show(){var an=$('ann');if(an)an.setAttribute('opacity','1');
       result(head(G,G==='ok'?'位置正確！':G==='mid'?'可以，但不是最好':'再想想','最好的位置：A 天花板中央',pts,15)+'<p class="why">'+esc(W[id])+'</p>'+
       kc('住警器裝在天花板中央','以裝在天花板為原則，距離牆面或樑 60 公分以上，盡量在居室中央。裝在牆面時，要在距天花板 15～50 公分之間。遠離冷氣出風口。'),'下一題',next,function(){stageTop();play(S,function(){})})}
@@ -412,15 +436,15 @@ RUN.gas=function(){
       var last=step===QS.length-1,pts=Math.round(got/QS.length*25),S;
       if(Q.kind==='pick'){
         [].forEach.call(document.querySelectorAll('#stg .tgt'),function(t){t.style.opacity='.25'});
-        S=[{d:4200,cap:Q.light?'瓦斯從爐子漏出來。天然氣比空氣輕，一直往上飄，先積在天花板下面。':'瓦斯從爐子漏出來。桶裝瓦斯比空氣重，一直往下沉，先積在地板上。',draw:gasDraw(Q.light,id)}];
-        if(!ok)S.push({d:3600,cap:'換成正確位置 '+Q.ans+'：瓦斯一積起來，偵測器馬上就響了。',draw:gasDraw(Q.light,Q.ans)});
+        S=[{d:6000,cap:Q.light?'瓦斯從爐子漏出來。天然氣比空氣輕，一直往上飄，先積在天花板下面。':'瓦斯從爐子漏出來。桶裝瓦斯比空氣重，一直往下沉，先積在地板上。',draw:gasDraw(Q.light,id)}];
+        if(!ok)S.push({d:5000,cap:'換成正確位置 '+Q.ans+'：瓦斯一積起來，偵測器馬上就響了。',draw:gasDraw(Q.light,Q.ans)});
       }else{
         $('stg').hidden=false;
         var det=function(on){return function(t){var h=gasDraw(true,null)(t*.8)+'<rect x="304" y="46" width="28" height="20" rx="4" fill="#f4f4f2" stroke="#0e1316" stroke-width="2"/>';
           h+=on?(t>.5?waves(318,56,t)+beepTag(270,56,'響了'):'')+'<path d="M332 60C350 70 360 150 369 178" stroke="#c9d0d3" stroke-width="2" fill="none"/>':'<path d="M332 60C350 70 356 140 350 160" stroke="#c9d0d3" stroke-width="2" fill="none"/><text class="fx-s" x="300" y="188" text-anchor="end">插頭沒插</text>';
           return h+'<text class="fx-s" x="210" y="236" text-anchor="middle">凌晨 2 點，沒有人在煮飯</text>'}};
-        S=[{d:4200,cap:id==='on'?'凌晨 2 點，管線接頭鬆了，瓦斯慢慢漏出來。偵測器一直插著電，馬上就響了。':'凌晨 2 點，管線接頭鬆了，瓦斯慢慢漏出來。偵測器沒插電，一點聲音都沒有，沒有人知道。',draw:det(id==='on')}];
-        if(id!=='on')S.push({d:3400,cap:'一直插著電的話：瓦斯一漏，偵測器就叫醒全家。',draw:det(true)});
+        S=[{d:5500,cap:id==='on'?'凌晨 2 點，管線接頭鬆了，瓦斯慢慢漏出來。偵測器一直插著電，馬上就響了。':'凌晨 2 點，管線接頭鬆了，瓦斯慢慢漏出來。偵測器沒插電，一點聲音都沒有，沒有人知道。',draw:det(id==='on')}];
+        if(id!=='on')S.push({d:4500,cap:'一直插著電的話：瓦斯一漏，偵測器就叫醒全家。',draw:det(true)});
       }
       var body=head(ok?'ok':'bad',ok?'答對了！':'再想想','正確答案：'+Q.ok,pts,last?25:0)+'<p class="why">'+esc(Q.W[id])+'</p>';
       if(last){SCORE.push({k:'gas',t:'瓦斯偵測器',got:pts,max:25,g:got===3?'ok':got>=2?'mid':'bad'});
@@ -461,9 +485,9 @@ RUN.co=function(){
     SCORE.push({k:'co',t:'一氧化碳警報器',got:pts,max:15,g:G});
     var W={A:'臥室門口的走廊天花板：大家睡覺時關著房門也聽得到，又離熱水器有一段距離，不容易誤報。',D:'客廳是生活區域，裝在這裡可以；但睡覺時關著房門，可能聽不清楚。家裡如果有兩顆，客廳和臥室附近都裝更好。',B:'熱水器正上方太近，點火瞬間的廢氣容易誤報；設置原則建議離燃燒器具 1.5 公尺以上。',C:'瓦斯爐旁太近，也有油煙、熱氣，容易誤報。'};
     var S=[];
-    if(id==='B'||id==='C')S.push({d:3400,cap:id==='B'?'警報器裝在熱水器正上方：每次熱水器點火，那一點廢氣就讓它響，常常誤報，最後被拆掉。':'警報器裝在瓦斯爐旁：每次煮飯就響，常常誤報，最後被拆掉。',draw:coDraw(id,'false')});
-    else S.push({d:4600,cap:id==='A'?'半夜，熱水器不完全燃燒，一氧化碳沿著走廊擴散。臥室門口的警報器很快就響了，全家都被叫醒。':'半夜，一氧化碳沿著走廊擴散。客廳的警報器要等擴散到客廳才響，房門關著，臥室裡的人聽不太清楚。',draw:coDraw(id,'co')});
-    if(id!=='A')S.push({d:4600,cap:'裝在正確的位置 A（臥室門口的走廊天花板）：一氧化碳一飄過來就響，關著房門也聽得到。',draw:coDraw('A','co')});
+    if(id==='B'||id==='C')S.push({d:5000,cap:id==='B'?'警報器裝在熱水器正上方：每次熱水器點火，那一點廢氣就讓它響，常常誤報，最後被拆掉。':'警報器裝在瓦斯爐旁：每次煮飯就響，常常誤報，最後被拆掉。',draw:coDraw(id,'false')});
+    else S.push({d:6500,cap:id==='A'?'半夜，熱水器不完全燃燒，一氧化碳沿著走廊擴散。臥室門口的警報器很快就響了，全家都被叫醒。':'半夜，一氧化碳沿著走廊擴散。客廳的警報器要等擴散到客廳才響，房門關著，臥室裡的人聽不太清楚。',draw:coDraw(id,'co')});
+    if(id!=='A')S.push({d:6500,cap:'裝在正確的位置 A（臥室門口的走廊天花板）：一氧化碳一飄過來就響，關著房門也聽得到。',draw:coDraw('A','co')});
     function show(){result(head(G,G==='ok'?'位置正確！':G==='mid'?'可以，但還能更好':'再想想','最好的位置：A 臥室門口的走廊',pts,15)+'<p class="why">'+esc(W[id])+'</p>'+
       kc('一氧化碳警報器：裝在生活、睡覺的區域','裝在客廳、臥室附近等生活區域的天花板，關著房門也要聽得到警報。離燃氣熱水器、瓦斯爐等燃燒器具 1.5 公尺以上，也離冷氣出風口 1.5 公尺以上。最根本的是：燃氣熱水器要裝在室外通風良好的地方。'),'看成績單',next,function(){stageTop();play(S,function(){})})}
     stageTop();later(function(){play(S,show)},350);
@@ -485,7 +509,7 @@ function exit(){if(IN_FRAME){toParent({iw:'close'});return}try{history.back()}ca
 function start(){clearLater();SCORE=[];CARDS=[];ri=0;prog();RUN.ext();window.scrollTo(0,0)}
 $('exitB').onclick=exit;
 /* 測試用 */
-window.__eq={ri:function(){return ri},score:function(){return SCORE},fbGo:function(){var b=$('fbGo');if(b)b.click()},fast:function(v){FAST=!!v},
+window.__eq={ri:function(){return ri},frame:function(id,k,t){clearLater();var fx=document.querySelector('#stg svg #fx'),S=extSteps(id);if(fx)fx.innerHTML=S[k].draw(t);return S.length+' '+S[k].cap},score:function(){return SCORE},fbGo:function(){var b=$('fbGo');if(b)b.click()},fast:function(v){FAST=!!v},
   pick:function(id){var c=document.querySelector('#chips .chip[data-id="'+id+'"]');if(c)c.click()},
   alarmGood:function(){RUN.alarm.set({kit:'heat',liv:'smoke',hall:'smoke',mbr:'smoke',gst:'smoke'});$('chk').click()}};
 start();toParent({iw:'ready'});

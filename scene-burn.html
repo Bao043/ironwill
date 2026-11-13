@@ -1158,7 +1158,7 @@ var puddleF=Q(.8,.6,KET.x+.3,.004,KET.z+.2,-PI/2,0,0x5d7180,{a:0,blend:'alpha',s
 var stream=Cy(.016,1,.016,SPOUT[0],SPOUT[1]-.2,SPOUT[2],0xcfe6ff,{a:0,blend:'alpha',spec:1,em:[.08,.1,.12],dyn:true});
 var basinWater=Q(SK.w-.02,SK.d-.02,SK.x,CTOP-SK.dp+.012,SK.z,-PI/2,0,0x9fb8c8,{a:0,blend:'alpha',spec:1,dyn:true});
 /* 紗布、牙膏、冰塊、剪刀、膠帶、針、藥膏、車鑰匙 */
-var gauze=B(.15,.006,.11,0,0,0,0xf4f4ef,{tex:TX.fabric,rep:[2,2],em:[.08,.08,.08],dyn:true});gauze.vis=false;
+var gauze=Cy(.048,.13,.042,0,0,0,0xf4f4ef,{tex:TX.fabric,rep:[2,2],em:[.08,.08,.08],dyn:true});gauze.vis=false;
 var gauzePk=B(.1,.02,.08,SINKX+.42,CTOP+.01,SINKZ+.1,0xe9e9e4,{tex:TX.fabric});
 var paste=Cy(.035,.17,.035,0,0,0,0xf2f2f2,{r:[0,0,PI/2],spec:.5,dyn:true});paste.vis=false;
 var pasteCap=Cy(.02,.025,.02,0,0,0,0x3a7bd5,{r:[0,0,PI/2],dyn:true});pasteCap.vis=false;
@@ -1524,7 +1524,7 @@ function handsUpdate(){
     var M=rotM(rr[0],rr[1],rr[2]),W=[p[0]+.06*hs*M[8]/HS,p[1]+.06*hs*M[9]/HS,p[2]+.06*hs*M[10]/HS];if(H.mesh&&HM.ready)W=hmFromLocal(H,p,rr,HAND_DATA.wr);
     var L=Math.hypot(H.elbow[0]-W[0],H.elbow[1]-W[1],H.elbow[2]-W[2]);
     H.armS.mat=limbMat(BB,W,H.elbow,.004,Math.min(H.armL||.16,L),H.armW||.037,H.armH||.019);
-    H.arm.mat=limbMat(BB,W,H.elbow,Math.min(H.mesh&&HM.ready?(H.sl0!=null?H.sl0:.03):.14,L*.5),L+(H.slEnd!=null?H.slEnd:.4),H.slW||.078,H.slH||.07);
+    H.arm.mat=limbMat(BB,W,H.elbow,Math.min(H.mesh&&HM.ready?(H.sl0!=null?H.sl0:.03):.14,L*(H.slK||.5)),L+(H.slEnd!=null?H.slEnd:.4),H.slW||.078,H.slH||.07);
     H.armS.dyn=false;H.arm.dyn=false;
     if(H.up){H.up.vis=vis&&!!H.shoulder;if(H.shoulder){var ue=H.elbow,us=H.shoulder;H.up.mat=limbMat(BB,ue,us,-.03,Math.hypot(us[0]-ue[0],us[1]-ue[1],us[2]-ue[2])+.02,(H.slW||.078)*1.05,(H.slH||.07)*1.05);H.up.dyn=false}}
   });
@@ -1583,7 +1583,7 @@ function handsReset(){HLIST.forEach(function(H){H.vis=false;H.follow=null;H.hold
 function bothOut(dur,done){hOut(HR,dur);hOut(HL,dur,done)}
 /* ================= 聲音（程式合成，立體聲定位 + 殘響 + 壓縮，強化現場感） ================= */
 var AC=null,muffle=null,comp=null,revSend=null,noiseBuf=null,whiteBuf=null,alarmG=null,fireRumbleG=null,fireRoarG=null,firePan=null,fireBus=null,sirenG=null,sirenPan=null,droneG=null,windG=null;
-var alarmLevel=1,nextBeat=0,regOn=false,roarKick=0,fireVol=0;
+var alarmLevel=1,nextBeat=0,tenseUntil=0,regOn=false,roarKick=0,fireVol=0;
 function mkNoise(brown){
   var n=AC.sampleRate*4,b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0),last=0;
   for(var i=0;i<n;i++){var w=Math.random()*2-1;if(brown){last=(last+.02*w)/1.02;d[i]=last*3.5}else d[i]=w}
@@ -1657,13 +1657,14 @@ function crackle(){
   if(big){var o=AC.createOscillator(),og=AC.createGain();o.type='sine';o.frequency.setValueAtTime(260+Math.random()*200,t);o.frequency.exponentialRampToValueAtTime(70,t+.1);og.gain.setValueAtTime(vv*.8,t);og.gain.exponentialRampToValueAtTime(.001,t+.12);o.connect(og);og.connect(fireBus);o.start(t);o.stop(t+.14)}
 }
 function heartbeat(){
-  if(!AC||document.hidden||sfNow>=75||phase==='title'||phase==='end')return;
+  if(!AC||document.hidden||sfNow>=75||AC.currentTime>tenseUntil||phase==='title'||phase==='end')return;
   var now=AC.currentTime;if(now<nextBeat)return;
   var k=(100-sfNow)/100;nextBeat=now+60/(78+k*80);
   [0,.17].forEach(function(dt,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(i?50:60,now+dt);o.frequency.exponentialRampToValueAtTime(32,now+dt+.12);
     g.gain.setValueAtTime(0,now+dt);g.gain.linearRampToValueAtTime((i?.35:.55)*(.5+k),now+dt+.01);g.gain.exponentialRampToValueAtTime(.001,now+dt+.2);o.connect(g);g.connect(master);o.start(now+dt);o.stop(now+dt+.22)});
 }
 function breath(){
+  return;
   if(!AC||document.hidden||phase==='title'||phase==='end'||sfNow>=75)return;
   var vol=.06+(100-sfNow)/100*.16,t=AC.currentTime;
   var s=AC.createBufferSource();s.buffer=whiteBuf;var f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=1100;f.Q.value=.9;var g=AC.createGain();
@@ -1781,7 +1782,7 @@ function bars(on){el('bars').classList.toggle('on',!!on)}
 function fadeTo(v,ms){var f=el('fade');f.style.transition='opacity '+(ms||1200)+'ms ease';f.style.opacity=v}
 function showSkip(v){el('skip').hidden=!v}
 function setSafety(v){
-  sfNow=clamp(Math.round(v),0,100);
+  var nv=clamp(Math.round(v),0,100);if(nv<sfNow&&AC&&phase!=='title')tenseUntil=AC.currentTime+4;sfNow=nv;
   el('sval').textContent=sfNow;var f=el('sfill');f.style.width=sfNow+'%';f.style.background=sfNow>60?'var(--ok)':sfNow>30?'var(--warn)':'var(--signal)';
   ST.smokeT=baseSmoke+(100-sfNow)/100*.32;
 }
@@ -1808,7 +1809,7 @@ var CHS=['沖','脫','泡蓋','送'],CLKS=['17:48','17:51','17:56','18:05'];
 DEC.forEach(function(d,i){d.ch='第'+'一二三四'[i]+'章　'+CHS[i]});
 /* ---- 孩子的手臂（用同一套寫實手部模型，縮小成孩子的手） ---- */
 var HC=mkHand(0xd8a88c,0x3d5a80,false,{world:true,hs:.6});
-HC.tint=[.97,.84,.77];HC.slW=.062;HC.slH=.056;HC.armW=.034;HC.armH=.028;HC.armL=.2;HC.sl0=.05;
+HC.tint=[.97,.84,.77];HC.slW=.062;HC.slH=.056;HC.armW=.034;HC.armH=.028;HC.armL=.24;HC.sl0=.05;HC.slK=.95;
 var BURN={lv:0,tex:[],armTex:[]};
 /* 燙傷的紅：畫在手臂模型的貼圖上（前臂與手背） */
 function burnPaint(img,lv,raw){
@@ -1835,14 +1836,14 @@ HC.onTex=function(img){
 function setBurn(lv){BURN.lv=lv;if(!BURN.tex.length)return;HC.mesh.tex=BURN.tex[lv];HC.armS.tex=BURN.armTex[lv];HC.armS.col=[1,1,1];HC.armS.skin=1}
 /* 水泡（掛在孩子手上的局部座標：前臂背側） */
 var BLIS=[];
-[[.008,.02,-.004,.014],[-.014,.019,.016,.011],[.016,.018,.03,.009]].forEach(function(b){
+[[.008,.03,.07,.014],[-.013,.029,.11,.011],[.014,.028,.15,.009]].forEach(function(b){
   var q=O({g:'sph',parent:HC.root,dyn:true,p:[b[0],b[1],b[2]],s:[b[3]*1.6,b[3]*.9,b[3]*1.4],col:hex(0xf3d6c4),spec:1,em:[.08,.06,.05],a:1});q.vis=false;q._h=HC;HDRAW.push(q);BLIS.push(q)});
 function blisters(v,flat){BLIS.forEach(function(q){q.vis=v;q.s[1]=flat?.004:q.s[0]*.55})}
 /* ---- 鏡頭位置 ---- */
 var CAM={},KIDP={};
 function camSetup(){
   KIDP.table={p:[TB.x+.15,0,TB.z+.62],ry:PI};
-  KIDP.sink={p:[SINKX-.14,.24,-1.58],ry:PI};
+  KIDP.sink={p:[SINKX-.163,.24,-1.645],ry:PI};
   CAM.table=lookAt([TB.x+.72,1.45,TB.z+1.45],[KET.x+.08,TB.y+.1,KET.z+.05]);
   CAM.arm=lookAt([TB.x+.82,1.3,TB.z+.5],[TB.x+.22,.9,TB.z+.42]);
   CAM.sink=lookAt([SINKX+.36,1.4,-1.48],[SPOUT[0],CTOP-.07,SPOUT[2]+.03]);
@@ -1856,8 +1857,8 @@ bodyArm(HC,KID,[-.22,.5,.04]);bodyArm(HC2,KID,[.22,.5,.04]);
 var HANG_R=[-.22,.5,.04],HANG_L=[.22,.5,.04];
 function kidAt(k){KID.node.p=k.p.slice();KID.node.r=[0,k.ry,0];resetBody(KID);stool.vis=k.p[1]>.1;KID.show(true);
   setLp(HC2,HANG_L);HC2.aim=-PI/2;HC2.curl=.45;HC2.thumb=.3;HC2.vis=true}
-function armTable(){kidAt(KIDP.table);HC.poleB=null;setLp(HC,HANG_R);HC.aim=PI/2;HC.curl=.35;HC.thumb=.3}
-function armSink(){kidAt(KIDP.sink);setWt(HC,[SPOUT[0],CTOP+.07,SPOUT[2]+.03]);HC.aim=.1;HC.poleB=[-.9,-.25,-.2];HC.curl=.3;HC.thumb=.25;
+function armTable(){kidAt(KIDP.table);HC.poleB=null;HC.reach=null;setLp(HC,HANG_R);HC.aim=PI/2;HC.curl=.35;HC.thumb=.3}
+function armSink(){kidAt(KIDP.sink);HC.reach=.55;setWt(HC,[SPOUT[0]-.025,CTOP+.065,SPOUT[2]-.035]);HC.aim=.1;HC.poleB=[-.9,-.25,-.2];HC.curl=.3;HC.thumb=.25;
   setLp(HC2,w2b(KID,[SINKX-.36,CTOP+.04,-1.8]));HC2.aim=0;HC2.curl=.5}
 /* 你的雙手扶著孩子的手臂 */
 function holdArm(dur){
@@ -1870,6 +1871,11 @@ function water(on){WATER=on?1:0;tween(stream,{a:on?.55:0},.3);tween(basinWater,{
     waterG.gain.setTargetAtTime(on?.08:0,AC.currentTime,.12)}}catch(e){}
   lever.r=[0,0,on?-.5:-1.2];}
 function placeOnArm(o,lx,ly,lz){var m=HC.root.mat;if(!m)return;o.p=[m[0]*lx+m[4]*ly+m[8]*lz+m[12],m[1]*lx+m[5]*ly+m[9]*lz+m[13],m[2]*lx+m[6]*ly+m[10]*lz+m[14]]}
+/* 放在前臂上（z：從手腕往手肘的距離，孩子手的局部座標）並順著前臂的方向 */
+function foreW(z,y,x){var m=HC.root.mat;if(!m)return HC.p.slice();x=x||0;y=y==null?.032:y;return [m[0]*x+m[4]*y+m[8]*z+m[12],m[1]*x+m[5]*y+m[9]*z+m[13],m[2]*x+m[6]*y+m[10]*z+m[14]]}
+function onFore(o,z,y,x){var m=HC.root.mat;if(!m)return;o.p=foreW(z,y,x);o.r=[0,Math.atan2(m[8],m[10]),0]}
+/* 紗布：鬆鬆地包住前臂燙傷的那一段（圓筒順著前臂的方向） */
+function gauzeOn(){var m=HC.root.mat;if(!m)return;var l=Math.hypot(m[8],m[9],m[10])||1;gauze.p=foreW(.17,.004);gauze.r=[PI/2-Math.asin(clamp(m[9]/l,-1,1)),Math.atan2(m[8],m[10]),0];gauze.vis=true}
 function cryCap(t){cap(t,'孩子')}
 /* ---- 開場 ---- */
 SCN.reset=function(){
@@ -1906,10 +1912,10 @@ var PRE={
   },
   3:function(go){
     cap('沖了二十分鐘，他的哭聲慢慢小了。');
-    after(1200,function(){if(HC.sl0<.1){HC.sl0=.16;HC.showArmS=true}water(false);blisters(true);cap('手臂上起了幾個水泡。');after(1600,go)});
+    after(1200,function(){if(HC.sl0<.2){HC.sl0=.21;HC.showArmS=true}water(false);blisters(true);cap('前臂上起了幾個水泡。');after(1600,go)});
   },
   4:function(go){
-    if(!(G.d3&&G.d3.id==='cover')){gauze.vis=true;placeOnArm(gauze,0,.026,.01)}
+    if(!(G.d3&&G.d3.id==='cover')){gauzeOn()}
     cap('紗布輕輕蓋著。燙傷的範圍有半隻前臂那麼大。');after(1800,go);
   }
 };
@@ -1945,40 +1951,40 @@ var PLAY={
  d2:{
   cut:function(done){
     cap('水不停地沖。你拿剪刀，從袖口小心地往上剪開。');
-    tween(HC,{sl0:.17},2.2);after(900,function(){HC.showArmS=true});
+    tween(HC,{sl0:.21},2.2);after(900,function(){HC.showArmS=true});
     after(2600,function(){cap('黏在皮膚上的那一小片，留著不動。')});
     after(4400,done);
   },
   rip:function(done){
     cap('你一把扯下他的袖子——');
-    HC.showArmS=true;tween(HC,{sl0:.17},.25);
+    HC.showArmS=true;tween(HC,{sl0:.21},.25);
     after(400,function(){setBurn(2);ST.shake=.4;tween(ST,{shake:0},.5);cryCap('啊——！')});
     after(2800,done);
   },
   stop:function(done){
     cap('你先關掉水，想把衣服擦乾再脫。');water(false);
     after(1800,function(){cryCap('又開始痛了……又燙了……')});
-    after(3200,function(){cap('你趕緊把水重新打開。');water(true);tween(HC,{sl0:.17},1.2);HC.showArmS=true});
+    after(3200,function(){cap('你趕緊把水重新打開。');water(true);tween(HC,{sl0:.21},1.2);HC.showArmS=true});
     after(4600,done);
   },
-  _:function(done){cap('濕衣服還貼在他的手臂上。');after(1200,function(){HC.showArmS=true;tween(HC,{sl0:.17},1)});after(2800,done)}
+  _:function(done){cap('濕衣服還貼在他的手臂上。');after(1200,function(){HC.showArmS=true;tween(HC,{sl0:.21},1)});after(2800,done)}
  },
  d3:{
   cover:function(done){
-    cap('你拿出乾淨的紗布，鬆鬆地蓋在傷口上，沒有碰破水泡。');
+    cap('你拿出乾淨的紗布，鬆鬆地蓋在前臂的傷口上，沒有碰破水泡。');
     var a=w2c([SINKX+.42,CTOP+.02,SINKZ+.1]);hIn(HR,{p:[a[0],a[1]+.04,a[2]],r:[.4,-.2,0],curl:.7,thumb:.6,abs:true,elbow:[a[0]+.2,a[1]-.32,a[2]+.3]},.5);
-    after(900,function(){var c=w2c(HC.p);hTo(HR,{p:[c[0],c[1]+.05,c[2]],abs:true},.5)});
-    after(1500,function(){gauze.vis=true;placeOnArm(gauze,0,.026,.01);hOut(HR,.4)});
+    after(900,function(){var c=w2c(foreW(.11,.06));hTo(HR,{p:[c[0],c[1]+.05,c[2]],abs:true},.5)});
+    after(1500,function(){gauzeOn();hOut(HR,.4)});
     after(2800,done);
   },
   pop:function(done){
-    cap('你拿針把水泡戳破。');needle.vis=true;placeOnArm(needle,.012,.05,-.002);
+    cap('你拿針把水泡戳破。');needle.vis=true;placeOnArm(needle,.012,.07,.07);
     after(1200,function(){blisters(true,true);needle.vis=false;cryCap('痛！')});
     after(3000,done);
   },
   tape:function(done){
     cap('你拿膠帶，把傷處緊緊貼起來。');
-    after(800,function(){tapeS.vis=true;placeOnArm(tapeS,0,.024,.008)});
+    after(800,function(){tapeS.vis=true;onFore(tapeS,.1,.027);tapeS.r[1]+=PI/2});
     after(2400,function(){cap('等一下要撕下來的時候，皮會跟著被扯起來。')});
     after(3800,done);
   },
@@ -2302,7 +2308,7 @@ function armSolve(H){
   }
   var side=H.mirror?1:-1,S=[side*.18,.95,0],T=H.lp?H.lp.slice():w2b(B,H.wt||H.p);
   /* 手不能跑到軀幹裡或身體後面 */
-  if(T[1]>.3&&T[1]<1.3){var zmin=Math.abs(T[0])<.27?.15:-.1;if(T[2]<zmin)T[2]=zmin}
+  if(T[1]>.3&&T[1]<1.3){var zmin=Math.abs(T[0])<.27?.15:-.1;if(T[1]>1.0&&T[1]<1.12&&Math.abs(T[0])<.14)zmin=-.06;if(T[2]<zmin)T[2]=zmin}
   var R=H.reach||.5,d0=Math.hypot(T[0]-S[0],T[1]-S[1],T[2]-S[2]);
   if(B.canLean&&H.wt&&!H.lp){
     if(B._ft!==tNow){var dt=Math.min(.05,Math.max(0,tNow-(B._ft||tNow)));B.lean=(B.lean||0)+(Math.min(.42,B._need||0)-(B.lean||0))*Math.min(1,dt*4);B._ft=tNow;B._need=0;B.node.r[0]=(B.r0||0)+B.lean}

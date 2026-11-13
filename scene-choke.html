@@ -1153,6 +1153,7 @@ var food=Sp(.035,.025,.03,0,0,0,0x8a4b2a,{dyn:true,spec:.4});food.vis=false;
 var DADS=mkBody({p:[0,0,0],ry:PI,k:1.3,shirt:0x5f6f7a,pants:0x2e3036,skin:0xc9977a,sit:true});DADS.show(false);
 var DAD=mkBody({p:[0,0,0],ry:PI,k:1.3,shirt:0x5f6f7a,pants:0x2e3036,skin:0xc9977a});DAD.show(false);
 var MOM2=mkBody({p:[0,0,0],ry:0,k:1.18,shirt:0x9a6b84,pants:0x3a3f4a,skin:0xd9a98d,long:true,hairC:0x2a1d16});MOM2.show(false);
+var RES=mkBody({p:[0,0,0],ry:PI,k:1.2,shirt:0x65759a,pants:0x2e3036,skin:0xd9a384});RES.show(false);
 
 var objsOpaque=[],objsTrans=[];
 objsOpaque=objs.filter(function(o){return o.g&&o.blend==='none'});objsTrans=objs.filter(function(o){return o.g&&o.blend!=='none'});
@@ -1505,7 +1506,7 @@ function handsUpdate(){
     var M=rotM(rr[0],rr[1],rr[2]),W=[p[0]+.06*hs*M[8]/HS,p[1]+.06*hs*M[9]/HS,p[2]+.06*hs*M[10]/HS];if(H.mesh&&HM.ready)W=hmFromLocal(H,p,rr,HAND_DATA.wr);
     var L=Math.hypot(H.elbow[0]-W[0],H.elbow[1]-W[1],H.elbow[2]-W[2]);
     H.armS.mat=limbMat(BB,W,H.elbow,.004,Math.min(H.armL||.16,L),H.armW||.037,H.armH||.019);
-    H.arm.mat=limbMat(BB,W,H.elbow,Math.min(H.mesh&&HM.ready?(H.sl0!=null?H.sl0:.03):.14,L*.5),L+(H.slEnd!=null?H.slEnd:.4),H.slW||.078,H.slH||.07);
+    H.arm.mat=limbMat(BB,W,H.elbow,Math.min(H.mesh&&HM.ready?(H.sl0!=null?H.sl0:.03):.14,L*(H.slK||.5)),L+(H.slEnd!=null?H.slEnd:.4),H.slW||.078,H.slH||.07);
     H.armS.dyn=false;H.arm.dyn=false;
     if(H.up){H.up.vis=vis&&!!H.shoulder;if(H.shoulder){var ue=H.elbow,us=H.shoulder;H.up.mat=limbMat(BB,ue,us,-.03,Math.hypot(us[0]-ue[0],us[1]-ue[1],us[2]-ue[2])+.02,(H.slW||.078)*1.05,(H.slH||.07)*1.05);H.up.dyn=false}}
   });
@@ -1564,7 +1565,7 @@ function handsReset(){HLIST.forEach(function(H){H.vis=false;H.follow=null;H.hold
 function bothOut(dur,done){hOut(HR,dur);hOut(HL,dur,done)}
 /* ================= 聲音（程式合成，立體聲定位 + 殘響 + 壓縮，強化現場感） ================= */
 var AC=null,muffle=null,comp=null,revSend=null,noiseBuf=null,whiteBuf=null,alarmG=null,fireRumbleG=null,fireRoarG=null,firePan=null,fireBus=null,sirenG=null,sirenPan=null,droneG=null,windG=null;
-var alarmLevel=1,nextBeat=0,regOn=false,roarKick=0,fireVol=0;
+var alarmLevel=1,nextBeat=0,tenseUntil=0,regOn=false,roarKick=0,fireVol=0;
 function mkNoise(brown){
   var n=AC.sampleRate*4,b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0),last=0;
   for(var i=0;i<n;i++){var w=Math.random()*2-1;if(brown){last=(last+.02*w)/1.02;d[i]=last*3.5}else d[i]=w}
@@ -1638,13 +1639,14 @@ function crackle(){
   if(big){var o=AC.createOscillator(),og=AC.createGain();o.type='sine';o.frequency.setValueAtTime(260+Math.random()*200,t);o.frequency.exponentialRampToValueAtTime(70,t+.1);og.gain.setValueAtTime(vv*.8,t);og.gain.exponentialRampToValueAtTime(.001,t+.12);o.connect(og);og.connect(fireBus);o.start(t);o.stop(t+.14)}
 }
 function heartbeat(){
-  if(!AC||document.hidden||sfNow>=75||phase==='title'||phase==='end')return;
+  if(!AC||document.hidden||sfNow>=75||AC.currentTime>tenseUntil||phase==='title'||phase==='end')return;
   var now=AC.currentTime;if(now<nextBeat)return;
   var k=(100-sfNow)/100;nextBeat=now+60/(78+k*80);
   [0,.17].forEach(function(dt,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(i?50:60,now+dt);o.frequency.exponentialRampToValueAtTime(32,now+dt+.12);
     g.gain.setValueAtTime(0,now+dt);g.gain.linearRampToValueAtTime((i?.35:.55)*(.5+k),now+dt+.01);g.gain.exponentialRampToValueAtTime(.001,now+dt+.2);o.connect(g);g.connect(master);o.start(now+dt);o.stop(now+dt+.22)});
 }
 function breath(){
+  return;
   if(!AC||document.hidden||phase==='title'||phase==='end'||sfNow>=75)return;
   var vol=.06+(100-sfNow)/100*.16,t=AC.currentTime;
   var s=AC.createBufferSource();s.buffer=whiteBuf;var f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=1100;f.Q.value=.9;var g=AC.createGain();
@@ -1762,7 +1764,7 @@ function bars(on){el('bars').classList.toggle('on',!!on)}
 function fadeTo(v,ms){var f=el('fade');f.style.transition='opacity '+(ms||1200)+'ms ease';f.style.opacity=v}
 function showSkip(v){el('skip').hidden=!v}
 function setSafety(v){
-  sfNow=clamp(Math.round(v),0,100);
+  var nv=clamp(Math.round(v),0,100);if(nv<sfNow&&AC&&phase!=='title')tenseUntil=AC.currentTime+4;sfNow=nv;
   el('sval').textContent=sfNow;var f=el('sfill');f.style.width=sfNow+'%';f.style.background=sfNow>60?'var(--ok)':sfNow>30?'var(--warn)':'var(--signal)';
   ST.smokeT=baseSmoke+(100-sfNow)/100*.32;
 }
@@ -1799,16 +1801,17 @@ function camSetup(){
   CAM.intro=lookAt([TB.x-.55,1.62,TB.z+1.55],[TB.x+.32,1.0,TB.z+.45]);
   CAM.near=lookAt([TB.x-.15,1.6,TB.z+1.3],[TB.x+.36,1.15,TB.z+.6]);
   CAM.back=lookAt([TB.x+.6,1.62,TB.z+1.4],[TB.x+.4,1.15,TB.z+.95]);
-  CAM.thr=lookAt([TB.x+.58,1.58,TB.z+1.1],[TB.x+.4,.95,TB.z+.78]);
+  CAM.thr=lookAt([TB.x+1.75,1.3,TB.z+.35],[TB.x+.42,.95,TB.z+.72]);
 }
 camSetup();
 function dadSit(){DAD.show(false);chairs[1].p=[TB.x+.35,0,TB.z+.62];chairs[1].r=[0,0,0];DADS.node.p=POS.sit.p.slice();DADS.node.r=[0,PI,0];DADS.head.r=[0,0,0];DADS.show(true);curDad=DADS;
-  HDL.owner=HDR.owner=DADS;
+  HDL.owner=HDR.owner=DADS;HDL.poleB=HDR.poleB=null;
   setLp(HDR,w2b(DADS,[TB.x+.47,TB.y+.06,TB.z+.25]));HDR.aim=0;HDR.curl=.7;HDR.thumb=.6;
   setLp(HDL,w2b(DADS,[TB.x+.2,TB.y+.05,TB.z+.3]));HDL.aim=0;HDL.curl=.35;HDL.thumb=.3;HDL.vis=HDR.vis=true}
 function neckPt(B,dx){return b2w(B,[dx,1.06,.1])}
-var NECK_L=[.05,1.06,.15],NECK_R=[-.05,1.06,.15];
-function clutch(B,dur){HDL.owner=HDR.owner=B;HDL.aim=-PI/2;HDR.aim=PI/2;HDL.curl=HDR.curl=.55;HDL.thumb=HDR.thumb=.6;
+/* 噎到的手勢：雙手掐住自己的脖子（手肘往前、往下） */
+var NECK_L=[.08,1.08,.05],NECK_R=[-.08,1.08,.05];
+function clutch(B,dur){HDL.owner=HDR.owner=B;HDL.aim=-PI/2;HDR.aim=PI/2;HDL.curl=HDR.curl=.62;HDL.thumb=HDR.thumb=.75;HDL.poleB=[.7,-1,.5];HDR.poleB=[-.7,-1,.5];
   if(dur){lpTo(HDL,NECK_L,dur);lpTo(HDR,NECK_R,dur)}else{setLp(HDL,NECK_L);setLp(HDR,NECK_R)}}
 var curDad=null,LEAN={a:0},SHAKE={a:0};
 function dadStand(lean){DADS.show(false);chairs[1].p=[TB.x+.98,0,TB.z+.45];chairs[1].r=[0,.9,0];DAD.node.p=POS.stand.p.slice();LEAN.a=lean||0;DAD.node.r=[LEAN.a,PI,0];DAD.head.r=[0,0,0];DAD.show(true);curDad=DAD;
@@ -1824,21 +1827,22 @@ function backBlows(n,soft,done){
   after(600+n*520,function(){hOut(HR,.3);if(done)done()});
 }
 /* 腹部擠壓：你在他背後，雙手環抱，拳頭在肚臍上方 */
+var THR={push:0};
 function thrustSet(){
-  var m=matOf(DAD.node),k=DAD.k;
-  function wp(x,y,z){return [m[0]*x*k+m[4]*y*k+m[8]*z*k+m[12],m[1]*x*k+m[5]*y*k+m[9]*z*k+m[13],m[2]*x*k+m[6]*y*k+m[10]*z*k+m[14]]}
-  YR.p=wp(.03,.72,.17);YL.p=wp(-.04,.73,.17);var R=[Math.cos(cam.yaw),0,-Math.sin(cam.yaw)];YR.pole=[R[0],-1,R[2]];YL.pole=[-R[0],-1,-R[2]];
-  YR.aim=-PI/2;YL.aim=PI/2;YR.curl=YL.curl=.95;YR.thumb=YL.thumb=.8;YR.vis=YL.vis=true;
+  /* 鏡頭切到側前方：看得到「你」站在他背後，雙手從腰側環抱到肚臍上方 */
+  var D=DAD.node.p;RES.node.p=[D[0],0,D[2]+.36];RES.node.r=[.14,PI,0];RES.show(true);
+  THR.push=0;[YL,YR].forEach(function(H,i){var sd=i?-1:1;H.wreach=null;H.pole=null;H.shF=function(){return RES.shoulder(sd)}});
+  YR.aim=-PI/2;YL.aim=PI/2;YR.curl=YL.curl=.95;YR.thumb=YL.thumb=.8;thrustFollow();YR.vis=YL.vis=true;
 }
 function thrusts(n,ok,done){
   thrustSet();
-  for(var i=0;i<n;i++)(function(i){after(400+i*650,function(){var a=YR.p.slice(),b=YL.p.slice();
-    tween(YR.p,{1:a[1]+.04,2:a[2]-.03},.12,function(){tween(YR.p,{1:a[1],2:a[2]},.2)});tween(YL.p,{1:b[1]+.04,2:b[2]-.03},.12,function(){tween(YL.p,{1:b[1],2:b[2]},.2)});
+  for(var i=0;i<n;i++)(function(i){after(400+i*650,function(){
+    tween(THR,{push:1},.12,function(){tween(THR,{push:0},.2)});
     SHAKE.a=1;tween(SHAKE,{a:0},.3);thud(.6);if(ok&&i===n-1){food.vis=true;var f=neckPt(DAD,0);food.p=[f[0],f[1]+.12,f[2]];tween(food.p,{1:TB.y+.02,2:f[2]-.55},.6);cough()}})})(i);
   after(500+n*650,function(){if(done)done()});
 }
 SCN.reset=function(){
-  [DADS,DAD,MOM2].forEach(function(b){b.show(false)});[HDL,HDR,YL,YR].forEach(function(H){H.vis=false});
+  [DADS,DAD,MOM2,RES].forEach(function(b){b.show(false)});[HDL,HDR,YL,YR].forEach(function(H){H.vis=false});
   food.vis=false;cup2.vis=false;LEAN.a=0;SHAKE.a=0;curDad=null;
 };
 SCN.start=function(){
@@ -1887,7 +1891,7 @@ var PLAY={
  },
  d4:{
   thrust:function(done){cap('你站到他背後環抱，讓他上半身保持往前傾，拳頭放在肚臍上方，快速往內、往上推壓。');tween(LEAN,{a:.45},.3);camTo(CAM.thr,.6);
-    thrusts(5,false,function(){cap('推壓 5 下，東西還是卡著。');after(1800,function(){YL.vis=YR.vis=false;done()})})},
+    thrusts(5,false,function(){cap('推壓 5 下，東西還是卡著。');after(1800,function(){thrEnd();done()})})},
   chest:function(done){cap('你雙手按在他的胸口，用力往下推。');after(1800,function(){cap('他還有意識、還站著，這樣壓沒有用。')});after(3400,done)},
   again:function(done){cap('你再拍背 5 下，一直拍……');backBlows(5,false,function(){cap('東西還是卡著。他快撐不住了。');after(1200,done)})},
   _:function(done){cap('他的腿一軟——');after(2600,done)}
@@ -1895,14 +1899,14 @@ var PLAY={
  d5:{
   cycle:function(done){cap('你換回拍背：一手扶胸讓他前傾，掌根拍肩胛骨中間 5 下。');camTo(CAM.back,.6);tween(LEAN,{a:.55},.4);
     backBlows(5,false,function(){cap('再換腹部推壓——');tween(LEAN,{a:.45},.3);camTo(CAM.thr,.6);
-      thrusts(3,true,function(){cap('第二輪推到第三下，一塊肉噴了出來。爸爸大口吸氣，咳個不停。');tween(LEAN,{a:.05},.8);after(2800,function(){YL.vis=YR.vis=false;done()})})})},
+      thrusts(3,true,function(){cap('第二輪推到第三下，一塊肉噴了出來。爸爸大口吸氣，咳個不停。');tween(LEAN,{a:.05},.8);after(2800,function(){thrEnd();done()})})})},
   push:function(done){cap('你一直腹部推壓，沒有再拍背。');camTo(CAM.thr,.6);tween(LEAN,{a:.45},.3);
-    thrusts(5,false,function(){thrusts(4,true,function(){cap('推了好多下，東西才終於出來。爸爸已經快站不住了。');tween(LEAN,{a:.05},.8);after(2800,function(){YL.vis=YR.vis=false;done()})})})},
+    thrusts(5,false,function(){thrusts(4,true,function(){cap('推了好多下，東西才終於出來。爸爸已經快站不住了。');tween(LEAN,{a:.05},.8);after(2800,function(){thrEnd();done()})})})},
   wait:function(done){cap('你停了下來，扶他坐好等救護車。');tween(LEAN,{a:.1},.6);after(2000,function(){cap('不到一分鐘，他的腿一軟，倒了下去。');ST.shake=.4;tween(ST,{shake:0},.5);thud(.9)});after(4200,done)},
   _:function(done){cap('他的腿一軟——');after(2600,done)}
  }
 };
-SCN.quickCam=function(){bothOut(.3);YL.vis=YR.vis=false};
+SCN.quickCam=function(){bothOut(.3);thrEnd()};
 SCN.epilogue=function(){
   var g=SC.log.filter(function(l){return l.o.grade==='good'}).length,ok=SC.log[4]&&SC.log[4].o.grade!=='bad'&&SC.log[4].o.id!=='timeout';
   return ok?['19:20，救護人員抵達。','爸爸吐出了那塊肉，呼吸恢復了。腹部推壓可能造成內傷，他還是被送去醫院檢查。',g===5?'因為你一路都做對了，他沒有失去意識。':'雖然中間有些耽誤，最後還是把東西排出來了。']
@@ -1927,7 +1931,16 @@ function sceneTick(dt){
   if(curDad===DAD){var sh=SHAKE.a*.03;DAD.node.r=[LEAN.a+sh,PI,0]}
   if(YR.vis)thrustFollow();
 }
-function thrustFollow(){}
+function thrEnd(){YL.vis=YR.vis=false;RES.show(false)}
+function thrustFollow(){
+  /* 你站在他背後：肩膀在你身上，手肘貼著他的腰側，拳頭在他肚臍上方（往內、往上推） */
+  if(!curDad)return;var B=curDad,R=[Math.cos(cam.yaw),0,-Math.sin(cam.yaw)],pu=THR.push;
+  [YL,YR].forEach(function(H,i){var sd=i?-1:1,rs=i?1:-1;
+    H.p=b2w(B,[sd*.035,.74+pu*.035,.145-pu*.035]);
+    H.elbow=b2w(B,[sd*.255,.79,.05]);
+    H.shoulder=H.shF();
+  });
+}
 function titleCam(){var c=CAM.intro;cam.x=c.x+Math.sin(tNow*.2)*.1;cam.y=c.y;cam.z=c.z;cam.yaw=c.yaw+Math.sin(tNow*.17)*.06;cam.pitch=c.pitch}
 
 SCN.flow=[{"t": "辨認", "s": "說不出話、咳不出來"}, {"t": "求救", "s": "一人打 119，一人急救"}, {"t": "拍背 5 下", "s": "扶胸前傾，拍肩胛骨中間"}, {"t": "腹部推壓 5 下", "s": "保持前傾，肚臍上方往內往上"}, {"t": "5＋5 交替", "s": "直到排出；昏倒就 CPR"}];
@@ -2201,7 +2214,7 @@ function armSolve(H){
   }
   var side=H.mirror?1:-1,S=[side*.18,.95,0],T=H.lp?H.lp.slice():w2b(B,H.wt||H.p);
   /* 手不能跑到軀幹裡或身體後面 */
-  if(T[1]>.3&&T[1]<1.3){var zmin=Math.abs(T[0])<.27?.15:-.1;if(T[2]<zmin)T[2]=zmin}
+  if(T[1]>.3&&T[1]<1.3){var zmin=Math.abs(T[0])<.27?.15:-.1;if(T[1]>1.0&&T[1]<1.12&&Math.abs(T[0])<.14)zmin=-.06;if(T[2]<zmin)T[2]=zmin}
   var R=H.reach||.5,d0=Math.hypot(T[0]-S[0],T[1]-S[1],T[2]-S[2]);
   if(B.canLean&&H.wt&&!H.lp){
     if(B._ft!==tNow){var dt=Math.min(.05,Math.max(0,tNow-(B._ft||tNow)));B.lean=(B.lean||0)+(Math.min(.42,B._need||0)-(B.lean||0))*Math.min(1,dt*4);B._ft=tNow;B._need=0;B.node.r[0]=(B.r0||0)+B.lean}
